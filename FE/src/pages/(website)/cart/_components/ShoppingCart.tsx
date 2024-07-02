@@ -28,10 +28,10 @@ const ShoppingCart = () => {
         <>
             {/* Cart  */}
 
-            {/* <ModeToggle /> */}
+            <ModeToggle />
             <section className="Status_Cart transition-all duration-500 max-w-[1408px] w-full max-[1408px]:w-[88%] mx-auto grid grid-cols-[57%_auto] max-lg:grid-cols-1 gap-x-16">
                 {/* Cart__Left */}
-                <div className="Your_Cart flex flex-col py-8 gap-6">
+                <div className="Your_Cart flex flex-col py-8 gap-6 max-[1440px]:pl-2 max-[1408px]:pl-0">
                     {/* Top  */}
                     <div className="Top flex justify-between pb-6 border-b border-[#C8C9CB]">
                         <p className="text-[20px] max-sm:text-[16px]">Your Cart</p>
@@ -52,13 +52,19 @@ const ShoppingCart = () => {
                             {/* information */}
                             <div className="flex flex-col gap-3">
                                 <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
-                                    <div className="text-[#9D9EA2] w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px] hover:text-black"><a href="#">Khalifa Kush (AAAA)</a></div>
+                                    <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
+                                        <div className='hover:text-black'>
+                                            <a href="#">Khalifa Kush (AAAA)</a>
+                                        </div>
+                                    </div>
                                     <div className="flex items-center gap-3 max-sm:col-start-1">
                                         <div className="flex rounded-[6px] *:transition-all duration-500">
                                             <div className="px-[15px] py-[6px] flex justify-center items-center cursor-pointer select-none">
                                                 -
                                             </div>
-                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px]">2</div>
+                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black flex justify-center items-center">
+                                                <p>2</p>
+                                            </div>
                                             <div className="px-[15px] py-[6px] flex justify-center items-center cursor-pointer select-none">
                                                 +
                                             </div>
@@ -101,13 +107,17 @@ const ShoppingCart = () => {
                             {/* information */}
                             <div className="flex flex-col gap-3">
                                 <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
-                                    <div className="text-[#9D9EA2] w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px] hover:text-black"><a href="#">Khalifa Kush (AAAA) Khalifa Kush</a></div>
+                                    <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
+                                        <div className='hover:text-black'>
+                                            <a href="#">Khalifa Kush (AAAA) Khalifa Kush</a>
+                                        </div>
+                                    </div>
                                     <div className="flex items-center gap-3 max-sm:col-start-1">
                                         <div className="flex rounded-[6px] *:transition-all duration-500">
                                             <div className="px-[15px] py-[6px] flex justify-center items-center">
                                                 -
                                             </div>
-                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px]">2</div>
+                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black">2</div>
                                             <div className="px-[15px] py-[6px] flex justify-center items-center">
                                                 +
                                             </div>
@@ -204,13 +214,17 @@ const ShoppingCart = () => {
                             {/* information */}
                             <div className="flex flex-col gap-3">
                                 <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
-                                    <div className="text-[#9D9EA2] w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px] hover:text-black"><a href="#">Khalifa Kush (AAAA) Khalifa Kush Khalifa Kush (AAAA)</a></div>
+                                    <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
+                                        <div className='hover:text-black'>
+                                            <a href="#">Khalifa Kush (AAAA) Khalifa Kush (AAAA) Khalifa Kush</a>
+                                        </div>
+                                    </div>
                                     <div className="flex items-center gap-3 max-sm:col-start-1">
                                         <div className="flex rounded-[6px] *:transition-all duration-500">
                                             <div className="px-[15px] py-[6px] flex justify-center items-center">
                                                 -
                                             </div>
-                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px]">2</div>
+                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black">2</div>
                                             <div className="px-[15px] py-[6px] flex justify-center items-center">
                                                 +
                                             </div>
@@ -302,7 +316,7 @@ const ShoppingCart = () => {
                     {/* Bottom  */}
                     <div className="Bottom border-t border-[#F4F4F4] pt-6 grid grid-cols-3 gap-6 max-sm:gap-4">
                         <div className='flex gap-4 flex-col'>
-                            <p className='text-[16px] max-sm:text-[14px] text-light-400'>Delivery</p>
+                            <p className='text-[16px] max-sm:text-[14px]'>Delivery</p>
                             <div className='flex flex-col border border-[#F4F4F4] rounded-[12px] p-4 gap-4'>
                                 <div className='Icon flex justify-center items-center w-1 h-1 bg-light-50 p-6 rounded-full'>
                                     <img className='max-w-max' src={minius} alt="" />
@@ -316,7 +330,7 @@ const ShoppingCart = () => {
                             </div>
                         </div>
                         <div className='flex gap-4 flex-col'>
-                            <p className='text-[16px] max-sm:text-[14px] text-light-400'>Time</p>
+                            <p className='text-[16px] max-sm:text-[14px]'>Time</p>
                             <div className='flex flex-col border border-[#F4F4F4] rounded-[12px] p-4 gap-4'>
                                 <div className='Icon flex justify-center items-center w-1 h-1 bg-light-50 p-6 rounded-full'>
                                     <img className='max-w-max' src={boxtime} alt="" />
@@ -330,7 +344,7 @@ const ShoppingCart = () => {
                             </div>
                         </div>
                         <div className='flex gap-4 flex-col'>
-                            <p className='text-[16px] max-sm:text-[14px] text-light-400'>Free Returns</p>
+                            <p className='text-[16px] max-sm:text-[14px]'>Free Returns</p>
                             <div className='flex flex-col border border-[#F4F4F4] rounded-[12px] p-4 gap-4'>
                                 <div className='Icon flex justify-center items-center w-1 h-1 bg-light-50 p-6 rounded-full'>
                                     <img className='max-w-max' src={trucktime} alt="" />
@@ -349,7 +363,7 @@ const ShoppingCart = () => {
                 {/* End Cart__Left  */}
 
                 {/* Cart__Right */}
-                <div className='Cart__Right py-8'>
+                <div className='Cart__Right py-8 max-[1440px]:pr-2 max-[1408px]:pr-0'>
                     <div className='flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6'>
                         <div className='Subtotal flex flex-col gap-4'>
                             <div className='flex justify-between'>

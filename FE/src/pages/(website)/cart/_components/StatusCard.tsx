@@ -27,7 +27,7 @@ const StatusCard = () => {
     return (
         <>
             {/* Status  */}
-            <div className="Status w-full py-7 bg-[#F4F4F4] overflow-hidden">
+            <div className="Status w-full py-7 bg-status overflow-hidden">
                 <div className={`flex justify-center items-center gap-x-4 mx-auto max-[1408px]:w-[88%]`}>
                     <div className={`flex gap-2 items-center font-medium transition-all duration-700 ${cartStatus > 1 ? 'max-sm:w-8' : 'max-sm:w-[143px]'} `}>
                         <div className={`py-2 px-2 rounded-full ${cartStatus === 1 ? 'bg-light-400 transition duration-500' : cartStatus === 2 ? 'bg-light-200 transition duration-500' : cartStatus === 3 ? 'bg-light-200' : 'bg-light-200'}`}>

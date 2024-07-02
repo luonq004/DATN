@@ -23,6 +23,7 @@ const SizeColorSelector = ({ attribute, onChangeAttribute }: { attribute: any, o
 
     const handleColorClick = (color: any) => {
         setTempColor(color);
+
     };
 
     const handleSave = () => {
@@ -56,15 +57,15 @@ const SizeColorSelector = ({ attribute, onChangeAttribute }: { attribute: any, o
                     </svg>
                 </div>
             </div>
-            <div className={`absolute bg-white py-3 px-4 left-1/2 max-sm:left-[5%] -translate-x-1/2 border rounded-md transition-all duration-500 ${attribute === 2 ? 'opacity-100 top-[130%] z-10' : 'opacity-0 top-[90%] z-[-1]'}`}>
+            <div className={`absolute bg-background py-3 px-4 left-1/2 max-sm:left-[5%] -translate-x-1/2 border-2 border-border1 rounded-md transition-all duration-500 ${attribute === 2 ? 'opacity-100 top-[130%] z-10' : 'opacity-0 top-[90%] z-[-1]'}`}>
                 <div className="flex flex-col gap-2 mb-2">
                     <h1 className="font-medium">Select size</h1>
                     <div className="flex gap-2">
                         {sizeOptions.map((size) => (
                             <div
                                 key={size}
-                                className={`relative px-5 py-4 rounded-md cursor-pointer transition-all ${tempSize === size ? "bg-black text-white" : "bg-[#efefef] text-black"
-                                    } border-2 ${tempSize === size ? "border-black" : "border-[#efefef]"
+                                className={`relative px-5 py-4 rounded-md cursor-pointer hover:border-background1 transition-all ${tempSize === size ? "bg-background1 text-background" : "bg-background2 text-background1 hover:bg-border1 hover:text-black"
+                                    } border-2 ${tempSize === size ? "border-background1" : "border-[#efefef]"
                                     }`}
                                 onClick={() => handleSizeClick(size)}
                             >
@@ -79,11 +80,11 @@ const SizeColorSelector = ({ attribute, onChangeAttribute }: { attribute: any, o
                 <div className="flex flex-col gap-2 mb-6">
                     <h1 className="font-medium">Select color</h1>
                     {tempSize && (
-                        <div className="flex gap-2 mt-4">
+                        <div className="flex gap-2">
                             {colorOptions[tempSize].map((color: any) => (
                                 <div
                                     key={color}
-                                    className={`p-1 border-2 rounded-full cursor-pointer transition-all ${tempColor === color ? "border-black" : "border-[#d1d0d0]"
+                                    className={`p-1 border-2 rounded-full cursor-pointer hover:border-background1 transition-all ${tempColor === color ? "border-background1" : "border-border2"
                                         }`}
                                     onClick={() => handleColorClick(color)}
                                 >
@@ -99,7 +100,7 @@ const SizeColorSelector = ({ attribute, onChangeAttribute }: { attribute: any, o
 
                 <div className="flex justify-between">
                     <div className="p-1 hover:text-red-500 cursor-pointer" onClick={() => changeAttribute(1)}>Cancel</div>
-                    <button onClick={handleSave} className="py-1 px-3 bg-white border border-black text-black rounded-sm hover:bg-black hover:text-white transition-all duration-300">Save</button>
+                    <button onClick={handleSave} className="py-1 px-3 bg-background border border-background1 text-background1 rounded-sm hover:bg-background1 hover:text-background transition-all duration-300">Save</button>
                 </div>
             </div>
         </>
