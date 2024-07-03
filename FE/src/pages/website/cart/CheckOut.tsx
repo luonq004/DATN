@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import FormCheckOut from "./FormCheckOut";
-import { FormLabel } from "@/components/ui/form";
 
 
 const CheckOut = () => {
@@ -23,7 +22,7 @@ const CheckOut = () => {
                   alt=""
                 />
               </span>
-              <div className="hidden sm:block ">Shopping Cart</div>
+              <div className="hidden sm:block font-medium ">Shopping Cart</div>
             </Link>
             <Link to={`/cart`}>
               <div>
@@ -41,7 +40,7 @@ const CheckOut = () => {
                   alt=""
                 />
               </span>
-              <div className="">Checkout</div>
+              <div className="font-medium ">Checkout</div>
             </Link>
             <Link to={`/cart`}>
               <div>
@@ -59,7 +58,7 @@ const CheckOut = () => {
                   alt=""
                 />
               </span>
-              <div className="hidden sm:block">Order Complete</div>
+              <div className="hidden font-medium  sm:block">Order Complete</div>
             </Link>
           </ul>
           {/*=========================END  CHECKOUT =================*/}
