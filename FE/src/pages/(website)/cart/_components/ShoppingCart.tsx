@@ -2,18 +2,19 @@ import React, { useEffect, useState } from 'react'
 import { ModeToggle } from '../../../../components/mode-toggle';
 
 //products
-import ImgProduct from '../../../../assets/products/product-1.svg';
+import ImgProduct from '@/assets/products/product-1.svg';
 
 //icons
-import minius from '../../../../assets/icons/transaction-minus.svg';
-import boxtime from '../../../../assets/icons/box-time.svg';
-import trucktime from '../../../../assets/icons/truck-time.svg';
-import idk from '../../../../assets/icons/idk.svg';
-import visa from '../../../../assets/icons/Visa.svg';
-import bitcoin from '../../../../assets/icons/Bitcoin.svg';
-import interac from '../../../../assets/icons/Interac.svg';
+import minius from '@/assets/icons/transaction-minus.svg';
+import boxtime from '@/assets/icons/box-time.svg';
+import trucktime from '@/assets/icons/truck-time.svg';
+import idk from '@/assets/icons/idk.svg';
+import visa from '@/assets/icons/Visa.svg';
+import bitcoin from '@/assets/icons/Bitcoin.svg';
+import interac from '@/assets/icons/Interac.svg';
 import SizeColorSelector from './SizeColorSelect';
-import { set } from 'zod';
+import { Link } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
 
 const ShoppingCart = () => {
     const [attribute, setAttribute] = useState<number | 1>(1);
@@ -27,15 +28,14 @@ const ShoppingCart = () => {
     return (
         <>
             {/* Cart  */}
-
-            <ModeToggle />
-            <section className="Status_Cart transition-all duration-500 max-w-[1408px] w-full max-[1408px]:w-[88%] mx-auto grid grid-cols-[57%_auto] max-lg:grid-cols-1 gap-x-16">
+            {/* <ModeToggle /> */}
+            <section className="Status_Cart transition-all duration-500 space-y-8 px-4 py-8 max-w-[1408px] w-full max-[1408px]:w-[88%] mx-auto grid grid-cols-[57%_auto] max-lg:grid-cols-1 gap-x-16">
                 {/* Cart__Left */}
-                <div className="Your_Cart flex flex-col py-8 gap-6 max-[1440px]:pl-2 max-[1408px]:pl-0">
+                <div className="Your_Cart flex flex-col gap-6">
                     {/* Top  */}
                     <div className="Top flex justify-between pb-6 border-b border-[#C8C9CB]">
-                        <p className="text-[20px] max-sm:text-[16px]">Your Cart</p>
-                        <p className="text-[#9D9EA2] font-light transition-all duration-500 max-sm:text-[14px]">(3)</p>
+                        <p className="font-medium text-[24px] max-sm:text-[16px]">Your Cart</p>
+                        <p className="text-[#9D9EA2] max-sm:text-[14px] transition-all duration-500">(3)</p>
                     </div>
                     {/* End Top  */}
 
@@ -54,7 +54,7 @@ const ShoppingCart = () => {
                                 <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
                                     <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
                                         <div className='hover:text-black'>
-                                            <a href="#">Khalifa Kush (AAAA)</a>
+                                            <Link to={`#`}>Khalifa Kush (AAAA)</Link>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 max-sm:col-start-1">
@@ -73,7 +73,7 @@ const ShoppingCart = () => {
                                     <div className=''>
                                         <p>$<span>120.00</span></p>
                                     </div>
-                                    <div className="group transition-all pb-0 hover:pb-1 cursor-pointer max-sm:col-start-2 max-sm:row-start-1 max-sm:flex max-sm:justify-end" onClick={() => window.confirm('Bạn chắc chứ ?') ? alert('Xóa thành cônng') : ''}>
+                                    <div className="group transition-all pb-0 hover:pb-1 cursor-pointer max-sm:col-start-2 max-sm:row-start-1 max-sm:flex max-sm:justify-end" onClick={() => window.confirm('Bạn chắc chứ ?')}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" viewBox="0 0 24 24" className="stroke-gray-500 transition duration-300 group-hover:stroke-red-500">
                                             <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7h16M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3m-5 5l4 4m0-4l-4 4" />
                                         </svg>
@@ -216,7 +216,7 @@ const ShoppingCart = () => {
                                 <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
                                     <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
                                         <div className='hover:text-black'>
-                                            <a href="#">Khalifa Kush (AAAA) Khalifa Kush (AAAA) Khalifa Kush</a>
+                                            <Link to={`#`}>Khalifa Kush (AAAA) Khalifa Kush (AAAA) Khalifa Kush</Link>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 max-sm:col-start-1">
@@ -363,7 +363,7 @@ const ShoppingCart = () => {
                 {/* End Cart__Left  */}
 
                 {/* Cart__Right */}
-                <div className='Cart__Right py-8 max-[1440px]:pr-2 max-[1408px]:pr-0'>
+                <div className='Cart__Right'>
                     <div className='flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6'>
                         <div className='Subtotal flex flex-col gap-4'>
                             <div className='flex justify-between'>
@@ -380,7 +380,8 @@ const ShoppingCart = () => {
                             </div>
                         </div>
                         <div className='Code-Sale flex items-center justify-between gap-4'>
-                            <input type="text" placeholder='Coupon code' className='border border-[#F4F4F4] rounded-[8px] py-3 px-6 w-full' />
+                            {/* <input type="text" placeholder='Coupon code' className='border border-[#F4F4F4] rounded-[8px] py-3 px-6 w-full' /> */}
+                            <Input placeholder="Coupon code" />
                             <div className='py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none'>
                                 Apply Coupon
                             </div>
@@ -399,13 +400,13 @@ const ShoppingCart = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className='flex justify-center items-center'>
+                        <Link to={`checkout`}>
                             <div className='bg-[#C8C9CB] hover:bg-light-400 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
                                 <div>Checkout</div>
                                 <div className=''>|</div>
                                 <div>$<span>547.00</span></div>
                             </div>
-                        </div>
+                        </Link>
                         <hr />
                         <div className='Payments flex flex-col gap-4'>
                             <p className='text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]'>SECURE PAYMENTS PROVIDED BY</p>

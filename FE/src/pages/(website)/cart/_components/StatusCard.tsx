@@ -16,7 +16,7 @@ const StatusCard = () => {
     useEffect(() => {
         if (location.pathname.match(/\/cart(\/)?$/)) {
             setCartStatus(1);
-        } else if (location.pathname.match(/\/cart\/check-out(\/)?$/)) {
+        } else if (location.pathname.match(/\/cart\/checkout(\/)?$/)) {
             setCartStatus(2);
         } else if (location.pathname.match(/\/cart\/order(\/)?$/)) {
             setCartStatus(3);
@@ -27,7 +27,7 @@ const StatusCard = () => {
     return (
         <>
             {/* Status  */}
-            <div className="Status w-full py-7 bg-status overflow-hidden">
+            <section className="Status w-full px-4 py-7 bg-status overflow-hidden">
                 <div className={`flex justify-center items-center gap-x-4 mx-auto max-[1408px]:w-[88%]`}>
                     <div className={`flex gap-2 items-center font-medium transition-all duration-700 ${cartStatus > 1 ? 'max-sm:w-8' : 'max-sm:w-[143px]'} `}>
                         <div className={`py-2 px-2 rounded-full ${cartStatus === 1 ? 'bg-light-400 transition duration-500' : cartStatus === 2 ? 'bg-light-200 transition duration-500' : cartStatus === 3 ? 'bg-light-200' : 'bg-light-200'}`}>
@@ -85,7 +85,7 @@ const StatusCard = () => {
                         <p className={`whitespace-nowrap max-sm:text-[14px] transition-all duration-200 ${cartStatus === 3 ? 'max-sm:block' : 'max-sm:hidden'} `}>Order Complete</p>
                     </div>
                 </div >
-            </div >
+            </section>
             {/* End Status  */}
         </>
     )

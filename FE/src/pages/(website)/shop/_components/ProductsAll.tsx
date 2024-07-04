@@ -125,9 +125,9 @@ const ProductsAll = () => {
     return (
         <>
             {/* <Test2 /> */}
-            <ModeToggle />
-            <section className='max-w-[1408px] transition-all duration-500 ease-in-out max-[1408px]:w-[88%] mx-auto grid grid-cols-[22%_74%] max-[1408px]:grid-cols-[24%_73%] max-md:grid-cols-1 gap-x-8 pt-[40px]'>
-                <div className="Filters w-full transition-all duration-200 border-r max-[1440px]:pl-2 max-[1408px]:pl-0 max-md:border-r-0 border-[#F4F4F4] flex flex-col gap-[20px] pr-[32px]">
+            {/* <ModeToggle /> */}
+            <section className='max-w-[1408px] transition-all duration-500 ease-in-out px-4 max-[1408px]:w-[88%] mx-auto grid grid-cols-[22%_75%] max-[1408px]:grid-cols-[24%_73%] max-md:grid-cols-1 gap-x-8 pt-[40px]'>
+                <div className="Filters w-full transition-all duration-200 border-r max-[1408px]:pl-0 max-md:border-r-0 border-[#F4F4F4] flex flex-col gap-[20px] pr-[32px]">
                     <div className="pt-[17px] pb-[24px] flex gap-[8px] border-b border-[#F4F4F4]">
                         <p className="text-[18px] font-normal">Filters</p>
                     </div>
