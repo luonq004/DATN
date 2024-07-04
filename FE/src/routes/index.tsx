@@ -1,12 +1,14 @@
 import { Route, Routes } from "react-router-dom";
-import CheckOut from "../pages/website/cart/CheckOut";
 import LayoutWebsite from "@/pages/(dashboard)/layout";
+import CheckOut from "@/pages/website/cart/CheckOutPayment/CheckOut";
+import OrderComplete from "@/pages/website/cart/OrderComplete/OrderComplete";
 
 const Router = () => {
   return <>
   <Routes>
     <Route path="/" element={<LayoutWebsite/>}>
-    <Route index element={<CheckOut/>}/>
+    <Route path="/checkout" element={<CheckOut/>}/>
+    <Route path="/orderComplete" element={<OrderComplete/>}/>
     </Route>
   </Routes>
   </>;

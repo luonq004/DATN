@@ -1,12 +1,6 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from "axios";
-import React, { useEffect, useState, forwardRef } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../components/ui/select"; 
+import  { useEffect, useState, forwardRef } from "react";
 
 interface City {
   Id: string;

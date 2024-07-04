@@ -67,7 +67,7 @@ const FormCheckOut = () => {
     <Form {...form}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-8 2xl:w-[1408px] xl:w-[1200px] p-10 lg:w-[900px] lg:mt-[32px] max-[830px]:flex-col max-[830px]:flex grid grid-cols-2 xl:grid lg:grid-cols-2 xl:grid-cols-[57%_auto] 2xl:grid-cols-[57%_auto] gap-x-16 mx-auto"
+        className="space-y-8 2xl:w-[1408px] xl:w-[1200px] p-4 lg:w-[900px] lg:mt-[32px] max-[830px]:flex-col max-[830px]:flex grid grid-cols-2 xl:grid lg:grid-cols-2 xl:grid-cols-[57%_auto] 2xl:grid-cols-[57%_auto] gap-x-16 mx-auto"
       >
         <div>
           <div className="flex justify-between lg:h-[54px] mb-8 border-b border-b-[#C8C9CB]">
@@ -81,7 +81,7 @@ const FormCheckOut = () => {
             rules={{ required: "Full name is required" }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">FULL NAME*</FormLabel>
+                <FormLabel className="text-black " >FULL NAME*</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter your full name" {...field} />
                 </FormControl>
@@ -95,7 +95,7 @@ const FormCheckOut = () => {
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">COUNTRY / REGION *</FormLabel>
+                <FormLabel className="text-black " >COUNTRY / REGION *</FormLabel>
                 <FormControl>
                   <Country
                     {...field}
@@ -124,7 +124,7 @@ const FormCheckOut = () => {
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">PHONE (optional)</FormLabel>
+                <FormLabel className="text-black " >PHONE (optional)</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter your phone number" {...field} />
                 </FormControl>
@@ -145,7 +145,7 @@ const FormCheckOut = () => {
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">EMAIL ADDRESS *</FormLabel>
+                <FormLabel className="text-black " >EMAIL ADDRESS *</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter your email" {...field} />
                 </FormControl>
@@ -160,7 +160,7 @@ const FormCheckOut = () => {
             rules={{ required: "Note is required" }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">NOTE *</FormLabel>
+                <FormLabel className="text-black " >NOTE *</FormLabel>
                 <FormControl>
                   <Textarea placeholder="Type your message here." {...field} />
                 </FormControl>
