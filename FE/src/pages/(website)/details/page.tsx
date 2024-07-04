@@ -144,7 +144,7 @@ const DetailPage = () => {
     <section className="max-w-[1408px] mx-auto px-4">
       {/* Breadcrumb */}
 
-      <div className="flex gap-1 items-center text-sm my-5 font-medium">
+      <div className="flex gap-1 items-center text-xs sm:text-sm my-5 font-medium">
         <Link to="/" className="hover:text-gray-600">
           Home
         </Link>

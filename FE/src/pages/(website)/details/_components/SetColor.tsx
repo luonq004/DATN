@@ -35,7 +35,7 @@ const SetColor: React.FC<SetColorProps> = ({
       {images.map((image, index) => (
         <ToggleGroupItem
           key={image.color}
-          className="rounded-full border border-slate-200 w-8 h-8"
+          className="rounded-full border border-slate-200 w-8 h-8 p-1"
           value={image.colorCode}
           onClick={() => {
             api?.scrollTo(index);
