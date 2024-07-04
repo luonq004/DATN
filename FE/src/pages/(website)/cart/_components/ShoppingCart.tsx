@@ -24,7 +24,6 @@ const ShoppingCart = () => {
         setAttribute(number);
     }
 
-
     return (
         <>
             {/* Cart  */}
