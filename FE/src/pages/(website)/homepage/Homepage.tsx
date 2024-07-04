@@ -15,7 +15,7 @@ import product5 from "../assets/img/products/product5.jpg";
 import product6 from "../assets/img/products/product6.jpg";
 import product8 from "../assets/img/products/product7.jpg";
 
-const HomePages = () => {
+const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeButton, setActiveButton] = useState("All"); // State để lưu trữ nút hiện tại được chọn
   const slides = [bannerImage1, bannerImage2, bannerImage3];
@@ -270,4 +270,4 @@ const HomePages = () => {
   );
 };
 
-export default HomePages;
+export default HomePage;

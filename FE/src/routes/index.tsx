@@ -1,4 +1,4 @@
-import Pagination from "@/components/Pagination";
+import HomePage from "@/pages/(website)/homepage/Homepage";
 import LayoutWebsite from "@/pages/(website)/layout";
 import { Route, Routes } from "react-router-dom";
 
@@ -7,7 +7,7 @@ const Router = () => {
     <div>
       <Routes>
         <Route path="/" element={<LayoutWebsite />}>
-          <Route index element={<Pagination />}/>
+          <Route index element={<HomePage />}/>
         </Route>
       </Routes>
     </div>
