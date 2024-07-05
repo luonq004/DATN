@@ -8,17 +8,17 @@ import { FaHeart, FaStar } from "react-icons/fa6";
 import { IoBagOutline } from "react-icons/io5";
 import { MdOutlineCancel } from "react-icons/md";
 
-import biscoint from "@/assets/biscoint.png";
-import tShirtUchinaga from "@/assets/img/tShirtUchinaga.jpg";
-import tShirtUchinaga2 from "@/assets/img/tShirtUchinaga2.jpg";
-import interac from "@/assets/interac.png";
-import mastercard from "@/assets/mastercard.png";
-import visa from "@/assets/visa.png";
-import customer from "@/assets/img/customer.jpg";
-import aeriUchinagaGirl from "@/assets/img/aeriUchinagaGirl.jpg";
-import aespaKpopNutritional from "@/assets/img/aespaKpopNutritional.jpg";
-import aespaKpopNutritionalBoy from "@/assets/img/aespaKpopNutritionalBoy.jpg";
-import colorOilPaint from "@/assets/img/colorOilPaint.jpg";
+import biscoint from "@/assets/icons/biscoint.png";
+import tShirtUchinaga from "@/assets/images/tShirtUchinaga.jpg";
+import tShirtUchinaga2 from "@/assets/images/tShirtUchinaga2.jpg";
+import interac from "@/assets/icons/interac.png";
+import mastercard from "@/assets/icons/mastercard.png";
+import visa from "@/assets/icons/visa.png";
+import customer from "@/assets/images/customer.jpg";
+import aeriUchinagaGirl from "@/assets/images/aeriUchinagaGirl.jpg";
+import aespaKpopNutritional from "@/assets/images/aespaKpopNutritional.jpg";
+import aespaKpopNutritionalBoy from "@/assets/images/aespaKpopNutritionalBoy.jpg";
+import colorOilPaint from "@/assets/images/colorOilPaint.jpg";
 
 import {
   Carousel,
@@ -144,7 +144,7 @@ const DetailPage = () => {
     <section className="max-w-[1408px] mx-auto px-4">
       {/* Breadcrumb */}
 
-      <div className="flex gap-1 items-center text-sm my-5 font-medium">
+      <div className="flex gap-1 items-center text-xs sm:text-sm my-5 font-medium">
         <Link to="/" className="hover:text-gray-600">
           Home
         </Link>
