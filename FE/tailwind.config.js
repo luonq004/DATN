@@ -1,11 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  mode: 'jit',
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
+    "./node_modules/flowbite/**/*.js",
   ],
   prefix: "",
   theme: {
@@ -69,6 +71,30 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        status: {
+          DEFAULT: "hsl(var(--status))",
+          foreground: "hsl(var(--status-foreground))",
+        },
+        // xám trắng
+        border1: {
+          DEFAULT: "hsl(var(--border1))",
+          foreground: "hsl(var(--border1-foreground))",
+        },
+        //xám đen
+        border2: {
+          DEFAULT: "hsl(var(--border2))",
+          foreground: "hsl(var(--border2-foreground))",
+        },
+        //bg đen trắng
+        background1: {
+          DEFAULT: "hsl(var(--foreground))",
+          foreground: "hsl(var(--background))",
+        },
+        //bg xám đen
+        background2: {
+          DEFAULT: "hsl(var(--background2))",
+          foreground: "hsl(var(--foreground2))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -91,5 +117,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require('flowbite/plugin'),
+  ],
 };
