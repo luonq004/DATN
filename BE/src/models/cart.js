@@ -35,7 +35,6 @@ const cartSchema = new mongoose.Schema({
   discount: {
     type: Number,
   },
-
   total: {
     type: Number,
     required: true,

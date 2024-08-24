@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Cart from "./cart.js";
 
+import Cart from "./cart.js";
 
 
 const variantSchema = new mongoose.Schema({
@@ -51,7 +51,6 @@ variantSchema.post('findOneAndDelete', async function (doc) {
       { $pull: { variants: doc._id } }
     );
   }
-
 });
 
 export default mongoose.model("Variant", variantSchema);

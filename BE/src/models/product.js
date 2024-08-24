@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import paginate from "mongoose-paginate-v2";
+
 import Cart from "./cart.js";
+
 
 const productSchema = new mongoose.Schema(
   {

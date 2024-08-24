@@ -7,18 +7,14 @@ const attributeSchema = new mongoose.Schema({
     required: true,
   },
 
+
   type: {
     type: String,
     lowcase: true,
     required: true
   },
 
-  values: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AttributeValue",
-    },
-  ],
+
 }, { timestamps: true, versionKey: false });
 
 export default mongoose.model("Attribute", attributeSchema);

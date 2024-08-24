@@ -12,4 +12,6 @@ const attributeValueSchema = new mongoose.Schema({
   },
 }, { timestamps: true, versionKey: false });
 
+
+
 export default mongoose.model("AttributeValue", attributeValueSchema);
