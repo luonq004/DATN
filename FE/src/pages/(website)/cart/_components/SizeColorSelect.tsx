@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute, idCart, onChangeVariant }: { idProduct: string, idVariant: string, attribute: any, onChangeAttribute: any, idCart: string, onChangeVariant: any }) => {
     const [selectedValue, setSelectedValue] = useState<{ [key: string]: any }>({});
@@ -28,10 +28,6 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
     const variantOfProduct = data?.variants.find((variant: any) => variant._id === idVariant)
     const str = (variantOfProduct?.values.flatMap((value: any) => value.name))
 
-    // console.log('data', data)
-    // console.log('attri', attri)
-
-    // useEffect để khởi tạo selectedAttributes dựa trên idVariant
     useEffect(() => {
         if (data && idVariant) {
             const selectedVariant = data?.variants.find((variant: any) => variant._id === idVariant);
@@ -71,8 +67,6 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
         });
     };
 
-    // console.log('selectedValue', selectedValue)
-
     // Mảng mới để chứa các variant
     const variantProduct = attri?.map((attr: any) => {
         const seenIds = new Set();
@@ -90,25 +84,18 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
         };
     });
 
-    // console.log('val2', variantProduct)
-    // console.log('product', data);
-    // console.log('mewAttri', variantProduct)
-
     const getCompatibleAttributeValues = () => {
 
         let filterVariants = data?.variants;
 
         // Lọc các variant dựa trên các thuộc tính đã chọn
         Object.keys(selectedValue).forEach((attributeId: any) => {
-            // console.log(attributeId)
+
             const valueVariant = selectedValue[attributeId];
-            // console.log('valueVariant', valueVariant)
             filterVariants = filterVariants.filter((variant: any) =>
                 variant.values.some((value: any) => value._id === valueVariant)
             );
         });
-
-        // console.log('filterVariants', filterVariants)
 
         const filterValues: { [key: string]: string[] } = {};
 
@@ -125,14 +112,10 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
             filterValues[attribute._id] = [...valuesSet] as string[]; // Explicitly cast values to string[]
         });
 
-        // console.log('Values', filterValues)
-
         return filterValues;
     };
 
     const compatibleAttributeValues = getCompatibleAttributeValues();
-
-    // console.log('compatibleAttributeValues', compatibleAttributeValues)
 
     const saveVariant = (selectedValue: any) => {
         // Tìm variant khớp với tất cả các thuộc tính đã chọn
@@ -166,11 +149,6 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
                 className="flex items-center gap-1 px-2 py-1 border rounded-md cursor-pointer max-sm:text-[14px]"
                 onClick={() => attribute !== idCart ? changeAttribute(idCart) : changeAttribute('1')}
             >
-                {/* <div>
-                    <p>{size}</p>
-                </div> */}
-                {/* <div className="bg-[#C3D2CC] px-1.5 max-sm:px-1 h-[2px]"></div> */}
-                {/* <div className={`w-4 max-sm:w-3 h-4 max-sm:h-3 rounded-full`} style={{ backgroundColor: color || undefined }}></div> */}
                 {str?.join(', ')}
                 <div className={`transition-all duration-500 ${attribute === idCart ? 'rotate-180' : ''}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">

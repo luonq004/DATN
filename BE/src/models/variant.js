@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import Cart from "./cart.js";
+import Product from "./product.js";
 
 
 const variantSchema = new mongoose.Schema({
@@ -42,14 +43,19 @@ variantSchema.pre('findOneAndDelete', async function (next) {
 variantSchema.post('findOneAndDelete', async function (doc) {
   // console.log(doc);
   if (doc) {
-    await Cart.updateMany(
-      { "products.variantItem": doc._id },
-      { $pull: { products: { variantItem: doc._id } } }
-    );
-    await Product.updateMany(
-      { "variants": doc._id },
-      { $pull: { variants: doc._id } }
-    );
+    try {
+      await Cart.updateMany(
+        { "products.variantItem": doc._id },
+        { $pull: { products: { variantItem: doc._id } } }
+      );
+
+      await Product.updateMany(
+        { "variants": doc._id },
+        { $pull: { variants: doc._id } }
+      );
+    } catch (err) {
+      console.error('Error:', err);
+    }
   }
 });
 

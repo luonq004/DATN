@@ -14,7 +14,11 @@ const updateTotal = async (cart) => {
         const date = new Date();
         cart.voucher.forEach(voucher => {
             // check hạn sử dụng code và loại code phải là product
-            if (new Date(date.getTime() + 7 * 60 * 60 * 1000) >= new Date(voucher.startDate) && new Date(date.getTime() + 7 * 60 * 60 * 1000) <= new Date(voucher.endDate) && voucher.category === "product") {
+            const presentTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+            let startDate = new Date(voucher.startDate);
+            let endDate = new Date(voucher.endDate);
+
+            if (presentTime >= startDate && presentTime <= endDate && voucher.category === "product") {
                 if (voucher.type === "fixed") {
                     totalDiscount += voucher.discount;
                 } else if (voucher.type === "percent") {

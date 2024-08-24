@@ -116,6 +116,7 @@ const ShopCart = () => {
                             title: "Sucsess",
                             description: "Đổi thành công!",
                         })
+                        setAttribute('1')
                     }
                 })
                 break;
