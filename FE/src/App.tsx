@@ -1,4 +1,5 @@
 import "./App.css";
+import { Toaster } from "./components/ui/toaster";
 import Router from "./routes";
 
 function App() {
@@ -6,7 +7,7 @@ function App() {
     <>
 
       <Router />
-      {/* <Toaster /> */}
+      <Toaster />
     </>
   );
 }
