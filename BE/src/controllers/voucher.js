@@ -19,7 +19,18 @@ export const getOneVoucher = async (req, res) => {
         if (voucher.length < 0) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
         }
-        return res.status(StatusCodes.OK).json(voucher)
+        const currentTime = new Date();
+        const endTime = new Date(voucher.endDate);
+        const timeRemaining = endTime - currentTime;
+
+        if (timeRemaining <= 0) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Voucher hết hạn" });
+        }
+
+        return res.status(StatusCodes.OK).json({
+            voucher,
+            countdown: timeRemaining
+        });
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
     }
@@ -66,5 +77,32 @@ export const removeVoucher = async (req, res) => {
         return res.status(StatusCodes.OK).json(voucher)
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
+    }
+}
+
+export const getVoucherWithCountdown = async (req, res) => {
+    const { voucherId } = req.params;
+
+    try {
+        const voucher = await Voucher.findOne({ _id: voucherId });
+        if (!voucher) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" });
+        }
+
+        const currentTime = new Date();
+        const endTime = new Date(voucher.endDate);
+        const timeRemaining = endTime - currentTime;
+
+        if (timeRemaining <= 0) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Voucher hết hạn" });
+        }
+
+        // Trả về thời gian còn lại cùng với thông tin voucher
+        return res.status(StatusCodes.OK).json({
+            voucher,
+            countdown: timeRemaining // thời gian còn lại tính bằng milliseconds
+        });
+    } catch (error) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
     }
 }
