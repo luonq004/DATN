@@ -3,11 +3,29 @@ import Voucher from "../models/voucher"
 
 export const getAllVoucher = async (req, res) => {
     try {
-        const voucher = await Voucher.find();
+        let voucher = await Voucher.find();
         if (voucher.length < 0) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
         }
-        return res.status(StatusCodes.OK).json(voucher)
+
+        const newVoucher = voucher.map((data) => {
+            // console.log(data)
+            const currentTime = new Date();
+            const endTime = new Date(data.endDate);
+            const timeRemaining = endTime - currentTime;
+
+            if (timeRemaining <= 0) return null
+
+            return {
+                voucher: data,
+                countdown: timeRemaining
+            }
+        }).filter((data) => data !== null)
+
+        // await voucher.save();
+        // console.log(voucher)
+
+        return res.status(StatusCodes.OK).json(newVoucher);
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
     }
