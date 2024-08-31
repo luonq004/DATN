@@ -30,4 +30,5 @@ const variantSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("Variant", variantSchema);
+const Variant= mongoose.model("Variant", variantSchema);
+export default Variant

@@ -30,10 +30,10 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
-    // price: {
-    //   type: Number,
-    //   required: true,
-    // },
+    price: {
+      type: Number,
+      required: true,
+    },
 
     description: {
       type: String,
@@ -69,4 +69,5 @@ const productSchema = new mongoose.Schema(
 
 productSchema.plugin(paginate);
 
-export default mongoose.model("Product", productSchema);
+const Products= mongoose.model("Product", productSchema);
+export default Products
