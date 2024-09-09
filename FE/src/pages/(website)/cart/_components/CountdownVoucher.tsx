@@ -11,6 +11,8 @@ const CountdownVoucher = () => {
         }
     });
 
+    console.log(data)
+
     const intervals = useRef<{ [key: string]: NodeJS.Timeout }>({}); // Lưu trữ các interval
 
     useEffect(() => {

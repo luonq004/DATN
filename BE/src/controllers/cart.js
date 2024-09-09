@@ -276,7 +276,7 @@ export const updateQuantity = async (req, res) => {
 
 export const addVoucher = async (req, res) => {
     const { userId, voucherCode } = req.body;
-    console.log(req.body)
+    // console.log(req.body)
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
@@ -322,6 +322,7 @@ export const addVoucher = async (req, res) => {
         }
 
         // console.log(voucher)
+        await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
         cart.voucher.push(voucher)
         // console.log(cart)
         cart = await updateTotal(cart);

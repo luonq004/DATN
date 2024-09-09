@@ -7,12 +7,15 @@ const attributeSchema = new mongoose.Schema({
     required: true,
   },
 
-
   type: {
     type: String,
     lowcase: true,
     required: true
   },
+
+  values: {
+    type: Array
+  }
 
 
 }, { timestamps: true, versionKey: false });

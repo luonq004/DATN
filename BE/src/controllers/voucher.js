@@ -10,7 +10,7 @@ export const getAllVoucher = async (req, res) => {
 
         const newVoucher = voucher.map((data) => {
             // console.log(data)
-            const currentTime = new Date();
+            const currentTime = (new Date().getTime() + 7 * 60 * 60 * 1000);
             const endTime = new Date(data.endDate);
             const timeRemaining = endTime - currentTime;
 
