@@ -7,7 +7,7 @@ const CartPage = () => {
 
     return <>
         <StatusCard />
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
             < Outlet />
         </ThemeProvider>
 
