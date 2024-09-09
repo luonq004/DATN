@@ -3,6 +3,7 @@ import Cart from "../models/cart";
 import Voucher from "../models/voucher";
 import Product from "../models/product";
 import Variant from "../models/variant";
+import VoucherUsage from "../models/voucherUsage";
 
 const updateTotal = async (cart) => {
     let total = cart.products.reduce((acc, item) => acc + item.variantItem.price * item.quantity, 0)
@@ -322,7 +323,13 @@ export const addVoucher = async (req, res) => {
         }
 
         // console.log(voucher)
+
+        // giảm số lượng của voucher
         await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
+
+        // thêm vào danh sách đã sử dụng voucher
+        await VoucherUsage.create({ userId: userId, voucherId: voucher._id });
+
         cart.voucher.push(voucher)
         // console.log(cart)
         cart = await updateTotal(cart);
