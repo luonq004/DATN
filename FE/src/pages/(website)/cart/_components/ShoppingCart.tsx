@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { ModeToggle } from '../../../../components/mode-toggle';
+import  { useState } from 'react'
 
 //products
 import ImgProduct from '@/assets/products/product-1.svg';
@@ -380,7 +379,7 @@ const ShoppingCart = () => {
                         </div>
                         <div className='Code-Sale flex items-center justify-between gap-4'>
                             {/* <input type="text" placeholder='Coupon code' className='border border-[#F4F4F4] rounded-[8px] py-3 px-6 w-full' /> */}
-                            <Input placeholder="Coupon code" />
+                            <Input placeholder="Coupon code"  style={{margin: 0}}/>
                             <div className='py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none'>
                                 Apply Coupon
                             </div>

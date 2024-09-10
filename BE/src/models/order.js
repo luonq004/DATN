@@ -7,14 +7,14 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
 
-  userInfo: {
-    number: {
-      type: String,
-      required: true,
-    },
+  //  tham chiếu đến Address
+  addressId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Address",
+    required: true,
   },
 
-  // Embedded
+  // Danh sách sản phẩm
   products: [Object],
 
   payment: {
@@ -43,3 +43,7 @@ const orderSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+const Order = mongoose.model("Order", orderSchema);
+
+export default Order;

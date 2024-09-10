@@ -28,7 +28,6 @@ const Router = () => {
           <Route path="checkout" element={<CheckOut />} />
           <Route path="order" element={<Order />} />
         </Route>
-
       </Route>
     </Routes>
   </>;
