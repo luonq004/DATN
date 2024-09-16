@@ -14,6 +14,10 @@ const attributeSchema = new mongoose.Schema({
     required: true
   },
 
+  values: {
+    type: Array
+  }
+
 
 }, { timestamps: true, versionKey: false });
 

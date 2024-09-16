@@ -89,6 +89,7 @@ export const addToCart = async (req, res) => {
         if (!cart) {
             cart = await Cart.create({ userId: userId, products: [], voucher: {}, total: 0 })
         }
+        // console.log(cart)
 
         //ktra sp trùng lặp trong giỏ hàng
         const existProductIndex = cart.products.findIndex(
@@ -108,6 +109,7 @@ export const addToCart = async (req, res) => {
                 .populate('products.productItem')
                 .populate('products.variantItem');
             cart = await updateTotal(newCart);
+            // console.log(cart)
             return res.status(StatusCodes.OK).json(cart);
         }
 

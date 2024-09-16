@@ -1,10 +1,35 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
+const userSchema = new Schema(
+    {
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
+        name: {
+            type: String,
+            required: true,
+            minlength: 3,
+            maxlength: 30,
+        },
+        role: {
+            type: String,
+            enum: ["user", "admin"],
+            default: "user",
+        },
+        avatar: {
+            type: String,
+            default: "../upload/avatar.jpg",
+        },
+
+
     },
-}, { timestamps: true, versionKey: false });
+    { timestamps: true, versionKey: false }
+);
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model("User", userSchema); 

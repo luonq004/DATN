@@ -34,6 +34,7 @@ export const createAttributeValue = async (req, res) => {
             ...attribute._doc,
             values: [...attribute.values, response._id]
         }
+        console.log(addValue)
         const attributeNewValue = await Attribute.findOneAndUpdate({ _id: id }, addValue, { new: true });
         return res.status(201).json(attributeNewValue);
 

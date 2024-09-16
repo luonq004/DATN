@@ -1,15 +1,39 @@
 import jwt from "jsonwebtoken";
+import User from "../models/user";
+import { isTokenBlacklisted } from "../controllers/auth";
 
 export const checkAuth = async (req, res, next) => {
-  console.log(req);
+    try {
+        const token = req.headers.authorization;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
 
-  const token = req.headers.authorization.split(" ")[1];
+        // Kiểm tra token có trong blacklist
+        if (await isTokenBlacklisted(token)) {
+            return res.status(401).json({ error: "Token không hợp lệ" });
+        }
+        let decoded;
+        try {
+            decoded = jwt.verify(token, "123456");
+        } catch (error) {
+            if (error.name === "TokenExpiredError") {
+                return res.status(401).json({ error: "Hết hạn token, cần làm mới" });
+            } else {
+                return res.status(401).json({ error: "Token không hợp lệ" });
+            }
+        }
 
-  jwt.verify(token, "123456", (error, decode) => {
-    if (error.name === "TokenExpireError") console.log("Token het han");
-    else if (error.name === "JsonWebTokenError")
-      console.log("Token khong hop le");
+        const user = await User.findOne({ _id: decoded.userId });
+        if (!user || user.role !== "admin") {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
 
-    console.log("decode", decode);
-  });
+        // Thêm user vào req để sử dụng ở các middleware tiếp theo
+        req.user = user;
+        next();
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 };

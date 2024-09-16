@@ -12,8 +12,12 @@ import routerCategory from "./routers/category";
 import { addProduct } from "./controllers/products";
 import { createVariant, removeVariant } from "./controllers/variant";
 import routerCart from "./routers/cart";
-import { createUser } from "./controllers/user";
+// import { createUser } from "./controllers/user";
 import routerVoucher from "./routers/voucher";
+import authRouter from "./routers/auth";
+import routerAddress from "./routers/Address";
+import routerOrder from "./routers/order";
+
 
 const app = express();
 dotenv.config();
@@ -34,7 +38,8 @@ app.use("/api", routerVoucher);
 app.post("/api/products/add", addProduct)
 app.post("/api/variant/add", createVariant)
 app.delete("/api/variant/:id", removeVariant)
-app.post("/api/user/add", createUser)
-// app.use("/api", authRouter);
+app.use("/api", authRouter);
+app.use("/api", routerAddress);
+app.use("/api", routerOrder);
 
 export const viteNodeApp = app;

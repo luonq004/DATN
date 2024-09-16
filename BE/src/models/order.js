@@ -1,46 +1,63 @@
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-
-  userInfo: {
-    number: {
-      type: String,
-      required: true,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
     },
-  },
 
-  // Embedded
-  products: [Object],
+    //  tham chiếu đến Address
+    addressId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address",
+        required: true,
+    },
 
-  payment: {
-    type: String,
-    required: true,
-  },
+    // Danh sách sản phẩm
+    // products: [Object],
+    products: [
+        {
+            productId: mongoose.Schema.Types.ObjectId,
+            quantity: Number,
+        }
+    ],
 
-  status: {
-    type: String,
-    enum: ["pending", "processing", "completed", "cancelled"],
-    default: "pending",
-  },
+    payment: {
+        type: String,
+        required: true,
+    },
 
-  totalPrice: {
-    type: Number,
-    required: true,
-  },
+    status: {
+        type: String,
+        enum: ["pending", "processing", "completed", "cancelled"],
+        default: "pending",
+    },
 
-  shipping: {
-    type: Date,
-    required: true,
-  },
+    totalPrice: {
+        type: Number,
+        required: true,
+    },
 
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-}, { timestamps: true, versionKey: false });
+    shipping: {
+        type: Date,
+        required: true,
+    },
 
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+
+    orders: [{
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true }, // Giá của từng sản phẩm
+        date: { type: Date, default: Date.now } // Ngày mua hàng
+    }]
+}, { timeseries: true, versionKey: false }
+);
+
+const Order = mongoose.model("Order", orderSchema);
+
+export default Order;
