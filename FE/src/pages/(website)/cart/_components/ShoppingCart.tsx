@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 //icons
 import minius from '@/assets/icons/transaction-minus.svg';
@@ -28,6 +28,12 @@ import {
 import { toast } from '@/components/ui/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import CountdownVoucher from './CountdownVoucher';
+import { ChevronRight, CircleCheck, CirclePlus, Ticket, TicketPercent } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 const formSchema = z.object({
     voucherCode: z.string().min(2, {
@@ -44,7 +50,7 @@ const ShopCart = () => {
     }
 
     const userId = '66a105b8ad18a6e2447d5afb' // USER ID
-    const { cart, isLoading, isError, updateQuantity, increaseItem, decreaseItem, removeItem, addVoucher, changeVariant } = useCart(userId);
+    const { cart, isLoading, isError, updateQuantity, increaseItem, decreaseItem, removeItem, addVoucher, removeVoucher, changeVariant } = useCart(userId);
     // console.log(cart)
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -58,11 +64,22 @@ const ShopCart = () => {
         userAction({ type: 'applyVoucher' }, values)
     }
 
+    function handleApplyVoucher(item: any) {
+        // console.log(item)
+        userAction({ type: 'applyVoucher' }, { voucherCode: item })
+    }
+
+    function handleRemoveVoucher(item: any) {
+        // console.log(item)
+        userAction({ type: 'removeVoucher' }, { voucherCode: item })
+    }
+
     function userAction(action: any, value: any) {
         const item = {
             userId: userId,
             ...value
         }
+        // console.log(item)
         switch (action.type) {
             case 'changeQuality':
                 if (value.quantity < 0) {
@@ -108,6 +125,10 @@ const ShopCart = () => {
                         })
                     }
                 })
+                break;
+
+            case 'removeVoucher':
+                removeVoucher.mutate(item)
                 break;
 
             case 'changeVariant':
@@ -167,7 +188,6 @@ const ShopCart = () => {
         <>
             {/* Cart  */}
             {/* <ModeToggle /> */}
-            <CountdownVoucher />
             <section className="Status_Cart transition-all duration-500 space-y-8 px-4 py-8 max-w-[1408px] w-full max-[1408px]:w-[88%] mx-auto grid grid-cols-[57%_auto] max-lg:grid-cols-1 gap-x-16">
                 {/* Cart__Left */}
                 <div className="Your_Cart flex flex-col gap-6">
@@ -313,7 +333,7 @@ const ShopCart = () => {
                                 <p className=''>$<span>{cart?.discount}.00</span></p>
                             </div>
                         </div>
-                        <Form {...form}>
+                        {/* <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="Code-Sale flex items-start justify-between gap-4">
                                 <div className='w-full'>
                                     <FormField
@@ -335,7 +355,50 @@ const ShopCart = () => {
 
                                 <FormMessage />
                             </form>
-                        </Form>
+                        </Form> */}
+
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <div>
+                                    <Button variant="outline" className='w-full p-2 rounded-md bg-slate-200 grid grid-cols-[30px_auto_20px] justify-normal'>
+                                        <div className='items-start'><Ticket /></div>
+                                        <div className='text-start truncate'>Select or enter a voucher</div>
+                                        <div className='items-end'><ChevronRight /></div>
+                                    </Button>
+                                </div>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[625px]">
+                                <DialogHeader>
+                                    <DialogTitle>Discount and Voucher</DialogTitle>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <Form {...form}>
+                                        <form onSubmit={form.handleSubmit(onSubmit)} className="Code-Sale flex items-start justify-between gap-4">
+                                            <div className='w-full'>
+                                                <FormField
+                                                    control={form.control}
+                                                    name="voucherCode"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormControl>
+                                                                <Input placeholder='Discount code' className='w-full' {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                            <button className='py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none' type="submit">
+                                                Apply Coupon
+                                            </button>
+
+                                            <FormMessage />
+                                        </form>
+                                    </Form>
+                                    <CountdownVoucher onApplyVoucher={handleApplyVoucher} onRemoveVoucher={handleRemoveVoucher} cart={cart} />
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                         <div className='Free-Ship flex flex-col pt-4 gap-4 border-t border-[#F4F4F4]'>
                             <div className='relative'>
                                 <div className='bg-[#F4F4F4] w-full h-[6px] rounded-full'></div>

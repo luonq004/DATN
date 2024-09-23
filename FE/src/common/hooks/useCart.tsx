@@ -73,6 +73,7 @@ const useCart = (userId: string) => {
         increaseItem: cartActiton('increase'),
         decreaseItem: cartActiton('decrease'),
         addVoucher: cartActiton('add-voucher'),
+        removeVoucher: cartActiton('remove-voucher'),
         changeVariant: cartActiton('change-variant')
     }
 }

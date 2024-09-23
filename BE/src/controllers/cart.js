@@ -19,6 +19,11 @@ const updateTotal = async (cart) => {
             let startDate = new Date(voucher.startDate);
             let endDate = new Date(voucher.endDate);
 
+            //nếu voucher hết hạn sẽ bị xóa khỏi giỏ hàng
+            if (presentTime <= startDate || presentTime >= endDate) {
+                cart.voucher = cart.voucher.filter(item => item._id !== voucher._id)
+            }
+
             if (presentTime >= startDate && presentTime <= endDate && voucher.category === "product") {
                 if (voucher.type === "fixed") {
                     totalDiscount += voucher.discount;
@@ -334,6 +339,40 @@ export const addVoucher = async (req, res) => {
         // console.log(cart)
         cart = await updateTotal(cart);
         await cart.save()
+        return res.status(StatusCodes.OK).json(cart)
+    } catch (error) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
+    }
+}
+
+export const revomeVoucherCart = async (req, res) => {
+    const { userId, voucherCode } = req.body;
+    // console.log(req.body)
+    try {
+        let cart = await Cart.findOne({ userId: userId })
+            .populate('products.productItem')
+            .populate('products.variantItem');
+        if (!cart) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Cart not found" })
+        }
+
+        const voucher = await Voucher.findOne({ code: voucherCode })
+        if (!voucher) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
+        }
+
+        // tăng số lượng của voucher
+        await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock + 1 }, { new: true })
+
+        // loại khỏi danh sách đã sử dụng voucher
+        await VoucherUsage.findOneAndDelete({ userId: userId, voucherId: voucher._id });
+
+        // loại khỏi giỏ hàng
+        cart.voucher = cart.voucher.filter(item => item._id.toString() !== voucher._id.toString())
+        // console.log(cart)
+        cart = await updateTotal(cart);
+        await cart.save()
+        // console.log(cart)
         return res.status(StatusCodes.OK).json(cart)
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })

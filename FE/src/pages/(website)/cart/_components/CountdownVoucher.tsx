@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { useEffect, useRef } from 'react'
+import { CircleCheck, CirclePlus, CircleX, TicketPercent, Truck } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react'
 
-const CountdownVoucher = () => {
+const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
+    const [isHover, setIsHover] = useState(false);
     const { data, isLoading, isError } = useQuery({
         queryKey: ['voucher'],
         queryFn: async () => {
@@ -11,7 +13,7 @@ const CountdownVoucher = () => {
         }
     });
 
-    console.log(data)
+    // console.log(data)
 
     const intervals = useRef<{ [key: string]: NodeJS.Timeout }>({}); // Lưu trữ các interval
 
@@ -30,7 +32,7 @@ const CountdownVoucher = () => {
             Object.values(intervals.current).forEach(clearInterval);
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
-    }, [data]);
+    }, [data, cart]);
 
     const handleVisibilityChange = () => {
         if (document.hidden) {
@@ -50,13 +52,20 @@ const CountdownVoucher = () => {
 
     function startCountdown(timeRemaining: number, id: string) {
         const countdownElement = document.getElementById(`countdown-${id}`);
+        const parentDiv = countdownElement?.closest('.voucher-item');
 
         if (!countdownElement) return;
 
         intervals.current[id] = setInterval(() => {
+            if (timeRemaining <= 60000) {
+                countdownElement.classList.add('text-red-500');
+            }
             if (timeRemaining <= 0) {
                 clearInterval(intervals.current[id]);
                 countdownElement.innerText = "Voucher đã hết hạn";
+                if (parentDiv) {
+                    parentDiv.classList.add('pointer-events-none');
+                }
                 return;
             }
 
@@ -74,14 +83,55 @@ const CountdownVoucher = () => {
     if (isLoading) return <div>Loading...</div>;
     if (isError) return <div>Error</div>;
     return (
-        <div>
-            <h1>Voucher:</h1>
-            {data.map((item: any) => (
-                <div key={item.voucher._id} style={{ marginBottom: '20px' }}>
-                    <h2>{item.voucher.code}</h2>
-                    <div id={`countdown-${item.voucher._id}`}></div>
-                </div>
-            ))}
+        <div className='w-full flex flex-col gap-2'>
+            <div className='text-'>
+                <h1>Voucher</h1>
+            </div>
+            <div className='flex flex-col gap-4'>
+                {data?.map((item: any) => {
+                    const matchedVoucher = cart?.voucher.find((voucher: any) => voucher._id === item.voucher._id);
+                    // console.log(matchedVoucher)
+                    return (
+                        <div key={item.voucher._id} className={`voucher-item p-3 w-full grid grid-cols-[15%_auto_5.5%] gap-x-3 transition-all duration-200 border rounded-md ${matchedVoucher ? 'border-black' : 'border-gray-300'}`}>
+                            <div className='bg-slate-300 flex justify-center items-center p-1'>
+                                {item.voucher.category === 'product'
+                                    ? <TicketPercent size={42} />
+                                    : <Truck size={42} />
+                                }
+                            </div>
+                            <div className='flex flex-col justify-between gap-5 text-[13px] sm:text-[16px]'>
+                                <div className='flex gap-3 items-center'>
+                                    <div className='border-2 p-1 rounded-md border-light-400 text-light-400 text-xs'>
+                                        <p>{item.voucher.code}</p>
+                                    </div>
+                                    <div>
+                                        <p>Giảm {item.voucher.discount.toLocaleString()}{item.voucher.type === 'fixed' ? 'đ' : '%'}</p>
+                                    </div>
+                                </div>
+                                <div className='text-gray-400 flex gap-2'>
+                                    <div>HSD:</div>
+                                    <div className='' id={`countdown-${item.voucher._id}`}></div>
+                                </div>
+                            </div>
+                            <div className='flex items-center select-none'>
+                                {matchedVoucher
+                                    ? (
+                                        <div
+                                            onMouseEnter={() => setIsHover(matchedVoucher._id)}
+                                            onMouseLeave={() => setIsHover(false)}
+                                            className='cursor-pointer'
+                                            onClick={() => onRemoveVoucher(matchedVoucher.code)}
+                                        >
+                                            {isHover === matchedVoucher._id ? <CircleX color='red' /> : <CircleCheck />}
+                                        </div>
+                                    )
+                                    : <CirclePlus onClick={() => onApplyVoucher(item.voucher.code)} className='text-gray-300 hover:text-black cursor-pointer' />
+                                }
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }
