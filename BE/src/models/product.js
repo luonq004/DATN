@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import paginate from "mongoose-paginate-v2";
 
+import Cart from "./cart.js";
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -52,6 +54,8 @@ const productSchema = new mongoose.Schema(
     },
     reviews: [Object],
 
+    attribute: [Object],
+
     variants: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -67,5 +71,18 @@ const productSchema = new mongoose.Schema(
 );
 
 productSchema.plugin(paginate);
+
+productSchema.pre("findOneAndDelete", async function (next) {
+  this._doc = await this.model.findOne(this.getQuery());
+  next();
+});
+
+productSchema.post("findOneAndDelete", async function (doc) {
+  // console.log(doc)
+  await Cart.updateMany(
+    { "products.productItem": doc._id },
+    { $pull: { products: { productItem: doc._id } } }
+  );
+});
 
 export default mongoose.model("Product", productSchema);

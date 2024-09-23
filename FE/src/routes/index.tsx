@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import LayoutWebsite from "../pages/(website)/layout";
@@ -10,27 +9,34 @@ import ProductsAll from "@/pages/(website)/shop/_components/ProductsAll";
 import DetailPage from "@/pages/(website)/details/page";
 import CheckOut from "@/pages/(website)/cart/_components/CheckOut";
 import HomePage from "@/pages/(website)/homepage/Homepage";
+import LayoutAdmin from "@/pages/(dashboard)/layout";
+import DashBoardPage from "@/pages/(dashboard)/dashboard/page";
 
 const Router = () => {
-  return <>
-    <Routes>
-      <Route path="/" element={<LayoutWebsite />} >
-        <Route index path="" element={<HomePage />} />
-        
-        <Route path="product/:id" element={<DetailPage />} />
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<LayoutWebsite />}>
+          <Route index path="" element={<HomePage />} />
 
-        <Route path="shop" element={<ShopPage />}>
-          <Route index element={<ProductsAll />} />
-        </Route>
+          <Route path="product/:id" element={<DetailPage />} />
 
-        <Route path="cart" element={<CartPage />} >
-          <Route index element={<ShoppingCart />} />
-          <Route path="checkout" element={<CheckOut />} />
-          <Route path="order" element={<Order />} />
+          <Route path="shop" element={<ShopPage />}>
+            <Route index element={<ProductsAll />} />
+          </Route>
+
+          <Route path="cart" element={<CartPage />}>
+            <Route index element={<ShoppingCart />} />
+            <Route path="checkout" element={<CheckOut />} />
+            <Route path="order" element={<Order />} />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
-  </>;
+        <Route path="admin" element={<LayoutAdmin />}>
+          <Route path="dashboard" element={<DashBoardPage />} />
+        </Route>
+      </Routes>
+    </>
+  );
 };
 
 export default Router;
