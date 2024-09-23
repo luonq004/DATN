@@ -17,9 +17,9 @@ export const removeVariant = async (req, res) => {
         if (variant.length < 0) {
             return res.status(500).json({ message: "Variant not found" })
         }
-        console.log(variant)
-        res.status(200).json(variant);
+        // console.log(variant)
+        return res.status(200).json(variant);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 }

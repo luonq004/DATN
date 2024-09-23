@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/form"
 import { toast } from '@/components/ui/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import CountdownVoucher from './CountdownVoucher';
 
 const formSchema = z.object({
     voucherCode: z.string().min(2, {
@@ -116,6 +117,7 @@ const ShopCart = () => {
                             title: "Sucsess",
                             description: "Đổi thành công!",
                         })
+                        setAttribute('1')
                     }
                 })
                 break;
@@ -165,6 +167,7 @@ const ShopCart = () => {
         <>
             {/* Cart  */}
             {/* <ModeToggle /> */}
+            <CountdownVoucher />
             <section className="Status_Cart transition-all duration-500 space-y-8 px-4 py-8 max-w-[1408px] w-full max-[1408px]:w-[88%] mx-auto grid grid-cols-[57%_auto] max-lg:grid-cols-1 gap-x-16">
                 {/* Cart__Left */}
                 <div className="Your_Cart flex flex-col gap-6">

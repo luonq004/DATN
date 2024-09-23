@@ -3,6 +3,7 @@ import Cart from "../models/cart";
 import Voucher from "../models/voucher";
 import Product from "../models/product";
 import Variant from "../models/variant";
+import VoucherUsage from "../models/voucherUsage";
 
 const updateTotal = async (cart) => {
     let total = cart.products.reduce((acc, item) => acc + item.variantItem.price * item.quantity, 0)
@@ -14,7 +15,11 @@ const updateTotal = async (cart) => {
         const date = new Date();
         cart.voucher.forEach(voucher => {
             // check hạn sử dụng code và loại code phải là product
-            if (new Date(date.getTime() + 7 * 60 * 60 * 1000) >= new Date(voucher.startDate) && new Date(date.getTime() + 7 * 60 * 60 * 1000) <= new Date(voucher.endDate) && voucher.category === "product") {
+            const presentTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+            let startDate = new Date(voucher.startDate);
+            let endDate = new Date(voucher.endDate);
+
+            if (presentTime >= startDate && presentTime <= endDate && voucher.category === "product") {
                 if (voucher.type === "fixed") {
                     totalDiscount += voucher.discount;
                 } else if (voucher.type === "percent") {
@@ -272,7 +277,7 @@ export const updateQuantity = async (req, res) => {
 
 export const addVoucher = async (req, res) => {
     const { userId, voucherCode } = req.body;
-    console.log(req.body)
+    // console.log(req.body)
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
@@ -318,6 +323,13 @@ export const addVoucher = async (req, res) => {
         }
 
         // console.log(voucher)
+
+        // giảm số lượng của voucher
+        await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
+
+        // thêm vào danh sách đã sử dụng voucher
+        await VoucherUsage.create({ userId: userId, voucherId: voucher._id });
+
         cart.voucher.push(voucher)
         // console.log(cart)
         cart = await updateTotal(cart);
