@@ -1,4 +1,8 @@
-import { useState } from 'react'
+import  { useState } from 'react'
+
+//products
+import ImgProduct from '@/assets/products/product-1.svg';
+
 
 //icons
 import minius from '@/assets/icons/transaction-minus.svg';
@@ -310,7 +314,18 @@ const ShopCart = () => {
                             </div>
                             <div className='flex justify-between'>
                                 <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Discount</p>
-                                <p className=''>$<span>{cart?.discount}.00</span></p>
+                                <p className=''>$<span>0</span></p>
+                            </div>
+                            <div className='flex justify-between'>
+                                <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Shipping Costs</p>
+                                <p className=''>$<span>50.00</span></p>
+                            </div>
+                        </div>
+                        <div className='Code-Sale flex items-center justify-between gap-4'>
+                            {/* <input type="text" placeholder='Coupon code' className='border border-[#F4F4F4] rounded-[8px] py-3 px-6 w-full' /> */}
+                            <Input placeholder="Coupon code"  style={{margin: 0}}/>
+                            <div className='py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none'>
+                                Apply Coupon
                             </div>
                         </div>
                         <Form {...form}>

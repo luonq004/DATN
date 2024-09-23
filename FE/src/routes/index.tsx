@@ -31,7 +31,6 @@ const Router = () => {
             <Route path="order" element={<Order />} />
           </Route>
         </Route>
-
         <Route path="admin" element={<LayoutAdmin />}>
           <Route path="dashboard" element={<DashBoardPage />} />
         </Route>

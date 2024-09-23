@@ -52,7 +52,6 @@ const productSchema = new mongoose.Schema(
       // Ta có thể bỏ qua field khỏi schema khi được select (Trong trg hợp data nhạy cảm,...)
       select: false,
     },
-
     reviews: [Object],
 
     attribute: [Object],
