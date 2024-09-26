@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 //icons
 import minius from '@/assets/icons/transaction-minus.svg';
@@ -28,12 +28,9 @@ import {
 import { toast } from '@/components/ui/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import CountdownVoucher from './CountdownVoucher';
-import { ChevronRight, CircleCheck, CirclePlus, Ticket, TicketPercent } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ChevronRight, Ticket } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 
 const formSchema = z.object({
     voucherCode: z.string().min(2, {
