@@ -138,9 +138,14 @@ export const isTokenBlacklisted = async (token) => {
 
 export const getTopUsers = async (req, res) => {
     try {
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, limit } = req.query;
 
-        // console.log(new Date(startDate), new Date(endDate))
+        const userLimit = parseInt(limit) || 10; // Default to 10 if limit is not provided
+        if (userLimit <= 0) {
+            return res.status(400).json({ message: 'Limit phải lớn hơn 0!' });
+        }
+
+        // console.log(new Date(startDate), new Date(endDate));
 
         const topSpendingUsers = await Order.aggregate([
             { $unwind: "$products" },
@@ -159,7 +164,7 @@ export const getTopUsers = async (req, res) => {
                 }
             },
             { $sort: { totalSpent: -1 } },
-            { $limit: 10 }
+            { $limit: userLimit }
         ]);
 
         console.log(topSpendingUsers)

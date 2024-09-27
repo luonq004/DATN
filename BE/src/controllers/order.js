@@ -103,9 +103,16 @@ export const getOrdersById = async (req, res) => {
 
 export const Top10_productOrder = async (req, res) => {
     try {
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, limit } = req.query;
+
+        const productLimit = parseInt(limit) || 10;
+        if (productLimit <= 0) {
+            return res.status(400).json({ message: 'Limit phải lớn hơn 0!' });
+        }
+
         // console.log(new Date(startDate), new Date(endDate))
-        // Tổng hợp tìm ra top 10 sản phẩm bán chạy nhất trong phạm vi ngày
+
+
         const topSpendingProduct = await Order.aggregate([
             { $unwind: "$products" },   //mảng sản phẩm
             {
@@ -123,7 +130,7 @@ export const Top10_productOrder = async (req, res) => {
                 }
             },
             { $sort: { totalQuantity: -1 } },  // Tổng hợp số lượng đã bán
-            { $limit: 10 }  // Giới hạn ở top 10
+            { $limit: productLimit }
         ]);
         console.log(topSpendingProduct);
         //Kiểm tra xem kết quả có trống không
