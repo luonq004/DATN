@@ -22,7 +22,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="relative min-w-[80px] border-r px-3 pb-10 pt-24">
+    <div className="relative border-r px-3 pb-10 pt-24">
       <div className="absolute right-[-20px] top-7">
         <Button
           className=" rounded-full p-2"

@@ -1,18 +1,19 @@
-import { useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./_components/SideBar";
 
 const LayoutAdmin = () => {
-  const location = useLocation();
-  console.log(location);
+  // const location = useLocation();
+  // console.log(location);
 
   return (
-    <div className="bg-white flex min-h-screen">
+    <div className="bg-white flex min-h-screen overflow-hidden">
       <Sidebar />
 
-      <div className="w-full">
-        <div className="h-20 bg-red-400"></div>
-        <div className="bg-slate-300 rounded-lg m-7 min-h-80">áádd</div>
-        {/* <Outlet />asd */}
+      <div className="bg-[#f5f5f5] w-full">
+        <div className="h-20 bg-red-700"></div>
+        <div>
+          <Outlet />
+        </div>
       </div>
     </div>
   );

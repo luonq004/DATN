@@ -1,4 +1,3 @@
-
 import express from "express";
 
 import cors from "cors";
@@ -18,7 +17,6 @@ import routerCart from "./routers/cart";
 import { createUser } from "./controllers/user";
 import routerVoucher from "./routers/voucher";
 
-
 const app = express();
 dotenv.config();
 //Middleware
@@ -26,7 +24,7 @@ app.use(express.json());
 // app.use(morgan("tiny"));
 app.use(cors());
 
-app.use(morgan("dev"))
+app.use(morgan("dev"));
 /// connect DB
 connectDB(process.env.DB_URI);
 //Router
@@ -34,9 +32,9 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 // ================ tạo địa chỉ  ===========
-app.use("/api", routerAddress)
+app.use("/api", routerAddress);
 // ================ order ===========
-app.use("/api", routerOrder)
+app.use("/api", routerOrder);
 
 //routers
 app.use("/api", productRouter);

@@ -11,6 +11,7 @@ import CheckOut from "@/pages/(website)/cart/_components/CheckOut";
 import HomePage from "@/pages/(website)/homepage/Homepage";
 import LayoutAdmin from "@/pages/(dashboard)/layout";
 import DashBoardPage from "@/pages/(dashboard)/dashboard/page";
+import ProductPage from "@/pages/(dashboard)/product/page";
 
 const Router = () => {
   return (
@@ -33,6 +34,7 @@ const Router = () => {
         </Route>
         <Route path="admin" element={<LayoutAdmin />}>
           <Route path="dashboard" element={<DashBoardPage />} />
+          <Route path="products" element={<ProductPage />} />
         </Route>
       </Routes>
     </>

@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { createAddress, deleteAddressByUserId, getAddressById, getAllAddressUserById, updateAddressByUserId } from "../controller/address";
+import {
+  createAddress,
+  deleteAddressByUserId,
+  getAddressById,
+  getAllAddressUserById,
+  updateAddressByUserId,
+} from "../controllers/address";
 
 const routerAddress = Router();
 // Tạo địa chỉ mới
