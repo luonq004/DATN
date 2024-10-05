@@ -3,6 +3,7 @@ import Header from "./_components/Header";
 import { columnProducts } from "@/components/Column";
 import { useSearchParams } from "react-router-dom";
 import DataGrid from "./_components/DataGrid";
+import Container from "./_components/Container";
 
 const data = [
   {
@@ -156,7 +157,7 @@ const ProductPage = () => {
   const currentLayout = searchParams.get("layout") ?? "table";
 
   return (
-    <div className="p-7 mx-auto">
+    <Container>
       <Header />
 
       <div className="min-h-80 mt-5">
@@ -166,7 +167,7 @@ const ProductPage = () => {
           <DataGrid data={data} />
         )}
       </div>
-    </div>
+    </Container>
   );
 };
 

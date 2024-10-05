@@ -12,6 +12,7 @@ import HomePage from "@/pages/(website)/homepage/Homepage";
 import LayoutAdmin from "@/pages/(dashboard)/layout";
 import DashBoardPage from "@/pages/(dashboard)/dashboard/page";
 import ProductPage from "@/pages/(dashboard)/product/page";
+import ProductAddPage from "@/pages/(dashboard)/product/add/page";
 
 const Router = () => {
   return (
@@ -35,6 +36,8 @@ const Router = () => {
         <Route path="admin" element={<LayoutAdmin />}>
           <Route path="dashboard" element={<DashBoardPage />} />
           <Route path="products" element={<ProductPage />} />
+          <Route path="products/add" element={<ProductAddPage />} />
+          <Route path="products/edit/:id" element={<ProductAddPage />} />
         </Route>
       </Routes>
     </>

@@ -22,7 +22,10 @@ const DataGrid = ({ data }: { data: Product[] }) => {
             />
             <div className="mt-4 p-4">
               <div className="flex justify-between items-center">
-                <Link to={`/admin/products/${product._id}`} className="text-lg">
+                <Link
+                  to={`/admin/products/edit/${product._id}`}
+                  className="text-lg"
+                >
                   {product.name}
                 </Link>
                 <span className="text-sm">${product.price}</span>

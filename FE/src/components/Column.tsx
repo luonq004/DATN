@@ -1,16 +1,7 @@
+import { IProduct } from "@/common/types/Product";
 import { ColumnDef } from "@tanstack/react-table";
 
-export type Product = {
-  _id: string;
-  name: string;
-  category: string[];
-  price: number;
-  description: string;
-  image: string;
-  // status: "pending" | "processing" | "success" | "failed";
-};
-
-export const columnProducts: ColumnDef<Product>[] = [
+export const columnProducts: ColumnDef<IProduct>[] = [
   {
     accessorKey: "_id",
     header: "ID",

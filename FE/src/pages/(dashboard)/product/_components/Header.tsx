@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BadgePlus, LayoutGrid, TableProperties } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const Header = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,9 +36,12 @@ const Header = () => {
           </div>
         </Tabs>
 
-        <Button className="text-lg font-light flex gap-3 px-4 bg-orange-500">
-          <BadgePlus /> <span className="hidden md:block">Add new product</span>
-        </Button>
+        <Link to="add">
+          <Button className="text-lg font-light flex gap-3 px-4 bg-orange-500">
+            <BadgePlus />{" "}
+            <span className="hidden md:block">Add new product</span>
+          </Button>
+        </Link>
       </div>
     </div>
   );

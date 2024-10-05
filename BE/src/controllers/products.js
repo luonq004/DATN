@@ -53,14 +53,13 @@ export const getAllProducts = async (req, res) => {
 
 export const getProductById = async (req, res) => {
   try {
-    const data = await Product.findOne({ _id: req.params.id })
-      .populate({
-        path: 'variants',
-        populate: {
-          path: 'values',
-          // model: 'AttributeValue'
-        }
-      });
+    const data = await Product.findOne({ _id: req.params.id }).populate({
+      path: "variants",
+      populate: {
+        path: "values",
+        model: "AttributeValue",
+      },
+    });
 
     if (!data) {
       return res.status(404).json({ message: "No products found" });
@@ -68,6 +67,48 @@ export const getProductById = async (req, res) => {
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const getProductForEdit = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await Product.findOne({ _id: id }).populate({
+      path: "variants",
+      populate: {
+        path: "values",
+        model: "AttributeValue",
+      },
+    });
+
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    // Chuyển đổi mảng variants, format lại chỉ values
+    const arrVariants = product.variants.map((variant) => {
+      // Format lại values thành mảng các object
+      let formattedValues = variant.values.map((value) => {
+        return {
+          type: value.type, // Loại của giá trị (Color, Size, Material, ...)
+          [value.type]: `${value._id}`, // Kết hợp id và giá trị
+        };
+      });
+
+      // Giữ nguyên các thuộc tính khác của variant và chỉ thay đổi values
+      return {
+        _id: variant._id,
+        price: variant.price,
+        countOnStock: variant.countOnStock,
+        image: variant.image,
+        values: formattedValues, // Gán values đã format thành mảng object
+      };
+    });
+
+    return res.status(200).json({
+      ...product._doc, // Trả về tất cả các thông tin của sản phẩm
+      variants: arrVariants, // Gán lại biến variants với format mới cho values
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };
 

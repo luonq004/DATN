@@ -32,10 +32,13 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
-    // price: {
-    //   type: Number,
-    //   required: true,
-    // },
+    price: {
+      type: Number,
+    },
+
+    priceSale: {
+      type: Number,
+    },
 
     description: {
       type: String,
@@ -54,13 +57,13 @@ const productSchema = new mongoose.Schema(
     },
     reviews: [Object],
 
-    attribute: [Object],
+    // attribute: [Object],
 
     variants: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Variant",
-        required: true,
+        // required: true,
       },
     ],
   },
