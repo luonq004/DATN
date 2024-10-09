@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProduct } from "./api";
+import { getProductEdit } from "./api";
 
 export function useGetProduct(id: string) {
   const {
@@ -8,7 +8,7 @@ export function useGetProduct(id: string) {
     error,
   } = useQuery({
     queryKey: ["Product", id],
-    queryFn: () => getProduct(id),
+    queryFn: () => getProductEdit(id),
   });
 
   return { isLoading, product, error };

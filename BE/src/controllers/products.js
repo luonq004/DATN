@@ -53,13 +53,17 @@ export const getAllProducts = async (req, res) => {
 
 export const getProductById = async (req, res) => {
   try {
-    const data = await Product.findOne({ _id: req.params.id }).populate({
-      path: "variants",
-      populate: {
-        path: "values",
-        model: "AttributeValue",
-      },
-    });
+    const data = await Product.findOne({ _id: req.params.id })
+      .populate({
+        path: "variants",
+        populate: {
+          path: "values",
+          model: "AttributeValue",
+          select: "-__v", // Loại bỏ __v cho các trường values
+        },
+        select: "-__v", // Loại bỏ __v cho các trường variants
+      })
+      .select("-__v"); // Loại bỏ __v cho sản phẩm chính
 
     if (!data) {
       return res.status(404).json({ message: "No products found" });
@@ -73,13 +77,17 @@ export const getProductById = async (req, res) => {
 export const getProductForEdit = async (req, res) => {
   const { id } = req.params;
   try {
-    const product = await Product.findOne({ _id: id }).populate({
-      path: "variants",
-      populate: {
-        path: "values",
-        model: "AttributeValue",
-      },
-    });
+    const product = await Product.findOne({ _id: id })
+      .populate({
+        path: "variants",
+        populate: {
+          path: "values",
+          model: "AttributeValue",
+          select: "-__v",
+        },
+        select: "-__v",
+      })
+      .select("-__v");
 
     if (!product) return res.status(404).json({ message: "Product not found" });
 

@@ -1,4 +1,4 @@
-import React from "react";
+import { useReducer, useState } from "react";
 import { FormTypeProductSimple } from "@/common/types/validate";
 
 import {
@@ -18,14 +18,53 @@ import {
 } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { tabProductData } from "@/common/constants";
+import AttributeTab from "./AttributeTab";
+import { reducer } from "./reducer";
+
+import { Attribute, Data, State } from "@/common/types/Product";
+import { useGetAtributes } from "../actions/useGetAttributes";
 
 const InfoGeneralProduct: React.FC<{
+  id: boolean;
   form: FormTypeProductSimple;
-  isLoading: boolean;
   typeProduct: string;
   handleChangeTab: (value: string) => void;
-}> = ({ form, isLoading, typeProduct, handleChangeTab }) => {
-  const [valuetab, setValueTab] = React.useState("inventory");
+  filteredData: Attribute[];
+  attributeValue: Data[][];
+}> = ({
+  id,
+  form,
+  typeProduct,
+  handleChangeTab,
+  filteredData,
+  attributeValue,
+}) => {
+  const [valuetab, setValueTab] = useState("inventory");
+  const { atributes } = useGetAtributes();
+
+  const initialState: State = {
+    attributesChoose: filteredData,
+    valuesChoose: attributeValue, // valuesChoose là mảng chứa mảng Data[]
+    valuesMix: [], // valuesMix là mảng chứa mảng Data[]
+  };
+  const [stateAttribute, dispatch] = useReducer(reducer, initialState);
+
+  const [selectedValues, setSelectedValues] = useState({});
+
+  const handleAttributeValueChange = (
+    attributeId: string,
+    selectedOptions: {
+      value: string;
+      label: string;
+      _id: string;
+      attribute: string;
+    }
+  ) => {
+    setSelectedValues({
+      ...selectedValues,
+      [attributeId]: selectedOptions,
+    });
+  };
 
   return (
     <div className="w-3/4">
@@ -102,12 +141,17 @@ const InfoGeneralProduct: React.FC<{
       />
 
       <div className="border relative">
-        <Accordion className="bg-white" type="single" collapsible>
+        <Accordion
+          className="bg-white"
+          type="single"
+          collapsible
+          orientation="vertical"
+        >
           <AccordionItem className="border-none" value="item-1">
             <AccordionTrigger className="border-b p-5 hover:no-underline">
               Product data
             </AccordionTrigger>
-            <AccordionContent className="p-0">
+            <AccordionContent className="p-0 ">
               <Tabs
                 value={valuetab}
                 onValueChange={(value) => setValueTab(value)}
@@ -159,8 +203,20 @@ const InfoGeneralProduct: React.FC<{
                 {/* <TabsContent className="px-3 pt-2" value="linked-products">
                   Manage linked products here.
                 </TabsContent> */}
-                <TabsContent className="px-3 pt-2" value="attributes">
-                  Set product attributes here.
+                <TabsContent
+                  className="px-3 pt-2 flex-1 min-h-[400px]"
+                  value="attributes"
+                >
+                  <AttributeTab
+                    id={id}
+                    form={form}
+                    attributes={atributes}
+                    stateAttribute={stateAttribute}
+                    dispatch={dispatch}
+                    selectedValues={selectedValues}
+                    setSelectedValues={setSelectedValues}
+                    handleAttributeValueChange={handleAttributeValueChange}
+                  />
                 </TabsContent>
                 <TabsContent className="px-3 pt-2" value="variations">
                   Manage product variations here.

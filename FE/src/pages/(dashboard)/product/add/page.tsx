@@ -14,10 +14,14 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { getProductEdit } from "../actions/api";
+import { getUniqueAttributeValue, getUniqueTypes } from "@/lib/utils";
+import { useGetAtributes } from "../actions/useGetAttributes";
+import { Attribute } from "@/common/types/Product";
 
 const ProductAddPage = () => {
   const { id } = useParams();
   const [typeProduct, setTypeProduct] = useState("simple");
+  const { isLoadingAtributes, atributes } = useGetAtributes();
 
   function handleChangeTab(value: string) {
     setTypeProduct(value);
@@ -74,7 +78,16 @@ const ProductAddPage = () => {
     console.log(values);
   }
 
-  if (isLoading) return <Container>Loading...</Container>;
+  if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
+
+  const types = id ? getUniqueTypes(product) : [];
+
+  const filteredData = types.length
+    ? atributes.filter((item: Attribute) => types.includes(item.name))
+    : [];
+
+  const attributeValue = id ? getUniqueAttributeValue(product) : [];
+  // console.log("attributeValue: ", attributeValue);
 
   return (
     <Container>
@@ -87,10 +100,12 @@ const ProductAddPage = () => {
           <div className="flex gap-4">
             {/* Info Product */}
             <InfoGeneralProduct
+              id={id ? true : false}
               form={form}
-              isLoading={isLoading}
               typeProduct={typeProduct}
               handleChangeTab={handleChangeTab}
+              filteredData={filteredData}
+              attributeValue={attributeValue}
             />
 
             {/* Info Categories and More... */}

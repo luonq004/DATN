@@ -38,7 +38,7 @@ app.use("/api", routerOrder);
 
 //routers
 app.use("/api/v1", productRouter);
-app.use("/api", attributeRouter);
+app.use("/api/v1", attributeRouter);
 app.use("/api", attributeValueRouter);
 app.use("/api", routerCategory);
 app.use("/api", routerCart);

@@ -1,0 +1,186 @@
+import { Action, Attribute, Data, State } from "@/common/types/Product";
+import { FormTypeProductSimple } from "@/common/types/validate";
+import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { useState } from "react";
+import Select from "react-select";
+
+const AttributeTab = ({
+  id,
+  form,
+  attributes,
+  stateAttribute,
+  dispatch,
+  selectedValues,
+  setSelectedValues,
+  handleAttributeValueChange,
+}: {
+  id: boolean;
+  form: FormTypeProductSimple;
+  attributes: Attribute[];
+  stateAttribute: State;
+  dispatch: React.Dispatch<Action>;
+  selectedValues: { [key: string]: { value: string; label: string } };
+  setSelectedValues: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: {
+        _id: string;
+        attribute: string;
+        value: string;
+        label: string;
+      };
+    }>
+  >;
+  handleAttributeValueChange: (
+    attributeId: string,
+    selectedOptions: {
+      _id: string;
+      attribute: string;
+      value: string;
+      label: string;
+    }
+  ) => void;
+}) => {
+  // State
+  const [valueOptions, setValueOptions] = useState<{
+    value: string | undefined;
+    label: string;
+  } | null>(null);
+
+  const [chooseAttribute, setChooseAttribute] = useState<Attribute | undefined>(
+    undefined
+  );
+  const [selectError, setSelectError] = useState(false);
+
+  function handleAdd() {
+    if (!chooseAttribute) {
+      setSelectError(true);
+      return;
+    }
+    setSelectError(false);
+
+    dispatch({ type: "ADD_ATTRIBUTE", payload: chooseAttribute });
+  }
+
+  // console.log("SELECTED VALUES: ", selectedValues["6697fcd487ab9b1763829b7b"]);
+
+  return (
+    <>
+      <div className="flex gap-10 py-5">
+        <Select
+          placeholder="Custom product attribute"
+          value={valueOptions}
+          noOptionsMessage={() => "Không có giá trị nào"}
+          className="w-60"
+          options={
+            attributes
+              .map((item) => ({
+                value: item._id,
+                label: item.name,
+              }))
+              .filter(
+                (item) =>
+                  !stateAttribute.attributesChoose.find(
+                    (value) => value._id === item.value
+                  )
+              ) || []
+          }
+          onChange={(value) => {
+            const attribute = attributes.find(
+              (item) => item._id === value?.value
+            );
+            setChooseAttribute(attribute);
+            setValueOptions(value);
+            setSelectError(false);
+          }}
+        />
+
+        <Button
+          type="button"
+          className="w-1/4"
+          onClick={() => {
+            handleAdd();
+            setValueOptions(null);
+          }}
+        >
+          Add
+        </Button>
+        {selectError && (
+          <span className="text-red-500">Bạn phải chọn một giá trị!</span>
+        )}
+      </div>
+
+      {stateAttribute.attributesChoose.map((value, index) => (
+        // console.log("VALUE: ", value),
+        <Collapsible key={value._id} className="py-3 border-b">
+          <CollapsibleTrigger className="flex justify-between items-center w-full">
+            <p className="text-lg font-medium text-gray-500">{value.name}</p>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-3">
+            <div className="flex justify-between">
+              <Select<Data, true>
+                isMulti
+                className="w-2/3"
+                options={value?.values.map((val) => ({
+                  value: val.value,
+                  label: val.name,
+                  _id: val._id as string,
+                  type: value.name,
+                }))}
+                value={
+                  id
+                    ? (stateAttribute.valuesChoose[index] as Data[]) // Đảm bảo rằng đây là kiểu Data[]
+                    : selectedValues[value._id]
+                }
+                onChange={(selectedOptions) =>
+                  handleAttributeValueChange(value._id, selectedOptions)
+                }
+              />
+
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => {
+                  dispatch({
+                    type: "DELETE_ONE_VALUE",
+                    payload: value._id as string,
+                  });
+                  setSelectedValues((current) => {
+                    const { [value._id]: _, ...rest } = current;
+                    return rest;
+                  });
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      ))}
+
+      <div className="flex gap-3 mt-10">
+        <Button
+          type="button"
+          onClick={() => {
+            dispatch({ type: "CLEAR_VALUES" });
+            dispatch({
+              type: "ADD_VALUE",
+              payload: Object.values(selectedValues).flatMap((val) => [val]),
+            });
+            dispatch({ type: "MIX_VALUES" });
+          }}
+        >
+          Add
+        </Button>
+        {/* <Button type="button" onClick={handleSaveAttributeAdd}> */}
+        <Button type="button">Save</Button>
+      </div>
+    </>
+  );
+};
+
+export default AttributeTab;
