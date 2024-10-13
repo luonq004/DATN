@@ -1,5 +1,5 @@
 import { Action, Attribute, Data, State } from "@/common/types/Product";
-import { FormTypeProductSimple } from "@/common/types/validate";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -20,11 +20,13 @@ const AttributeTab = ({
   handleAttributeValueChange,
 }: {
   id: boolean;
-  form: FormTypeProductSimple;
+  form: FormTypeProductVariation;
   attributes: Attribute[];
   stateAttribute: State;
   dispatch: React.Dispatch<Action>;
-  selectedValues: { [key: string]: { value: string; label: string } };
+  selectedValues: {
+    [key: string]: { value: string; label: string; _id: string; type: string };
+  };
   setSelectedValues: React.Dispatch<
     React.SetStateAction<{
       [key: string]: {
@@ -66,7 +68,7 @@ const AttributeTab = ({
     dispatch({ type: "ADD_ATTRIBUTE", payload: chooseAttribute });
   }
 
-  // console.log("SELECTED VALUES: ", selectedValues["6697fcd487ab9b1763829b7b"]);
+  // console.log("SELECTED VALUES: ", selectedValues);
 
   return (
     <>
@@ -114,7 +116,7 @@ const AttributeTab = ({
         )}
       </div>
 
-      {stateAttribute.attributesChoose.map((value, index) => (
+      {stateAttribute.attributesChoose.map((value) => (
         // console.log("VALUE: ", value),
         <Collapsible key={value._id} className="py-3 border-b">
           <CollapsibleTrigger className="flex justify-between items-center w-full">
@@ -131,14 +133,18 @@ const AttributeTab = ({
                   _id: val._id as string,
                   type: value.name,
                 }))}
-                value={
-                  id
-                    ? (stateAttribute.valuesChoose[index] as Data[]) // Đảm bảo rằng đây là kiểu Data[]
-                    : selectedValues[value._id]
-                }
-                onChange={(selectedOptions) =>
-                  handleAttributeValueChange(value._id, selectedOptions)
-                }
+                value={selectedValues[value._id]}
+                onChange={(selectedOptions) => {
+                  const mappedOptions = (selectedOptions as Data[]).map(
+                    (option) => ({
+                      _id: option._id,
+                      type: option.type,
+                      value: option.value,
+                      label: option.label,
+                    })
+                  );
+                  handleAttributeValueChange(value._id, mappedOptions);
+                }}
               />
 
               <Button

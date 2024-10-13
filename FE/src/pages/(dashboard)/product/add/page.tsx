@@ -4,7 +4,7 @@ import Container from "../_components/Container";
 // Form Components
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import InfoGeneralProduct from "../_components/InfoGeneralProduct";
+import InfoGeneralProduct from "../_components/InfoProduct";
 
 // Validate Fields
 import { productSchema, productSimpleSchema } from "@/common/types/validate";
@@ -61,7 +61,14 @@ const ProductAddPage = () => {
       : {
           name: "",
           description: "",
-          variants: [],
+          variants: [
+            {
+              price: "",
+              image: "",
+              values: [],
+              countOnStock: 0,
+            },
+          ],
           reviews: [],
           createdAt: "",
           updatedAt: "",
@@ -69,7 +76,6 @@ const ProductAddPage = () => {
           price: 0,
           priceSale: 0,
           slug: "",
-          attribute: [],
         },
   });
 

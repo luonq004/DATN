@@ -57,3 +57,7 @@ export type FormTypeProductSimple = UseFormReturn<
 export type FormTypeProductVariation = UseFormReturn<
   z.infer<typeof productSchema>
 >;
+
+export type FormTypeProductCommon = UseFormReturn<
+  z.infer<typeof productSimpleSchema> & Partial<z.infer<typeof productSchema>>
+>;

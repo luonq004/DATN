@@ -1,5 +1,5 @@
 import { useReducer, useState } from "react";
-import { FormTypeProductSimple } from "@/common/types/validate";
+import { FormTypeProductVariation } from "@/common/types/validate";
 
 import {
   FormControl,
@@ -23,10 +23,13 @@ import { reducer } from "./reducer";
 
 import { Attribute, Data, State } from "@/common/types/Product";
 import { useGetAtributes } from "../actions/useGetAttributes";
+import { getSelectedValues } from "@/lib/utils";
+import { useFieldArray } from "react-hook-form";
+import VariationTab from "./VariationTab";
 
 const InfoGeneralProduct: React.FC<{
   id: boolean;
-  form: FormTypeProductSimple;
+  form: FormTypeProductVariation;
   typeProduct: string;
   handleChangeTab: (value: string) => void;
   filteredData: Attribute[];
@@ -49,7 +52,10 @@ const InfoGeneralProduct: React.FC<{
   };
   const [stateAttribute, dispatch] = useReducer(reducer, initialState);
 
-  const [selectedValues, setSelectedValues] = useState({});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [selectedValues, setSelectedValues] = useState<Record<string, any>>(
+    getSelectedValues(attributeValue, atributes)
+  );
 
   const handleAttributeValueChange = (
     attributeId: string,
@@ -60,11 +66,17 @@ const InfoGeneralProduct: React.FC<{
       attribute: string;
     }
   ) => {
-    setSelectedValues({
-      ...selectedValues,
+    setSelectedValues((prevSelectedValues) => ({
+      ...prevSelectedValues,
       [attributeId]: selectedOptions,
-    });
+    }));
   };
+
+  // Variant:
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "variants",
+  });
 
   return (
     <div className="w-3/4">
@@ -219,7 +231,7 @@ const InfoGeneralProduct: React.FC<{
                   />
                 </TabsContent>
                 <TabsContent className="px-3 pt-2" value="variations">
-                  Manage product variations here.
+                  <VariationTab />
                 </TabsContent>
                 <TabsContent className="px-3 pt-2" value="advanced">
                   Advanced product settings go here.

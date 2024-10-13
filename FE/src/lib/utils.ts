@@ -1,4 +1,4 @@
-import { Data, IProduct2, Value } from "@/common/types/Product";
+import { Attribute, Data, IProduct2, Value } from "@/common/types/Product";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -154,13 +154,15 @@ export function getUniqueAttributeValue(product: IProduct2): Data[][] {
 //   },
 // ];
 
-// // Tạo đối tượng kết quả dựa trên array2
-// const result = array2.reduce((acc, attribute, index) => {
-//   const matchedValues = array1[index]; // Lấy các giá trị tương ứng từ array1 theo index
-//   if (matchedValues) {
-//     acc[attribute._id] = matchedValues; // Gán mảng giá trị từ array1 vào acc với khóa là _id của attribute
-//   }
-//   return acc;
-// }, {} as Record<string, typeof array1[0]>);
-
-// console.log(result);
+export function getSelectedValues(
+  valueAttributeProduct: Data[][],
+  attribute: Attribute[]
+) {
+  return attribute.reduce((acc, attribute, index) => {
+    const matchedValues = valueAttributeProduct[index]; // Lấy các giá trị tương ứng từ array1 theo index
+    if (matchedValues) {
+      acc[attribute._id] = matchedValues; // Gán mảng giá trị từ array1 vào acc với khóa là _id của attribute
+    }
+    return acc;
+  }, {} as Record<string, (typeof valueAttributeProduct)[0]>);
+}
