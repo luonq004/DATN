@@ -23,8 +23,8 @@ const getCart = async (userId: string) => {
 const putCart = async (actiton: string, item: Icart) => {
     const url = `${BASE_URL}/cart/${actiton}`;
     const { data } = await axios.put(url, item);
-    console.log(data)
-    // return data
+    // console.log(data)
+    return data
 }
 
 const useCart = (userId: string) => {
@@ -55,7 +55,7 @@ const useCart = (userId: string) => {
                 // alert(error.response.data.message)
                 toast({
                     variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
+                    title: "Error",
                     description: `${error.response.data.message}`,
                     action: <ToastAction altText="Try again">Try again</ToastAction>,
                 })

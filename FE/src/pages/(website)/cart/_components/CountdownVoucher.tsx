@@ -1,17 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
+import useVoucher from '@/common/hooks/useVouher';
 import { CircleCheck, CirclePlus, CircleX, TicketPercent, Truck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react'
 
 const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
     const [isHover, setIsHover] = useState(false);
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ['voucher'],
-        queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:8080/api/voucher`);
-            return data;
-        }
-    });
+    const { getVoucher, changeStatusVoucher } = useVoucher()
+    const { data, isLoading, isError } = getVoucher('get-all-countdown')
 
     // console.log(data)
 
@@ -20,7 +14,7 @@ const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
     useEffect(() => {
         if (data) {
             data.forEach((item: any) => {
-                if (item.countdown) {
+                if (item.countdown && item.countdown > 0) {
                     startCountdown(item.countdown, item.voucher._id);
                 }
             });
@@ -42,7 +36,7 @@ const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
             // Bắt đầu lại countdown khi tab visible
             if (data) {
                 data.forEach((item: any) => {
-                    if (item.countdown) {
+                    if (item.countdown && item.countdown > 0) {
                         startCountdown(item.countdown, item.voucher._id);
                     }
                 });
@@ -66,6 +60,7 @@ const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
                 if (parentDiv) {
                     parentDiv.classList.add('pointer-events-none');
                 }
+                changeStatusVoucher.mutate({ status: 'inactive', id });
                 return;
             }
 
@@ -87,7 +82,7 @@ const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
             <div className='text-'>
                 <h1>Voucher</h1>
             </div>
-            <div className='flex flex-col gap-4'>
+            <div className='flex flex-col max-h-[400px] overflow-y-auto gap-4'>
                 {data?.map((item: any) => {
                     const matchedVoucher = cart?.voucher.find((voucher: any) => voucher._id === item.voucher._id);
                     // console.log(matchedVoucher)

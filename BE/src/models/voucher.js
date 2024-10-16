@@ -50,7 +50,7 @@ const voucherSchema = new mongoose.Schema({
 //Nếu ko nhập endDate
 voucherSchema.pre('save', function (next) {
     if (!this.endDate) {
-        const defaultEndDate = 30 * 1000; // 3 ngày - 3 giờ 3 * 24 * 60 * 60 * 1000
+        const defaultEndDate = 30 * 1000; // 3 ngày 3 * 24 * 60 * 60 * 1000
         this.endDate = new Date(this.startDate.getTime() + defaultEndDate);
     }
     next();
