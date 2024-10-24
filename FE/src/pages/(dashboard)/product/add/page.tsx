@@ -20,7 +20,7 @@ import { Attribute } from "@/common/types/Product";
 
 const ProductAddPage = () => {
   const { id } = useParams();
-  const [typeProduct, setTypeProduct] = useState("simple");
+
   const { isLoadingAtributes, atributes } = useGetAtributes();
 
   function handleChangeTab(value: string) {
@@ -41,8 +41,9 @@ const ProductAddPage = () => {
       }
       return {};
     },
+    staleTime: 1000 * 60 * 5,
   });
-
+  const [typeProduct, setTypeProduct] = useState("simple");
   const schemaProduct =
     typeProduct === "simple" ? productSimpleSchema : productSchema;
 
@@ -62,12 +63,12 @@ const ProductAddPage = () => {
           name: "",
           description: "",
           variants: [
-            {
-              price: "",
-              image: "",
-              values: [],
-              countOnStock: 0,
-            },
+            // {
+            //   price: "",
+            //   image: "",
+            //   values: [],
+            //   countOnStock: 0,
+            // },
           ],
           reviews: [],
           createdAt: "",
@@ -75,7 +76,7 @@ const ProductAddPage = () => {
           deleted: false,
           price: 0,
           priceSale: 0,
-          slug: "",
+          // slug: "",
         },
   });
 
@@ -87,10 +88,12 @@ const ProductAddPage = () => {
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
 
   const types = id ? getUniqueTypes(product) : [];
+  // console.log("types: ", types);
 
   const filteredData = types.length
     ? atributes.filter((item: Attribute) => types.includes(item.name))
     : [];
+  // console.log("filteredData: ", filteredData);
 
   const attributeValue = id ? getUniqueAttributeValue(product) : [];
   // console.log("attributeValue: ", attributeValue);

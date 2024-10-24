@@ -19,16 +19,20 @@ export interface IProduct2 {
   createdAt: Date;
   deleted: boolean;
   updatedAt: Date;
-  variants: [
-    {
-      _id: string;
-      countOnStock: number;
-      price: number;
-      deleted: boolean;
-      image: string;
-      values: Value[];
-    }
-  ];
+  variants: Variant[];
+}
+
+export interface Variant {
+  price: number;
+  values: {
+    _id?: string;
+    name?: string;
+    type?: string;
+    value?: string;
+  }[];
+  countOnStock: number;
+  image: string;
+  deleted: boolean;
 }
 
 export interface Value {

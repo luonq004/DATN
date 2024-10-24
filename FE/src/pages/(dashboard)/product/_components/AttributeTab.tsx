@@ -1,5 +1,14 @@
-import { Action, Attribute, Data, State } from "@/common/types/Product";
-import { FormTypeProductVariation } from "@/common/types/validate";
+import {
+  Action,
+  Attribute,
+  Data,
+  State,
+  Variant,
+} from "@/common/types/Product";
+import {
+  FormTypeProductCommon,
+  // FormTypeProductVariation,
+} from "@/common/types/validate";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -12,6 +21,7 @@ import Select from "react-select";
 const AttributeTab = ({
   id,
   form,
+  fields,
   attributes,
   stateAttribute,
   dispatch,
@@ -20,7 +30,9 @@ const AttributeTab = ({
   handleAttributeValueChange,
 }: {
   id: boolean;
-  form: FormTypeProductVariation;
+  // form: FormTypeProductVariation | FormTypeProductSimple;
+  form: FormTypeProductCommon;
+  fields: Variant[];
   attributes: Attribute[];
   stateAttribute: State;
   dispatch: React.Dispatch<Action>;
@@ -183,7 +195,7 @@ const AttributeTab = ({
           Add
         </Button>
         {/* <Button type="button" onClick={handleSaveAttributeAdd}> */}
-        <Button type="button">Save</Button>
+        {/* <Button type="button">Save</Button> */}
       </div>
     </>
   );

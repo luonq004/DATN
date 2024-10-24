@@ -1,5 +1,5 @@
+import { FormTypeProductCommon } from "@/common/types/validate";
 import { useReducer, useState } from "react";
-import { FormTypeProductVariation } from "@/common/types/validate";
 
 import {
   FormControl,
@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+import { tabProductData } from "@/common/constants";
 import {
   Accordion,
   AccordionContent,
@@ -17,19 +18,18 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { tabProductData } from "@/common/constants";
 import AttributeTab from "./AttributeTab";
 import { reducer } from "./reducer";
 
 import { Attribute, Data, State } from "@/common/types/Product";
-import { useGetAtributes } from "../actions/useGetAttributes";
-import { getSelectedValues } from "@/lib/utils";
+import { getSelectedValues, getUniqueTypesFromFields } from "@/lib/utils";
 import { useFieldArray } from "react-hook-form";
+import { useGetAtributes } from "../actions/useGetAttributes";
 import VariationTab from "./VariationTab";
 
 const InfoGeneralProduct: React.FC<{
   id: boolean;
-  form: FormTypeProductVariation;
+  form: FormTypeProductCommon;
   typeProduct: string;
   handleChangeTab: (value: string) => void;
   filteredData: Attribute[];
@@ -57,6 +57,8 @@ const InfoGeneralProduct: React.FC<{
     getSelectedValues(attributeValue, atributes)
   );
 
+  // console.log(selectedValues);
+
   const handleAttributeValueChange = (
     attributeId: string,
     selectedOptions: {
@@ -73,10 +75,12 @@ const InfoGeneralProduct: React.FC<{
   };
 
   // Variant:
-  const { fields, append, remove } = useFieldArray({
+  const { fields, replace, remove } = useFieldArray({
     control: form.control,
     name: "variants",
   });
+
+  const typeFields: string[] = getUniqueTypesFromFields(fields) as string[];
 
   return (
     <div className="w-3/4">
@@ -163,13 +167,13 @@ const InfoGeneralProduct: React.FC<{
             <AccordionTrigger className="border-b p-5 hover:no-underline">
               Product data
             </AccordionTrigger>
-            <AccordionContent className="p-0 ">
+            <AccordionContent className="p-0">
               <Tabs
                 value={valuetab}
                 onValueChange={(value) => setValueTab(value)}
                 className="flex"
               >
-                <TabsList className="flex flex-col gap-2 justify-start h-auto bg-white border-r rounded-none p-0">
+                <TabsList className="flex flex-col justify-start gap-2 h-auto bg-white border-r rounded-none p-0">
                   {typeProduct == "simple"
                     ? tabProductData
                         .filter((tab) => tab.label !== "Variations")
@@ -222,6 +226,7 @@ const InfoGeneralProduct: React.FC<{
                   <AttributeTab
                     id={id}
                     form={form}
+                    fields={fields}
                     attributes={atributes}
                     stateAttribute={stateAttribute}
                     dispatch={dispatch}
@@ -230,8 +235,15 @@ const InfoGeneralProduct: React.FC<{
                     handleAttributeValueChange={handleAttributeValueChange}
                   />
                 </TabsContent>
-                <TabsContent className="px-3 pt-2" value="variations">
-                  <VariationTab />
+                <TabsContent className="px-3 pt-2 w-full" value="variations">
+                  <VariationTab
+                    fields={fields}
+                    stateAttribute={stateAttribute}
+                    typeFields={typeFields}
+                    form={form}
+                    replaceFields={replace}
+                    removeFields={remove}
+                  />
                 </TabsContent>
                 <TabsContent className="px-3 pt-2" value="advanced">
                   Advanced product settings go here.
@@ -242,7 +254,7 @@ const InfoGeneralProduct: React.FC<{
         </Accordion>
 
         <select
-          className="absolute text-sm top-5 py-0 w-24 lg:w-48 left-40 outline-none"
+          className="absolute text-sm top-3 w-24 lg:w-48 left-40 outline-none hover:cursor-pointer"
           value={typeProduct}
           onChange={(e) => {
             form.reset();

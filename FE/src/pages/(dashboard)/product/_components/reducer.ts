@@ -1,11 +1,5 @@
 import { Action, Data, State } from "@/common/types/Product";
 
-// interface PAYLOAD {
-//   value: string;
-//   label: string;
-//   _id?: string;
-// }
-
 const renderSelects = (
   dataArrays: Data[],
   currentIndex = 0,

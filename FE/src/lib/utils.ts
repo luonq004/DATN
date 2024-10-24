@@ -1,4 +1,10 @@
-import { Attribute, Data, IProduct2, Value } from "@/common/types/Product";
+import {
+  Attribute,
+  Data,
+  IProduct2,
+  Value,
+  Variant,
+} from "@/common/types/Product";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -18,6 +24,28 @@ export function getUniqueTypes(product: IProduct2) {
   });
 
   return Array.from(types); // Chuyển Set về mảng và trả về
+}
+
+export function getUniqueTypesFromFields(fields: Variant[] | Attribute[]) {
+  const types = new Set(); // Sử dụng Set để đảm bảo không có giá trị trùng lặp
+
+  // Duyệt qua tất cả các biến thể (variants) của sản phẩm
+  fields.forEach((field) => {
+    // Duyệt qua tất cả các giá trị (values) trong mỗi biến thể
+    field.values.forEach((value) => {
+      types.add(value.type); // Thêm type vào Set
+    });
+  });
+
+  return Array.from(types); // Chuyển Set về mảng và trả về
+}
+
+// Check array equal
+// Example: areArraysEqual([1, 2, 3], [2, 1, 3]) => true
+export function areArraysEqual(arr1: string[], arr2: string[]): boolean {
+  if (arr1.length !== arr2.length) return false;
+
+  return arr1.every((item) => arr2.includes(item));
 }
 
 export function getUniqueAttributeValue(product: IProduct2): Data[][] {
@@ -54,106 +82,6 @@ export function getUniqueAttributeValue(product: IProduct2): Data[][] {
   }, []);
 }
 
-// const array1 = [
-//   [
-//     {
-//       value: '#1b67ea',
-//       label: 'Blue',
-//       _id: '66aa5c8d21a88f63c3a19662',
-//       type: 'Color',
-//     },
-//     {
-//       value: '#f05252',
-//       label: 'Red',
-//       _id: '66aa5c9721a88f63c3a19666',
-//       type: 'Color',
-//     },
-//   ],
-//   [
-//     {
-//       value: 'm',
-//       label: 'M',
-//       _id: '66aa5caf21a88f63c3a1966e',
-//       type: 'Size',
-//     },
-//     {
-//       value: 's',
-//       label: 'S',
-//       _id: '66aa5cb621a88f63c3a19672',
-//       type: 'Size',
-//     },
-//     {
-//       value: 'xl',
-//       label: 'XL',
-//       _id: '66aa5ca821a88f63c3a1966a',
-//       type: 'Size',
-//     },
-//   ],
-// ];
-
-// const array2 = [
-//   {
-//     _id: '6697fcd487ab9b1763829b7b',
-//     name: 'Color',
-//     values: [
-//       {
-//         _id: '66aa5c8d21a88f63c3a19662',
-//         name: 'Blue',
-//         type: 'Color',
-//         value: '#1b67ea',
-//       },
-//       {
-//         _id: '66aa5c9721a88f63c3a19666',
-//         name: 'Red',
-//         type: 'Color',
-//         value: '#f05252',
-//       },
-//     ],
-//   },
-//   {
-//     _id: '6699ce561174ba56977e01f5',
-//     name: 'Size',
-//     values: [
-//       {
-//         _id: '66aa5ca821a88f63c3a1966a',
-//         name: 'XL',
-//         type: 'Size',
-//         value: 'xl',
-//       },
-//       {
-//         _id: '66aa5caf21a88f63c3a1966e',
-//         name: 'M',
-//         type: 'Size',
-//         value: 'm',
-//       },
-//       {
-//         _id: '66aa5cb621a88f63c3a19672',
-//         name: 'S',
-//         type: 'Size',
-//         value: 's',
-//       },
-//     ],
-//   },
-//   {
-//     _id: '66a35bf6ac516ed46cc934a6',
-//     name: 'Material',
-//     values: [
-//       {
-//         _id: '66aa5cd121a88f63c3a19676',
-//         name: 'Wooden',
-//         type: 'Material',
-//         value: 'wooden',
-//       },
-//       {
-//         _id: '66aa5cec21a88f63c3a19684',
-//         name: 'Iron',
-//         type: 'Material',
-//         value: 'iron',
-//       },
-//     ],
-//   },
-// ];
-
 export function getSelectedValues(
   valueAttributeProduct: Data[][],
   attribute: Attribute[]
@@ -165,4 +93,44 @@ export function getSelectedValues(
     }
     return acc;
   }, {} as Record<string, (typeof valueAttributeProduct)[0]>);
+}
+
+export function formatDataLikeFields(valeMix: Data[][]) {
+  return valeMix.map((group) => ({
+    price: 0,
+    values: group.map((item) => ({
+      _id: item._id,
+      name: item.label,
+      type: item.type,
+      value: item.value,
+    })),
+    countOnStock: 0,
+    image: "",
+    deleted: false,
+    // id: crypto.randomUUID(), // Tạo id ngẫu nhiên cho mỗi phần tử
+  }));
+}
+
+// ====================
+const isMatch = (values1: Value[], values2: Value[]) => {
+  return values2.every((value2) =>
+    values1.some(
+      (value1) =>
+        value1._id === value2._id &&
+        value1.type === value2.type &&
+        value1.value === value2.value
+    )
+  );
+};
+
+// Tạo mảng 2 mới bằng cách thay thế các object nếu tìm thấy trùng trong mảng 1
+export function updateFields(array1: Variant[], array2: Variant[]) {
+  return array2.map((item2) => {
+    const matchingItem = array1.find((item1) =>
+      isMatch(item1.values, item2.values)
+    );
+
+    // Nếu tìm thấy item trùng trong array1, thay thế, nếu không, giữ nguyên item2
+    return matchingItem ? matchingItem : item2;
+  });
 }
