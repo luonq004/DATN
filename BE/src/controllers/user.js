@@ -109,15 +109,22 @@ export const getTopUsers = async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
 
-        // console.log(req.query)
+        const productLimit = parseInt(limit) || 10;
+        if (productLimit <= 0) {
+            return res.status(400).json({ message: 'Limit phải lớn hơn 0!' });
+        }
+
 
         const topSpendingUsers = await Order.aggregate([
             // { $unwind: "$orders" },
             {
                 $match: {
                     "createdAt": {
-                        $gte: new Date("2024-02-07T14:25:03.435+00:00"), // nhờ so sánh tgian phải định dạng ntn
-                        $lte: new Date("2024-09-07T23:59:59.999+00:00")
+                        // $gte: new Date("2024-02-07T14:25:03.435+00:00"), // nhờ so sánh tgian phải định dạng ntn
+                        // $lte: new Date("2024-09-07T23:59:59.999+00:00")
+                        $gte: new Date(startDate),
+                        $lte: new Date(endDate),
+
                     }
                 }
             },
@@ -132,13 +139,6 @@ export const getTopUsers = async (req, res) => {
             { $sort: { totalSpent: -1 } },
             { $limit: 10 }
         ]);
-
-        // const topSpendingUsers = await Order.find({
-        //     createdAt: {
-        //         $gte: new Date("2024-04-07T14:25:03.435+00:00"),
-        //         $lte: new Date("2024-04-07T23:59:59.999+00:00")
-        //     }
-        // })
 
         console.log(topSpendingUsers)
 

@@ -110,9 +110,6 @@ export const Top10_productOrder = async (req, res) => {
             return res.status(400).json({ message: 'Limit phải lớn hơn 0!' });
         }
 
-        // console.log(new Date(startDate), new Date(endDate))
-
-
         const topSpendingProduct = await Order.aggregate([
             { $unwind: "$products" },   //mảng sản phẩm
             {
@@ -133,6 +130,7 @@ export const Top10_productOrder = async (req, res) => {
             { $limit: productLimit }
         ]);
         console.log(topSpendingProduct);
+
         //Kiểm tra xem kết quả có trống không
         if (topSpendingProduct.length === 0) {
             return res.status(404).json({ message: 'Không có sản phẩm nào được bán trong khoảng thời gian này!' });
@@ -144,3 +142,41 @@ export const Top10_productOrder = async (req, res) => {
         res.status(500).json({ error: 'Đã xảy ra lỗi khi lấy dữ liệu!' });
     }
 };
+
+// ============================ Doanh thu ===========================
+export const revenue = async (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    // Kiểm tra xem có cung cấp cả startDate và endDate không
+    if (!startDate || !endDate) {
+        return res.status(400).json({ error: 'Vui lòng cung cấp cả startDate và endDate' });
+    }
+
+    try {
+        // Tính tổng doanh thu trong khoảng thời gian
+        const revenue = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: new Date(startDate),
+                        $lte: new Date(endDate),
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$totalPrice" },
+                },
+            },
+        ]);
+
+        const totalRevenue = revenue[0]?.totalRevenue || 0; // Nếu không có dữ liệu thì mặc định là 0
+        res.json({ totalRevenue });
+
+    } catch (error) {
+        console.error('Lỗi khi tính toán doanh thu:', error);
+        res.status(500).json({ error: 'Lỗi khi tính toán doanh thu' });
+    };
+};
+
