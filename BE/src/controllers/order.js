@@ -147,13 +147,12 @@ export const Top10_productOrder = async (req, res) => {
 export const revenue = async (req, res) => {
     const { startDate, endDate } = req.query;
 
-    // Kiểm tra xem có cung cấp cả startDate và endDate không
     if (!startDate || !endDate) {
         return res.status(400).json({ error: 'Vui lòng cung cấp cả startDate và endDate' });
     }
 
     try {
-        // Tính tổng doanh thu trong khoảng thời gian
+
         const revenue = await Order.aggregate([
             {
                 $match: {
@@ -176,6 +175,7 @@ export const revenue = async (req, res) => {
 
     } catch (error) {
         console.error('Lỗi khi tính toán doanh thu:', error);
+        // res.status(500).json({ error: 'Lỗi khi tính toán doanh thu' });
         res.status(500).json({ error: 'Lỗi khi tính toán doanh thu' });
     };
 };

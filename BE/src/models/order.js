@@ -46,7 +46,7 @@ const orderSchema = new mongoose.Schema({
         required: true,
     },
 
-    // Ngày tạo đơn hàng
+    // Ngay tao
     createdAt: {
         type: Date,
         default: Date.now,
