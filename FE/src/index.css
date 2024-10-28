@@ -50,6 +50,13 @@ body {
     /* xám đen  */
     --border2: 0 1.08% 81.76%;
     ----border2--foreground: 222.2 84% 4.9%;
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
   }
 
   .dark {
@@ -88,6 +95,16 @@ body {
     /* xám đen  */
     --border2: 222.2 84% 4.9%;
     ----border2--foreground: 0 1.08% 81.76%;
+    /* Hong nhat*/
+    --chart-1: 220 70% 50%;
+    /* Xanh la */
+    --chart-2: 160 60% 45%;
+    /* Xanh duong */
+    --chart-3: 30 80% 55%;
+    /* Vang nhat */
+    --chart-4: 280 65% 60%;
+    /* Cam */
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -99,4 +116,26 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.toast-box {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.toast-box:hover {
+  transform: scale(1.02);
+}
+
+.ToastViewport {
+  top: 20px;
+  /* Adjust top position as needed */
+  max-width: 400px;
+  /* Set a max width for the toast */
+  width: 100%;
+  /* Make it full width */
 }

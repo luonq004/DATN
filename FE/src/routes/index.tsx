@@ -10,13 +10,15 @@ import ProductsAll from "@/pages/(website)/shop/_components/ProductsAll";
 import DetailPage from "@/pages/(website)/details/page";
 import CheckOut from "@/pages/(website)/cart/_components/CheckOut";
 import HomePage from "@/pages/(website)/homepage/Homepage";
+import LayoutAdmin from "@/pages/(dashboard)/layout";
+import List from "@/pages/(dashboard)/overview/layout";
 
 const Router = () => {
   return <>
     <Routes>
       <Route path="/" element={<LayoutWebsite />} >
         <Route index path="" element={<HomePage />} />
-        
+
         <Route path="product/:id" element={<DetailPage />} />
 
         <Route path="shop" element={<ShopPage />}>
@@ -28,7 +30,10 @@ const Router = () => {
           <Route path="checkout" element={<CheckOut />} />
           <Route path="order" element={<Order />} />
         </Route>
+      </Route>
 
+      <Route path="admin" element={<LayoutAdmin />}>
+        <Route index element={<List />} />
       </Route>
     </Routes>
   </>;
