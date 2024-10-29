@@ -1,4 +1,4 @@
-import { State, Variant } from "@/common/types/Product";
+import { Attribute, State, Variant } from "@/common/types/Product";
 import { FormTypeProductCommon } from "@/common/types/validate";
 import { FieldArrayWithId } from "react-hook-form";
 
@@ -27,6 +27,7 @@ const VariationTab = ({
   form,
   replaceFields,
   removeFields,
+  duplicate,
 }: {
   fields: FieldArrayWithId<Variant>[];
   stateAttribute: State;
@@ -34,13 +35,11 @@ const VariationTab = ({
   form: FormTypeProductCommon;
   replaceFields: (fields: Variant[]) => void;
   removeFields: (index: number) => void;
+  duplicate: number[];
 }) => {
   const [stateSelect, setStateSelect] = useState<string>(
     fields.length ? "create" : ""
   );
-  // const [tempSelect, setTempSelect] = useState<string>(
-  //   fields.length ? "create" : ""
-  // );
 
   const [previewImages, setPreviewImages] = useState<{
     [key: string]: string | null;
@@ -80,9 +79,12 @@ const VariationTab = ({
   const handleButtonClick = () => {
     if (stateSelect === "create") {
       if (stateAttribute.valuesMix.length !== 0) {
+        // console.log(stateAttribute.valuesMix.length);
         const typesFromReducer = getUniqueTypesFromFields(
           stateAttribute.attributesChoose
         );
+
+        // console.log("typesFromReducer: ", typesFromReducer);
 
         const newFields = areArraysEqual(
           typeFields as string[],
@@ -91,28 +93,15 @@ const VariationTab = ({
           ? updateFields(fields, formatDataLikeFields(stateAttribute.valuesMix))
           : formatDataLikeFields(stateAttribute.valuesMix);
 
-        console.log(newFields);
+        // console.log(newFields);
         replaceFields(newFields);
       }
     }
   };
-  // function findCategoryById(id, categories) {
-  //   for (const category of categories) {
-  //     for (const value of category.values) {
-  //       if (value._id === id) {
-  //         return category;
-  //       }
-  //     }
-  //   }
-  //   return null; // ID not found
-  // }
 
-  // console.log(
-  //   findCategoryById(
-  //     "66aa5c8d21a88f63c3a19662",
-  //     stateAttribute.attributesChoose
-  //   ).values
-  // );
+  const attributes: Attribute[] = stateAttribute.attributesChoose.filter(
+    (item) => typeFields.includes(item.name)
+  );
 
   return (
     <>
@@ -138,26 +127,24 @@ const VariationTab = ({
       </div>
       <div>
         {fields.map((field, index) => {
-          // console.log(field);
           return (
-            <div className=" py-4 border-b" key={field.id}>
+            <div
+              className={`py-4 border-b ${
+                duplicate.includes(index) ? "border-red-500 border" : ""
+              }`}
+              key={field.id}
+            >
               <Collapsible key={field.id}>
                 <div className="flex gap-3 relative">
                   <CollapsibleTrigger className="text-left font-bold w-2/3">
-                    #{field.id.split("-")[1]}
+                    #{index + 1}
                   </CollapsibleTrigger>
-                  <div>
-                    <VariationValues
-                      form={form}
-                      indexValue={index}
-                      field={field}
-                    />
-                  </div>
-                  {stateAttribute.attributesChoose.map((attribute, indx) => {
+                  <div></div>
+                  {attributes?.map((attribute, indx) => {
                     return (
                       <div key={attribute._id}>
                         <select
-                          className="w-32 py-1"
+                          className="w-24 py-1"
                           value={form.watch(
                             `variants.${index}.values.${indx}._id`
                           )} // Sử dụng `value` và theo dõi giá trị
@@ -175,7 +162,6 @@ const VariationTab = ({
                         >
                           {attribute.values.map((value) => {
                             return (
-                              // console.log("VAL: ", value),
                               <option key={value._id} value={value._id}>
                                 {value.name}
                               </option>
@@ -183,42 +169,18 @@ const VariationTab = ({
                           })}
                         </select>
 
-                        {/* <input
-                          type="text"
-                          {...form.register(
-                            `variants.${index}.values.${indx}.name` as const
-                          )}
-                        />
-                        <input
-                          type="text"
-                          {...form.register(
-                            `variants.${index}.values.${indx}.value` as const
-                          )}
-                        />
-                        <input
-                          type="text"
-                          {...form.register(
-                            `variants.${index}.values.${indx}.type` as const
-                          )}
-                        /> */}
+                        {form.formState.errors.variants && (
+                          <p className="text-red-600">
+                            {form.formState.errors.variants.message}
+                          </p> // Lỗi chung cho variants
+                        )}
                       </div>
                     );
                   })}
                 </div>
                 <CollapsibleContent className="mt-4">
                   <div className="pt-4 border-t">
-                    {/* Input to upload images */}
-                    <div
-                      className="mt-2 flex flex-col justify-center items-center border border-dashed border-blue-300 h-[100px] w-[100px] cursor-pointer rounded p-1"
-                      onClick={() => {
-                        const inputElement = document.querySelector(
-                          `.input-file__${field.id}`
-                        );
-                        if (inputElement) {
-                          (inputElement as HTMLInputElement).click();
-                        }
-                      }}
-                    >
+                    <div className="mt-2 flex border-b border-gray-300 pb-4">
                       <input
                         className={`input-file__${field.id}`}
                         {...form.register(`variants.${index}.image`)}
@@ -228,7 +190,17 @@ const VariationTab = ({
                       />
 
                       {/* Preview Image */}
-                      <div className="flex items-center justify-center">
+                      <div
+                        onClick={() => {
+                          const inputElement = document.querySelector(
+                            `.input-file__${field.id}`
+                          );
+                          if (inputElement) {
+                            (inputElement as HTMLInputElement).click();
+                          }
+                        }}
+                        className="h-[100px] w-[100px] border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center"
+                      >
                         {previewImages[field.id] ? (
                           <img
                             src={previewImages[field.id] || ""}
@@ -236,33 +208,25 @@ const VariationTab = ({
                             className="object-cover w-[90px] h-[90px]"
                           />
                         ) : (
-                          <FaCloudUploadAlt className="text-4xl text-blue-400" />
+                          <FaCloudUploadAlt className="text-4xl  text-blue-400" />
                         )}
+                      </div>
+                      <div className="self-end ml-auto">
+                        <label className="block">Số lượng tồn kho</label>
+                        <input
+                          type="text"
+                          {...form.register(
+                            `variants.${index}.countOnStock` as const
+                          )}
+                        />
                       </div>
                     </div>
 
-                    <input
-                      type="text"
-                      // {...form.register(`variants.${index}.price` as const)}
-                      {...form.register(`variants.${index}.price` as const)}
-                      className={
-                        form.formState.errors?.variants?.[index]?.price
-                          ? "border-red-500"
-                          : ""
-                      }
+                    <VariationValues
+                      form={form}
+                      indexValue={index}
+                      removeFields={removeFields}
                     />
-                    <span>
-                      {form.formState.errors?.variants?.[index]?.price?.message}
-                    </span>
-
-                    {/* <input
-                      type="text"
-                      {...form.register(
-                        `variants.${index}.values.${index}.name` as const
-                      )}
-                    /> */}
-
-                    {/* <input type="text" {...form.register("test")} /> */}
                   </div>
                 </CollapsibleContent>
               </Collapsible>

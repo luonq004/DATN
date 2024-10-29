@@ -134,3 +134,26 @@ export function updateFields(array1: Variant[], array2: Variant[]) {
     return matchingItem ? matchingItem : item2;
   });
 }
+
+// Check trùng values
+export const checkForDuplicateVariants = (data: IProduct2) => {
+  const variantSet = new Map<string, number>(); // Lưu vị trí của từng variant key
+  const duplicateIndices: number[] = []; // Lưu vị trí của các biến thể bị trùng
+
+  data.variants.forEach((variant, index) => {
+    // Tạo khóa duy nhất dựa trên các thuộc tính chính
+    const variantKey = variant.values
+      .map((valueObj) => `${valueObj.type}:${valueObj._id}`)
+      .join("|");
+
+    if (variantSet.has(variantKey)) {
+      // Nếu trùng, thêm vị trí hiện tại vào duplicateIndices
+      duplicateIndices.push(index);
+    } else {
+      // Nếu không trùng, lưu vị trí hiện tại vào variantSet
+      variantSet.set(variantKey, index);
+    }
+  });
+
+  return duplicateIndices; // Trả về mảng vị trí của các biến thể bị trùng
+};

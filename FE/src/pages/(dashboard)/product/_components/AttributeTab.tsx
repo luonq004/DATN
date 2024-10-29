@@ -30,7 +30,6 @@ const AttributeTab = ({
   handleAttributeValueChange,
 }: {
   id: boolean;
-  // form: FormTypeProductVariation | FormTypeProductSimple;
   form: FormTypeProductCommon;
   fields: Variant[];
   attributes: Attribute[];
@@ -79,8 +78,6 @@ const AttributeTab = ({
 
     dispatch({ type: "ADD_ATTRIBUTE", payload: chooseAttribute });
   }
-
-  // console.log("SELECTED VALUES: ", selectedValues);
 
   return (
     <>

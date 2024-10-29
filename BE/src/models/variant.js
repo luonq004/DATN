@@ -10,6 +10,10 @@ const variantSchema = new mongoose.Schema(
       required: true,
     },
 
+    priceSale: {
+      type: Number,
+    },
+
     values: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -20,7 +24,7 @@ const variantSchema = new mongoose.Schema(
 
     countOnStock: {
       type: Number,
-      required: true,
+      default: 0,
     },
 
     image: {

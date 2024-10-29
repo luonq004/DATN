@@ -12,24 +12,24 @@ const productSchema = new mongoose.Schema(
 
     slug: {
       type: String,
-      unique: true,
+      // unique: true,
       lowercase: true,
     },
 
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+      },
+    ],
 
     countOnStock: {
       type: Number,
-      required: true,
     },
 
-    avatarMain: {
+    image: {
       type: String,
-      required: true,
     },
 
     price: {

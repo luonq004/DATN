@@ -34,6 +34,7 @@ const InfoGeneralProduct: React.FC<{
   handleChangeTab: (value: string) => void;
   filteredData: Attribute[];
   attributeValue: Data[][];
+  duplicate: number[];
 }> = ({
   id,
   form,
@@ -41,6 +42,7 @@ const InfoGeneralProduct: React.FC<{
   handleChangeTab,
   filteredData,
   attributeValue,
+  duplicate,
 }) => {
   const [valuetab, setValueTab] = useState("inventory");
   const { atributes } = useGetAtributes();
@@ -243,6 +245,7 @@ const InfoGeneralProduct: React.FC<{
                     form={form}
                     replaceFields={replace}
                     removeFields={remove}
+                    duplicate={duplicate}
                   />
                 </TabsContent>
                 <TabsContent className="px-3 pt-2" value="advanced">

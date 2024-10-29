@@ -14,12 +14,21 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { getProductEdit } from "../actions/api";
-import { getUniqueAttributeValue, getUniqueTypes } from "@/lib/utils";
+import {
+  checkForDuplicateVariants,
+  getUniqueAttributeValue,
+  getUniqueTypes,
+} from "@/lib/utils";
 import { useGetAtributes } from "../actions/useGetAttributes";
 import { Attribute } from "@/common/types/Product";
+import StatusProduct from "../_components/StatusProduct";
+import { useCreateProduct } from "../actions/useCreateProduct";
 
 const ProductAddPage = () => {
   const { id } = useParams();
+  const [typeProduct, setTypeProduct] = useState("simple");
+  const [duplicate, setDuplicate] = useState<number[]>([]);
+  const { createProduct, isCreatting } = useCreateProduct();
 
   const { isLoadingAtributes, atributes } = useGetAtributes();
 
@@ -43,7 +52,7 @@ const ProductAddPage = () => {
     },
     staleTime: 1000 * 60 * 5,
   });
-  const [typeProduct, setTypeProduct] = useState("simple");
+
   const schemaProduct =
     typeProduct === "simple" ? productSimpleSchema : productSchema;
 
@@ -63,12 +72,20 @@ const ProductAddPage = () => {
           name: "",
           description: "",
           variants: [
-            // {
-            //   price: "",
-            //   image: "",
-            //   values: [],
-            //   countOnStock: 0,
-            // },
+            {
+              price: 0,
+              priceSale: 0,
+              image: "",
+              values: [
+                {
+                  _id: "",
+                  name: "",
+                  type: "",
+                  value: "",
+                },
+              ],
+              countOnStock: 0,
+            },
           ],
           reviews: [],
           createdAt: "",
@@ -82,10 +99,21 @@ const ProductAddPage = () => {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof schemaProduct>) {
-    console.log(values);
+    console.log("values: ", values);
+    // if (typeProduct !== "simple") {
+    //   const duplicateValues = checkForDuplicateVariants(values);
+    //   setDuplicate(duplicateValues);
+
+    //   if (!duplicateValues.length) createProduct(values);
+    // } else {
+    //   createProduct(values);
+    // }
   }
 
-  if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
+  if (isLoading || isLoadingAtributes || isCreatting)
+    return <Container>Loading...</Container>;
+
+  // console.log(duplicate);
 
   const types = id ? getUniqueTypes(product) : [];
   // console.log("types: ", types);
@@ -115,10 +143,11 @@ const ProductAddPage = () => {
               handleChangeTab={handleChangeTab}
               filteredData={filteredData}
               attributeValue={attributeValue}
+              duplicate={duplicate}
             />
 
             {/* Info Categories and More... */}
-            <div>Categories</div>
+            <StatusProduct form={form} />
           </div>
           <Button type="submit">Submit</Button>
         </form>

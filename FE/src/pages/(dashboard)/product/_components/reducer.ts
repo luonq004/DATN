@@ -14,7 +14,9 @@ const renderSelects = (
     }
 
     const currentArray = dataArrays[currentIndex];
-    currentArray.forEach((item) => {
+    // console.log("currentArray: ", currentArray, "currentIndex: ", currentIndex);
+
+    currentArray?.forEach((item) => {
       loopArrays(currentIndex + 1, [...combination, item]); // Đệ quy lặp qua các mảng
     });
   };
@@ -34,11 +36,20 @@ export const reducer = (state: State, action: Action): State => {
         attributesChoose: [...state.attributesChoose, action.payload],
       };
 
-    case "ADD_VALUE":
+    case "ADD_VALUE": {
+      const filteredValues = action.payload.filter(
+        (value) => value && Object.keys(value).length > 0
+      );
+
+      // console.log("FILTERED VALUES: ", filteredValues);
+
+      if (!filteredValues.length) return state;
+
       return {
         ...state,
-        valuesChoose: [...state.valuesChoose, action.payload],
+        valuesChoose: [...state.valuesChoose, filteredValues],
       };
+    }
 
     case "CLEAR_VALUES":
       return {

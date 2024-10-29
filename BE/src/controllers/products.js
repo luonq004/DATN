@@ -1,5 +1,6 @@
 import Product from "../models/product";
 import slugify from "slugify";
+import Variant from "../models/variant";
 
 export const getAllProducts = async (req, res) => {
   const {
@@ -120,13 +121,42 @@ export const getProductForEdit = async (req, res) => {
   }
 };
 
-export const addProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   try {
+    // console.log(req?.body);
+    const { name, image, price, priceSale, description, category, variants } =
+      req.body;
+
+    const slug = slugify(req.body.name, "-");
+
+    const variantsId = [];
+
+    for (let i = 0; i < variants.length; i++) {
+      const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+
+      const variant = await Variant({
+        price: variants[i].price,
+        priceSale: variants[i].priceSale,
+        values,
+        countOnStock: variants[i].countOnStock,
+        image: variants[i].image,
+      }).save();
+      variantsId.push(variant._id);
+    }
+
     const data = await Product({
-      ...req.body,
+      name,
+      image,
+      category,
+      description,
       slug: slugify(req.body.name, "-"),
+      variants: variantsId,
     }).save();
-    res.status(201).json(data);
+
+    return res.status(201).json({
+      message: "Tạo sản phẩm thành công",
+      data,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
