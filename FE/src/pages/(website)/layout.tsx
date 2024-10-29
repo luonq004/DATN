@@ -48,9 +48,14 @@ const LayoutWebsite = () => {
                                     <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
                                 </Link>
                             </div>
-                            <div className="relative">
-                                <IoBagOutline />
-                                <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
+                            <div className="relative transition transform duration-150 ease-in-out active:scale-75">
+                                <Link to="/cart">
+                                    <IoBagOutline />
+                                    <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
+                                </Link>
+                                {/* <div className='absolute border'>
+
+                                </div> */}
                             </div>
                         </div>
                         <img className="w-7 rounded-full" src={customer} alt="customer" />

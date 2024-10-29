@@ -146,7 +146,7 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
     return (
         <>
             <div
-                className="flex items-center gap-1 px-2 py-1 border rounded-md cursor-pointer max-sm:text-[14px]"
+                className="flex items-center gap-1 px-2 py-1 border rounded-md cursor-pointer max-sm:text-[14px] select-none"
                 onClick={() => attribute !== idCart ? changeAttribute(idCart) : changeAttribute('1')}
             >
                 {str?.join(', ')}
@@ -157,7 +157,7 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
                 </div>
             </div>
             <div
-                className={`absolute bg-background py-3 px-4 left-1/2 max-sm:left-[50%] -translate-x-1/2 border-2 border-border1 rounded-md transition-all duration-500 select-none 
+                className={`absolute bg-background py-3 px-4 left-1/2 max-sm:left-[50%] -translate-x-1/2 border rounded-md transition-all duration-300 select-none shadow-2xl
                 ${attribute === idCart ? 'opacity-100 top-[130%] z-10' : 'opacity-0 top-[90%] z-[-1]'}`}
             >
                 {variantProduct?.map((item: any) => {
@@ -190,7 +190,7 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
                     )
                 })}
 
-                <div className="flex justify-between space-x-4">
+                <div className="flex justify-between space-x-8 pt-4">
                     <div className="p-1 hover:text-red-500 cursor-pointer" onClick={() => changeAttribute('1')}>Cancel</div>
                     <button
                         onClick={() => saveVariant(selectedValue)}

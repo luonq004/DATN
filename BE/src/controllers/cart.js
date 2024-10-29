@@ -19,6 +19,11 @@ const updateTotal = async (cart) => {
             let startDate = new Date(voucher.startDate);
             let endDate = new Date(voucher.endDate);
 
+            //nếu voucher hết hạn sẽ bị xóa khỏi giỏ hàng
+            if (presentTime <= startDate || presentTime >= endDate) {
+                cart.voucher = cart.voucher.filter(item => item._id !== voucher._id)
+            }
+
             if (presentTime >= startDate && presentTime <= endDate && voucher.category === "product") {
                 if (voucher.type === "fixed") {
                     totalDiscount += voucher.discount;
@@ -138,7 +143,7 @@ export const increase = async (req, res) => {
         )
 
         if (existProductIndex !== -1) {
-            console.log(cart.products[existProductIndex].variantItem.countOnStock)
+            // console.log(cart.products[existProductIndex].variantItem.countOnStock)
             //kiểm tra tồn kho
             if (cart.products[existProductIndex].variantItem.countOnStock > cart.products[existProductIndex].quantity) {
                 cart.products[existProductIndex].quantity++
@@ -294,30 +299,30 @@ export const addVoucher = async (req, res) => {
         //check hạn sử dụng
         const date = new Date();
         if (new Date(date.getTime() + 7 * 60 * 60 * 1000) >= new Date(voucher.endDate)) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Code đã hết hạn" })
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Voucher đã hết hạn" })
         }
         if (new Date(date.getTime() + 7 * 60 * 60 * 1000) <= new Date(voucher.startDate)) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Chưa đến ngày dùng code" })
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Chưa đến ngày dùng voucher" })
         }
 
         //check trạng thái
         if (voucher.status === "inactive") {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Code đã bị vô hiệu hóa" })
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Voucher đã bị vô hiệu hóa" })
         }
 
         //check số lượng
         if (voucher.countOnStock === 0) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Số lượng code đã hết" })
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Số lượng Voucher đã hết" })
         }
 
         //kiểm tra trùng lặp
         if (cart.voucher.length > 0) {
             for (let item of cart.voucher) {
                 if ((item._id).toString() === voucher._id.toString()) {
-                    return res.status(StatusCodes.BAD_REQUEST).json({ message: "Code đã được sử dụng" })
+                    return res.status(StatusCodes.BAD_REQUEST).json({ message: "Voucher đã được sử dụng" })
                 }
                 if (item.category === voucher.category) {
-                    return res.status(StatusCodes.BAD_REQUEST).json({ message: "Không thể sử dụng 2 code cùng loại" })
+                    return res.status(StatusCodes.BAD_REQUEST).json({ message: "Không thể sử dụng 2 Voucher cùng loại" })
                 }
             }
         }
@@ -334,6 +339,40 @@ export const addVoucher = async (req, res) => {
         // console.log(cart)
         cart = await updateTotal(cart);
         await cart.save()
+        return res.status(StatusCodes.OK).json(cart)
+    } catch (error) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
+    }
+}
+
+export const revomeVoucherCart = async (req, res) => {
+    const { userId, voucherCode } = req.body;
+    // console.log(req.body)
+    try {
+        let cart = await Cart.findOne({ userId: userId })
+            .populate('products.productItem')
+            .populate('products.variantItem');
+        if (!cart) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Cart not found" })
+        }
+
+        const voucher = await Voucher.findOne({ code: voucherCode })
+        if (!voucher) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
+        }
+
+        // tăng số lượng của voucher
+        await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock + 1 }, { new: true })
+
+        // loại khỏi danh sách đã sử dụng voucher
+        await VoucherUsage.findOneAndDelete({ userId: userId, voucherId: voucher._id });
+
+        // loại khỏi giỏ hàng
+        cart.voucher = cart.voucher.filter(item => item._id.toString() !== voucher._id.toString())
+        // console.log(cart)
+        cart = await updateTotal(cart);
+        await cart.save()
+        // console.log(cart)
         return res.status(StatusCodes.OK).json(cart)
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
