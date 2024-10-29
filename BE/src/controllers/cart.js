@@ -56,7 +56,8 @@ export const getCartByUserId = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: id })
             .populate('products.productItem')
-            .populate('products.variantItem');
+            .populate('products.variantItem')
+            .populate('voucher');
 
         if (!cart) {
             cart = await Cart.create({ userId: id, products: [], voucher: [], total: 0 })
@@ -75,7 +76,8 @@ export const addToCart = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
-            .populate('products.variantItem');
+            .populate('products.variantItem')
+            .populate('voucher');
 
         const product = await Product.findOne({ _id: productId });
         const variantValue = await Variant.findOne({ _id: variantId });
@@ -131,7 +133,8 @@ export const increase = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
-            .populate('products.variantItem');
+            .populate('products.variantItem')
+            .populate('voucher');
 
         if (!cart) {
             cart = await Cart.create({ userId: userId, products: [], voucher: {}, total: 0 })
@@ -171,7 +174,8 @@ export const decrease = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
-            .populate('products.variantItem');
+            .populate('products.variantItem')
+            .populate('voucher');
 
         if (!cart) {
             cart = await Cart.create({ userId: userId, products: [], voucher: {}, total: 0 })
@@ -217,7 +221,8 @@ export const removeCartProduct = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
-            .populate('products.variantItem');
+            .populate('products.variantItem')
+            .populate('voucher');
 
         if (!cart) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Cart not found" })
@@ -245,7 +250,8 @@ export const updateQuantity = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
-            .populate('products.variantItem');
+            .populate('products.variantItem')
+            .populate('voucher');
         if (!cart) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Cart not found" })
         }
@@ -286,7 +292,8 @@ export const addVoucher = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
-            .populate('products.variantItem');
+            .populate('products.variantItem')
+            .populate('voucher');
         if (!cart) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Cart not found" })
         }
@@ -330,15 +337,21 @@ export const addVoucher = async (req, res) => {
         // console.log(voucher)
 
         // giảm số lượng của voucher
-        await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
+        // await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
 
         // thêm vào danh sách đã sử dụng voucher
-        await VoucherUsage.create({ userId: userId, voucherId: voucher._id });
+        // await VoucherUsage.create({ userId: userId, voucherId: voucher._id });
 
-        cart.voucher.push(voucher)
+        cart.voucher.push(voucher._id)
         // console.log(cart)
+        await cart.save()
+        cart = await Cart.findOne({ userId: userId })
+            .populate('products.productItem')
+            .populate('products.variantItem')
+            .populate('voucher');
         cart = await updateTotal(cart);
         await cart.save()
+        // console.log(cart)
         return res.status(StatusCodes.OK).json(cart)
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
@@ -351,7 +364,8 @@ export const revomeVoucherCart = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: userId })
             .populate('products.productItem')
-            .populate('products.variantItem');
+            .populate('products.variantItem')
+            .populate('voucher');
         if (!cart) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Cart not found" })
         }
