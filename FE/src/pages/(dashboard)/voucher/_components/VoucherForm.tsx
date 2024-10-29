@@ -123,8 +123,8 @@ const VoucherForm = ({ id }: any) => {
             ...data,
             _id: id,
             status: status,
-            startDate: data.dob.from,
-            endDate: data.dob.to
+            startDate: new Date(new Date(data.dob.from).getTime() + 7 * 60 * 60 * 1000),
+            endDate: new Date(new Date(data.dob.to).getTime() + 7 * 60 * 60 * 1000)
         }
         const { dob, ...item } = info
         updateVoucher.mutate(item, {

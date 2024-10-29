@@ -2,16 +2,9 @@ import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import Icart from "../types/cart";
 
 const BASE_URL = "http://localhost:8080/api";
-
-interface Icart {
-    userId?: string,
-    productId?: string,
-    variantId?: string,
-    quantity?: number
-    voucherId?: string
-}
 
 const CART_QUERY_KEY = 'CART';
 

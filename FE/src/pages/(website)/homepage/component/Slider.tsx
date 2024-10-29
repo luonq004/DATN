@@ -20,9 +20,8 @@ const Slider = () => {
           {slides.map((slide, index) => (
             <div
               key={index}
-              className={`absolute w-full h-full transition-transform duration-500 ease-in-out transform ${
-                index === currentSlide ? "translate-x-0" : "translate-x-full"
-              }`}
+              className={`absolute w-full h-full transition-transform duration-500 ease-in-out transform ${index === currentSlide ? "translate-x-0" : "translate-x-full"
+                }`}
               style={{
                 transform: `translateX(${(index - currentSlide) * 100}%)`,
               }}

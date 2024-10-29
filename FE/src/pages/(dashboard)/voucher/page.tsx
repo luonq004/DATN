@@ -3,7 +3,6 @@ import useVoucher from "@/common/hooks/useVouher";
 import { columns } from "./_components/columns"
 import { DataTable } from "./_components/data-table"
 import { useEffect, useRef } from "react";
-import { toast } from "@/components/ui/use-toast";
 import { CirclePlus } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import VoucherAddForm from "./_components/VoucherAddForm";
@@ -25,18 +24,12 @@ const Demopage = () => {
     const { data, isLoading, isError } = getVoucher('get-all-countdown');
     // console.log(data)
     const item = data?.map((item: any) => {
-        // console.log('item', item)
-        // const endDate = new Date(item.voucher.endDate);
-        // const vietnamOffset = 7 * 60 * 60 * 1000;
-
-        // const localDate = new Date(endDate.getTime() - vietnamOffset);
-        const localDate = new Date(item.voucher.endDate);
+        const localDate = new Date(new Date(item.voucher.endDate).getTime() - 7 * 60 * 60 * 1000);
         return {
             ...item.voucher,
-            endDate: localDate.getDate() + '/' + (localDate.getMonth() + 1) + '/' + localDate.getFullYear() + ' ' +
-                localDate.getHours() + ':' +
+            endDate: localDate.getDate() + '/' + (localDate.getMonth() + 1) + '/' + localDate.getFullYear() + ' '
+                + localDate.getHours() + ':' +
                 (localDate.getMinutes() < 10 ? '0' + localDate.getMinutes() : localDate.getMinutes())
-            // endDate: item.countdown
         }
     })
 
@@ -58,33 +51,32 @@ const Demopage = () => {
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
 
-    }, [data])
+    }, [data]);
 
     const handleVisibilityChange = () => {
         if (document.hidden) {
             Object.values(interval.current).forEach(clearInterval);
-        } else {
-            if (data) {
-                data.forEach((item: any) => {
-                    if (item.countdown && item.countdown > 0) {
-                        startCountDown(item.countdown, item.voucher._id);
-                    }
-                });
-            }
+        } else if (data) {
+            data.forEach((item: any) => {
+                if (item.countdown && item.countdown > 0) {
+                    startCountDown(item.countdown, item.voucher._id);
+                }
+            });
         }
     };
 
-    function startCountDown(timeCountDown: any, id: any) {
+    const startCountDown = (timeCountDown: any, id: any) => {
+
         interval.current[id] = setInterval(() => {
             if (timeCountDown <= 0) {
                 clearInterval(interval.current[id]);
                 changeStatusVoucher.mutate({ status: 'inactive', id });
                 return;
             }
-            timeCountDown -= 1000
-        }, 1000)
+            timeCountDown -= 1000;
+        }, 1000);
 
-    }
+    };
 
     if (isLoading) return <div>Loading...</div>;
     if (isError) return <div>Error</div>;

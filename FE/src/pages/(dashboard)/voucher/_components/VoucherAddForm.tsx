@@ -88,18 +88,18 @@ const VoucherAddForm = () => {
         const info = {
             ...data,
             status: status,
-            startDate: data.dob.from,
-            endDate: data.dob.to
+            startDate: new Date(new Date(data.dob.from).getTime() + 7 * 60 * 60 * 1000),
+            endDate: new Date(new Date(data.dob.to).getTime() + 7 * 60 * 60 * 1000)
         }
         const { dob, ...item } = info
-        console.log(item)
+        // console.log(item)
         createVoucher.mutate(item, {
             onSuccess: () => {
                 toast({
                     title: "Success",
                     description: "Tạo thành công",
                 })
-                // reset()
+                reset()
             }
         })
     }
