@@ -243,6 +243,7 @@ const InfoGeneralProduct: React.FC<{
                     stateAttribute={stateAttribute}
                     typeFields={typeFields}
                     form={form}
+                    attributes={atributes}
                     replaceFields={replace}
                     removeFields={remove}
                     duplicate={duplicate}

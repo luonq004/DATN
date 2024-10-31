@@ -191,8 +191,6 @@ const AttributeTab = ({
         >
           Add
         </Button>
-        {/* <Button type="button" onClick={handleSaveAttributeAdd}> */}
-        {/* <Button type="button">Save</Button> */}
       </div>
     </>
   );

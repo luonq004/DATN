@@ -123,40 +123,56 @@ export const getProductForEdit = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    // console.log(req?.body);
     const { name, image, price, priceSale, description, category, variants } =
       req.body;
 
     const slug = slugify(req.body.name, "-");
 
-    const variantsId = [];
-
-    for (let i = 0; i < variants.length; i++) {
-      const values = variants[i].values.map((obj) => Object.values(obj)[0]);
-
-      const variant = await Variant({
-        price: variants[i].price,
-        priceSale: variants[i].priceSale,
-        values,
-        countOnStock: variants[i].countOnStock,
-        image: variants[i].image,
+    if (!variants) {
+      const data = await Product({
+        name,
+        image,
+        price,
+        priceSale,
+        description,
+        category,
+        slug,
       }).save();
-      variantsId.push(variant._id);
+
+      return res.status(201).json({
+        message: "Tạo sản phẩm thành công",
+        data,
+      });
+    } else {
+      const variantsId = [];
+
+      for (let i = 0; i < variants.length; i++) {
+        const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+
+        const variant = await Variant({
+          price: variants[i].price,
+          priceSale: variants[i].priceSale,
+          values,
+          countOnStock: variants[i].countOnStock,
+          image: variants[i].image,
+        }).save();
+        variantsId.push(variant._id);
+      }
+
+      const data = await Product({
+        name,
+        image,
+        category,
+        description,
+        slug: slugify(req.body.name, "-"),
+        variants: variantsId,
+      }).save();
+
+      return res.status(201).json({
+        message: "Tạo sản phẩm thành công",
+        data,
+      });
     }
-
-    const data = await Product({
-      name,
-      image,
-      category,
-      description,
-      slug: slugify(req.body.name, "-"),
-      variants: variantsId,
-    }).save();
-
-    return res.status(201).json({
-      message: "Tạo sản phẩm thành công",
-      data,
-    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -164,15 +180,74 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const data = await Product.findOneAndUpdate(
-      { _id: req.params.id },
-      req.body,
-      { new: true }
-    );
-    if (data.length < 0) {
-      return res.status(404).json({ message: "No products found" });
+    const { name, image, price, priceSale, description, category, variants } =
+      req.body;
+
+    const slug = slugify(req.body.name, "-");
+    if (!variants) {
+      const data = await Product.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          name,
+          image,
+          price,
+          priceSale,
+          description,
+          category,
+          slug,
+        },
+        { new: true }
+      );
+      return res.json(data);
+    } else {
+      const variantsId = [];
+
+      for (let i = 0; i < variants.length; i++) {
+        // const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+        if (variants[i]._id) {
+          const variant = await Variant.findOneAndUpdate(
+            { _id: variants[i]._id },
+            {
+              price: variants[i].price,
+              priceSale: variants[i].priceSale,
+              // values,
+              countOnStock: variants[i].countOnStock,
+              image: variants[i].image,
+            },
+            { new: true }
+          );
+          variantsId.push(variant._id);
+        } else {
+          const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+          const variant = await Variant({
+            price: variants[i].price,
+            priceSale: variants[i].priceSale,
+            values,
+            countOnStock: variants[i].countOnStock,
+            image: variants[i].image,
+          }).save();
+          variantsId.push(variant._id);
+        }
+      }
+
+      const data = await Product.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          name,
+          image,
+          category,
+          description,
+          slug: slugify(req.body.name, "-"),
+          variants: variantsId,
+        },
+        { new: true }
+      );
+
+      return res.json({
+        message: "Cập nhật sản phẩm thành công",
+        data,
+      });
     }
-    res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

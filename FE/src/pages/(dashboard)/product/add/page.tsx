@@ -23,12 +23,14 @@ import { useGetAtributes } from "../actions/useGetAttributes";
 import { Attribute } from "@/common/types/Product";
 import StatusProduct from "../_components/StatusProduct";
 import { useCreateProduct } from "../actions/useCreateProduct";
+import { useUpdateProduct } from "../actions/useUpdateProduct";
 
 const ProductAddPage = () => {
   const { id } = useParams();
   const [typeProduct, setTypeProduct] = useState("simple");
   const [duplicate, setDuplicate] = useState<number[]>([]);
   const { createProduct, isCreatting } = useCreateProduct();
+  const { updateProduct, isUpdating } = useUpdateProduct();
 
   const { isLoadingAtributes, atributes } = useGetAtributes();
 
@@ -100,17 +102,28 @@ const ProductAddPage = () => {
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof schemaProduct>) {
     console.log("values: ", values);
-    // if (typeProduct !== "simple") {
-    //   const duplicateValues = checkForDuplicateVariants(values);
-    //   setDuplicate(duplicateValues);
+    if (id) {
+      if (typeProduct !== "simple") {
+        const duplicateValues = checkForDuplicateVariants(values);
+        setDuplicate(duplicateValues);
 
-    //   if (!duplicateValues.length) createProduct(values);
-    // } else {
-    //   createProduct(values);
-    // }
+        if (!duplicateValues.length) updateProduct({ data: values, id });
+      } else {
+        updateProduct({ data: values, id });
+      }
+    } else {
+      if (typeProduct !== "simple") {
+        const duplicateValues = checkForDuplicateVariants(values);
+        setDuplicate(duplicateValues);
+
+        if (!duplicateValues.length) createProduct(values);
+      } else {
+        createProduct(values);
+      }
+    }
   }
 
-  if (isLoading || isLoadingAtributes || isCreatting)
+  if (isLoading || isLoadingAtributes || isCreatting || isUpdating)
     return <Container>Loading...</Container>;
 
   // console.log(duplicate);

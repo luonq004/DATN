@@ -53,7 +53,7 @@ export const productSchema = z.object({
       z.instanceof(File), // Chấp nhận đối tượng File
     ])
     .optional(),
-  price: z.coerce.number(),
+  price: z.coerce.number().optional(),
   priceSale: z.coerce.number().optional(),
   reviews: z.array(z.object({})).optional(), // Cấu trúc cho reviews nếu cần
   updatedAt: z
@@ -78,11 +78,12 @@ export const productSchema = z.object({
   // ), // Mảng các variants tuân theo schema variant
   // slug: z.string().min(1),
   // __v: z.number(),
-  // _id: z.string(),
+  _id: z.string().optional(),
 });
 
 export const productSimpleSchema = z
   .object({
+    _id: z.string().optional(),
     name: z.string().min(1),
     category: z.array(z.string()).optional(),
     image: z

@@ -25,6 +25,7 @@ const VariationTab = ({
   stateAttribute,
   typeFields,
   form,
+  attributes,
   replaceFields,
   removeFields,
   duplicate,
@@ -33,6 +34,7 @@ const VariationTab = ({
   stateAttribute: State;
   typeFields: string[];
   form: FormTypeProductCommon;
+  attributes: Attribute[];
   replaceFields: (fields: Variant[]) => void;
   removeFields: (index: number) => void;
   duplicate: number[];
@@ -79,12 +81,9 @@ const VariationTab = ({
   const handleButtonClick = () => {
     if (stateSelect === "create") {
       if (stateAttribute.valuesMix.length !== 0) {
-        // console.log(stateAttribute.valuesMix.length);
         const typesFromReducer = getUniqueTypesFromFields(
           stateAttribute.attributesChoose
         );
-
-        // console.log("typesFromReducer: ", typesFromReducer);
 
         const newFields = areArraysEqual(
           typeFields as string[],
@@ -93,15 +92,21 @@ const VariationTab = ({
           ? updateFields(fields, formatDataLikeFields(stateAttribute.valuesMix))
           : formatDataLikeFields(stateAttribute.valuesMix);
 
-        // console.log(newFields);
         replaceFields(newFields);
       }
     }
   };
 
-  const attributes: Attribute[] = stateAttribute.attributesChoose.filter(
-    (item) => typeFields.includes(item.name)
+  const matchingAttributes = attributes.filter((attribute) =>
+    fields.some((field) =>
+      field.values.some(
+        (productValue: string) =>
+          attribute.name === (productValue.type as string)
+      )
+    )
   );
+
+  console.log(matchingAttributes);
 
   return (
     <>
@@ -139,8 +144,7 @@ const VariationTab = ({
                   <CollapsibleTrigger className="text-left font-bold w-2/3">
                     #{index + 1}
                   </CollapsibleTrigger>
-                  <div></div>
-                  {attributes?.map((attribute, indx) => {
+                  {matchingAttributes?.map((attribute, indx) => {
                     return (
                       <div key={attribute._id}>
                         <select
