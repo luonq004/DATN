@@ -4,8 +4,7 @@ import LayoutWebsite from "../pages/(website)/layout";
 import CartPage from "../pages/(website)/cart/page";
 import ShoppingCart from "../pages/(website)/cart/_components/ShoppingCart";
 import Order from "../pages/(website)/cart/_components/Order";
-import ShopPage from "@/pages/(website)/shop/page";
-import ProductsAll from "@/pages/(website)/shop/_components/ProductsAll";
+
 import DetailPage from "@/pages/(website)/details/page";
 import CheckOut from "@/pages/(website)/cart/_components/CheckOut";
 import HomePage from "@/pages/(website)/homepage/Homepage";
@@ -13,6 +12,8 @@ import LayoutAdmin from "@/pages/(dashboard)/layout";
 import DashBoardPage from "@/pages/(dashboard)/dashboard/page";
 import ProductPage from "@/pages/(dashboard)/product/page";
 import ProductAddPage from "@/pages/(dashboard)/product/add/page";
+
+import ProductShopPage from "@/pages/(website)/shop/page";
 
 const Router = () => {
   return (
@@ -22,10 +23,10 @@ const Router = () => {
           <Route index path="" element={<HomePage />} />
 
           <Route path="product/:id" element={<DetailPage />} />
-
-          <Route path="shop" element={<ShopPage />}>
-            <Route index element={<ProductsAll />} />
-          </Route>
+          {/* 
+          <Route path="shop" element={<ProductShopPage />}>
+            <Route index element={<ProductShopPage />} />
+          </Route> */}
 
           <Route path="cart" element={<CartPage />}>
             <Route index element={<ShoppingCart />} />
@@ -39,6 +40,8 @@ const Router = () => {
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />
         </Route>
+
+        <Route path="shopping" element={<ProductShopPage />} />
       </Routes>
     </>
   );
