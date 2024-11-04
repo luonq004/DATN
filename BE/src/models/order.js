@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { nanoid } from "nanoid";
 const orderSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +32,12 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-
+  orderCode: {
+    type: String,
+    unique: true,
+    required: true,
+    default: () => nanoid(10), // Tạo mã đơn hàng với 10 ký tự ngẫu nhiên
+  },
   shipping: {
     type: Date,
     required: true,
