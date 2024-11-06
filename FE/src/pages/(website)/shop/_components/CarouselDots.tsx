@@ -28,7 +28,6 @@ import ProductItem from "./ProductItem";
 export function CarouselDots() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
-  const [count, setCount] = React.useState(0);
 
   const images = [banner, banner_3, banner_2];
 
@@ -37,7 +36,6 @@ export function CarouselDots() {
       return;
     }
 
-    setCount(api.scrollSnapList().length);
     setCurrent(api.selectedScrollSnap() + 1);
 
     api.on("select", () => {

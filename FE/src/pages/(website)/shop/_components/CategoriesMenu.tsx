@@ -2,9 +2,9 @@ import { useState } from "react";
 
 const CategoriesMenu = () => {
   // State để theo dõi phần tử toggle nào đang được chọn
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const handleToggle = (index: any) => {
+  const handleToggle = (index: number) => {
     // Nếu index đã được chọn thì đặt thành null để bỏ chọn
     setActiveIndex(activeIndex === index ? null : index);
   };
@@ -25,7 +25,7 @@ const CategoriesMenu = () => {
               quần & áo
             </a>
             <div
-              className={`size-8 absolute top-[10%] lg:top-1/2 transform -translate-y-1/2 right-0 bg-change cursor-pointer toggle ${
+              className={`size-8 absolute top-[6%] lg:top-1/2 transform -translate-y-1/2 right-0 bg-change cursor-pointer toggle ${
                 activeIndex === i ? "active" : ""
               }`}
               onClick={() => handleToggle(i)}
