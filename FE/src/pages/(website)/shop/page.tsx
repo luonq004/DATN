@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
+import { ContentShop } from "./_components/ContentShop";
 import Header from "./_components/Header";
-import { CarouselDots } from "./_components/CarouselDots";
 
-import CategoriesMenu from "./_components/CategoriesMenu";
+import FilterContent from "./_components/FilterContent";
 
 const ProductShopPage = () => {
   return (
@@ -28,12 +28,12 @@ const ProductShopPage = () => {
         <div className="h-4 md:h-12 lg:h-24 mb-0"></div>
         {/* Khoang cach */}
         <div className="flex flex-col gap-4 lg:flex-row">
-          {/* CAROUSEL */}
-          <CarouselDots />
-          {/* CAROUSEL */}
+          {/* CONTENT */}
+          <ContentShop />
+          {/* CONTENT */}
           {/*=========================  */}
           {/* CATEGORY */}
-          <CategoriesMenu />
+          <FilterContent />
           {/* CATEGORY */}
         </div>
       </div>

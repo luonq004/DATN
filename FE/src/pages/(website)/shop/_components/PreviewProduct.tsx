@@ -222,17 +222,17 @@ const PreviewProduct = ({
               <button className="btn-add text-white uppercase flex-1">
                 <span className="btn-add__wrapper text-[11px] px-[30px] rounded-full bg-[#343434] pt-[17px] pb-[15px] font-raleway">
                   <span className="icon">
-                    <IoBagHandleSharp />
+                    <IoBagHandleSharp className="text-[#b8cd06]" />
                   </span>
                   <span className="text">thêm vào giỏ hàng</span>
                 </span>
               </button>
               <button className="btn-add text-white uppercase flex-1">
-                <span className="btn-add__wrapper text-[11px] px-[30px] rounded-full bg-[#343434] pt-[17px] pb-[15px] font-raleway">
+                <span className="btn-add__wrapper text-[11px] px-[30px] rounded-full border pt-[17px] pb-[15px] font-raleway">
                   <span className="icon">
-                    <IoBagHandleSharp />
+                    <SlHeart className="text-[#b8cd06]" />
                   </span>
-                  <span className="text">thêm vào giỏ hàng</span>
+                  <span className="text text-[#555]">thêm vào yêu thích</span>
                 </span>
               </button>
             </div>

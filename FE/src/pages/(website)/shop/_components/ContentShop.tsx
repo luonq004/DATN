@@ -24,8 +24,9 @@ import banner_3 from "@/assets/img/banner/banner-3.jpeg";
 
 import { LayoutGrid, TableProperties } from "lucide-react";
 import ProductItem from "./ProductItem";
+import Pagination from "@/components/Pagination";
 
-export function CarouselDots() {
+export function ContentShop() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
 
@@ -171,6 +172,7 @@ export function CarouselDots() {
 
         {/* PRODUCT */}
       </div>
+      <Pagination totalCount={70} pageSize={10} />
       {/* LAYOUT */}
     </div>
   );
