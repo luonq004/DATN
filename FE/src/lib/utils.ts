@@ -157,3 +157,11 @@ export const checkForDuplicateVariants = (data: IProduct2) => {
 
   return duplicateIndices; // Trả về mảng vị trí của các biến thể bị trùng
 };
+
+export function debounce(func: () => void, delay: number) {
+  let timeout: ReturnType<typeof setTimeout>;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}

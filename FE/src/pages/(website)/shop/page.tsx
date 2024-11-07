@@ -3,8 +3,14 @@ import { ContentShop } from "./_components/ContentShop";
 import Header from "./_components/Header";
 
 import FilterContent from "./_components/FilterContent";
+import { debounce } from "@/lib/utils";
+import React from "react";
 
 const ProductShopPage = () => {
+  const handleRangeChange = debounce((event) => {
+    console.log("Giá trị:", event.target.value);
+  }, 300); // Thời gian trễ là 300ms
+
   return (
     <>
       <Header />
@@ -35,6 +41,8 @@ const ProductShopPage = () => {
           {/* CATEGORY */}
           <FilterContent />
           {/* CATEGORY */}
+
+          <input type="range" min="0" max="100" onInput={handleRangeChange} />
         </div>
       </div>
     </>
