@@ -1,9 +1,10 @@
 import express from "express";
 import {
-  addProduct,
+  createProduct,
   deleteProduct,
   getAllProducts,
   getProductById,
+  getProductForEdit,
   updateProduct,
 } from "../controllers/products";
 // import { checkAuth } from "../middlewares/checkAuth";
@@ -14,7 +15,9 @@ router.get("/products", getAllProducts);
 
 router.get("/products/:id", getProductById);
 
-router.post("/products", addProduct);
+router.get("/products/:id/edit", getProductForEdit);
+
+router.post("/products", createProduct);
 // router.post("/products", checkAuth, addProduct);
 
 router.put("/products/:id", updateProduct);
