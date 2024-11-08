@@ -16,14 +16,18 @@ module.exports = {
       padding: "2rem",
       screens: {
         sm: "640px",
-        md: "768px",
-        lg: "1024px",
-        xl: "1280px",
+        md: "767px",
+        lg: "991px",
+        xl: "1199px",
         "1408px": "1408px",
         "2xl": "1536px",
       },
     },
     extend: {
+      fontFamily: {
+        questrial: ['"Questrial"', 'sans-serif'],
+        raleway: ['"Raleway"', 'sans-serif'],
+      },
       colors: {
         light: {
           50: "#f1f9fa",

@@ -22,16 +22,18 @@ import UpdateLogoPage from "@/pages/(dashboard)/logo/_components/UpdateLogo";
 import ListLogoPage from "@/pages/(dashboard)/logo/_components/ListLogo";
 import SidebarAccount from "@/pages/(website)/user/_components/Sidebar";
 import ProfilePage from "@/pages/(website)/user/page";
+import HomePageNew from "@/pages/(website)/homepagenew/page";
 
 const Router = () => {
   return (
     <>
       <Routes>
+        <Route index path="homepage" element={<HomePageNew />} />
         <Route path="/" element={<LayoutWebsite />}>
           <Route index path="" element={<HomePage />} />
 
-          <Route path="users" element={<ProfilePage/>}>
-            <Route index element={<SidebarAccount/>}/>
+          <Route path="users" element={<ProfilePage />}>
+            <Route index element={<SidebarAccount />} />
           </Route>
 
           <Route path="product/:id" element={<DetailPage />} />
@@ -48,26 +50,23 @@ const Router = () => {
         </Route>
 
         <Route path="/dashboard" element={<LayoutAdmin />}>
-
           <Route path="users" element={<UserPage />}>
             <Route index element={<ListUser />} />
             <Route path="detail/:clerkId" element={<UserDetailPage />} />
           </Route>
 
-          <Route path="sliders" element={<SliderPage />} >
-            <Route index element={<ListSlider/>}/>
-            <Route path="add" element={<AddSlider/>}/>
-            <Route path="edit/:id" element={<UpdateSlider/>}/>
+          <Route path="sliders" element={<SliderPage />}>
+            <Route index element={<ListSlider />} />
+            <Route path="add" element={<AddSlider />} />
+            <Route path="edit/:id" element={<UpdateSlider />} />
           </Route>
 
-          <Route path="logos" element={<LogoPage />} >
-            <Route index element={<ListLogoPage/>}/>
-            <Route path="add" element={<AddLogoPage/>}/>
-            <Route path="edit/:id" element={<UpdateLogoPage/>}/>
+          <Route path="logos" element={<LogoPage />}>
+            <Route index element={<ListLogoPage />} />
+            <Route path="add" element={<AddLogoPage />} />
+            <Route path="edit/:id" element={<UpdateLogoPage />} />
           </Route>
-          
         </Route>
-
       </Routes>
     </>
   );

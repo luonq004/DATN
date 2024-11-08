@@ -1,7 +1,7 @@
-import Collections from "./component/Collections";
-import Endow from "./component/Sale";
-import Products from "./component/Products";
-import Slider from "./component/Slider";
+import Collections from "./_components/Collections";
+import Endow from "./_components/Sale";
+import Products from "./_components/Products";
+import Slider from "./_components/Slider";
 
 const HomePage = () => {
 
