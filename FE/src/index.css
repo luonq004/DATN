@@ -14,7 +14,6 @@
 @tailwind utilities;
 
 body {
-  /* font-family: "Poppins", sans-serif; */
   font-family: "Questrial", sans-serif;
   box-sizing: border-box;
 }

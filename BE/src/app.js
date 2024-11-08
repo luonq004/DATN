@@ -1,8 +1,15 @@
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import { config } from "dotenv";
 import express from "express";
 
-import cors from "cors";
-import dotenv from "dotenv";
-import morgan from "morgan";
+import categoriesRouter from "./Routes/Categories";
+import collectionRouter from "./Routes/Collections";
+import logoRouter from "./Routes/Logo";
+import sliderRouter from "./routes/slider";
+import userRouter from "./routes/Users";
+
+config();
 
 import routerAddress from "./routers/Address";
 import routerOrder from "./routers/Order";
@@ -28,6 +35,10 @@ app.use(morgan("dev"));
 /// connect DB
 connectDB(process.env.DB_URI);
 //Router
+app.use(cookieParser());
+
+const dbUrl = process.env.DB_URI;
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -48,5 +59,21 @@ app.post("/api/variant/add", createVariant);
 app.delete("/api/variant/:id", removeVariant);
 app.post("/api/user/add", createUser);
 // app.use("/api", authRouter);
+
+app.use("/api/sliders", sliderRouter);
+app.use("/api/logo", logoRouter);
+app.use("/api/categories", categoriesRouter);
+app.use("/api/collections", collectionRouter);
+app.use("/api/users", userRouter);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Internal Server Error" });
+});
+
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
 
 export const viteNodeApp = app;

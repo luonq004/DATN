@@ -1,17 +1,29 @@
 import { useEffect, useState } from "react";
-import bannerImage1 from "../../../../assets/img/header/baner.jpg";
-import bannerImage2 from "../../../../assets/img/header/baner2.jpg";
-import bannerImage3 from "../../../../assets/img/header/baner3.jpg";
+import axios from "axios";
+
 const Slider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const slides = [bannerImage1, bannerImage2, bannerImage3];
+  const [slides, setSlides] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/sliders");
+        setSlides(response.data);
+      } catch (error) {
+        console.error("Failed to fetch slides", error);
+      }
+    };
+
+    fetchSlides();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
     }, 3000);
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [slides]);
 
   return (
     <div>
@@ -19,7 +31,7 @@ const Slider = () => {
         <div className="overflow-hidden relative h-full">
           {slides.map((slide, index) => (
             <div
-              key={index}
+              key={slide._id || index}
               className={`absolute w-full h-full transition-transform duration-500 ease-in-out transform ${
                 index === currentSlide ? "translate-x-0" : "translate-x-full"
               }`}
@@ -28,18 +40,16 @@ const Slider = () => {
               }}
             >
               <img
-                src={slide}
+                src={slide.image}
                 alt={`Slide ${index + 1}`}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center text-white">
-                <h1 className="text-[30px]  lg:text-4xl xl:text-5xl font-bold mb-4 mx-10">
-                  Discover Your Street Style with Our Diverse Collection of
-                  Streetwear
+              <div className="absolute inset-0 bg-black bg-opacity-20 flex flex-col items-center justify-center text-center text-white">
+                <h1 className="text-[30px] lg:text-4xl xl:text-5xl font-bold mb-4 mx-10  max-w-screen-xl break-words ">
+                  {slide.title}
                 </h1>
-                <p className="text-[20px]  lg:text-lg xl:text-xl mb-8 mx-5">
-                  Get your unique streetwear style with our various collections.
-                  Shop now to look fashionable with the latest trends.
+                <p className="text-[20px] lg:text-lg xl:text-xl mb-8 mx-5  max-w-xl break-words">
+                  {slide.description}
                 </p>
                 <button className="px-6 py-3 bg-white text-black rounded-full font-semibold transition ease-in-out transform hover:scale-105">
                   Shop Now
