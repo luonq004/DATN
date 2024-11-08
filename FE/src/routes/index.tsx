@@ -27,6 +27,8 @@ import Order from "../pages/(website)/cart/_components/Order";
 import ShoppingCart from "../pages/(website)/cart/_components/ShoppingCart";
 import CartPage from "../pages/(website)/cart/page";
 import LayoutWebsite from "../pages/(website)/layout";
+import DemoPage from "@/pages/(dashboard)/voucher/page";
+import AboutUsPage from "@/pages/(website)/aboutus/page";
 
 const Router = () => {
   return (
@@ -51,6 +53,8 @@ const Router = () => {
             <Route path="checkout" element={<CheckOut />} />
             <Route path="order" element={<Order />} />
           </Route>
+
+          <Route path="about" element={<AboutUsPage />} />
         </Route>
         <Route path="admin" element={<LayoutAdmin />}>
           <Route path="dashboard" element={<DashBoardPage />} />
@@ -78,6 +82,7 @@ const Router = () => {
             <Route path="add" element={<AddLogoPage />} />
             <Route path="edit/:id" element={<UpdateLogoPage />} />
           </Route>
+          <Route path="voucher" element={<DemoPage />} />
         </Route>
       </Routes>
     </>

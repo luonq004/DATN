@@ -31,7 +31,7 @@ const Slider = () => {
         <div className="overflow-hidden relative h-full">
           {slides.map((slide, index) => (
             <div
-              key={slide._id || index}
+              key={index}
               className={`absolute w-full h-full transition-transform duration-500 ease-in-out transform ${
                 index === currentSlide ? "translate-x-0" : "translate-x-full"
               }`}

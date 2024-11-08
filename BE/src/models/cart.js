@@ -26,7 +26,10 @@ const cartSchema = new mongoose.Schema({
     },
   ],
 
-  voucher: [],
+  voucher: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Voucher",
+  }],
 
   subTotal: {
     type: Number,

@@ -116,100 +116,41 @@ const LayoutWebsite = () => {
             </nav>
           </div>
 
-          <div className="flex gap-4 items-center">
-            {/* input search */}
-            <InputSearch />
-            {/* End input search */}
-            <SignedIn>
-              <div className="text-2xl flex gap-4 text-white border-r pr-4">
-                <div className="relative">
-                  <Link to="/wishlist">
-                    <CiHeart />
-                    <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
-                  </Link>
+                    <div className="flex gap-4 items-center">
+                        {/* input search */}
+                        <InputSearch />
+                        {/* End input search */}
+
+                        <div className="text-2xl flex gap-4 text-white border-r pr-4">
+                            <div className="relative">
+                                <Link to="/wishlist">
+                                    <CiHeart />
+                                    <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
+                                </Link>
+                            </div>
+                            <div className="relative">
+                                <Link to="/message">
+                                    <CiBellOn />
+                                    <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
+                                </Link>
+                            </div>
+                            <div className="relative transition transform duration-150 ease-in-out active:scale-75">
+                                <Link to="/cart">
+                                    <IoBagOutline />
+                                    <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
+                                </Link>
+                                {/* <div className='absolute border'>
+
+                                </div> */}
+                            </div>
+                        </div>
+                        <img className="w-7 rounded-full" src={customer} alt="customer" />
+                        <div className="hidden md:block">
+                            <ModeToggle />
+                        </div>
+                    </div>
                 </div>
-                <div className="relative">
-                  <Link to="/message">
-                    <CiBellOn />
-                    <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
-                  </Link>
-                </div>
-                <div className="relative">
-                  <IoBagOutline />
-                  <span className="absolute block w-2 h-2 bg-red-500 rounded-full top-1 right-0"></span>
-                </div>
-              </div>
-
-              <div className="relative flex items-center gap-4">
-                {/* Ảnh đại diện của user */}
-                <img
-                  src={user?.imageUrl || "default_avatar.jpg"}
-                  alt="User Avatar"
-                  className="w-8 h-8 rounded-full cursor-pointer"
-                  onMouseEnter={() => setIsMenuVisible(true)} 
-                />
-
-                {/* Menu khi hover vào ảnh */}
-                <div
-                  className={`absolute right-0 top-12 bg-white text-black shadow-lg rounded-lg w-48 z-50 transition-opacity duration-200 ${
-                    isMenuVisible
-                      ? "opacity-100 pointer-events-auto"
-                      : "opacity-0 pointer-events-none"
-                  }`}
-                  onMouseEnter={() => setIsMenuVisible(true)}
-                  onMouseLeave={() => setIsMenuVisible(false)}
-                >
-                  {/* Mũi tên chỉ vào ảnh đại diện */}
-                  <div className="absolute -top-1 right-2 w-6 h-6 bg-white rotate-45 z-10" />
-
-                  <ul className="flex flex-col gap-2 p-4">
-                    <li>
-                      <Link to="/users" className="hover:text-cyan-500">
-                        Tài khoản của tôi
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/orders" className="hover:text-cyan-500">
-                        Đơn mua
-                      </Link>
-                    </li>
-                    <li>
-                      <button
-                        onClick={handleLogout}
-                        className="text-orange-700 text-left w-full hover:text-cyan-500"
-                      >
-                        Đăng xuất
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </SignedIn>
-
-            <SignedOut>
-              <div className="flex gap-3 items-center">
-                <button
-                  onClick={opensignin}
-                  className="w-full py-1 px-3 bg-gradient-to-r from-pink-500 to-yellow-500 text-white font-mono rounded-md hover:bg-gradient-to-l transition-all duration-300"
-                >
-                  Sign In
-                </button>
-                <Link
-                  to="/"
-                  onClick={opensignup}
-                  className="w-full py-1 px-3 bg-gradient-to-r from-pink-500 to-yellow-500 text-white font-mono rounded-md hover:bg-gradient-to-l transition-all duration-300"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            </SignedOut>
-
-            <div className="hidden md:block">
-              <ModeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+            </header>
 
       {isBanned && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
