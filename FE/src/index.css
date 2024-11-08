@@ -57,8 +57,38 @@ body {
 /* CATEGORIES */
 .categories-menu li {
   position: relative;
+  /* font-family: "Poppins", sans-serif; */
+  font-family: "Questrial", sans-serif;
+  -webkit-text-size-adjust: none;
 }
-
+/* banner */
+.title-underline span:before,
+.title-underline span:after {
+  width: 4px;
+  height: 1px;
+  background: inherit;
+  position: absolute;
+  content: "";
+  top: 0;
+  left: -9px;
+}
+.highlight::selection {
+  background-color: #343434;
+  color: #b8cd06;
+}
+.title-underline span:after {
+  left: auto;
+  right: -9px;
+}
+.title-underline span:before,
+.title-underline span:after {
+  width: 4px;
+  height: 1px;
+  background: inherit;
+  position: absolute;
+  content: "";
+  top: 0;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -394,3 +424,14 @@ body {
 }
 
 /* BTN ADD */
+.swiper-pagination-bullet-active {
+  border: 2px #fff solid;
+  transform: scale(1.5);
+  -webkit-transform: scale(1.5);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.swiper-pagination-bullet-active {
+  background: white;
+}
