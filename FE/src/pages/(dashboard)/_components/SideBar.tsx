@@ -62,7 +62,7 @@ const Sidebar = () => {
           },
           {
             title: "Orders",
-            href: "/dashboard/orders",
+            href: "/admin/orders",
             icon: ShoppingCart,
             variant: "ghost",
           },

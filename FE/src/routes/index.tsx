@@ -27,6 +27,8 @@ import Order from "../pages/(website)/cart/_components/Order";
 import ShoppingCart from "../pages/(website)/cart/_components/ShoppingCart";
 import CartPage from "../pages/(website)/cart/page";
 import LayoutWebsite from "../pages/(website)/layout";
+import AdminOrder from "@/pages/(dashboard)/Order/Order";
+import PageServices from "@/pages/(website)/services/PageServices";
 
 const Router = () => {
   return (
@@ -45,7 +47,9 @@ const Router = () => {
           {/* <Route path="shop" element={<ShopPage />}>
             <Route index element={<ProductsAll />} />
           </Route> */}
+          {/* </Route> */}
 
+          <Route path="services1" element={<PageServices />} />
           <Route path="cart" element={<CartPage />}>
             <Route index element={<ShoppingCart />} />
             <Route path="checkout" element={<CheckOut />} />
@@ -78,6 +82,7 @@ const Router = () => {
             <Route path="add" element={<AddLogoPage />} />
             <Route path="edit/:id" element={<UpdateLogoPage />} />
           </Route>
+          <Route path="orders" element={<AdminOrder />} />
         </Route>
       </Routes>
     </>

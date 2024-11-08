@@ -1,15 +1,16 @@
+import { Link, NavLink, Outlet } from "react-router-dom";
+
+import logo3 from "../../assets/logo3.jpg";
+
+import customer from "@/assets/images/customer.jpg";
+
 import NavMobile from "@/components/NavMobile";
 import { ModeToggle } from "@/components/mode-toggle";
-import {
-  SignedIn,
-  SignedOut,
-  useClerk,
-  useUser,
-} from "@clerk/clerk-react";
+import { SignedIn, SignedOut, useClerk, useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { CiBellOn, CiHeart } from "react-icons/ci";
 import { IoBagOutline } from "react-icons/io5";
-import { Link, NavLink, Outlet } from "react-router-dom";
+
 import InputSearch from "./details/_components/InputSearch";
 
 const LayoutWebsite = () => {
@@ -146,7 +147,7 @@ const LayoutWebsite = () => {
                   src={user?.imageUrl || "default_avatar.jpg"}
                   alt="User Avatar"
                   className="w-8 h-8 rounded-full cursor-pointer"
-                  onMouseEnter={() => setIsMenuVisible(true)} 
+                  onMouseEnter={() => setIsMenuVisible(true)}
                 />
 
                 {/* Menu khi hover vào ảnh */}
