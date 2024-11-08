@@ -157,36 +157,39 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
                 </div>
             </div>
             <div
-                className={`absolute bg-background py-3 px-4 left-1/2 max-sm:left-[50%] -translate-x-1/2 border rounded-md transition-all duration-300 select-none shadow-2xl
+                className={`absolute bg-background py-3 px-4 left-1/2 max-sm:left-[50%] max-[450px]:left-0 -translate-x-1/2 border rounded-md transition-all duration-300 select-none shadow-2xl
                 ${attribute === idCart ? 'opacity-100 top-[130%] z-10' : 'opacity-0 top-[90%] z-[-1]'}`}
             >
                 {variantProduct?.map((item: any) => {
                     if (item.values.length < 1) return;
                     return (
-                        <div key={item._id} className="flex flex-col gap-2 mb-2">
-                            <h1 className="font-medium">Select {item.name}</h1>
-                            <div className="flex gap-2">
-                                {item.values.map((itemOther: any) => (
-                                    <div
-                                        key={itemOther._id}
-                                        className={`relative border-2 px-5 py-4 rounded-md 
+                        <>
+                            <div key={item._id} className="flex flex-col gap-2 my-3">
+                                <h1 className="font-medium">Select {item.name}</h1>
+                                <div className="flex gap-2">
+                                    {item.values.map((itemOther: any) => (
+                                        <div
+                                            key={itemOther._id}
+                                            className={`relative border-2 px-5 py-4 rounded-md 
                                             ${!compatibleAttributeValues[item._id]?.includes(itemOther._id) ? 'opacity-50 cursor-not-allowed' : 'hover:border-background1 cursor-pointer transition-all'} 
                                             ${selectedValue[item._id]?.includes(itemOther._id) ? 'border-background1' : ''}`}
 
-                                        onClick={() => {
-                                            if (compatibleAttributeValues[item._id]?.includes(itemOther._id)) {
-                                                handleAttributeChange(item._id, itemOther._id);
-                                            }
-                                        }}
-                                    >
-                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] font-medium">
-                                            {itemOther.name}
-                                        </p>
-                                    </div>
-                                ))}
+                                            onClick={() => {
+                                                if (compatibleAttributeValues[item._id]?.includes(itemOther._id)) {
+                                                    handleAttributeChange(item._id, itemOther._id);
+                                                }
+                                            }}
+                                        >
+                                            <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] font-medium">
+                                                {itemOther.name}
+                                            </p>
+                                        </div>
+                                    ))}
 
+                                </div>
                             </div>
-                        </div>
+                            <hr className="h-[2px] border-none bg-gray-200" />
+                        </>
                     )
                 })}
 
