@@ -1,5 +1,5 @@
-import { required } from "joi";
 import mongoose from "mongoose";
+import Cart from "./cart.js";
 
 const dateVietNam = () => {
     const date = new Date();
@@ -9,6 +9,7 @@ const dateVietNam = () => {
 const voucherSchema = new mongoose.Schema({
     code: {
         type: String,
+        uppercase: true,
         required: true,
     },
     category: {
@@ -49,10 +50,24 @@ const voucherSchema = new mongoose.Schema({
 //Nếu ko nhập endDate
 voucherSchema.pre('save', function (next) {
     if (!this.endDate) {
-        const defaultEndDate = 3 * 24 * 60 * 60 * 1000; // 3 ngày - 3 giờ
+        const defaultEndDate = 30 * 1000; // 3 ngày 3 * 24 * 60 * 60 * 1000
         this.endDate = new Date(this.startDate.getTime() + defaultEndDate);
     }
     next();
+});
+
+voucherSchema.pre('findOneAndUpdate', async function (next) {
+    this._doc = await this.model.findOne(this.getQuery());
+    next();
+});
+
+voucherSchema.post('findOneAndDelete', async function (doc) {
+    if (doc) {
+        await Cart.updateMany(
+            { "voucher._id": doc._id }, // điều kiện tìm
+            { $pull: { voucher: { _id: doc._id } } }
+        );
+    }
 });
 
 export default mongoose.model('Voucher', voucherSchema)

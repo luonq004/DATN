@@ -288,6 +288,41 @@ const LayoutWebsite = () => {
               </li>
             </ul>
           </div>
+          <div className="flex gap-8">
+            <ul>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+              <li>
+                <Link to="/company">Company</Link>
+              </li>
+              <li>
+                <Link to="/contact">Contact</Link>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <Link to="/discover">Discover</Link>
+              </li>
+              <li>
+                <Link to="/collaboration">Collaboration</Link>
+              </li>
+              <li>
+                <Link to="/comingsoon">Coming Soon</Link>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <Link to="/faq">FAQ</Link>
+              </li>
+              <li>
+                <Link to="/term">Term of Service</Link>
+              </li>
+              <li>
+                <Link to="/policy">Policy Service</Link>
+              </li>
+            </ul>
+          </div>
 
           <div className="flex flex-col gap-2 lg:gap-5 lg:justify-self-end max-w-72 md:max-w-72">
             <h3>Join Our News Collection</h3>

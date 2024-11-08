@@ -2,16 +2,9 @@ import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import Icart from "../types/cart";
 
 const BASE_URL = "http://localhost:8080/api";
-
-interface Icart {
-    userId?: string,
-    productId?: string,
-    variantId?: string,
-    quantity?: number
-    voucherId?: string
-}
 
 const CART_QUERY_KEY = 'CART';
 
@@ -23,8 +16,8 @@ const getCart = async (userId: string) => {
 const putCart = async (actiton: string, item: Icart) => {
     const url = `${BASE_URL}/cart/${actiton}`;
     const { data } = await axios.put(url, item);
-    console.log(data)
-    // return data
+    // console.log(data)
+    return data
 }
 
 const useCart = (userId: string) => {
@@ -55,7 +48,7 @@ const useCart = (userId: string) => {
                 // alert(error.response.data.message)
                 toast({
                     variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
+                    title: "Error",
                     description: `${error.response.data.message}`,
                     action: <ToastAction altText="Try again">Try again</ToastAction>,
                 })
@@ -73,6 +66,7 @@ const useCart = (userId: string) => {
         increaseItem: cartActiton('increase'),
         decreaseItem: cartActiton('decrease'),
         addVoucher: cartActiton('add-voucher'),
+        removeVoucher: cartActiton('remove-voucher'),
         changeVariant: cartActiton('change-variant')
     }
 }
