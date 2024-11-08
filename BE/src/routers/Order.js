@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrder, getAllOrders, getOrderCode, getOrdersById } from "../controller/order";
+import { createOrder, getAllOrders, getOrderCode, getOrdersById } from "../controllers/order";
 
 const routerOrder = Router();
 // tạo đơn hàng
