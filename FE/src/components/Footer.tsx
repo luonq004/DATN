@@ -22,33 +22,33 @@ const Footer = () => {
 
   const posts = [
     {
-      title: "Fusce tincidunt accumsan giá trị tại đây",
+      title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
       date: "07 Tháng 4 / 15",
       imgSrc: imageFoot1,
     },
     {
-      title: "Fusce tincidunt accumsan giá trị tại đây",
+      title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
       date: "07 Tháng 4 / 15",
       imgSrc: imageFoot2,
     },
     {
-      title: "Fusce tincidunt accumsan giá trị tại đây",
+      title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
       date: "07 Tháng 4 / 15",
       imgSrc: imageFoot1,
     },
   ];
   const tags = [
-    "Tai Nghe",
-    "Phụ Kiện",
-    "Mới",
-    "Không Dây",
-    "Cáp",
-    "Thiết Bị",
-    "Đồ Công Nghệ",
-    "Thương Hiệu",
-    "Thay Thế",
-    "Bao Da",
-    "Chuyên Nghiệp",
+    "TAI NGHE",
+    "PHỤ KIỆN",
+    "MỚI",
+    "KHÔNG DÂY",
+    "CÁP",
+    "THIẾT BỊ",
+    "ĐỒ CÔNG NGHỆ",
+    "THƯƠNG HIỆU",
+    "THAY THẾ",
+    "BAO DA",
+    "CHUYÊN NGHIỆP",
   ];
 
   const paymentMethods = [
@@ -79,7 +79,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-gray-800 text-xs text-gray-400 py-10 px-5">
+    <footer className="bg-[#343434] text-xs text-gray-400 py-10 px-5">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Thông Tin Công Ty */}
         <div>
@@ -95,7 +95,7 @@ const Footer = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="size-5"
+                className="size-5 text-[#b8cd06]"
               >
                 <path d="M10.5 18.75a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" />
                 <path
@@ -116,7 +116,7 @@ const Footer = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                className="size-5"
+                className="size-5 text-[#b8cd06]"
               >
                 <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z" />
                 <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
@@ -134,7 +134,7 @@ const Footer = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                className="size-5"
+                className="size-5 text-[#b8cd06] "
               >
                 <path
                   fill-rule="evenodd"
@@ -155,8 +155,8 @@ const Footer = () => {
 
         {/* Liên Kết Nhanh */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Liên Kết Nhanh
+          <h3 className="font-raleway font-extrabold text-white mb-4">
+            LIÊN KẾT NHANH
           </h3>
           <div className="grid grid-cols-2 gap-x-2">
             <ul className="space-y-5">
@@ -188,8 +188,8 @@ const Footer = () => {
 
         {/* Một Số Bài Viết */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Một Số Bài Viết
+          <h3 className="font-raleway font-extrabold text-white mb-4">
+            MỘT SỐ BÀI VIẾT
           </h3>
           <ul className="space-y-5 ">
             {posts.map((post, index) => (
@@ -204,7 +204,9 @@ const Footer = () => {
                 />
                 <div>
                   <p>{post.date}</p>
-                  <p className="hover:text-[#b8cd06]">{post.title}</p>
+                  <p className="hover:text-[#b8cd06] text-slate-200 font-raleway font-bold">
+                    {post.title}
+                  </p>
                 </div>
               </li>
             ))}
@@ -213,14 +215,14 @@ const Footer = () => {
 
         {/* Thẻ Phổ Biến */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Thẻ Phổ Biến
+          <h3 className=" font-raleway font-extrabold text-white mb-4">
+            THẺ PHỔ BIẾN
           </h3>
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="bg-gray-700 hover:bg-[#b8cd06] hover:text-white cursor-pointer text-gray-300 py-2 px-2 rounded-full"
+                className="bg-[#424242] font-raleway text-[10px]  hover:bg-[#b8cd06] hover:text-white cursor-pointer text-zinc-400 py-2 px-2 rounded-full"
               >
                 {tag}
               </span>
@@ -229,13 +231,13 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* <div className="border-t border-gray-700 mt-8 pt-8">
+      <div className="border-t border-[#424242] mt-8 pt-8">
         <div className="max-w-7xl gap-5 mx-auto flex flex-col md:flex-row items-center justify-between text-xs">
           <p>
             © 2015 Bản quyền thuộc về. Phát triển bởi{" "}
             <a
               href="https://unionagency.com"
-              className="text-green-400 hover:text-white"
+              className="text-[#b8cd06] hover:text-white"
             >
               Union Agency
             </a>
@@ -244,31 +246,31 @@ const Footer = () => {
           <div className="flex space-x-4 ">
             <a
               href="#facebook"
-              className="hover:text-gray-500 text-gray-400 bg-gray-700 p-3 rounded-full flex items-center justify-center w-10 h-10"
+              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
             >
               <i className="fab fa-facebook-f" />
             </a>
             <a
               href="#twitter"
-              className="hover:text-gray-500 text-gray-400 bg-gray-700 p-3 rounded-full flex items-center justify-center w-10 h-10"
+              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
             >
               <i className="fab fa-twitter" />
             </a>
             <a
               href="#linkedin"
-              className="hover:text-gray-500 text-gray-400 bg-gray-700 p-3 rounded-full flex items-center justify-center w-10 h-10"
+              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
             >
               <i className="fab fa-linkedin-in" />
             </a>
             <a
               href="#google"
-              className="hover:text-gray-500 text-gray-400 bg-gray-700 p-3 rounded-full flex items-center justify-center w-10 h-10"
+              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
             >
               <i className="fab fa-google-plus-g" />
             </a>
             <a
               href="#pinterest"
-              className="hover:text-gray-500 text-gray-400 bg-gray-700 p-3 rounded-full flex items-center justify-center w-10 h-10"
+              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
             >
               <i className="fab fa-pinterest" />
             </a>
@@ -286,7 +288,7 @@ const Footer = () => {
             ))}
           </div>
         </div>
-      </div> */}
+      </div>
     </footer>
   );
 };

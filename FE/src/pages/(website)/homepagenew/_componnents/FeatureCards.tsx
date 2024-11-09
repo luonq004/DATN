@@ -2,7 +2,6 @@ const FeatureCards = () => {
   // Thiết lập màu gradient mặc định
   const defaultGradientColor = "from-green-500 to-lime-400 to-cyan-500";
 
-
   const features = [
     {
       title: "ÂM THANH HOÀN HẢO CHO MỌI NGƯỜI",
@@ -30,11 +29,11 @@ const FeatureCards = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-5 pt-20 md:pt-36">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-5 pt-20 md:pt-36">
       {features.map((feature, index) => (
         <div
           key={index}
-          className="relative md:h-[650px] flex justify-center items-center rounded-lg overflow-hidden text-center text-white shadow-lg"
+          className="relative max-h[100%] lg:h-[650px] flex justify-center items-center rounded-lg overflow-hidden text-center text-white shadow-lg"
           style={{
             backgroundImage: `url(${feature.backgroundImage})`,
             backgroundSize: "cover",
@@ -46,16 +45,20 @@ const FeatureCards = () => {
             className={`absolute inset-0 bg-gradient-to-br ${defaultGradientColor} opacity-80`}
           ></div>
           <div className="relative z-10 p-8">
-            <h5 className="text-sm mb-2">{feature.subtitle}</h5>
-            <h2 className="text-3xl font-bold mb-4">{feature.title}</h2>
+            <h5 className="text-sm font-questrial mb-2">{feature.subtitle}</h5>
+            <h2 className="text-3xl font-extrabold font-raleway text-[#fff] mb-4">
+              {feature.title}
+            </h2>
             <div className="flex items-center gap-1 justify-center my-3">
               <span className="h-[1px] w-2 bg-white mb-2"></span>
               <span className="h-[1px] w-12 bg-white mb-2"></span>
               <span className="h-[1px] w-2 bg-white mb-2"></span>
             </div>
-            <p className="text-sm mb-6 line-clamp-3">{feature.description}</p>
+            <p className="text-sm mb-6 md:mx-[100px] lg:mx-[0px] line-clamp-3">
+              {feature.description}
+            </p>
 
-            <button className="group relative px-32 md:px-16 py-6 bg-black text-white rounded-full font-semibold overflow-hidden">
+            <button className="group relative px-32 md:px-16 py-6 bg-[#343434] text-[#fff] rounded-full font-semibold overflow-hidden">
               <span className="absolute inset-0 flex items-center justify-center text-xs transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                 TÌM HIỂU THÊM
               </span>

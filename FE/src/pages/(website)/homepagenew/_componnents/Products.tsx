@@ -110,7 +110,7 @@ const Products = () => {
       {/* Mũi tên trái */}
       <button
         onClick={handlePrev}
-        className="absolute hidden md:flex left-[-30px] top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 border-[5px] border-zinc-100 "
+        className="absolute hidden lg:flex left-[-30px] top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 border-[5px] border-zinc-100 "
       >
         <span className="material-icons text-gray-500">
           <svg
@@ -158,7 +158,7 @@ const Products = () => {
             {/* Giảm giá */}
             {product.badge && (
               <span
-                className={`absolute top-5 left-6 text-xs text-white py-1 px-2 rounded-full z-20 ${
+                className={`absolute top-5 font-questrial left-6 text-xs text-white py-1 px-2 rounded-full z-20 ${
                   product.badge.includes("GIẢM GIÁ")
                     ? "bg-red-500"
                     : product.badge === "GIÁ TỐT NHẤT"
@@ -181,11 +181,11 @@ const Products = () => {
 
             {/* Lớp phủ hiệu ứng hover với nút */}
             <div className="absolute inset-0 mb-52 space-y-3 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white bg-opacity-90">
-              <button className="group relative px-20 py-6 text-xs bg-black text-white rounded-full font-semibold overflow-hidden transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+              <button className="group relative px-20 py-6 text-xs bg-[#343434] text-[#fff] rounded-full font-semibold overflow-hidden transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                 <span className="absolute inset-0 flex items-center justify-center text-xs transition-transform duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                   TÌM HIỂU THÊM
                 </span>
-                <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-white transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
+                <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#fff] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -224,17 +224,17 @@ const Products = () => {
 
             <div className="px-10 relative">
               {/* Phiên bản */}
-              <h5 className="text-xs uppercase text-[#b8cd06] mb-1">
+              <h5 className="text-xs font-questrial text-[#b8cd06] mb-1">
                 {product.edition}
               </h5>
 
               {/* Tên sản phẩm */}
-              <h3 className="font-semibold text-sm mb-2 group-hover:text-[#b8cd06]">
+              <h3 className="font-raleway font-extrabold text-inherit text-[13px] mb-2 group-hover:text-[#b8cd06]">
                 {product.name}
               </h3>
 
               {/* Mô tả */}
-              <p className="text-sm text-gray-500 mb-2 group-hover:opacity-0 transition-opacity duration-300 line-clamp-3">
+              <p className="text-sm font-questrial text-gray-500 mb-2 group-hover:opacity-0 transition-opacity duration-300 line-clamp-3">
                 {product.description}
               </p>
 
@@ -316,7 +316,7 @@ const Products = () => {
       {/* Mũi tên phải*/}
       <button
         onClick={handleNext}
-        className="absolute hidden md:flex right-[-30px] top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 border-[5px] border-zinc-100"
+        className="absolute hidden lg:flex right-[-30px] top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 border-[5px] border-zinc-100"
       >
         <span className="material-icons text-gray-500">
           <svg

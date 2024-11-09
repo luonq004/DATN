@@ -1,7 +1,6 @@
 import Accessories from "./_componnents/Accessories";
 import Collections from "./_componnents/Collections";
 import FeatureCards from "./_componnents/FeatureCards";
-
 import NewArrivals from "./_componnents/NewArrivals";
 import OurSeries from "./_componnents/OurSeries";
 import Products from "./_componnents/Products";
