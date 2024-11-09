@@ -2,22 +2,22 @@ const SubscribeSection = () => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between pt-16 bg-white">
       {/* Hình ảnh bên trái */}
-      <div className="flex justify-center md:ml-16 mb-8 md:mb-0 w-full md:w-1/2">
+      <div className="md:flex hidden  justify-center md:ml-16 mb-8 md:mb-0 w-full md:w-1/2">
         <img
           src="http://unionagency.one/exzo/img/background-8.jpg"
           alt="Ưu Đãi Đặc Biệt"
-          className=" h-[300px] md:h-[600px] object-cover"
+          className=" max-h[100%] max-w[100%] object-cover"
         />
       </div>
 
       {/* Phần nội dung bên phải */}
-      <div className="md:w-1/2 mx-5 text-center md:pr-32">
+      <div className="md:w-1/2 mx-5 text-center xl:pr-32">
         <div className="text-center">
-          <p className="text-[#b8cd06] gap-1 text-lg text-center uppercase mb-3">
+          <p className="text-[#b8cd06] gap-1 font-questrial text-lg text-center uppercase mb-3">
             Ưu đãi đặc biệt{" "}
-            <span className="text-gray-800">cho người đăng ký</span>
+            <span className="text-[#555]">cho người đăng ký</span>
           </p>
-          <h2 className="text-3xl justify-center font-bold text-gray-900 mb-4 ">
+          <h2 className="text-3xl justify-center font-extrabold font-raleway text-[#343434] mb-4 ">
             <span>
               
             </span>ƯU ĐÃI MỚI MỖI TUẦN <span className="text-[#b8cd06]">+</span>{" "}
@@ -43,7 +43,7 @@ const SubscribeSection = () => {
             }}
           />
           <button className="group relative md:pr-16 px-14 md:px-14 py-6 md:py-6 bg-[#b8cd06] text-white rounded-full overflow-hidden">
-            <span className="absolute font-bold text-xs top-4 md:top-4 left-12 md:left-12 transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
+            <span className="absolute font-bold text-xs top-4 md:top-4 left-12 md:left-[53px] transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
               Gửi
             </span>
             <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-white transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">

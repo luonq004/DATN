@@ -11,7 +11,6 @@ const NewArrivals = () => {
   const [activeProductIndex, setActiveProductIndex] = useState(0);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const scrollRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperCore | null>(null);
   const swiperRefs = useRef<SwiperCore[]>([]);
 
@@ -160,10 +159,10 @@ const NewArrivals = () => {
     <div className="mx-auto lg:pt-36 pt-20">
       {/* Tiêu đề phần */}
       <div className="text-center md:mb-20">
-        <h5 className="text-sm uppercase text-gray-500 tracking-wider mb-3">
+        <h5 className="text-sm uppercase text-gray-500 font-questrial tracking-wider mb-3">
           SẢN PHẨM MỚI
         </h5>
-        <h2 className="text-3xl sm:text-4xl font-extrabold">
+        <h2 className="text-3xl sm:text-4xl text-[#343434] font-raleway font-extrabold">
           MÓN MỚI DÀNH CHO BẠN
         </h2>
         <div className="flex items-center gap-1 justify-center my-6">
@@ -293,7 +292,7 @@ const NewArrivals = () => {
           {filteredProducts.map((product, index) => (
             <SwiperSlide
               key={index}
-              className="relative bg-white border p-4 min-w-[100%] sm:min-w-[50%] md:min-w-[33.33%] lg:min-w-[25%] xl:min-w-[20%] max-w-[250px] group overflow-hidden"
+              className="relative bg-white border cursor-grab p-4 min-w-[100%] sm:min-w-[50%] md:min-w-[33.33%] lg:min-w-[25%] xl:min-w-[20%] max-w-[250px] group overflow-hidden"
             >
               {/* Nhãn sản phẩm */}
               {product.badge && (
@@ -412,10 +411,10 @@ const NewArrivals = () => {
               </div>
 
               <div className="px-10">
-                <h5 className="text-xs uppercase text-[#b8cd06] mb-1 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px]">
+                <h5 className="text-xs uppercase font-questrial text-[#b8cd06] mb-1 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px]">
                   {product.edition}
                 </h5>
-                <h3 className="font-bold text-sm group-hover:text-[#b8cd06] mb-3 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px]">
+                <h3 className="font-extrabold font-raleway text-[13px] text-inherit group-hover:text-[#b8cd06] mb-3 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px] line-clamp-1">
                   {product.name}
                 </h3>
                 <p className="text-xs text-gray-500 mb-3 group-hover:opacity-0 duration-200 text-wrap line-clamp-2">
