@@ -1,8 +1,6 @@
 import Accessories from "./_componnents/Accessories";
 import Collections from "./_componnents/Collections";
 import FeatureCards from "./_componnents/FeatureCards";
-import Footer from "./_componnents/Footer";
-import Header from "./_componnents/Header";
 import NewArrivals from "./_componnents/NewArrivals";
 import OurSeries from "./_componnents/OurSeries";
 import Products from "./_componnents/Products";
@@ -13,7 +11,6 @@ import SubscribeSection from "./_componnents/SubscribeSection";
 const HomePageNew = () => {
   return (
     <div className="bg-zinc-100">
-      <Header />
       <main className="bg-white  lg:mx-[50px] mx-[14px]">
         <Slider />
         <Collections />
@@ -25,7 +22,6 @@ const HomePageNew = () => {
         <FeatureCards/>
         <SubscribeSection/>
         </main>
-        <Footer/>
     </div>
   );
 };

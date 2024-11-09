@@ -43,7 +43,7 @@ const SubscribeSection = () => {
             }}
           />
           <button className="group relative md:pr-16 px-14 md:px-14 py-6 md:py-6 bg-[#b8cd06] text-white rounded-full overflow-hidden">
-            <span className="absolute font-bold text-xs top-4 md:top-4 left-12 md:left-12 transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
+            <span className="absolute font-bold text-xs top-4 md:top-4 left-12 md:left-[53px] transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
               Gửi
             </span>
             <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-white transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
