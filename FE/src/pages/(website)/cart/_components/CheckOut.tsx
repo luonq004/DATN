@@ -14,12 +14,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import Country from "./Country";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import idk from '@/assets/icons/idk.svg';
-import visa from '@/assets/icons/Visa.svg';
-import bitcoin from '@/assets/icons/Bitcoin.svg';
-import interac from '@/assets/icons/Interac.svg';
+import idk from "@/assets/icons/idk.svg";
+import visa from "@/assets/icons/Visa.svg";
+import bitcoin from "@/assets/icons/Bitcoin.svg";
+import interac from "@/assets/icons/Interac.svg";
 import { useNavigate } from "react-router-dom";
 
 const CheckOut = () => {
@@ -69,7 +75,7 @@ const CheckOut = () => {
       districtId: selectedDistrictId,
       wardId: selectedWardId,
     });
-    navigate('/cart/order');
+    navigate("/cart/order");
   };
 
   return (
@@ -98,6 +104,7 @@ const CheckOut = () => {
               </FormItem>
             )}
           />
+          {/* ==================  tỉnh thành ================ */}
 
           <FormField
             control={control}
@@ -116,6 +123,7 @@ const CheckOut = () => {
               </FormItem>
             )}
           />
+          {/* ================== end tỉnh thành ================ */}
 
           <FormField
             control={control}
@@ -141,7 +149,6 @@ const CheckOut = () => {
               </FormItem>
             )}
           />
-
           <FormField
             control={control}
             name="email"
@@ -180,29 +187,42 @@ const CheckOut = () => {
         </div>
 
         <div>
-          <div className='flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6'>
-            <div className='Subtotal flex flex-col gap-4'>
-              <div className='flex justify-between'>
-                <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Subtotal</p>
-                <p className=''>$<span>360.00</span></p>
+          <div className="flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6">
+            <div className="Subtotal flex flex-col gap-4">
+              <div className="flex justify-between">
+                <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+                  Subtotal
+                </p>
+                <p className="">
+                  $<span>360.00</span>
+                </p>
               </div>
-              <div className='flex justify-between'>
-                <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Shipping</p>
-                <p className=''>New York, US</p>
+              <div className="flex justify-between">
+                <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+                  Shipping
+                </p>
+                <p className="">New York, US</p>
               </div>
-              <div className='flex justify-between'>
-                <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Discount</p>
-                <p className=''>$<span>0</span></p>
+              <div className="flex justify-between">
+                <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+                  Discount
+                </p>
+                <p className="">
+                  $<span>0</span>
+                </p>
               </div>
-              <div className='flex justify-between'>
-                <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Shipping Costs</p>
-                <p className=''>$<span>50.00</span></p>
+              <div className="flex justify-between">
+                <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+                  Shipping Costs
+                </p>
+                <p className="">
+                  $<span>50.00</span>
+                </p>
               </div>
             </div>
-            <div className='Code-Sale flex items-center justify-between gap-4'>
-              {/* <input type="text" placeholder='Coupon code' className='border border-[#F4F4F4] rounded-[8px] py-3 px-6 w-full' /> */}
-              <Input placeholder="Coupon code" />
-              <div className='py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none'>
+            <div className="Code-Sale flex items-center justify-between gap-4">
+              <Input placeholder="Coupon code" style={{ margin: 0 }} />
+              <div className="py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none">
                 Apply Coupon
               </div>
             </div>
@@ -211,8 +231,8 @@ const CheckOut = () => {
               <Checkbox className="w-[22px] h-[22px]" id="terms" />
               <span className="text-[#717378] text-[14px]">
                 I confirm that my address is 100% correct and WILL NOT hold Top
-                Shelf BC liable if this shipment is sent to an incorrect address.
-                *
+                Shelf BC liable if this shipment is sent to an incorrect
+                address. *
               </span>
             </div>
             <div className="flex gap-5 ">
@@ -221,6 +241,7 @@ const CheckOut = () => {
                 Sign me up to receive email updates and news (optional)
               </span>
             </div>
+            {/* ============= PAYMENTMEDTHOD=============== */}
             <div className="w-full mx-auto">
               <FormField
                 control={control}
@@ -241,31 +262,36 @@ const CheckOut = () => {
                         <SelectItem value="COD">COD</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormDescription>
-                    </FormDescription>
+                    <FormDescription></FormDescription>
                     <FormMessage>{errors.paymentMethod?.message}</FormMessage>
                   </FormItem>
                 )}
               />
             </div>
-            <button className='bg-[#C8C9CB] hover:bg-light-400 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
+            {/* ============= PAYMENTMEDTHOD=============== */}
+
+            <button className="bg-[#C8C9CB] hover:bg-light-400 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none">
               <div>Place Order</div>
-              <div className=''>|</div>
-              <div>$<span>547.00</span></div>
+              <div className="">|</div>
+              <div>
+                $<span>547.00</span>
+              </div>
             </button>
-            <div className='Payments flex flex-col gap-4'>
-              <p className='text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]'>SECURE PAYMENTS PROVIDED BY</p>
-              <div className='flex gap-3'>
-                <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
+            <div className="Payments flex flex-col gap-4">
+              <p className="text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]">
+                SECURE PAYMENTS PROVIDED BY
+              </p>
+              <div className="flex gap-3">
+                <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
                   <img src={idk} alt="" />
                 </div>
-                <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
+                <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
                   <img src={visa} alt="" />
                 </div>
-                <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
+                <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
                   <img src={bitcoin} alt="" />
                 </div>
-                <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
+                <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
                   <img src={interac} alt="" />
                 </div>
               </div>

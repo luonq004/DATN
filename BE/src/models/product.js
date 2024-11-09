@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import paginate from "mongoose-paginate-v2";
 
+import Cart from "./cart.js";
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -10,30 +12,33 @@ const productSchema = new mongoose.Schema(
 
     slug: {
       type: String,
-      unique: true,
+      // unique: true,
       lowercase: true,
     },
 
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+      },
+    ],
 
     countOnStock: {
       type: Number,
-      required: true,
     },
 
-    avatarMain: {
+    image: {
       type: String,
-      required: true,
     },
 
-    // price: {
-    //   type: Number,
-    //   required: true,
-    // },
+    price: {
+      type: Number,
+    },
+
+    priceSale: {
+      type: Number,
+    },
 
     description: {
       type: String,
@@ -50,14 +55,15 @@ const productSchema = new mongoose.Schema(
       // Ta có thể bỏ qua field khỏi schema khi được select (Trong trg hợp data nhạy cảm,...)
       select: false,
     },
-
     reviews: [Object],
+
+    // attribute: [Object],
 
     variants: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Variant",
-        required: true,
+        // required: true,
       },
     ],
   },
@@ -68,5 +74,18 @@ const productSchema = new mongoose.Schema(
 );
 
 productSchema.plugin(paginate);
+
+productSchema.pre("findOneAndDelete", async function (next) {
+  this._doc = await this.model.findOne(this.getQuery());
+  next();
+});
+
+productSchema.post("findOneAndDelete", async function (doc) {
+  // console.log(doc)
+  await Cart.updateMany(
+    { "products.productItem": doc._id },
+    { $pull: { products: { productItem: doc._id } } }
+  );
+});
 
 export default mongoose.model("Product", productSchema);

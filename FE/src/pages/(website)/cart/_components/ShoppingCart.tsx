@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { ModeToggle } from '../../../../components/mode-toggle';
+import  { useState } from 'react'
 
 //products
 import ImgProduct from '@/assets/products/product-1.svg';
+
 
 //icons
 import minius from '@/assets/icons/transaction-minus.svg';
@@ -13,300 +13,243 @@ import visa from '@/assets/icons/Visa.svg';
 import bitcoin from '@/assets/icons/Bitcoin.svg';
 import interac from '@/assets/icons/Interac.svg';
 import SizeColorSelector from './SizeColorSelect';
+
+//other
 import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
+import useCart from '@/common/hooks/useCart';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-const ShoppingCart = () => {
-    const [attribute, setAttribute] = useState<number | 1>(1);
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage,
+} from "@/components/ui/form"
+import { toast } from '@/components/ui/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+import CountdownVoucher from './CountdownVoucher';
 
-    const hanldeOnChangeAttribute = (number: number) => {
+const formSchema = z.object({
+    voucherCode: z.string().min(2, {
+        message: "Không hợp lệ",
+    }),
+})
+
+const ShopCart = () => {
+    const [attribute, setAttribute] = useState<string | 1>(1);
+
+    const hanldeOnChangeAttribute = (idCart: string) => {
         // console.log(number)
-        setAttribute(number);
+        setAttribute(idCart);
     }
+
+    const userId = '66a105b8ad18a6e2447d5afb' // USER ID
+    const { cart, isLoading, isError, updateQuantity, increaseItem, decreaseItem, removeItem, addVoucher, changeVariant } = useCart(userId);
+    // console.log(cart)
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            voucherCode: "",
+        },
+    })
+
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        userAction({ type: 'applyVoucher' }, values)
+    }
+
+    function userAction(action: any, value: any) {
+        const item = {
+            userId: userId,
+            ...value
+        }
+        switch (action.type) {
+            case 'changeQuality':
+                if (value.quantity < 0) {
+                    return
+                }
+                if (isNaN(value.quantity)) {
+                    toast({
+                        variant: "destructive",
+                        title: "Error",
+                        description: `Vui lòng nhập số!`,
+                    })
+                    return
+                }
+                updateQuantity.mutate(item)
+                break;
+
+            case 'decreaseItem':
+                if (value.quantity === 1) {
+                    const confirm = window.confirm('Sản phẩm sẽ bị xóa, bạn chắc chứ?')
+                    if (!confirm) return
+                    decreaseItem.mutate(item)
+                }
+                decreaseItem.mutate(item)
+                break;
+
+            case 'increaseItem':
+                increaseItem.mutate(item)
+                break;
+
+            case 'removeItem':
+                const confirm = window.confirm('Bạn chắc chứ?')
+                if (!confirm) return
+                removeItem.mutate(item)
+                break;
+
+            case 'applyVoucher':
+                addVoucher.mutate(item, {
+                    onSuccess: () => {
+                        // console.log(`Thêm mã giảm giá ${value.voucherCode} thành công`)
+                        toast({
+                            title: "Sucsess",
+                            description: `Thêm mã giảm giá ${value.voucherCode} thành công`,
+                        })
+                    }
+                })
+                break;
+
+            case 'changeVariant':
+                changeVariant.mutate(item, {
+                    onSuccess: () => {
+                        toast({
+                            title: "Sucsess",
+                            description: "Đổi thành công!",
+                        })
+                        setAttribute('1')
+                    }
+                })
+                break;
+        }
+    }
+
+
+    if (isLoading) return (
+        <div className="Status_Cart transition-all duration-500 space-y-8 px-4 py-8 max-w-[1408px] w-full max-[1408px]:w-[88%] mx-auto grid grid-cols-[57%_auto] max-lg:grid-cols-1 gap-x-16">
+            <div className="Your_Cart flex flex-col gap-6">
+                <div className="flex items-center space-x-4">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                    </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                    </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                    </div>
+                </div>
+            </div>
+            <div className='Cart__Right'>
+                <div className="flex flex-col space-y-3">
+                    <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+    if (isError) return <div>Is Error</div>
 
     return (
         <>
             {/* Cart  */}
             {/* <ModeToggle /> */}
+            <CountdownVoucher />
             <section className="Status_Cart transition-all duration-500 space-y-8 px-4 py-8 max-w-[1408px] w-full max-[1408px]:w-[88%] mx-auto grid grid-cols-[57%_auto] max-lg:grid-cols-1 gap-x-16">
                 {/* Cart__Left */}
                 <div className="Your_Cart flex flex-col gap-6">
                     {/* Top  */}
                     <div className="Top flex justify-between pb-6 border-b border-[#C8C9CB]">
                         <p className="font-medium text-[24px] max-sm:text-[16px]">Your Cart</p>
-                        <p className="text-[#9D9EA2] max-sm:text-[14px] transition-all duration-500">(3)</p>
+                        <p className="text-[#9D9EA2] max-sm:text-[14px] transition-all duration-500">({cart?.products.length})</p>
                     </div>
                     {/* End Top  */}
 
                     {/* Mid  */}
                     <div className="Mid flex flex-col gap-6">
                         {/* Cart__Product */}
-                        <div className="grid transition-all duration-500 grid-cols-[81px_auto] max-sm:grid-cols-[75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6">
-                            {/* Image  */}
-                            <div className="Image_Product">
-                                <div className="border border-[#dddcdc] rounded-[6px] p-1">
-                                    <img className="w-full h-full" src={ImgProduct} alt="img" />
-                                </div>
-                            </div>
-                            {/* information */}
-                            <div className="flex flex-col gap-3">
-                                <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
-                                    <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
-                                        <div className='hover:text-black'>
-                                            <Link to={`#`}>Khalifa Kush (AAAA)</Link>
-                                        </div>
+                        {cart?.products.map((item: any, index: number) => (
+                            <div key={index} className="grid transition-all duration-500 grid-cols-[81px_auto] max-sm:grid-cols-[75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6">
+                                {/* Image  */}
+                                <div className="Image_Product">
+                                    <div className="border border-[#dddcdc] rounded-[6px] p-1">
+                                        <img className="w-full h-full" src={item.productItem.avatarMain} alt="img" />
                                     </div>
-                                    <div className="flex items-center gap-3 max-sm:col-start-1">
-                                        <div className="flex rounded-[6px] *:transition-all duration-500">
-                                            <div className="px-[15px] py-[6px] flex justify-center items-center cursor-pointer select-none">
-                                                -
-                                            </div>
-                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black flex justify-center items-center">
-                                                <p>2</p>
-                                            </div>
-                                            <div className="px-[15px] py-[6px] flex justify-center items-center cursor-pointer select-none">
-                                                +
+                                </div>
+                                {/* information */}
+                                <div className="flex flex-col gap-3">
+                                    <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
+                                        <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
+                                            <div className='hover:text-black'>
+                                                <Link to={`#`}>{item.productItem.name}</Link>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className=''>
-                                        <p>$<span>120.00</span></p>
-                                    </div>
-                                    <div className="group transition-all pb-0 hover:pb-1 cursor-pointer max-sm:col-start-2 max-sm:row-start-1 max-sm:flex max-sm:justify-end" onClick={() => window.confirm('Bạn chắc chứ ?')}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" viewBox="0 0 24 24" className="stroke-gray-500 transition duration-300 group-hover:stroke-red-500">
-                                            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7h16M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3m-5 5l4 4m0-4l-4 4" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                {/* Attribute  */}
-                                <div className="flex items-center gap-4 max-sm:justify-between">
-                                    <p className="text-[#9D9EA2] w-[51%] max-[1408px]:w-[49%] max-xl:w-[47%] max-lg:w-[52%] transition-all duration-500 max-sm:text-[14px]">Size, Color</p>
-                                    <div className="relative">
-                                        {/* Attribute__Table  */}
-                                        <SizeColorSelector attribute={attribute} onChangeAttribute={hanldeOnChangeAttribute} />
-                                        {/* End Attribute__Table  */}
-                                    </div>
-                                </div>
-                                {/* End Attribute  */}
-                                <div>
-                                    <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">Còn 120 sản phẩm</p>
-                                </div>
-
-                            </div>
-                        </div>
-                        {/* End Cart__Product */}
-                        {/* Cart__Product */}
-                        <div className="grid transition-all duration-500 grid-cols-[81px_auto] max-sm:grid-cols-[75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6">
-                            {/* Image  */}
-                            <div className="Image_Product">
-                                <div className="border border-[#dddcdc] rounded-[6px] p-1">
-                                    <img className="w-full h-full" src={ImgProduct} alt="img" />
-                                </div>
-                            </div>
-                            {/* information */}
-                            <div className="flex flex-col gap-3">
-                                <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
-                                    <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
-                                        <div className='hover:text-black'>
-                                            <a href="#">Khalifa Kush (AAAA) Khalifa Kush</a>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 max-sm:col-start-1">
-                                        <div className="flex rounded-[6px] *:transition-all duration-500">
-                                            <div className="px-[15px] py-[6px] flex justify-center items-center">
-                                                -
-                                            </div>
-                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black">2</div>
-                                            <div className="px-[15px] py-[6px] flex justify-center items-center">
-                                                +
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className=''>
-                                        <p>$<span>120.00</span></p>
-                                    </div>
-                                    <div className="group transition-all pb-0 hover:pb-1 cursor-pointer max-sm:col-start-2 max-sm:row-start-1 max-sm:flex max-sm:justify-end">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" viewBox="0 0 24 24" className="stroke-gray-500 transition duration-300 group-hover:stroke-red-500">
-                                            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7h16M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3m-5 5l4 4m0-4l-4 4" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                {/* Attribute  */}
-                                <div className="flex items-center gap-4 max-sm:justify-between">
-                                    <p className="text-[#9D9EA2] w-[51%] max-[1408px]:w-[49%] max-xl:w-[47%] max-lg:w-[52%] transition-all duration-500 max-sm:text-[14px]">Size, Color</p>
-                                    <div className="relative">
-                                        <div className="flex items-center gap-3 border rounded-md py-1 px-3 cursor-pointer max-sm:*:text-[14px]" onClick={() => setAttribute(attribute !== 3 ? 3 : 1)}>
-                                            <div>
-                                                <p>M</p>
-                                            </div>
-                                            <div className="bg-[#C3D2CC] px-1.5 max-sm:px-1 h-[2px]"></div>
-                                            <div className="w-4 max-sm:w-3 h-4 max-sm:h-3 bg-red-500 rounded-full"></div>
-                                            <div className={`transition-all duration-500 ${attribute === 3 ? 'rotate-180' : ''}`}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-                                                    <path fill="black" d="m12 13.171l4.95-4.95l1.414 1.415L12 16L5.636 9.636L7.05 8.222z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        {/* Attribute__Table  */}
-                                        <div className={`absolute bg-white py-3 px-4 left-1/2 max-sm:left-[5%] -translate-x-1/2 border rounded-md transition-all duration-500 ${attribute === 3 ? 'opacity-100 top-[130%] z-10' : 'opacity-0 top-[90%] z-[-1]'}`}>
-                                            <div className="flex flex-col gap-2 mb-2">
-                                                <h1 className="font-medium">Select size</h1>
-                                                <div className="flex gap-2">
-                                                    <div className="relative px-5 py-4 bg-black border-2 border-black hover:border-black rounded-md cursor-pointer transition-all">
-                                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] text-white font-medium">M</p>
-                                                    </div>
-                                                    <div className="relative px-5 py-4 bg-[#efefef] border-2 border-[#efefef] hover:border-black rounded-md cursor-pointer transition-all">
-                                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] font-medium">S</p>
-                                                    </div>
-                                                    <div className="relative px-5 py-4 bg-[#efefef] border-2 border-[#efefef] hover:border-black rounded-md cursor-pointer transition-all">
-                                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] font-medium">L</p>
-                                                    </div>
-                                                    <div className="relative px-5 py-4 bg-white border-2 border-[#efefef] rounded-md cursor-not-allowed">
-                                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] text-[#bbbbbb] font-medium">XXL</p>
-                                                    </div>
+                                        <div className="flex items-center gap-3 max-sm:col-start-1">
+                                            <div className="flex rounded-[6px] *:transition-all duration-500 max-w-[8rem]">
+                                                <div onClick={() => userAction({ type: 'decreaseItem' }, { productId: item.productItem._id, variantId: item.variantItem._id, quantity: item.quantity })} className="px-[15px] py-[6px] flex justify-center items-center cursor-pointer select-none">
+                                                    -
+                                                </div>
+                                                <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black flex justify-center items-center">
+                                                    <input
+                                                        onChange={(value) => userAction({ type: 'changeQuality' }, { productId: item.productItem._id, variantId: item.variantItem._id, quantity: Number(value.target.value) })}
+                                                        className="p-0 w-8 bg-transparent border-0 text-gray-800 text-center focus:ring-0"
+                                                        style={{ MozAppearance: 'textfield' }}
+                                                        type="text"
+                                                        min={1}
+                                                        value={item.quantity}
+                                                        title="Quantity"
+                                                        placeholder="Enter quantity"
+                                                    />
+                                                </div>
+                                                <div onClick={() => userAction({ type: 'increaseItem' }, { productId: item.productItem._id, variantId: item.variantItem._id })} className="px-[15px] py-[6px] flex justify-center items-center cursor-pointer select-none">
+                                                    +
                                                 </div>
                                             </div>
-
-                                            <div className="flex flex-col gap-2 mb-6">
-                                                <h1 className="font-medium">Select color</h1>
-                                                <div className="flex gap-2">
-                                                    <div className="p-1 border-2 border-black rounded-full hover:border-black cursor-pointer transition-all">
-                                                        <div className="relative p-2.5 bg-[#ff1f1f] rounded-full"></div>
-                                                    </div>
-                                                    <div className="p-1 border-2 border-[#d1d0d0] rounded-full hover:border-black cursor-pointer transition-all">
-                                                        <div className="relative p-2.5 bg-[#2ff11d] rounded-full"></div>
-                                                    </div>
-                                                    <div className="p-1 border-2 border-[#d1d0d0] rounded-full hover:border-black cursor-pointer transition-all">
-                                                        <div className="relative p-2.5 bg-[#1d61f3] rounded-full"></div>
-                                                    </div>
-                                                    <div className="p-1 border-2 border-[#d1d0d0] rounded-full cursor-not-allowed">
-                                                        <div className="relative p-2.5 bg-[#e0e0e0] rounded-full"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex justify-between">
-                                                <div className="p-1 hover:text-red-500 cursor-pointer" onClick={() => setAttribute(1)}>Cancel</div>
-                                                <button className="py-1 px-3 bg-white border border-black text-black rounded-sm hover:bg-black hover:text-white transition-all duration-300">Save</button>
-                                            </div>
                                         </div>
-                                        {/* End Attribute__Table  */}
+
+                                        <div className=''>
+                                            <p>$<span>{item.variantItem.price}.00</span></p>
+                                        </div>
+                                        <div className="group transition-all pb-0 hover:pb-1 cursor-pointer max-sm:col-start-2 max-sm:row-start-1 max-sm:flex max-sm:justify-end" onClick={() => userAction({ type: 'removeItem' }, { productId: item.productItem._id, variantId: item.variantItem._id })}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" viewBox="0 0 24 24" className="stroke-gray-500 transition duration-300 group-hover:stroke-red-500">
+                                                <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7h16M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3m-5 5l4 4m0-4l-4 4" />
+                                            </svg>
+                                        </div>
                                     </div>
-                                </div>
-                                {/* End Attribute  */}
-                                <div>
-                                    <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">Còn 120 sản phẩm</p>
-                                </div>
+                                    {/* Attribute  */}
+                                    <div className="flex items-center gap-4 max-sm:justify-between">
+                                        <p className="text-[#9D9EA2] w-[52%] max-[1408px]:w-[49%] max-xl:w-[47%] max-lg:w-[52%] transition-all duration-500 max-sm:text-[14px]">Phân loại</p>
+                                        <div className="relative">
+                                            {/* Attribute__Table  */}
+                                            <SizeColorSelector idProduct={item.productItem._id} idVariant={item.variantItem._id} attribute={attribute} idCart={item._id} onChangeAttribute={hanldeOnChangeAttribute} onChangeVariant={(value: any) => userAction({ type: 'changeVariant' }, value)} />
+                                            {/* End Attribute__Table  */}
+                                        </div>
+                                    </div>
+                                    {/* End Attribute  */}
+                                    <div>
+                                        <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">Còn {item.variantItem.countOnStock} sản phẩm</p>
+                                    </div>
 
-                            </div>
-                        </div>
-                        {/* End Cart__Product */}
-
-                        {/* Cart__Product */}
-                        <div className="grid transition-all duration-500 grid-cols-[81px_auto] max-sm:grid-cols-[75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6">
-                            {/* Image  */}
-                            <div className="Image_Product">
-                                <div className="border border-[#dddcdc] rounded-[6px] p-1">
-                                    <img className="w-full h-full" src={ImgProduct} alt="img" />
                                 </div>
                             </div>
-                            {/* information */}
-                            <div className="flex flex-col gap-3">
-                                <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
-                                    <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
-                                        <div className='hover:text-black'>
-                                            <Link to={`#`}>Khalifa Kush (AAAA) Khalifa Kush (AAAA) Khalifa Kush</Link>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 max-sm:col-start-1">
-                                        <div className="flex rounded-[6px] *:transition-all duration-500">
-                                            <div className="px-[15px] py-[6px] flex justify-center items-center">
-                                                -
-                                            </div>
-                                            <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black">2</div>
-                                            <div className="px-[15px] py-[6px] flex justify-center items-center">
-                                                +
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className=''>
-                                        <p>$<span>120.00</span></p>
-                                    </div>
-                                    <div className="group transition-all pb-0 hover:pb-1 cursor-pointer max-sm:col-start-2 max-sm:row-start-1 max-sm:flex max-sm:justify-end">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="1.8em" viewBox="0 0 24 24" className="stroke-gray-500 transition duration-300 group-hover:stroke-red-500">
-                                            <path fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7h16M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3m-5 5l4 4m0-4l-4 4" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                {/* Attribute  */}
-                                <div className="flex items-center gap-4 max-sm:justify-between">
-                                    <p className="text-[#9D9EA2] w-[51%] max-[1408px]:w-[49%] max-xl:w-[47%] max-lg:w-[52%] transition-all duration-500 max-sm:text-[14px]">Size, Color</p>
-                                    <div className="relative">
-                                        <div className="flex items-center gap-3 border rounded-md py-1 px-3 cursor-pointer max-sm:*:text-[14px]" onClick={() => setAttribute(attribute !== 4 ? 4 : 1)}>
-                                            <div>
-                                                <p>M</p>
-                                            </div>
-                                            <div className="bg-[#C3D2CC] px-1.5 max-sm:px-1 h-[2px]"></div>
-                                            <div className="w-4 max-sm:w-3 h-4 max-sm:h-3 bg-red-500 rounded-full"></div>
-                                            <div className={`transition-all duration-500 ${attribute === 4 ? 'rotate-180' : ''}`}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-                                                    <path fill="black" d="m12 13.171l4.95-4.95l1.414 1.415L12 16L5.636 9.636L7.05 8.222z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        {/* Attribute__Table  */}
-                                        <div className={`absolute bg-white py-3 px-4 left-1/2 max-sm:left-[5%] -translate-x-1/2 border rounded-md transition-all duration-500 ${attribute === 4 ? 'opacity-100 top-[130%] z-10' : 'opacity-0 top-[90%] z-[-1]'}`}>
-                                            <div className="flex flex-col gap-2 mb-2">
-                                                <h1 className="font-medium">Select size</h1>
-                                                <div className="flex gap-2">
-                                                    <div className="relative px-5 py-4 bg-black border-2 border-black hover:border-black rounded-md cursor-pointer transition-all">
-                                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] text-white font-medium">M</p>
-                                                    </div>
-                                                    <div className="relative px-5 py-4 bg-[#efefef] border-2 border-[#efefef] hover:border-black rounded-md cursor-pointer transition-all">
-                                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] font-medium">S</p>
-                                                    </div>
-                                                    <div className="relative px-5 py-4 bg-[#efefef] border-2 border-[#efefef] hover:border-black rounded-md cursor-pointer transition-all">
-                                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] font-medium">L</p>
-                                                    </div>
-                                                    <div className="relative px-5 py-4 bg-white border-2 border-[#efefef] rounded-md cursor-not-allowed">
-                                                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] text-[#bbbbbb] font-medium">XXL</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex flex-col gap-2 mb-6">
-                                                <h1 className="font-medium">Select color</h1>
-                                                <div className="flex gap-2">
-                                                    <div className="p-1 border-2 border-black rounded-full hover:border-black cursor-pointer transition-all">
-                                                        <div className="relative p-2.5 bg-[#ff1f1f] rounded-full"></div>
-                                                    </div>
-                                                    <div className="p-1 border-2 border-[#d1d0d0] rounded-full hover:border-black cursor-pointer transition-all">
-                                                        <div className="relative p-2.5 bg-[#2ff11d] rounded-full"></div>
-                                                    </div>
-                                                    <div className="p-1 border-2 border-[#d1d0d0] rounded-full hover:border-black cursor-pointer transition-all">
-                                                        <div className="relative p-2.5 bg-[#1d61f3] rounded-full"></div>
-                                                    </div>
-                                                    <div className="p-1 border-2 border-[#d1d0d0] rounded-full cursor-not-allowed">
-                                                        <div className="relative p-2.5 bg-[#e0e0e0] rounded-full"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex justify-between">
-                                                <div className="p-1 hover:text-red-500 cursor-pointer" onClick={() => setAttribute(1)}>Cancel</div>
-                                                <button className="py-1 px-3 bg-white border border-black text-black rounded-sm hover:bg-black hover:text-white transition-all duration-300">Save</button>
-                                            </div>
-                                        </div>
-                                        {/* End Attribute__Table  */}
-                                    </div>
-                                </div>
-                                {/* End Attribute  */}
-                                <div>
-                                    <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">Còn 120 sản phẩm</p>
-                                </div>
-
-                            </div>
-                        </div>
+                        ))}
                         {/* End Cart__Product */}
 
                     </div>
@@ -367,7 +310,7 @@ const ShoppingCart = () => {
                         <div className='Subtotal flex flex-col gap-4'>
                             <div className='flex justify-between'>
                                 <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Subtotal</p>
-                                <p className=''>$<span>360.00</span></p>
+                                <p className=''>$<span>{cart?.subTotal}.00</span></p>
                             </div>
                             <div className='flex justify-between'>
                                 <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Discount</p>
@@ -380,11 +323,34 @@ const ShoppingCart = () => {
                         </div>
                         <div className='Code-Sale flex items-center justify-between gap-4'>
                             {/* <input type="text" placeholder='Coupon code' className='border border-[#F4F4F4] rounded-[8px] py-3 px-6 w-full' /> */}
-                            <Input placeholder="Coupon code" />
+                            <Input placeholder="Coupon code"  style={{margin: 0}}/>
                             <div className='py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none'>
                                 Apply Coupon
                             </div>
                         </div>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="Code-Sale flex items-start justify-between gap-4">
+                                <div className='w-full'>
+                                    <FormField
+                                        control={form.control}
+                                        name="voucherCode"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input placeholder='ABCEFGH' className='w-full' {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <button className='py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none' type="submit">
+                                    Apply Coupon
+                                </button>
+
+                                <FormMessage />
+                            </form>
+                        </Form>
                         <div className='Free-Ship flex flex-col pt-4 gap-4 border-t border-[#F4F4F4]'>
                             <div className='relative'>
                                 <div className='bg-[#F4F4F4] w-full h-[6px] rounded-full'></div>
@@ -403,7 +369,7 @@ const ShoppingCart = () => {
                             <div className='bg-[#C8C9CB] hover:bg-light-400 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
                                 <div>Checkout</div>
                                 <div className=''>|</div>
-                                <div>$<span>547.00</span></div>
+                                <div>$<span>{cart?.total}.00</span></div>
                             </div>
                         </Link>
                         <hr />
@@ -433,4 +399,4 @@ const ShoppingCart = () => {
     )
 }
 
-export default ShoppingCart
+export default ShopCart

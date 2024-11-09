@@ -8,7 +8,7 @@ const InputSearch = () => {
     <>
       <div className="relative text-white hidden sm:block">
         <Input
-          className="pl-4 rounded-full bg-transparent py-0 sm:w-[250px] md:w-[300px] lg:w-[300px] xl:w-[400px] text-xs placeholder:text-white outline-none focus:border-none focus:outline-none"
+          className="pl-4 rounded-full bg-transparent py-0 sm:w-[250px] md:w-[300px] m-0 lg:w-[300px] xl:w-[400px] text-xs placeholder:text-white outline-none focus:border-none focus:outline-none"
           type="text"
           placeholder="Search product..."
         />

@@ -1,28 +1,32 @@
+import DashBoardPage from "@/pages/(dashboard)/dashboard/page";
+import ProductAddPage from "@/pages/(dashboard)/product/add/page";
+import ProductPage from "@/pages/(dashboard)/product/page";
+
 import LayoutAdmin from "@/pages/(dashboard)/layout";
 import ListUser from "@/pages/(dashboard)/user/_component/ListUser";
 import CheckOut from "@/pages/(website)/cart/_components/CheckOut";
 import DetailPage from "@/pages/(website)/details/page";
 import HomePage from "@/pages/(website)/homepage/page";
-import ProductsAll from "@/pages/(website)/shop/_components/ProductsAll";
-import ShopPage from "@/pages/(website)/shop/page";
+import ProductShopPage from "@/pages/(website)/shop/page";
+
+import AddLogoPage from "@/pages/(dashboard)/logo/_components/AddLogo";
+import ListLogoPage from "@/pages/(dashboard)/logo/_components/ListLogo";
+import UpdateLogoPage from "@/pages/(dashboard)/logo/_components/UpdateLogo";
+import LogoPage from "@/pages/(dashboard)/logo/page";
+import AddSlider from "@/pages/(dashboard)/slider/_components/AddSlide";
+import ListSlider from "@/pages/(dashboard)/slider/_components/ListSlider";
+import UpdateSlider from "@/pages/(dashboard)/slider/_components/UpdateSlider";
+import SliderPage from "@/pages/(dashboard)/slider/page";
+import UserDetailPage from "@/pages/(dashboard)/user/_component/DetailUser";
+import UserPage from "@/pages/(dashboard)/user/page";
+import HomePageNew from "@/pages/(website)/homepagenew/page";
+import SidebarAccount from "@/pages/(website)/user/_components/Sidebar";
+import ProfilePage from "@/pages/(website)/user/page";
 import { Route, Routes } from "react-router-dom";
 import Order from "../pages/(website)/cart/_components/Order";
 import ShoppingCart from "../pages/(website)/cart/_components/ShoppingCart";
 import CartPage from "../pages/(website)/cart/page";
 import LayoutWebsite from "../pages/(website)/layout";
-import UserDetailPage from "@/pages/(dashboard)/user/_component/DetailUser";
-import UserPage from "@/pages/(dashboard)/user/page";
-import SliderPage from "@/pages/(dashboard)/slider/page";
-import ListSlider from "@/pages/(dashboard)/slider/_components/ListSlider";
-import UpdateSlider from "@/pages/(dashboard)/slider/_components/UpdateSlider";
-import AddSlider from "@/pages/(dashboard)/slider/_components/AddSlide";
-import LogoPage from "@/pages/(dashboard)/logo/page";
-import AddLogoPage from "@/pages/(dashboard)/logo/_components/AddLogo";
-import UpdateLogoPage from "@/pages/(dashboard)/logo/_components/UpdateLogo";
-import ListLogoPage from "@/pages/(dashboard)/logo/_components/ListLogo";
-import SidebarAccount from "@/pages/(website)/user/_components/Sidebar";
-import ProfilePage from "@/pages/(website)/user/page";
-import HomePageNew from "@/pages/(website)/homepagenew/page";
 
 const Router = () => {
   return (
@@ -38,9 +42,9 @@ const Router = () => {
 
           <Route path="product/:id" element={<DetailPage />} />
 
-          <Route path="shop" element={<ShopPage />}>
+          {/* <Route path="shop" element={<ShopPage />}>
             <Route index element={<ProductsAll />} />
-          </Route>
+          </Route> */}
 
           <Route path="cart" element={<CartPage />}>
             <Route index element={<ShoppingCart />} />
@@ -48,6 +52,14 @@ const Router = () => {
             <Route path="order" element={<Order />} />
           </Route>
         </Route>
+        <Route path="admin" element={<LayoutAdmin />}>
+          <Route path="dashboard" element={<DashBoardPage />} />
+          <Route path="products" element={<ProductPage />} />
+          <Route path="products/add" element={<ProductAddPage />} />
+          <Route path="products/edit/:id" element={<ProductAddPage />} />
+        </Route>
+
+        <Route path="shopping" element={<ProductShopPage />} />
 
         <Route path="/dashboard" element={<LayoutAdmin />}>
           <Route path="users" element={<UserPage />}>

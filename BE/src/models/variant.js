@@ -1,33 +1,67 @@
 import mongoose from "mongoose";
 
-const variantSchema = new mongoose.Schema({
-  price: {
-    type: Number,
-    required: true,
-  },
+import Cart from "./cart.js";
+import Product from "./product.js";
 
-  values: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AttributeValue",
+const variantSchema = new mongoose.Schema(
+  {
+    price: {
+      type: Number,
       required: true,
     },
-  ],
 
-  countOnStock: {
-    type: Number,
-    required: true,
-  },
+    priceSale: {
+      type: Number,
+    },
 
-  image: {
-    type: String,
-    required: true,
-  },
+    values: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "AttributeValue",
+        // required: true,
+      },
+    ],
 
-  deleted: {
-    type: Boolean,
-    default: false,
+    countOnStock: {
+      type: Number,
+      default: 0,
+    },
+
+    image: {
+      type: String,
+      // required: true,
+    },
+
+    deleted: {
+      type: Boolean,
+      default: false,
+    },
   },
+  { timestamps: true, versionKey: false }
+);
+
+variantSchema.pre("findOneAndDelete", async function (next) {
+  this._doc = await this.model.findOne(this.getQuery());
+  next();
+});
+
+variantSchema.post("findOneAndDelete", async function (doc) {
+  // console.log(doc);
+  if (doc) {
+    try {
+      await Cart.updateMany(
+        { "products.variantItem": doc._id },
+        { $pull: { products: { variantItem: doc._id } } }
+      );
+
+      await Product.updateMany(
+        { variants: doc._id },
+        { $pull: { variants: doc._id } }
+      );
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  }
 });
 
 export default mongoose.model("Variant", variantSchema);
