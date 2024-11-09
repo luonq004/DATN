@@ -271,7 +271,6 @@ const NewArrivals = () => {
           onSwiper={(swiper) => (swiperRef.current = swiper)}
           onSlideChange={(swiper) => setActiveProductIndex(swiper.realIndex)}
           loop={true}
-          navigation
           pagination={{ clickable: true }}
           touchRatio={1}
           resistance={false}

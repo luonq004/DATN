@@ -95,7 +95,10 @@ const Header = () => {
               </a>
             </div>
             <span className="border-l border-gray-300 h-14"></span>
-            <button onClick={toggleSearch} className="text-gray-600 hover:text-lime-500">
+            <button
+              onClick={toggleSearch}
+              className="text-gray-600 hover:text-lime-500"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
@@ -146,13 +149,16 @@ const Header = () => {
         {/* Ô tìm kiếm */}
         <div
           className={`absolute top-36 left-0 w-full bg-white px-16 z-40 transition-all duration-500 ease-in-out ${
-            isSearchVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
+            isSearchVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-full"
           }`}
           style={{ pointerEvents: isSearchVisible ? "auto" : "none" }}
         >
           <SearchInput toggleSearch={toggleSearch} />
         </div>
       </header>
+      {/* <div className="block h-[100px] md:h-[159px]"></div> */}
     </>
   );
 };

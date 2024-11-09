@@ -132,7 +132,6 @@ const Products = () => {
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         onSlideChange={(swiper) => setActiveProductIndex(swiper.realIndex)}
         loop={true}
-        navigation
         pagination={{ clickable: true }}
         touchRatio={1}
         resistance={false}
@@ -155,7 +154,6 @@ const Products = () => {
           <SwiperSlide
             key={index}
             className="relative bg-white border-r border-b border-t p-4 min-w-[100%] sm:min-w-[50%] md:min-w-[33.33%] lg:min-w-[25%] xl:min-w-[20%] flex-shrink-0 text-wrap group cursor-grab"
-            
           >
             {/* Giảm giá */}
             {product.badge && (
@@ -337,20 +335,20 @@ const Products = () => {
       </button>
 
       {/* Chấm đánh dấu*/}
-      
-        <div className="flex lg:hidden space-x-2 mt-8 justify-center items-center">
-          {products.map((_, index) => (
-            <div
-              key={index}
-              className={`rounded-full w-3 h-3 bg-white cursor-pointer ${
-                index === activeProductIndex
-                  ? "border-[3px] w-4 h-4 border-[#b8cd06]"
-                  : "border-[1px] border-gray-500"
-              }`}
-              onClick={() => scrollToProduct(index)}
-            ></div>
-          ))}
-        </div>
+
+      <div className="flex lg:hidden space-x-2 mt-8 justify-center items-center">
+        {products.map((_, index) => (
+          <div
+            key={index}
+            className={`rounded-full w-3 h-3 bg-white cursor-pointer ${
+              index === activeProductIndex
+                ? "border-[3px] w-4 h-4 border-[#b8cd06]"
+                : "border-[1px] border-gray-500"
+            }`}
+            onClick={() => scrollToProduct(index)}
+          ></div>
+        ))}
+      </div>
     </div>
   );
 };

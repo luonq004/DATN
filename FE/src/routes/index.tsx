@@ -36,9 +36,9 @@ const Router = () => {
   return (
     <>
       <Routes>
-        <Route index path="homepage" element={<HomePageNew />} />
+        {/* <Route index path="homepage" element={<HomePageNew />} /> */}
         <Route path="/" element={<LayoutWebsite />}>
-          <Route index path="" element={<HomePage />} />
+          <Route index path="" element={<HomePageNew />} />
 
           <Route path="users" element={<ProfilePage />}>
             <Route index element={<SidebarAccount />} />
@@ -59,6 +59,8 @@ const Router = () => {
           </Route>
 
           <Route path="about" element={<AboutUsPage />} />
+
+          <Route path="shopping" element={<ProductShopPage />} />
         </Route>
         <Route path="admin" element={<LayoutAdmin />}>
           <Route path="dashboard" element={<DashBoardPage />} />
@@ -66,8 +68,6 @@ const Router = () => {
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />
         </Route>
-
-        <Route path="shopping" element={<ProductShopPage />} />
 
         <Route path="/dashboard" element={<LayoutAdmin />}>
           <Route path="users" element={<UserPage />}>

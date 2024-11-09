@@ -229,7 +229,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="border-t border-gray-700 mt-8 pt-8">
+      {/* <div className="border-t border-gray-700 mt-8 pt-8">
         <div className="max-w-7xl gap-5 mx-auto flex flex-col md:flex-row items-center justify-between text-xs">
           <p>
             © 2015 Bản quyền thuộc về. Phát triển bởi{" "}
@@ -286,7 +286,7 @@ const Footer = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </footer>
   );
 };

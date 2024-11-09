@@ -78,12 +78,11 @@ const Slider = () => {
           modules={[Autoplay]}
           slidesPerView={1}
           loop={true}
-          // autoplay={{
-          //   delay: 3000,
-          //   disableOnInteraction: false,
-          // }}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
           speed={600}
-          navigation
           pagination={{ clickable: true }}
           onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
           onSwiper={(swiper) => (swiperRef.current = swiper)}

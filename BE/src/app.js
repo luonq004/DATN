@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { config } from "dotenv";
+import dotenv from "dotenv";
+import morgan from "morgan";
 import express from "express";
 
 import categoriesRouter from "./Routes/Categories";
@@ -9,10 +10,8 @@ import logoRouter from "./Routes/Logo";
 import sliderRouter from "./routes/slider";
 import userRouter from "./routes/Users";
 
-config();
-
 import routerAddress from "./routers/Address";
-import routerOrder from "./routers/Order";
+// import routerOrder from "./routers/Order";
 import { connectDB } from "./config/db";
 import productRouter from "./routers/product.router";
 import attributeRouter from "./routers/attribute.router";
@@ -21,7 +20,7 @@ import routerCategory from "./routers/category";
 import { createProduct } from "./controllers/products";
 import { createVariant, removeVariant } from "./controllers/variant";
 import routerCart from "./routers/cart";
-import { createUser } from "./controllers/user";
+// import { createUser } from "./controllers/user";
 import routerVoucher from "./routers/voucher";
 
 const app = express();
@@ -45,7 +44,7 @@ app.get("/", (req, res) => {
 // ================ tạo địa chỉ  ===========
 app.use("/api", routerAddress);
 // ================ order ===========
-app.use("/api", routerOrder);
+// app.use("/api", routerOrder);
 
 //routers
 app.use("/api/v1", productRouter);
@@ -57,7 +56,7 @@ app.use("/api", routerVoucher);
 app.post("/api/products/add", createProduct);
 app.post("/api/variant/add", createVariant);
 app.delete("/api/variant/:id", removeVariant);
-app.post("/api/user/add", createUser);
+// app.post("/api/user/add", createUser);s
 // app.use("/api", authRouter);
 
 app.use("/api/sliders", sliderRouter);
