@@ -3,11 +3,12 @@ import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
 import { connectDB } from "./config/db";
-import categoriesRouter from "./Routes/Categories";
-import collectionRouter from "./Routes/Collections";
-import logoRouter from "./Routes/Logo";
-import sliderRouter from './routes/slider';
-import userRouter from './routes/Users';
+import sliderRouter from './routers/slider';
+import logoRouter from './routers/Logo';
+import categoriesRouter from './routers/Categories';
+import collectionRouter from './routers/Collections';
+import userRouter from './routers/Users';
+
 
 config();
 

@@ -85,7 +85,6 @@ const Slider = () => {
             disableOnInteraction: false,
           }}
           speed={600}
-          navigation
           pagination={{ clickable: true }}
           onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
@@ -99,7 +98,7 @@ const Slider = () => {
               <img
                 src={slide.backgroundImage}
                 alt="background"
-                className="absolute inset-0 w-full h-full object-cover -z-10"
+                className="absolute inset-0 lg:h-[800px] w-full h-full  object-cover -z-10"
               />
               {/* Overlay Gradient */}
               <div
@@ -107,18 +106,18 @@ const Slider = () => {
               ></div>
 
               {index === 0 && (
-                <div className="flex flex-col md:flex-row justify-between lg:items-center p-5 lg:p-0 mt-5 lg:mt-0 h-full relative z-20 space-y-4 md:space-y-0">
+                <div className="flex flex-col md:flex-row items-center h-full justify-between  p-5 wqAZ:p-0 mt-5 md:mt-0 relative z-20 space-y-4 md:space-y-0">
                   {/* Left Content */}
                   <div className="text-slate-50 space-y-3 lg:pl-32">
                     <h5 className="text-sm font-questrial">{slide.subtitle}</h5>
-                    <h2 className="md:text-7xl text-4xl font-raleway font-extrabold mb-2">
+                    <h2 className="xl:text-7xl md:text-5xl text-4xl text-[#fff]  font-raleway font-extrabold mb-2">
                       {slide.title}
                     </h2>
                     <div className="flex items-center gap-1">
                       <span className="h-[1px] w-2 bg-white mb-2"></span>
                       <span className="h-[1px] w-12 bg-white mb-2"></span>
                     </div>
-                    <p className="text-sm mb-6 text-wrap font-questrial md:w-3/5">
+                    <p className="text-sm mb-6 text-wrap font-questrial md:w-4/5">
                       {slide.description}
                     </p>
                     <ul className="space-y-3 text-sm py-6 font-questrial">
@@ -143,12 +142,12 @@ const Slider = () => {
                       ))}
                     </ul>
 
-                    <div className="flex flex-col font-questrial lg:flex-row text-start lg:items-center gap-5">
-                      <p className="text-lg">
+                    <div className="flex flex-col xl:flex-row font-questrial xl:items-center gap-5">
+                      <p className="text-lg text-left">
                         GIÁ TỐT NHẤT: <span>{slide.price}</span>
                       </p>
-                      <div className="flex flex-col font-questrial lg:flex-row mr-5 md:nr-0 text-xs gap-3">
-                        <button className="group relative md:px-16 py-6 bg-white text-black rounded-full font-bold overflow-hidden">
+                      <div className="flex flex-col font-questrial md:flex-row text-xs gap-3">
+                        <button className="group relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-bold overflow-hidden">
                           <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                             TÌM HIỂU THÊM
                           </span>
@@ -168,7 +167,7 @@ const Slider = () => {
                           </span>
                         </button>
 
-                        <button className="group relative lg:px-20 py-6 text-xs bg-black text-white rounded-full font-bold overflow-hidden">
+                        <button className="group relative md:px-20 py-6 text-xs bg-[#343434] text-[#fff] rounded-full font-bold overflow-hidden">
                           <span className="absolute px-2 inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                             THÊM VÀO GIỎ HÀNG
                           </span>
@@ -196,42 +195,42 @@ const Slider = () => {
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className="md:w-[450px] w-[300px] mb-14 h-auto object-cover z-20"
+                      className="md:w-[800px] lg:w-full w-[400px] mb-14 h-auto object-cover z-20"
                     />
                   </div>
                 </div>
               )}
 
               {index === 1 && (
-                <div className="flex flex-col lg:flex-row p-5 lg:p-0 mt-5 lg:mt-0 justify-between lg:items-center w-full h-full relative z-20"
+                <div className="flex flex-col md:flex-row p-5 lg:p-0 mt-5 md:mt-0 justify-between items-center w-full h-full relative z-20"
                 >
                   {/* Left Image */}
-                  <div className="lg:flex md:ml-32 justify-center hidden items-center">
+                  <div className="md:flex md:ml-32 justify-center hidden items-center">
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className="w-[450px] h-auto object-cover z-20"
+                      className="md:w-[800px] lg:w-auto w-[400px] h-auto object-cover z-20"
                     />
                   </div>
 
                   {/* Right Content */}
-                  <div className="justify-center lg:items-end lg:text-right text-left text-slate-50 lg:space-y-4 space-y-2 lg:pr-32">
+                  <div className="justify-center md:items-end md:text-right text-left text-slate-50 lg:space-y-4 space-y-2 lg:pr-32">
                     <h5 className="text-sm font-questrial">{slide.subtitle}</h5>
-                    <h2 className="lg:text-7xl text-4xl font-raleway font-extrabold mb-2">
+                    <h2 className="xl:text-7xl md:text-5xl text-4xl font-raleway font-extrabold mb-2">
                       {slide.title}
                     </h2>
-                    <div className="flex lg:justify-end items-center gap-1">
+                    <div className="flex md:justify-end items-center gap-1">
                       <span className="h-[1px] w-2 bg-white mb-2"></span>
                       <span className="h-[1px] w-12 bg-white mb-2"></span>
                     </div>
-                    <p className="text-sm mb-6 flex font-questrial lg:justify-end lg:md:w-4/5 md:ml-auto">
+                    <p className="text-sm mb-6 flex font-questrial md:justify-end lg:md:w-4/5 md:ml-auto">
                       {slide.description}
                     </p>
                     <ul className="space-y-3 text-sm py-6 font-questrial">
                       {slide.features.map((feature, i) => (
                         <li
                           key={i}
-                          className="flex lg:items-center lg:justify-end"
+                          className="flex lg:items-center md:justify-end"
                         >
                           <span className="lg:ml-2 mr-2">
                             <svg
@@ -252,12 +251,12 @@ const Slider = () => {
                       ))}
                     </ul>
 
-                    <div className="flex flex-col lg:flex-row font-questrial justify-end lg:items-center gap-5">
+                    <div className="flex flex-col xl:flex-row font-questrial md:justify-end xl:items-center gap-5">
                       <p className="text-lg">
                         GIÁ TỐT NHẤT: <span>{slide.price}</span>
                       </p>
-                      <div className="flex flex-col lg:flex-row mr-5 md:mr-0 text-xs gap-3 font-questrial">
-                        <button className="group relative md:px-16 py-6 bg-white text-gray-800 rounded-full font-semibold overflow-hidden">
+                      <div className="flex flex-col md:flex-row md:justify-end text-xs gap-3 font-questrial">
+                        <button className="group relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">
                           <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                             TÌM HIỂU THÊM
                           </span>
@@ -277,7 +276,7 @@ const Slider = () => {
                           </span>
                         </button>
 
-                        <button className="group relative lg:px-20 py-6 text-xs bg-black text-slate-100 rounded-full font-semibold overflow-hidden">
+                        <button className="group relative md:px-20 py-6 text-xs bg-[#343434] text-[#fff] rounded-full font-semibold overflow-hidden">
                           <span className="absolute px-2 inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                             THÊM VÀO GIỎ HÀNG
                           </span>
@@ -300,18 +299,18 @@ const Slider = () => {
                     </div>
                   </div>
 
-                  <div className=" lg:hidden flex justify-center items-center">
+                  <div className=" md:hidden flex justify-center items-center">
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className="lg:w-[450px] w-[300px] mb-14 h-auto object-cover z-20"
+                      className="md:w-[800px] w-[400px] mb-14 h-auto object-cover z-20"
                     />
                   </div>
                 </div>
               )}
 
               {index === 2 && (
-                <div className="flex flex-col p-5 lg:p-0 mt-5 lg:mt-0 lg:items-center lg:justify-center md:text-center w-full h-full space-y-5 z-20">
+                <div className="flex flex-col mb-10 p-5 lg:p-0 mt-5 md:mt-0 lg:items-center lg:justify-center md:text-center w-full h-full space-y-5 z-20">
                   <h5 className="text-sm text-slate-100 md:mt-20 lg:mt-0 z-20">{slide.subtitle}</h5>
                   <h2 className="md:text-7xl text-4xl font-raleway font-extrabold text-white mb-2 z-20">
                     {slide.title}
@@ -347,8 +346,8 @@ const Slider = () => {
                       </li>
                     ))}
                   </ul>
-                  <div className="flex relative md:justify-center flex-col mr-5 md:mr-0 lg:flex-row lg:items-center gap-5 z-20">
-                    <button className="group text-xs relative md:px-16 py-6 bg-white text-gray-800 rounded-full font-semibold overflow-hidden">
+                  <div className="flex relative md:justify-center flex-col lg:flex-row md:items-center gap-5 z-20">
+                    <button className="group text-xs relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">
                       <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                         TÌM HIỂU THÊM
                       </span>
