@@ -1,7 +1,7 @@
 import {
   Attribute,
   Data,
-  IProduct2,
+  IProduct,
   Value,
   Variant,
 } from "@/common/types/Product";
@@ -12,7 +12,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getUniqueTypes(product: IProduct2) {
+export function getUniqueTypes(product: IProduct) {
   const types = new Set(); // Sử dụng Set để đảm bảo không có giá trị trùng lặp
 
   // Duyệt qua tất cả các biến thể (variants) của sản phẩm
@@ -48,7 +48,7 @@ export function areArraysEqual(arr1: string[], arr2: string[]): boolean {
   return arr1.every((item) => arr2.includes(item));
 }
 
-export function getUniqueAttributeValue(product: IProduct2): Data[][] {
+export function getUniqueAttributeValue(product: IProduct): Data[][] {
   return product.variants.reduce<Data[][]>((acc, variant) => {
     variant.values.forEach((item: Value) => {
       const { type, value } = item;
@@ -136,7 +136,7 @@ export function updateFields(array1: Variant[], array2: Variant[]) {
 }
 
 // Check trùng values
-export const checkForDuplicateVariants = (data: IProduct2) => {
+export const checkForDuplicateVariants = (data: IProduct) => {
   const variantSet = new Map<string, number>(); // Lưu vị trí của từng variant key
   const duplicateIndices: number[] = []; // Lưu vị trí của các biến thể bị trùng
 

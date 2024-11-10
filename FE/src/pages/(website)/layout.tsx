@@ -17,7 +17,7 @@ const LayoutWebsite = () => {
         isUserSaved.current = true;
       }
 
-      console.log(user);
+      // console.log(user);
     }
   }, [user]);
 

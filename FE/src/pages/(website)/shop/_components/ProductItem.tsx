@@ -5,9 +5,12 @@ import clothesNorth from "@/assets/products/north.png";
 import { IoEyeOutline } from "react-icons/io5";
 import PreviewProduct from "./PreviewProduct";
 import { useState } from "react";
+import { IProduct } from "@/common/types/Product";
 
-const ProductItem = () => {
+const ProductItem = ({ listProduct }: { listProduct: IProduct }) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+
+  console.log(listProduct);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 mt-6">
@@ -68,7 +71,7 @@ const ProductItem = () => {
           <div className="flex justify-between h-9">
             <span className="text-[#b8cd06]">1.200.000đ</span>
             {/* &nbsp;&nbsp;&nbsp; */}
-            <span className="text-[#888] line-through">1.500.000đ</span>
+            {/* <span className="text-[#888] line-through">1.500.000đ</span> */}
           </div>
 
           <div className="relative overflow-hidden">
