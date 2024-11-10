@@ -230,65 +230,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-
-      <div className="border-t border-[#424242] mt-8 pt-8">
-        <div className="max-w-7xl gap-5 mx-auto flex flex-col md:flex-row items-center justify-between text-xs">
-          <p>
-            © 2015 Bản quyền thuộc về. Phát triển bởi{" "}
-            <a
-              href="https://unionagency.com"
-              className="text-[#b8cd06] hover:text-white"
-            >
-              Union Agency
-            </a>
-          </p>
-
-          <div className="flex space-x-4 ">
-            <a
-              href="#facebook"
-              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
-            >
-              <i className="fab fa-facebook-f" />
-            </a>
-            <a
-              href="#twitter"
-              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
-            >
-              <i className="fab fa-twitter" />
-            </a>
-            <a
-              href="#linkedin"
-              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
-            >
-              <i className="fab fa-linkedin-in" />
-            </a>
-            <a
-              href="#google"
-              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
-            >
-              <i className="fab fa-google-plus-g" />
-            </a>
-            <a
-              href="#pinterest"
-              className="hover:text-white hover:bg-[#b8cd06] text-zinc-400 bg-[#424242] p-3 rounded-full flex items-center justify-center w-10 h-10"
-            >
-              <i className="fab fa-pinterest" />
-            </a>
-          </div>
-
-          <div className="flex space-x-4 mt-4 md:mt-0">
-            {paymentMethods.map((method, index) => (
-              <a key={index} href={method.link} className="hover:opacity-80">
-                <img
-                  src={method.imgSrc}
-                  alt="Payment Method"
-                  className="w-10 h-6 object-contain"
-                />
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
     </footer>
   );
 };

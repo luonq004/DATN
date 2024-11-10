@@ -134,20 +134,20 @@ const Header = () => {
                       </a>
                     </li>
                     <li className="">
-                      <a
+                      <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
+                        to="/about"
                       >
                         Về chúng tôi
-                      </a>
+                      </Link>
                     </li>
                     <li className="">
-                      <a
+                      <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
+                        to="/shopping"
                       >
                         Sản phẩm
-                      </a>
+                      </Link>
                     </li>
                     <li className="">
                       <a
