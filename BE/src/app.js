@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
+import morgan from "morgan";
 
 config();
 
@@ -15,8 +16,14 @@ import routerCategory from "./routers/category";
 import { createProduct } from "./controllers/products";
 import { createVariant, removeVariant } from "./controllers/variant";
 import routerCart from "./routers/cart";
-import { createUser } from "./controllers/user";
+// import { createUser } from "./controllers/user";
 import routerVoucher from "./routers/voucher";
+
+import sliderRouter from "./routers/slider";
+import logoRouter from "./routers/Logo";
+import categoriesRouter from "./routers/Categories";
+import collectionRouter from "./routers/Collections";
+import userRouter from "./routers/Users";
 
 const app = express();
 
@@ -51,7 +58,7 @@ app.use("/api", routerVoucher);
 app.post("/api/products/add", createProduct);
 app.post("/api/variant/add", createVariant);
 app.delete("/api/variant/:id", removeVariant);
-app.post("/api/user/add", createUser);
+// app.post("/api/user/add", createUser);
 // app.use("/api", authRouter);
 
 app.use("/api/sliders", sliderRouter);
