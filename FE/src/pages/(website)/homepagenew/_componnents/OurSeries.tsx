@@ -85,16 +85,15 @@ const OurSeries = () => {
   };
 
   return (
-    <div
-      className="mx-auto px-5 md:px-28 pt-16 md:pt-36 overflow-hidden cursor-grab select-none"
-      
-    >
+    <div className="mx-auto px-5 xl:px-28 pt-16 md:pt-36 overflow-hidden cursor-grab select-none">
       {/* Tiêu đề phần */}
       <div className="text-center mb-8">
-        <h5 className="text-sm uppercase text-gray-500 tracking-wider mb-3">
+        <h5 className="text-sm uppercase font-questrial text-gray-500 tracking-wider mb-3">
           SẢN PHẨM CỦA CHÚNG TÔI
         </h5>
-        <h2 className="text-3xl sm:text-4xl font-bold">CHỌN MỘT PHONG CÁCH</h2>
+        <h2 className="text-3xl sm:text-4xl font-raleway text-[#343434] font-extrabold">
+          CHỌN MỘT PHONG CÁCH
+        </h2>
         <div className="flex items-center gap-1 justify-center my-6">
           <span className="h-[1px] w-2 bg-lime-400 mb-2"></span>
           <span className="h-[1px] w-12 bg-lime-400 mb-2"></span>
@@ -106,7 +105,7 @@ const OurSeries = () => {
       <Swiper
         spaceBetween={300}
         slidesPerView={1}
-        centeredSlides={false} 
+        centeredSlides={false}
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
         pagination={{ clickable: true }}
         loop={true}
@@ -115,14 +114,14 @@ const OurSeries = () => {
       >
         {productGroups.map((group, groupIndex) => (
           <SwiperSlide key={groupIndex}>
-            <div className="flex flex-col md:flex-row gap-10 justify-center items-center w-full">
+            <div className="flex flex-col md:flex-row gap-10 justify-center w-full">
               {group.map((product, index) => (
                 <div
                   key={product.id}
                   className={`flex flex-col ${
                     (groupIndex % 2 === 0 && index === 0) ||
                     (groupIndex % 2 !== 0 && index === 2)
-                      ? "w-full mt-10 mb-8 md:mb-0 relative"
+                      ? "w-full mb-8 md:mb-0 relative"
                       : "md:w-1/2"
                   } items-center text-center`}
                 >
@@ -136,15 +135,16 @@ const OurSeries = () => {
                             : product.image
                         }
                         alt={product.title}
-                        className="rounded-xl w-full h-[400px] md:h-[500px] object-cover transition-transform duration-300 ease-in-out"
+                        className="rounded-xl md:w-[600px] md:h-[480px] object-cover transition-transform duration-300 ease-in-out"
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
                       />
-                      <div className="absolute inset-0 bg-black bg-opacity-30 rounded-xl flex flex-col justify-center p-8 text-white">
-                        <p className="text-left text-lg mb-2">
+
+                      <div className="absolute md:h-[480px] inset-0 bg-black bg-opacity-30 rounded-xl flex flex-col justify-center p-8 text-white">
+                        <p className="text-left text-[#fff] text-lg font-questrial mb-2">
                           BẮT ĐẦU TỪ {product.price}
                         </p>
-                        <h2 className="text-3xl text-left font-bold mb-4">
+                        <h2 className="text-3xl text-left font-extrabold font-raleway mb-4">
                           {product.title.split(" ")[0]}{" "}
                           <span className="text-[#b8cd06]">
                             {product.title.split(" ")[1]}
@@ -154,11 +154,11 @@ const OurSeries = () => {
                         <p className="text-sm text-left mb-6 leading-relaxed line-clamp-3">
                           {product.description}
                         </p>
-                        <button className="group relative md:w-10 px-10 md:px-16 text-left py-6 md:py-6 text-sm bg-white text-black rounded-full font-semibold overflow-hidden">
+                        <button className="group relative md:w-10 px-10 md:px-16 text-left py-6 md:py-6 text-sm bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">
                           <span className="absolute inset-0 flex items-center justify-center text-xs transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                             TÌM HIỂU THÊM
                           </span>
-                          <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-black transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
+                          <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#555] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
@@ -184,7 +184,7 @@ const OurSeries = () => {
                             : product.image
                         }
                         alt={product.title}
-                        className={`mb-4 xl:w-[315px] xl:h-[315px] object-cover transition-transform duration-300 ease-in-out ${
+                        className={`mb-4 w-[315px] xl:w-[315px] xl:h-[315px] object-cover transition-transform duration-300 ease-in-out ${
                           hoveredIndex === index
                             ? "scale-95 opacity-100"
                             : "scale-100 opacity-100"
@@ -192,38 +192,41 @@ const OurSeries = () => {
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
                       />
-                      <h3 className="text-lg font-bold mb-2">
-                        {product.title.split(" ")[0]}{" "}
-                        <span className="text-[#b8cd06]">
-                          {product.title.split(" ")[1]}
-                        </span>{" "}
-                        {product.title.split(" ").slice(2).join(" ")}
-                      </h3>
-                      <p className="text-gray-500 text-xs px-16 md:px-6 line-clamp-3">
-                        {product.description}
-                      </p>
-                      <p className="text-sm text-gray-900 my-5">
-                        {product.price}
-                      </p>
-                      <button className="group relative px-20 md:px-16 py-5 md:py-5 text-sm bg-[#b8cd06] text-white rounded-full font-semibold overflow-hidden">
-                        <span className="absolute inset-0 flex items-center justify-center text-xs transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
-                          TÌM HIỂU THÊM
-                        </span>
-                        <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-white transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            className="w-5 h-5"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </span>
-                      </button>
+                      
+                      <div className="max-w-[100%]">
+                        <h3 className="text-lg font-raleway text-[#343434] font-extrabold mb-2">
+                          {product.title.split(" ")[0]}{" "}
+                          <span className="text-[#b8cd06]">
+                            {product.title.split(" ")[1]}
+                          </span>{" "}
+                          {product.title.split(" ").slice(2).join(" ")}
+                        </h3>
+                        <p className="text-gray-500 text-xs px-16 md:px-6 line-clamp-3">
+                          {product.description}
+                        </p>
+                        <p className="text-sm text-gray-900 my-5">
+                          {product.price}
+                        </p>
+                        <button className="group relative px-20 md:px-16 py-5 md:py-5 text-sm bg-[#b8cd06] text-white rounded-full font-semibold overflow-hidden">
+                          <span className="absolute inset-0 flex items-center justify-center text-xs transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
+                            TÌM HIỂU THÊM
+                          </span>
+                          <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-white transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-5 h-5"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        </button>
+                      </div>
                     </>
                   )}
                 </div>

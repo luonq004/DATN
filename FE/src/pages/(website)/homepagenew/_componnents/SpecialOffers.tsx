@@ -75,15 +75,14 @@ const SpecialOffers = () => {
   };
 
   return (
-    <div
-      className=" mx-auto px-5 sm:px-8 lg:px-28 pt-44 pb-10 md:pb-0 overflow-hidden w-full md:pt-36"
-     
-    >
+    <div className=" mx-auto px-5 lg:px-28 pt-44 pb-10 md:pb-0 overflow-hidden w-full md:pt-36">
       <div className="text-center mb-5 lg:mb-0">
-        <h5 className="text-sm uppercase text-gray-500 tracking-wider mb-3">
+        <h5 className="text-sm uppercase text-gray-500 font-questrial tracking-wider mb-3">
           Ưu Đãi Đặc Biệt
         </h5>
-        <h2 className="text-3xl sm:text-4xl font-bold">CHỌN LỰA TỐT NHẤT</h2>
+        <h2 className="text-3xl sm:text-4xl font-raleway text-[#343434] font-extrabold">
+          CHỌN LỰA TỐT NHẤT
+        </h2>
         <div className="flex items-center gap-1 justify-center my-6">
           <span className="h-[1px] w-2 bg-[#b8cd06] mb-2"></span>
           <span className="h-[1px] w-12 bg-[#b8cd06] mb-2"></span>
@@ -111,8 +110,8 @@ const SpecialOffers = () => {
         {offers.map((offer, index) => (
           <SwiperSlide
             key={index}
-            className="slider-item w-full flex-shrink-0 flex flex-col lg:flex-row  items-center justify-center space-y-8 lg:space-y-0  cursor-grab"
-            style={{ display: "flex",  }} 
+            className="slider-item w-full flex-shrink-0 flex-col gap-10 md:flex-row  xl:items-center justify-center space-y-8 lg:space-y-0  cursor-grab"
+            style={{ display: "flex" }}
           >
             <div className="w-full flex justify-center mt-10 lg:mt-0 pointer-events-none">
               <img
@@ -123,7 +122,7 @@ const SpecialOffers = () => {
             </div>
 
             <div className="w-full lg:w-3/4 text-left space-y-5 justify-center">
-              <h3 className="text-3xl font-bold text-gray-900">
+              <h3 className="text-3xl font-extrabold font-raleway text-[#343434]">
                 {offer.title.split(/([+\-*\/,;:"'<>\s])/).map((part, index) => (
                   <span
                     key={index}
@@ -150,7 +149,7 @@ const SpecialOffers = () => {
                   </span>
                 ))}
               </h3>
-              <p className="text-lg text-gray-500">
+              <p className="text-lg font-questrial text-gray-500">
                 GIÁ TỐT NHẤT:{" "}
                 <span className="text-[#b8cd06]">{offer.price}</span>
               </p>
@@ -174,7 +173,7 @@ const SpecialOffers = () => {
                 ))}
               </div>
 
-              <p className="text-gray-500 text-sm leading-relaxed">
+              <p className="text-gray-500 text-sm font-questrial leading-relaxed">
                 {offer.description}
               </p>
 
@@ -199,7 +198,7 @@ const SpecialOffers = () => {
                   </span>
                 </button>
 
-                <button className="group relative lg:px-20 py-6 text-xs bg-black text-white rounded-full font-semibold overflow-hidden">
+                <button className="group relative lg:px-20 py-6 text-xs bg-[#343434] text-white rounded-full font-semibold overflow-hidden">
                   <span className="absolute inset-0 flex items-center justify-center text-xs transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                     THÊM VÀO GIỎ HÀNG
                   </span>

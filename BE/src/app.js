@@ -3,12 +3,6 @@ import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
 
-import categoriesRouter from "./Routes/Categories";
-import collectionRouter from "./Routes/Collections";
-import logoRouter from "./Routes/Logo";
-import sliderRouter from "./routes/slider";
-import userRouter from "./routes/Users";
-
 config();
 
 import routerAddress from "./routers/Address";
@@ -25,10 +19,10 @@ import { createUser } from "./controllers/user";
 import routerVoucher from "./routers/voucher";
 
 const app = express();
-dotenv.config();
+
 //Middleware
 app.use(express.json());
-// app.use(morgan("tiny"));
+
 app.use(cors());
 
 app.use(morgan("dev"));
