@@ -31,6 +31,7 @@ import DemoPage from "@/pages/(dashboard)/voucher/page";
 import AboutUsPage from "@/pages/(website)/aboutus/page";
 import AdminOrder from "@/pages/(dashboard)/Order/Order";
 import PageServices from "@/pages/(website)/services/PageServices";
+import { SignIn, SignUp } from "@clerk/clerk-react";
 
 const Router = () => {
   return (
@@ -50,6 +51,9 @@ const Router = () => {
             <Route index element={<ProductsAll />} />
           </Route> */}
           {/* </Route> */}
+
+          <Route path="signin" element={<SignIn />} />
+          <Route path="signup" element={<SignUp />} />
 
           <Route path="services1" element={<PageServices />} />
           <Route path="cart" element={<CartPage />}>

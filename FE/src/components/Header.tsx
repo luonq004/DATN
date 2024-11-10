@@ -8,7 +8,12 @@ import MobileNav from "@/components/MobileNav";
 
 import logo from "@/assets/logo.png";
 
+import { Link } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+
 const Header = () => {
+  const { isSignedIn, user } = useUser();
+
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
@@ -47,19 +52,35 @@ const Header = () => {
               {/* NAVIGATION */}
               <div className="w-full lg:w-7/12 text-right flex justify-between lg:justify-end items-center px-[15px]">
                 <div className="border-l border-r lg:border-r-0 border-[#eee] px-[15px] py-[10px] md:p-5 lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase">
-                  <a
-                    href="#"
-                    className="cursor-pointer hover:text-[#b8cd06] transition-all"
-                  >
-                    <b>Đăng nhập</b>
-                  </a>
-                  &nbsp; hoặc &nbsp;
-                  <a
-                    href="#"
-                    className="cursor-pointer hover:text-[#b8cd06] transition-all"
-                  >
-                    <b>Đăng ký</b>
-                  </a>
+                  {isSignedIn ? (
+                    <Link className="flex gap-2" to="/users">
+                      <img
+                        className="rounded-full w-[20px] h-[20px] object-cover"
+                        src={user?.imageUrl}
+                        alt=""
+                      />{" "}
+                      <span>
+                        <span>{user?.firstName}</span>
+                        <span className="ml-0.5">{user?.lastName}</span>
+                      </span>
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        to="/signin"
+                        className="cursor-pointer hover:text-[#b8cd06] transition-all"
+                      >
+                        <b>Đăng nhập</b>
+                      </Link>
+                      &nbsp; hoặc &nbsp;
+                      <Link
+                        to="/signup"
+                        className="cursor-pointer hover:text-[#b8cd06] transition-all"
+                      >
+                        <b>Đăng ký</b>
+                      </Link>
+                    </>
+                  )}
                 </div>
 
                 <div className="border-l border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase hidden lg:inline">
@@ -97,9 +118,9 @@ const Header = () => {
         <div className="h-[60px] md:h-[98px] bg-white border-b border-b-[#eee] shadow-custom">
           <div className="border-x-0 lg:border-x-[50px] border-transparent h-full">
             <div className="flex h-full items-center">
-              <a className="w-4/12 md:w-2/12 px-[15px]" href="#">
+              <Link to="/" className="w-4/12 md:w-2/12 px-[15px]">
                 <img className="w-20 md:w-36" src={logo} alt="Logo" />
-              </a>
+              </Link>
 
               <div className="w-8/12 md:w-10/12 justify-items-end px-[15px]">
                 <nav className="hidden lg:block">
@@ -113,20 +134,20 @@ const Header = () => {
                       </a>
                     </li>
                     <li className="">
-                      <a
+                      <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
+                        to="/about"
                       >
                         Về chúng tôi
-                      </a>
+                      </Link>
                     </li>
                     <li className="">
-                      <a
+                      <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
+                        to="/shopping"
                       >
                         Sản phẩm
-                      </a>
+                      </Link>
                     </li>
                     <li className="">
                       <a
@@ -145,13 +166,14 @@ const Header = () => {
                       </a>
                     </li>
                     <li className="">
-                      <a
+                      <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
+                        to="/"
                       >
                         Trưng bày
-                      </a>
+                      </Link>
                     </li>
+
                     <li className="">
                       <a
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
