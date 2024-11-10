@@ -88,11 +88,13 @@ const Slider = () => {
           pagination={{ clickable: true }}
           onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
+          style={{height:"auto"}}
         >
           {slidesData.map((slide, index) => (
             <SwiperSlide
               key={index}
               className="flex justify-between items-center w-full h-full min-w-full relative flex-wrap"
+              style={{textAlign:"unset"}}
             >
               {/* Ảnh nền */}
               <img
@@ -312,7 +314,7 @@ const Slider = () => {
               {index === 2 && (
                 <div className="flex flex-col mb-10 p-5 lg:p-0 mt-5 md:mt-0 lg:items-center lg:justify-center md:text-center w-full h-full space-y-5 z-20">
                   <h5 className="text-sm text-slate-100 md:mt-20 lg:mt-0 z-20">{slide.subtitle}</h5>
-                  <h2 className="md:text-7xl text-4xl font-raleway font-extrabold text-white mb-2 z-20">
+                  <h2 className="md:text-5xl xl:text-7xl text-4xl font-raleway font-extrabold text-white mb-2 z-20">
                     {slide.title}
                   </h2>
                   <div className="flex md:justify-center md:items-center gap-1 z-20">
