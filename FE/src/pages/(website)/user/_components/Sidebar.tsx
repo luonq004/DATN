@@ -1,10 +1,12 @@
-import { useUser } from "@clerk/clerk-react";
+import { SignOutButton, useUser } from "@clerk/clerk-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ProfilePageModern from "./Profile";
 
 const SidebarAccount: React.FC = () => {
-  const [activeMenu, setActiveMenu] = useState<"account" | "bank" | null>("account");
+  const [activeMenu, setActiveMenu] = useState<"account" | "bank" | null>(
+    "account"
+  );
   const { user } = useUser();
 
   const toggleAccountMenu = () => {
@@ -127,8 +129,13 @@ const SidebarAccount: React.FC = () => {
             Kho Voucher
           </h3>
         </div>
-      </div>
 
+        {/* Đăng xuất */}
+
+        <SignOutButton>
+          <button>Đăng xuất</button>
+        </SignOutButton>
+      </div>
 
       {/* Nội dung bên phải */}
       <div className="flex-1 bg-white overflow-y-auto min-h-screen">
@@ -136,7 +143,6 @@ const SidebarAccount: React.FC = () => {
           <ProfilePageModern />
         </div>
       </div>
-      
     </div>
   );
 };

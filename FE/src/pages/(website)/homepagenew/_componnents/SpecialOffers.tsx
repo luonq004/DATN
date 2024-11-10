@@ -75,15 +75,14 @@ const SpecialOffers = () => {
   };
 
   return (
-    <div
-      className=" mx-auto px-5 lg:px-28 pt-44 pb-10 md:pb-0 overflow-hidden w-full md:pt-36"
-     
-    >
+    <div className=" mx-auto px-5 lg:px-28 pt-44 pb-10 md:pb-0 overflow-hidden w-full md:pt-36">
       <div className="text-center mb-5 lg:mb-0">
         <h5 className="text-sm uppercase text-gray-500 font-questrial tracking-wider mb-3">
           Ưu Đãi Đặc Biệt
         </h5>
-        <h2 className="text-3xl sm:text-4xl font-raleway text-[#343434] font-extrabold">CHỌN LỰA TỐT NHẤT</h2>
+        <h2 className="text-3xl sm:text-4xl font-raleway text-[#343434] font-extrabold">
+          CHỌN LỰA TỐT NHẤT
+        </h2>
         <div className="flex items-center gap-1 justify-center my-6">
           <span className="h-[1px] w-2 bg-[#b8cd06] mb-2"></span>
           <span className="h-[1px] w-12 bg-[#b8cd06] mb-2"></span>
@@ -112,7 +111,7 @@ const SpecialOffers = () => {
           <SwiperSlide
             key={index}
             className="slider-item w-full flex-shrink-0 flex-col gap-10 md:flex-row  xl:items-center justify-center space-y-8 lg:space-y-0  cursor-grab"
-            style={{ display: "flex" }} 
+            style={{ display: "flex" }}
           >
             <div className="w-full flex justify-center mt-10 lg:mt-0 pointer-events-none">
               <img
