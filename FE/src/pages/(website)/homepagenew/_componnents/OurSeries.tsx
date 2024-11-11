@@ -107,7 +107,6 @@ const OurSeries = () => {
         slidesPerView={1}
         centeredSlides={false}
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-        pagination={{ clickable: true }}
         loop={true}
         speed={600}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
