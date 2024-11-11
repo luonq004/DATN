@@ -1,10 +1,9 @@
-import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
-import { TiStarFullOutline } from "react-icons/ti";
-import { IoClose } from "react-icons/io5";
-import { IoBagHandleSharp } from "react-icons/io5";
+import { IoBagHandleSharp, IoClose } from "react-icons/io5";
 import { SlHeart } from "react-icons/sl";
+import { TiStarFullOutline } from "react-icons/ti";
 
 import {
   Carousel,
@@ -15,21 +14,40 @@ import {
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-import ao2 from "@/assets/products/ao2.png";
-import ao3 from "@/assets/products/ao3.png";
+import { IProduct, Variant } from "@/common/types/Product";
+import { extractAttributes, formatCurrency } from "@/lib/utils";
 
 const PreviewProduct = ({
   isOpen,
   onClose,
+  selectedIndex,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  selectedIndex: string | null;
 }) => {
   const [apiImage, setApiImage] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [productPopup, setProductPopup] = useState<IProduct>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const images = [ao2, ao3];
+  useEffect(() => {
+    if (!selectedIndex || productPopup?._id === selectedIndex) return;
+
+    const fetchProduct = async () => {
+      // setIsLoading(true);
+      const response = await fetch(
+        `http://localhost:8080/api/products/${selectedIndex}`
+      );
+      const data = await response.json();
+      setIsLoading(false);
+      setProductPopup(data);
+    };
+
+    fetchProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIndex, isLoading]);
 
   useEffect(() => {
     if (!apiImage) {
@@ -51,6 +69,13 @@ const PreviewProduct = ({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const attributesProduct =
+    !isLoading && Object.entries(extractAttributes(productPopup?.variants));
+
   return createPortal(
     <div
       className={`fixed inset-0 bg-[#000c] z-50 backdrop-blur-sm transition-opacity duration-500 ${
@@ -70,17 +95,25 @@ const PreviewProduct = ({
           <div className="px-[15px] mx-auto mb-[30px] md:mb-0">
             <Carousel className="w-full max-w-xs" setApi={setApiImage}>
               <CarouselContent>
-                {images.map((img, index) => (
-                  <CarouselItem key={index}>
-                    <img className="" src={img} alt="Anh san pham" />
-                  </CarouselItem>
-                ))}
+                {productPopup?.variants.map(
+                  (variant: Variant, index: number) => (
+                    <CarouselItem key={index}>
+                      <img
+                        className="w-full"
+                        src={variant.image}
+                        alt="Anh san pham"
+                        loading="lazy"
+                      />
+                    </CarouselItem>
+                  )
+                )}
               </CarouselContent>
             </Carousel>
 
             <div className="flex items-center mt-4 gap-2">
-              {images.map((img, index) => (
+              {productPopup?.variants.map((variant: Variant, index: number) => (
                 <div
+                  key={index}
                   className={`${
                     index + 1 === current ? "border-[#b8cd06] border-4" : ""
                   } transition-all`}
@@ -88,7 +121,7 @@ const PreviewProduct = ({
                   <img
                     key={index}
                     className={`size-14 `}
-                    src={img}
+                    src={variant.image}
                     alt=""
                     onClick={() => apiImage?.scrollTo(index)}
                   />
@@ -99,15 +132,19 @@ const PreviewProduct = ({
 
           {/* Section 2 */}
           <div className="px-[15px]">
-            <h5 className="uppercase text-[#555] text-sm leading-5">
+            {/* Category */}
+            {/* <h5 className="uppercase text-[#555] text-sm leading-5">
               thời trang mới
-            </h5>
+            </h5> */}
             <h2 className="text-3xl leading-8 uppercase font-black font-raleway text-[#343434] mb-[25px]">
-              watch 42mm smartwatch
+              {productPopup?.name}
             </h2>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center md:mb-[25px]">
               <span className="uppercase text-lg text-[#555]">
-                giá: <span className="text-[#b8cd06]">1.200.000đ</span>
+                giá:{" "}
+                <span className="text-[#b8cd06]">
+                  {formatCurrency(productPopup?.price ?? 0)} VNĐ
+                </span>
               </span>
 
               {/* Star Rating */}
@@ -125,68 +162,51 @@ const PreviewProduct = ({
 
             {/* Description */}
             <p className="text-sm text-[#888] leading-[22px] mb-[30px]">
-              Thiết kế cơ bản với cổ tròn hoặc cổ tim, tay ngắn, dễ phối đồ và
-              phù hợp cho nhiều dịp từ dạo phố đến tập luyện. Màu sắc và họa
-              tiết đa dạng, giúp áo thun trở thành món đồ không thể thiếu trong
-              tủ đồ hàng ngày.
+              {productPopup?.description}
             </p>
 
             {/* Attribute */}
-            <div className="mb-10 flex flex-col md:flex-row md:items-center">
-              <span className="uppercase text-[13px] text-[#343434] font-raleway font-black mb-2 w-full md:w-4/12">
-                kích thước:
-              </span>
-
-              <ToggleGroup
-                className="justify-start gap-2 w-full md:w-8/12 flex-wrap px-[15px]"
-                type="single"
-                defaultValue="bold"
+            {attributesProduct.map(([key, value]) => (
+              <div
+                className="mb-10 flex flex-col md:flex-row md:items-center"
+                key={key}
               >
-                <ToggleGroupItem
-                  className="rounded-none border data-[state=on]:border-2 data-[state=on]:text-black transition-all uppercase px-3 h-8"
-                  value="bold"
-                >
-                  s
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  className="rounded-none border data-[state=on]:border-2 data-[state=on]:text-black transition-all uppercase px-3 h-8"
-                  value="italic"
-                >
-                  m
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  className="rounded-none border data-[state=on]:border-2 data-[state=on]:text-black transition-all uppercase px-3 h-8"
-                  value="underline"
-                >
-                  l
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
+                <span className="uppercase text-[13px] text-[#343434] font-raleway font-black mb-2 w-full md:w-4/12">
+                  {key}:
+                </span>
 
-            <div className="mb-10 flex flex-col md:flex-row md:items-center">
-              <span className="uppercase text-[13px] text-[#343434] font-raleway font-black mb-2 w-full md:w-4/12">
-                màu sắc:
-              </span>
-
-              <ToggleGroup
-                className="justify-start gap-2 w-full md:w-8/12 flex-wrap px-[15px]"
-                type="single"
-                defaultValue="red"
-              >
-                <ToggleGroupItem
-                  className="rounded-none border bg-red-600 hover:bg-red-600 data-[state=on]:bg-red-600 data-[state=on]:border-2 size-6 p-0 cusor-pointer transition-all"
-                  value="red"
-                ></ToggleGroupItem>
-                <ToggleGroupItem
-                  className="rounded-none border bg-green-600 hover:bg-green-600 data-[state=on]:bg-green-600 data-[state=on]:border-2 size-6 p-0 cusor-pointer transition-all"
-                  value="green"
-                ></ToggleGroupItem>
-                <ToggleGroupItem
-                  className="rounded-none border bg-pink-600 hover:bg-pink-600 data-[state=on]:bg-pink-600 data-[state=on]:border-2 size-6 p-0 cusor-pointer transition-all"
-                  value="pink"
-                ></ToggleGroupItem>
-              </ToggleGroup>
-            </div>
+                <ToggleGroup
+                  className="justify-start gap-2 w-full md:w-8/12 flex-wrap px-[15px]"
+                  type="single"
+                  // defaultValue={value[0].value}
+                >
+                  {(value as string[]).map((item: string, idx: number) => {
+                    if (item.split(":")[1].startsWith("#")) {
+                      return (
+                        <ToggleGroupItem
+                          key={`${item.split(":")[0]}-${idx}`}
+                          className={`rounded-none border data-[state=on]:border-2 size-6 p-0 cusor-pointer transition-all`}
+                          value={item.split(":")[0]}
+                          style={{
+                            backgroundColor: item.split(":")[1],
+                          }}
+                        ></ToggleGroupItem>
+                      );
+                    } else {
+                      return (
+                        <ToggleGroupItem
+                          className="rounded-none border data-[state=on]:border-2 data-[state=on]:text-black transition-all uppercase px-3 h-8"
+                          value={item.split(":")[0]}
+                          key={item.split(":")[0]}
+                        >
+                          {item.split(":")[1]}
+                        </ToggleGroupItem>
+                      );
+                    }
+                  })}
+                </ToggleGroup>
+              </div>
+            ))}
 
             {/* Quantity */}
             <div className="mb-10 flex flex-col md:flex-row md:items-center">

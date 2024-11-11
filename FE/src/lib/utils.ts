@@ -12,6 +12,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("vi-VN").format(value);
+
+// ===================================================================
+
 export function getUniqueTypes(product: IProduct) {
   const types = new Set(); // Sử dụng Set để đảm bảo không có giá trị trùng lặp
 
@@ -156,4 +161,27 @@ export const checkForDuplicateVariants = (data: IProduct) => {
   });
 
   return duplicateIndices; // Trả về mảng vị trí của các biến thể bị trùng
+};
+
+//
+
+export const extractAttributes = (variants: any) => {
+  const attributes: any = {};
+
+  variants.forEach((variant) => {
+    variant.values.forEach((value) => {
+      const type = value.type;
+      if (!attributes[type]) {
+        attributes[type] = new Set();
+      }
+      attributes[type].add(`${value._id}:${value.value}`);
+    });
+  });
+
+  // Chuyển đổi Set thành Array cho mỗi thuộc tính
+  Object.keys(attributes).forEach((key) => {
+    attributes[key] = Array.from(attributes[key]);
+  });
+
+  return attributes;
 };

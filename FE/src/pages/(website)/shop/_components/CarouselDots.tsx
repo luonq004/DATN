@@ -45,6 +45,10 @@ export function CarouselDots() {
     });
   }, [api]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="w-full lg:w-[75%] lg:order-1">
       <Carousel setApi={setApi} className="relative">

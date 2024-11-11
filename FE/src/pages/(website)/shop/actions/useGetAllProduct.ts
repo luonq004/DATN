@@ -7,7 +7,7 @@ export function useGetAllProduct() {
     data: listProduct,
     error,
   } = useQuery({
-    queryKey: ["Product"],
+    queryKey: ["Products"],
     queryFn: getAllProduct,
   });
 
