@@ -48,7 +48,7 @@ const SlideOurTeam = () => {
                 <SwiperSlide>
                     <div className='flex flex-col gap-y-6 items-center group'>
                         <div className='grid place-items-center border border-[#eee] w-full hover:cursor-move'>
-                            <img className='transition duration-300 filter grayscale hover:filter-none' src={thum_40} alt="thum_35" />
+                            <img className='transition duration-300 filter grayscale group-hover:filter-none' src={thum_40} alt="thum_35" />
                         </div>
                         <div className='Content relative max-w-[300px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <div className='Desc group-hover:scale-0 transition-all duration-200 flex flex-col gap-y-3 items-center'>
@@ -85,7 +85,7 @@ const SlideOurTeam = () => {
                 <SwiperSlide>
                     <div className='flex flex-col gap-y-6 items-center group'>
                         <div className='grid place-items-center border border-[#eee] -mr-[1px] w-full hover:cursor-move'>
-                            <img className='transition duration-300 filter grayscale hover:filter-none' src={thum_41} alt="thum_35" />
+                            <img className='transition duration-300 filter grayscale group-hover:filter-none' src={thum_41} alt="thum_35" />
                         </div>
                         <div className='Content relative max-w-[300px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <div className='Desc group-hover:scale-0 transition-all duration-200 flex flex-col gap-y-3 items-center'>
@@ -122,7 +122,7 @@ const SlideOurTeam = () => {
                 <SwiperSlide>
                     <div className='flex flex-col gap-y-6 items-center group'>
                         <div className='grid place-items-center border border-[#eee] -mr-[1px] w-full hover:cursor-move'>
-                            <img className='transition duration-300 filter grayscale hover:filter-none' src={thum_42} alt="thum_35" />
+                            <img className='transition duration-300 filter grayscale group-hover:filter-none' src={thum_42} alt="thum_35" />
                         </div>
                         <div className='Content relative max-w-[300px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <div className='Desc group-hover:scale-0 transition-all duration-200 flex flex-col gap-y-3 items-center'>
@@ -159,7 +159,7 @@ const SlideOurTeam = () => {
                 <SwiperSlide>
                     <div className='flex flex-col gap-y-6 items-center group'>
                         <div className='grid place-items-center border border-[#eee] -mr-[1px] w-full hover:cursor-move'>
-                            <img className='transition duration-300 filter grayscale hover:filter-none' src={thum_43} alt="thum_35" />
+                            <img className='transition duration-300 filter grayscale group-hover:filter-none' src={thum_43} alt="thum_35" />
                         </div>
                         <div className='Content relative max-w-[300px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <div className='Desc group-hover:scale-0 transition-all duration-200 flex flex-col gap-y-3 items-center'>
@@ -196,7 +196,7 @@ const SlideOurTeam = () => {
                 <SwiperSlide>
                     <div className='flex flex-col gap-y-6 items-center group'>
                         <div className='grid place-items-center border border-[#eee] -mr-[1px] w-full hover:cursor-move'>
-                            <img className='transition duration-300 filter grayscale hover:filter-none' src={thum_40} alt="thum_35" />
+                            <img className='transition duration-300 filter grayscale group-hover:filter-none' src={thum_40} alt="thum_35" />
                         </div>
                         <div className='Content relative max-w-[300px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <div className='Desc group-hover:scale-0 transition-all duration-200 flex flex-col gap-y-3 items-center'>
