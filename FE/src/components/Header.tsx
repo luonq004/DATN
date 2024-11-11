@@ -9,12 +9,25 @@ import MobileNav from "@/components/MobileNav";
 import logo from "@/assets/logo.png";
 
 import { Link } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { useClerk, useUser } from "@clerk/clerk-react";
 
 const Header = () => {
   const { isSignedIn, user } = useUser();
-
+  const { openSignIn, openSignUp, signOut } = useClerk();
   const [isOpen, setIsOpen] = useState(false);
+
+  const opensignin = async () => {
+    await openSignIn({
+      redirectUrl: "/",
+    });
+  };
+
+  const opensignup = async () => {
+    await openSignUp({
+      redirectUrl: "/",
+    });
+  };
+
   return (
     <>
       <header
@@ -67,14 +80,16 @@ const Header = () => {
                   ) : (
                     <>
                       <Link
-                        to="/signin"
+                        to="/"
+                        onClick={opensignin}
                         className="cursor-pointer hover:text-[#b8cd06] transition-all"
                       >
                         <b>Đăng nhập</b>
                       </Link>
                       &nbsp; hoặc &nbsp;
                       <Link
-                        to="/signup"
+                        to='/'
+                        onClick={opensignup}
                         className="cursor-pointer hover:text-[#b8cd06] transition-all"
                       >
                         <b>Đăng ký</b>

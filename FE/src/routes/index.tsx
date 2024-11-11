@@ -52,8 +52,8 @@ const Router = () => {
           </Route> */}
           {/* </Route> */}
 
-          <Route path="signin" element={<SignIn />} />
-          <Route path="signup" element={<SignUp />} />
+          {/* <Route path="signin" element={<SignIn />} />
+          <Route path="signup" element={<SignUp />} /> */}
 
           <Route path="services1" element={<PageServices />} />
           <Route path="cart" element={<CartPage />}>
