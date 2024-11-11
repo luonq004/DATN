@@ -100,7 +100,6 @@ const SpecialOffers = () => {
         }}
         speed={600}
         spaceBetween={30}
-        pagination={{ clickable: true }}
         breakpoints={{
           320: { slidesPerView: 1 },
           768: { slidesPerView: 1 },

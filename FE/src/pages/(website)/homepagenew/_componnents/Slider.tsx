@@ -85,16 +85,13 @@ const Slider = () => {
           //   disableOnInteraction: false,
           // }}
           speed={600}
-          pagination={{ clickable: true }}
           onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
-          style={{height:"auto"}}
         >
           {slidesData.map((slide, index) => (
             <SwiperSlide
               key={index}
               className="flex justify-between items-center w-full h-full min-w-full relative flex-wrap"
-              style={{textAlign:"unset"}}
             >
               {/* Ảnh nền */}
               <img
@@ -405,9 +402,9 @@ const Slider = () => {
             className="size-6 text-gray-500"
           >
             <path
-              fill-rule="evenodd"
+              fillRule="evenodd"
               d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
-              clip-rule="evenodd"
+              clipRule="evenodd"
             />
           </svg>
         </button>
