@@ -12,30 +12,33 @@ const productSchema = new mongoose.Schema(
 
     slug: {
       type: String,
-      unique: true,
+      // unique: true,
       lowercase: true,
     },
 
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+      },
+    ],
 
     countOnStock: {
       type: Number,
-      required: true,
     },
 
-    avatarMain: {
+    image: {
       type: String,
-      required: true,
     },
 
-    // price: {
-    //   type: Number,
-    //   required: true,
-    // },
+    price: {
+      type: Number,
+    },
+
+    priceSale: {
+      type: Number,
+    },
 
     description: {
       type: String,
@@ -52,16 +55,15 @@ const productSchema = new mongoose.Schema(
       // Ta có thể bỏ qua field khỏi schema khi được select (Trong trg hợp data nhạy cảm,...)
       select: false,
     },
-
     reviews: [Object],
 
-    attribute: [Object],
+    // attribute: [Object],
 
     variants: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Variant",
-        required: true,
+        // required: true,
       },
     ],
   },

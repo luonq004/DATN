@@ -23,6 +23,10 @@ module.exports = {
       padding: "2rem",
     },
     extend: {
+      fontFamily: {
+        questrial: ['"Questrial"', "sans-serif"],
+        raleway: ['"Raleway"', "sans-serif"],
+      },
       colors: {
         light: {
           50: "#f1f9fa",
