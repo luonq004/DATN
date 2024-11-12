@@ -15,7 +15,11 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { IProduct, Variant } from "@/common/types/Product";
-import { extractAttributes, formatCurrency } from "@/lib/utils";
+import {
+  extractAttributes,
+  filterAndFormatAttributes,
+  formatCurrency,
+} from "@/lib/utils";
 
 const PreviewProduct = ({
   isOpen,
@@ -31,6 +35,10 @@ const PreviewProduct = ({
   const [quantity, setQuantity] = useState(1);
   const [productPopup, setProductPopup] = useState<IProduct>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [attributesChoose, setAttributesChoose] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     if (!selectedIndex || productPopup?._id === selectedIndex) return;
@@ -75,6 +83,53 @@ const PreviewProduct = ({
 
   const attributesProduct =
     !isLoading && Object.entries(extractAttributes(productPopup?.variants));
+
+  // console.log(attributesProduct);
+
+  const handleAttributeSelect = (type: string, value: string) => {
+    if (!productPopup) return;
+    const attributeSelected = filterAndFormatAttributes(
+      productPopup,
+      type,
+      value
+    );
+
+    // console.log(attributeSelected);
+
+    setAttributesChoose((prev) => {
+      const newSelected = { ...prev };
+      // console.log("newSelected: ", newSelected);
+
+      // Duyệt qua các key trong attributeSelected
+      Object.keys(attributeSelected).forEach((key) => {
+        const newValue = attributeSelected[key]; // Giá trị mới từ attributeSelected
+
+        // Kiểm tra nếu key đã tồn tại trong state (newSelected)
+        if (newSelected[key]) {
+          // Kiểm tra nếu value trong attributeSelected trùng với value hiện tại trong state
+          if (
+            newValue.length === newSelected[key][0].length &&
+            newValue.every(
+              (value, index) => value === newSelected[key][0][index]
+            )
+          ) {
+            // Nếu trùng cả key và value, xóa key và value
+            delete newSelected[key];
+          } else {
+            // Nếu chỉ trùng key, nhưng value khác, ghi đè giá trị mới cho key đó
+            newSelected[key] = [newValue]; // Giá trị được thay thế
+          }
+        } else {
+          // Nếu key chưa tồn tại, thêm mới vào state
+          newSelected[key] = [newValue];
+        }
+      });
+
+      return newSelected;
+    });
+  };
+
+  console.log(attributesChoose);
 
   return createPortal(
     <div
@@ -184,20 +239,47 @@ const PreviewProduct = ({
                     if (item.split(":")[1].startsWith("#")) {
                       return (
                         <ToggleGroupItem
+                          onClick={() =>
+                            handleAttributeSelect(key, item.split(":")[0])
+                          }
                           key={`${item.split(":")[0]}-${idx}`}
                           className={`rounded-none border data-[state=on]:border-2 size-6 p-0 cusor-pointer transition-all`}
                           value={item.split(":")[0]}
                           style={{
                             backgroundColor: item.split(":")[1],
                           }}
+                          disabled={
+                            key in attributesChoose
+                              ? !attributesChoose[key][0].includes(
+                                  item.split(":")[0]
+                                )
+                              : false
+                          }
                         ></ToggleGroupItem>
                       );
                     } else {
                       return (
                         <ToggleGroupItem
+                          onClick={() =>
+                            handleAttributeSelect(key, item.split(":")[0])
+                          }
                           className="rounded-none border data-[state=on]:border-2 data-[state=on]:text-black transition-all uppercase px-3 h-8"
                           value={item.split(":")[0]}
                           key={item.split(":")[0]}
+                          // disabled={
+                          //   key in attributesChoose
+                          //     ? item
+                          //         .split(":")[0]
+                          //         .includes(attributesChoose[key][0])
+                          //     : false
+                          // }
+                          disabled={
+                            key in attributesChoose
+                              ? !attributesChoose[key][0].includes(
+                                  item.split(":")[0]
+                                )
+                              : false
+                          }
                         >
                           {item.split(":")[1]}
                         </ToggleGroupItem>

@@ -185,3 +185,30 @@ export const extractAttributes = (variants: any) => {
 
   return attributes;
 };
+
+export const filterAndFormatAttributes = (
+  product: IProduct,
+  type: string,
+  value: string
+) => {
+  const filteredVariants = product.variants.filter((variant) =>
+    variant.values.some((attr) => attr.type === type && attr._id === value)
+  );
+
+  const result: Record<string, string[]> = {};
+
+  filteredVariants.forEach((variant) => {
+    variant.values.forEach((attr) => {
+      if (attr.type !== type) {
+        if (!result[attr.type]) {
+          result[attr.type] = [];
+        }
+        if (!result[attr.type].includes(attr._id)) {
+          result[attr.type].push(attr._id);
+        }
+      }
+    });
+  });
+
+  return result;
+};

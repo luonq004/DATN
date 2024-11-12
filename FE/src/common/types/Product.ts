@@ -26,6 +26,7 @@ export interface IProduct {
 export interface Variant {
   _id?: string;
   price: number;
+  priceSale?: number;
   values: {
     _id?: string;
     name?: string;
