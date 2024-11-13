@@ -1,16 +1,17 @@
+// export interface IProduct {
+//   _id: string;
+//   name: string;
+//   category: string[];
+//   price: number;
+//   description: string;
+//   image: string;
+//   // status: "pending" | "processing" | "success" | "failed";
+// }
+
 export interface IProduct {
   _id: string;
   name: string;
-  category: string[];
-  price: number;
-  description: string;
-  image: string;
-  // status: "pending" | "processing" | "success" | "failed";
-}
-
-export interface IProduct2 {
-  _id: string;
-  name: string;
+  type: string;
   category: string[];
   price: number;
   description: string;
@@ -25,11 +26,12 @@ export interface IProduct2 {
 export interface Variant {
   _id?: string;
   price: number;
+  priceSale?: number;
   values: {
-    _id?: string;
-    name?: string;
-    type?: string;
-    value?: string;
+    _id: string;
+    name: string;
+    type: string;
+    value: string;
   }[];
   countOnStock: number;
   image: string;

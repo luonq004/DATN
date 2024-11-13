@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { UserInfoProvider } from "./common/context/UserProvider.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,10 +28,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-          <App />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </ClerkProvider>
+        <UserInfoProvider>
+          <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+            <App />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </ClerkProvider>
+        </UserInfoProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>

@@ -24,10 +24,12 @@ import banner_3 from "@/assets/img/banner/banner-3.jpeg";
 
 import { LayoutGrid, TableProperties } from "lucide-react";
 import ProductItem from "./ProductItem";
+import { useGetAllProduct } from "../actions/useGetAllProduct";
 
 export function CarouselDots() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
+  const { isLoading, listProduct, error } = useGetAllProduct();
 
   const images = [banner, banner_3, banner_2];
 
@@ -42,6 +44,10 @@ export function CarouselDots() {
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="w-full lg:w-[75%] lg:order-1">
@@ -146,13 +152,13 @@ export function CarouselDots() {
           <div className="mt-0 mb-2 w-full md:w-auto">
             <Select>
               <SelectTrigger className="focus:border-[#b8cd06] rounded-2xl outline-0 ring-0 focus:outline-0 focus:ring-0 focus:ring-offset-0 md:w-[120px] mt-0">
-                <SelectValue placeholder="HIỂN THỊ 30" />
+                <SelectValue placeholder="HIỂN THỊ 9" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
+                  <SelectItem value="30">9</SelectItem>
+                  <SelectItem value="50">12</SelectItem>
+                  <SelectItem value="100">15</SelectItem>
                   <SelectItem value="200">200</SelectItem>
                 </SelectGroup>
               </SelectContent>
@@ -162,7 +168,7 @@ export function CarouselDots() {
 
         {/* PRODUCT */}
         {/* ============= GRID ============= */}
-        <ProductItem />
+        <ProductItem listProduct={listProduct} />
         {/* ============= GRID ============= */}
 
         {/* ==================================================================== */}

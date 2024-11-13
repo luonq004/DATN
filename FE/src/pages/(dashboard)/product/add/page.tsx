@@ -69,6 +69,7 @@ const ProductAddPage = () => {
           description: "",
           price: 0,
           priceSale: 0,
+          type: "simple",
         }
       : {
           name: "",
@@ -95,6 +96,9 @@ const ProductAddPage = () => {
           deleted: false,
           price: 0,
           priceSale: 0,
+          category: [],
+          image: "",
+          type: "variable",
           // slug: "",
         },
   });

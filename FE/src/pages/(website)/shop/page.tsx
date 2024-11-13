@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import Header from "./_components/Header";
 import { CarouselDots } from "./_components/CarouselDots";
 
 import CategoriesMenu from "./_components/CategoriesMenu";
@@ -7,8 +6,6 @@ import CategoriesMenu from "./_components/CategoriesMenu";
 const ProductShopPage = () => {
   return (
     <>
-      {/* <Header /> */}
-      {/* <div className="block h-[100px] md:h-[159px]"></div> */}
       <div className="container">
         <div className="h-4 md:h-8 mb-0"></div>
 

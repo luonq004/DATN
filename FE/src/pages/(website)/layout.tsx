@@ -1,3 +1,4 @@
+import { useUserContext } from "@/common/context/UserProvider";
 import { saveUserToDatabase } from "@/common/hooks/useCheckUser";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -8,18 +9,24 @@ import { Outlet } from "react-router-dom";
 const LayoutWebsite = () => {
   const { user } = useUser();
   const isUserSaved = useRef(false);
+  const { login } = useUserContext();
 
   useEffect(() => {
-    if (user) {
-      // Gọi saveUserToDatabase một lần
-      if (!isUserSaved.current) {
-        saveUserToDatabase(user.id);
-        isUserSaved.current = true;
+    const saveUserIfNeeded = async () => {
+      if (user && !isUserSaved.current) {
+        try {
+          // Gọi hàm saveUserToDatabase với await
+          const data = await saveUserToDatabase(user.id);
+          login(data._id); // Lưu _id vào context
+          isUserSaved.current = true; // Đánh dấu đã lưu
+        } catch (error) {
+          console.error("Lỗi khi lưu user vào database:", error);
+        }
       }
+    };
 
-      console.log(user);
-    }
-  }, [user]);
+    saveUserIfNeeded(); // Gọi hàm async bên trong useEffect
+  }, [user, login]);
 
   return (
     <>

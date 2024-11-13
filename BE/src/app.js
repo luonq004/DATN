@@ -49,7 +49,7 @@ app.use("/api", routerAddress);
 app.use("/api", routerOrder);
 
 //routers
-app.use("/api/v1", productRouter);
+app.use("/api", productRouter);
 app.use("/api/v1", attributeRouter);
 app.use("/api", attributeValueRouter);
 app.use("/api", routerCategory);
@@ -72,7 +72,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal Server Error" });
 });
 
-const port = process.env.PORT || 8080;
+// const port = process.env.PORT || 8080;
+const port = process.env.PORT;
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
