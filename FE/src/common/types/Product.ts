@@ -28,10 +28,10 @@ export interface Variant {
   price: number;
   priceSale?: number;
   values: {
-    _id?: string;
-    name?: string;
-    type?: string;
-    value?: string;
+    _id: string;
+    name: string;
+    type: string;
+    value: string;
   }[];
   countOnStock: number;
   image: string;

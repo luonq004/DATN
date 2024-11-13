@@ -200,10 +200,12 @@ export const updateUser = async (req, res) => {
     // Kiểm tra người dùng tồn tại trong MongoDB
     const user = await Users.findOne({ clerkId });
     if (!user) {
-      return res.status(404).json({ message: "Người dùng không tồn tại trong cơ sở dữ liệu" });
+      return res
+        .status(404)
+        .json({ message: "Người dùng không tồn tại trong cơ sở dữ liệu" });
     }
 
-    let imageUrl = updateData.imageUrl; 
+    let imageUrl = updateData.imageUrl;
 
     // Kiểm tra nếu có file hình ảnh mới được tải lên
     if (req.file) {
@@ -217,9 +219,11 @@ export const updateUser = async (req, res) => {
 
       // Kiểm tra nếu quá trình upload lên Cloudinary thành công
       if (uploadResponse && uploadResponse.secure_url) {
-        imageUrl = uploadResponse.secure_url; 
+        imageUrl = uploadResponse.secure_url;
       } else {
-        return res.status(500).json({ message: "Không thể lấy URL ảnh từ Cloudinary." });
+        return res
+          .status(500)
+          .json({ message: "Không thể lấy URL ảnh từ Cloudinary." });
       }
 
       console.log("URL ảnh mới từ Cloudinary:", imageUrl);
@@ -228,7 +232,7 @@ export const updateUser = async (req, res) => {
     // Cập nhật thông tin người dùng trên Clerk
     try {
       const clerkResponse = await clerkClient.users.updateUser(clerkId, {
-        imageUrl: imageUrl, 
+        imageUrl: imageUrl,
         firstName: updateData.firstName,
         lastName: updateData.lastName,
         emailAddress: updateData.email,
@@ -241,15 +245,25 @@ export const updateUser = async (req, res) => {
 
       // Kiểm tra phản hồi từ Clerk
       if (clerkResponse.imageUrl !== imageUrl) {
-        console.error("Ảnh không được cập nhật trên Clerk. Vui lòng kiểm tra lại.");
+        console.error(
+          "Ảnh không được cập nhật trên Clerk. Vui lòng kiểm tra lại."
+        );
       } else {
         console.log("Ảnh đã được cập nhật thành công trên Clerk.");
       }
 
       console.log("Clerk update response: ", clerkResponse);
     } catch (clerkError) {
-      console.error("Lỗi khi cập nhật thông tin người dùng trên Clerk:", clerkError);
-      return res.status(500).json({ message: "Đã xảy ra lỗi khi cập nhật thông tin người dùng trên Clerk." });
+      console.error(
+        "Lỗi khi cập nhật thông tin người dùng trên Clerk:",
+        clerkError
+      );
+      return res
+        .status(500)
+        .json({
+          message:
+            "Đã xảy ra lỗi khi cập nhật thông tin người dùng trên Clerk.",
+        });
     }
 
     // Cập nhật thông tin người dùng trong MongoDB
@@ -273,8 +287,6 @@ export const updateUser = async (req, res) => {
     });
   }
 };
-
-
 
 export const banUser = async (req, res) => {
   const { clerkId } = req.params;

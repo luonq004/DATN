@@ -20,6 +20,8 @@ import {
   filterAndFormatAttributes,
   formatCurrency,
 } from "@/lib/utils";
+import { useUserContext } from "@/common/context/UserProvider";
+import axios from "axios";
 
 const PreviewProduct = ({
   isOpen,
@@ -40,11 +42,18 @@ const PreviewProduct = ({
     Record<string, string>
   >({});
 
+  const [selectedAttributes, setSelectedAttributes] = useState<
+    Record<string, string>
+  >({});
+
+  const { _id } = useUserContext();
+
   useEffect(() => {
     if (!selectedIndex || productPopup?._id === selectedIndex) return;
 
     const fetchProduct = async () => {
       // setIsLoading(true);
+      setAttributesChoose({});
       const response = await fetch(
         `http://localhost:8080/api/products/${selectedIndex}`
       );
@@ -54,7 +63,6 @@ const PreviewProduct = ({
     };
 
     fetchProduct();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex, isLoading]);
 
   useEffect(() => {
@@ -84,9 +92,23 @@ const PreviewProduct = ({
   const attributesProduct =
     !isLoading && Object.entries(extractAttributes(productPopup?.variants));
 
-  // console.log(attributesProduct);
-
   const handleAttributeSelect = (type: string, value: string) => {
+    setSelectedAttributes((prev) => {
+      const newSelected = { ...prev };
+
+      if (type in newSelected) {
+        if (newSelected[type] === value) {
+          delete newSelected[type];
+        } else {
+          newSelected[type] = value;
+        }
+      } else {
+        newSelected[type] = value;
+      }
+
+      return newSelected;
+    });
+
     if (!productPopup) return;
     const attributeSelected = filterAndFormatAttributes(
       productPopup,
@@ -94,11 +116,8 @@ const PreviewProduct = ({
       value
     );
 
-    // console.log(attributeSelected);
-
     setAttributesChoose((prev) => {
       const newSelected = { ...prev };
-      // console.log("newSelected: ", newSelected);
 
       // Duyệt qua các key trong attributeSelected
       Object.keys(attributeSelected).forEach((key) => {
@@ -129,7 +148,33 @@ const PreviewProduct = ({
     });
   };
 
-  console.log(attributesChoose);
+  const variantChoose =
+    Object.entries(selectedAttributes).length ===
+    productPopup?.variants[0].values.length
+      ? productPopup?.variants.find((variant) =>
+          variant.values.every((values) =>
+            Object.entries(selectedAttributes).some(([key, value]) => {
+              return key === values.type && values._id === value;
+            })
+          )
+        )
+      : null;
+
+  const handleAddToCart = async () => {
+    console.log("Add to cart");
+    if (!variantChoose) return;
+    const data = {
+      productId: productPopup?._id,
+      variantId: variantChoose._id,
+      quantity: quantity,
+      userId: _id,
+    };
+
+    const response = await axios.post(
+      "http://localhost:8080/api/cart/add",
+      data
+    );
+  };
 
   return createPortal(
     <div
@@ -198,7 +243,10 @@ const PreviewProduct = ({
               <span className="uppercase text-lg text-[#555]">
                 giá:{" "}
                 <span className="text-[#b8cd06]">
-                  {formatCurrency(productPopup?.price ?? 0)} VNĐ
+                  {variantChoose
+                    ? formatCurrency(variantChoose?.price)
+                    : formatCurrency(productPopup?.price ?? 0)}{" "}
+                  VNĐ
                 </span>
               </span>
 
@@ -297,31 +345,34 @@ const PreviewProduct = ({
               </span>
 
               <div className="flex items-center h-[42px] ">
-                <span
+                <button
                   className="cursor-pointer flex justify-center items-center text-5xl font-light w-[50px] h-full text-center border border-r-0 rounded-tl-full rounded-bl-full text-[#333]"
                   onClick={() => {
                     if (quantity > 1) setQuantity(quantity - 1);
                   }}
                 >
                   -
-                </span>
+                </button>
                 <span className="border flex justify-center items-center h-full w-24 text-center text-[#333]">
                   {quantity}
                 </span>
-                <span
+                <button
                   className="cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333]"
                   onClick={() => {
                     if (quantity < 10) setQuantity(quantity + 1);
                   }}
                 >
                   +
-                </span>
+                </button>
               </div>
             </div>
 
             {/* BUTTON */}
             <div className="flex flex-col md:flex-row gap-2 text-[11px] font-raleway font-bold">
-              <button className="btn-add text-white uppercase flex-1">
+              <button
+                className="btn-add text-white uppercase flex-1"
+                onClick={handleAddToCart}
+              >
                 <span className="btn-add__wrapper text-[11px] px-[30px] rounded-full bg-[#343434] pt-[17px] pb-[15px] font-raleway">
                   <span className="icon">
                     <IoBagHandleSharp />
