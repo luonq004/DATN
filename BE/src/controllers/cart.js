@@ -21,6 +21,12 @@ const updateTotal = async (cart) => {
       const presentTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
       let startDate = new Date(voucher.startDate);
       let endDate = new Date(voucher.endDate);
+      let status = voucher.status;
+
+      //nếu trạng thái inactive sẽ bị xóa khỏi giỏ hàng
+      if (status === 'inactive') {
+        cart.voucher = cart.voucher.filter((item) => item._id !== voucher._id);
+      }
 
       //nếu voucher hết hạn sẽ bị xóa khỏi giỏ hàng
       if (presentTime <= startDate || presentTime >= endDate) {
