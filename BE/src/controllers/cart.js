@@ -121,7 +121,7 @@ export const addToCart = async (req, res) => {
       cart = await Cart.create({
         userId: userId,
         products: [],
-        voucher: {},
+        voucher: [],
         total: 0,
       });
 
