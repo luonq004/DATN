@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute, idCart, onChangeVariant }: { idProduct: string, idVariant: string, attribute: any, onChangeAttribute: any, idCart: string, onChangeVariant: any }) => {
     const [selectedValue, setSelectedValue] = useState<{ [key: string]: any }>({});
@@ -20,13 +20,18 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
     const { data: attri } = useQuery({
         queryKey: ['attribute', idProduct],
         queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:8080/api/attribute`)
+            const { data } = await axios.get(`http://localhost:8080/api/v1/attributes`)
             return data
         }
     })
 
     const variantOfProduct = data?.variants.find((variant: any) => variant._id === idVariant)
     const str = (variantOfProduct?.values.flatMap((value: any) => value.name))
+
+    console.log(data)
+    // console.log(attri)
+    // console.log(selectedValue)
+    // console.log(idVariant)
 
     useEffect(() => {
         if (data && idVariant) {
@@ -36,7 +41,7 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
                 const variantProduct = attri?.reduce((acc: any, attr: any) => {
                     // console.log('attr', attr)
                     const uniqueValue = selectedVariant.values.find((value: any) =>
-                        attr.values.includes(value._id)
+                        attr.values.some((item: any) => item._id == value._id)
                     );
 
                     if (uniqueValue) {
@@ -48,6 +53,7 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
 
                 setSelectedValue(variantProduct)
             }
+            // console.log(selectedVariant)
         }
     }, [data, idVariant]);
 
@@ -71,11 +77,12 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
     const variantProduct = attri?.map((attr: any) => {
         const seenIds = new Set();
 
-        const uniqueValues = data?.variants.flatMap((variant: any) =>
-            variant.values.filter((value: any) =>
-                attr.values.includes(value._id) && !seenIds.has(value._id) && seenIds.add(value._id)
+        const uniqueValues = data?.variants.flatMap((variant: any) => {
+            // console.log(variant)
+            return variant.values.filter((value: any) =>
+                attr.values.some((attrValue: any) => attrValue._id === value._id) && !seenIds.has(value._id) && seenIds.add(value._id)
             )
-        );
+        });
 
         // console.log(uniqueValues)
         return {
@@ -83,6 +90,8 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
             values: uniqueValues
         };
     });
+
+    // console.log(variantProduct)
 
     const getCompatibleAttributeValues = () => {
 
@@ -104,7 +113,7 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
             const valuesSet = new Set();
             filterVariants?.forEach((variant: any) => {
                 variant.values.forEach((value: any) => {
-                    if (attribute.values.includes(value._id)) {
+                    if (attribute.values.some((item: any) => item._id == value._id)) {
                         valuesSet.add(value._id);
                     }
                 });
@@ -157,14 +166,14 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
                 </div>
             </div>
             <div
-                className={`absolute bg-background py-3 px-4 left-1/2 max-sm:left-[50%] max-[450px]:left-0 -translate-x-1/2 border rounded-md transition-all duration-300 select-none shadow-2xl
+                className={`absolute flex flex-col gap-3 bg-background py-3 px-4 left-1/2 max-sm:left-[50%] max-[450px]:left-0 -translate-x-1/2 border rounded-md transition-all duration-300 select-none shadow-2xl
                 ${attribute === idCart ? 'opacity-100 top-[130%] z-10' : 'opacity-0 top-[90%] z-[-1]'}`}
             >
                 {variantProduct?.map((item: any) => {
                     if (item.values.length < 1) return;
                     return (
-                        <>
-                            <div key={item._id} className="flex flex-col gap-2 my-3">
+                        <React.Fragment key={item._id}>
+                            <div key={item._id} className="flex flex-col gap-2">
                                 <h1 className="font-medium">Select {item.name}</h1>
                                 <div className="flex gap-2">
                                     {item.values.map((itemOther: any) => (
@@ -189,7 +198,7 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
                                 </div>
                             </div>
                             <hr className="h-[2px] border-none bg-gray-200" />
-                        </>
+                        </React.Fragment>
                     )
                 })}
 

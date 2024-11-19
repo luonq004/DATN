@@ -1,4 +1,6 @@
+
 import ProfilePageModern from "./_components/Profile";
+
 const ProfilePage = () => {
  
   return (

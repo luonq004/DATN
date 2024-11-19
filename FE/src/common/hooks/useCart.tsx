@@ -45,7 +45,7 @@ const useCart = (userId: string) => {
                 queryClient.invalidateQueries({ queryKey: [CART_QUERY_KEY, userId] })
             },
             onError: (error: any) => {
-                // alert(error.response.data.message)
+                // console.log(error.response.data.message)
                 toast({
                     variant: "destructive",
                     title: "Error",
