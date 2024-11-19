@@ -32,7 +32,9 @@ import AboutUsPage from "@/pages/(website)/aboutus/page";
 import AdminOrder from "@/pages/(dashboard)/Order/Order";
 import PageServices from "@/pages/(website)/services/PageServices";
 import { SignIn, SignUp } from "@clerk/clerk-react";
+import ListAddress from "@/pages/(website)/address/ListAddress";
 import VoucherStorage from "@/pages/(website)/user/_components/VoucherStorage";
+
 
 const Router = () => {
   return (
@@ -44,6 +46,10 @@ const Router = () => {
 
           <Route path="users" element={<SidebarAccount />}>
             <Route index element={<ProfilePage />} />
+
+            {/* địa chỉ */}
+            <Route path="dia-chi" element={<ListAddress/>}/>
+
             <Route path="voucher" element={<VoucherStorage />} />
           </Route>
 
