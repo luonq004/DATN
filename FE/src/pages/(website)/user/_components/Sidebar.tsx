@@ -1,7 +1,6 @@
 import { SignOutButton, useUser } from "@clerk/clerk-react";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import ProfilePageModern from "./Profile";
+import { Link, Outlet } from "react-router-dom";
 
 const SidebarAccount: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<"account" | "bank" | null>(
@@ -71,7 +70,7 @@ const SidebarAccount: React.FC = () => {
               </Link>
             </li>
             <li className="py-2 text-sm hover:text-cyan-500 cursor-pointer">
-              <Link to="/dia-chi" className="block">
+              <Link to="/users/dia-chi" className="block">
                 Địa Chỉ
               </Link>
             </li>
@@ -140,7 +139,7 @@ const SidebarAccount: React.FC = () => {
       {/* Nội dung bên phải */}
       <div className="flex-1 bg-white overflow-y-auto min-h-screen">
         <div>
-          <ProfilePageModern />
+          <Outlet/>
         </div>
       </div>
     </div>

@@ -62,10 +62,17 @@ export const getCartByUserId = async (req, res) => {
   // console.log(userId)
   try {
     let cart = await Cart.findOne({ userId: id })
-      .populate("products.productItem")
-      .populate("products.variantItem")
+      .populate({
+        path: "products.productItem",
+        populate: [
+          { path: "category", options: { strictPopulate: false } },
+        ],
+      })
+      .populate({
+        path: "products.variantItem",
+        populate: { path: "values" },
+      })
       .populate("voucher");
-
     if (!cart) {
       cart = await Cart.create({
         userId: id,

@@ -5,7 +5,7 @@ import Product from "../models/product";
 
 //=========================tạo đơn hàng mới===============
 export const createOrder = async (req, res) => {
-    const { userId, addressId, products, payment, totalPrice, name, shipping } =
+    const { userId, addressId, products, payment, totalPrice, name } =
         req.body;
     try {
         let finalAddressId = addressId;
@@ -35,9 +35,9 @@ export const createOrder = async (req, res) => {
             // Lưu địa chỉ mới
             const saveAddress = await newAddress.save();
             finalAddressId = saveAddress._id;
-            return res
-                .status(StatusCodes.CREATED)
-                .json({ message: "Địa chỉ đã được lưu", address: saveAddress });
+            // return res
+            //     .status(StatusCodes.CREATED)
+            //     .json({ message: "Địa chỉ đã được lưu", address: saveAddress });
         }
         // // Kiểm tra và cập nhật số lượng sản phẩm trong kho
         // for (const item of products) {
@@ -64,7 +64,6 @@ export const createOrder = async (req, res) => {
             products,
             payment,
             totalPrice,
-            shipping,
         });
         // Lưu đơn hàng
         const savedOrder = await newOrder.save();

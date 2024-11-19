@@ -38,11 +38,6 @@ const orderSchema = new mongoose.Schema({
     required: true,
     default: () => nanoid(10), // Tạo mã đơn hàng với 10 ký tự ngẫu nhiên
   },
-  shipping: {
-    type: Date,
-    required: true,
-  },
-
   createdAt: {
     type: Date,
     default: Date.now,

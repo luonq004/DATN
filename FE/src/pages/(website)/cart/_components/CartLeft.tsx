@@ -15,7 +15,6 @@ const CartLeft = ({ cart, attribute, setAttribute, userAction }: { cart: Icart, 
         // console.log(number)
         setAttribute(idCart);
     }
-
     return (
         <div className="Your_Cart flex flex-col gap-6">
             {/* Top  */}

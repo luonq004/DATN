@@ -8,6 +8,9 @@
 .font-raleway {
   font-family: "Raleway", sans-serif;
 }
+.add:hover {
+  color: white !important;
+}
 
 @tailwind base;
 @tailwind components;
