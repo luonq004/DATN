@@ -32,6 +32,7 @@ import AboutUsPage from "@/pages/(website)/aboutus/page";
 import AdminOrder from "@/pages/(dashboard)/Order/Order";
 import PageServices from "@/pages/(website)/services/PageServices";
 import { SignIn, SignUp } from "@clerk/clerk-react";
+import VoucherStorage from "@/pages/(website)/user/_components/VoucherStorage";
 
 const Router = () => {
   return (
@@ -41,8 +42,9 @@ const Router = () => {
         <Route path="/" element={<LayoutWebsite />}>
           <Route index path="" element={<HomePageNew />} />
 
-          <Route path="users" element={<ProfilePage />}>
-            <Route index element={<SidebarAccount />} />
+          <Route path="users" element={<SidebarAccount />}>
+            <Route index element={<ProfilePage />} />
+            <Route path="voucher" element={<VoucherStorage />} />
           </Route>
 
           <Route path="product/:id" element={<DetailPage />} />

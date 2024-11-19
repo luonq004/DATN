@@ -111,6 +111,7 @@ const VoucherAddForm = () => {
                     {errors?.code?.message ? <Label htmlFor="code" className='text-red-500'>Code</Label> : <Label htmlFor="code" >Code</Label>}
                     <Input
                         placeholder='Code...'
+                        className='mb-0'
                         {...register('code', { required: true, minLength: 3, maxLength: 255 })}
                     />
                     {errors?.code?.message && <span className='text-red-500'>{errors?.code?.message.toString()}</span>}
@@ -124,7 +125,7 @@ const VoucherAddForm = () => {
                         defaultValue=""
                         render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className="w-[180px]">
+                                <SelectTrigger className="w-[180px] mt-0">
                                     <SelectValue placeholder="Select a category" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -144,6 +145,7 @@ const VoucherAddForm = () => {
                     {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Discount</Label> : <Label htmlFor="discount" >Discount</Label>}
                     <Input
                         placeholder='discount...'
+                        className='mb-0'
                         {...register('discount', { required: true })}
                     />
                     {errors?.discount?.message && <span className='text-red-500'>{errors?.discount?.message.toString()}</span>}
@@ -153,6 +155,7 @@ const VoucherAddForm = () => {
                     {errors?.countOnStock?.message ? <Label htmlFor="countOnStock" className='text-red-500'>CountOnStock</Label> : <Label htmlFor="countOnStock" >CountOnStock</Label>}
                     <Input
                         placeholder='countOnStock...'
+                        className='mb-0'
                         {...register('countOnStock', { required: true })}
                     />
                     {errors?.countOnStock?.message && <span className='text-red-500'>{errors?.countOnStock?.message.toString()}</span>}
@@ -199,7 +202,7 @@ const VoucherAddForm = () => {
                         defaultValue=""
                         render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className="w-[180px]">
+                                <SelectTrigger className="w-[180px] mt-0">
                                     <SelectValue placeholder="Select a type" />
                                 </SelectTrigger>
                                 <SelectContent>

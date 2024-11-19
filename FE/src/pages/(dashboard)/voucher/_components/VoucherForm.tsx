@@ -142,7 +142,7 @@ const VoucherForm = ({ id }: any) => {
                 })
             }
         })
-        console.log(data2)
+        // console.log(data2)
     }
 
     if (isLoading) <div>Is Loading...</div>

@@ -28,7 +28,7 @@ const SizeColorSelector = ({ idProduct, idVariant, attribute, onChangeAttribute,
     const variantOfProduct = data?.variants.find((variant: any) => variant._id === idVariant)
     const str = (variantOfProduct?.values.flatMap((value: any) => value.name))
 
-    // console.log('data', data?.variants)
+    console.log(data)
     // console.log(attri)
     // console.log(selectedValue)
     // console.log(idVariant)

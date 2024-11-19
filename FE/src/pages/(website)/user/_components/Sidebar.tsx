@@ -1,7 +1,6 @@
 import { SignOutButton, useUser } from "@clerk/clerk-react";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import ProfilePageModern from "./Profile";
+import { Link, Outlet } from "react-router-dom";
 
 const SidebarAccount: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<"account" | "bank" | null>(
@@ -54,11 +53,10 @@ const SidebarAccount: React.FC = () => {
           </div>
 
           <ul
-            className={`flex flex-col mt-2 transition-all duration-300 ease-in-out ml-10 ${
-              activeMenu === "account"
-                ? "opacity-100 max-h-screen"
-                : "opacity-0 max-h-0 overflow-hidden"
-            }`}
+            className={`flex flex-col mt-2 transition-all duration-300 ease-in-out ml-10 ${activeMenu === "account"
+              ? "opacity-100 max-h-screen"
+              : "opacity-0 max-h-0 overflow-hidden"
+              }`}
           >
             <li className="py-2 text-sm hover:text-cyan-500 cursor-pointer">
               <Link to="/users" className="block">
@@ -71,7 +69,7 @@ const SidebarAccount: React.FC = () => {
               </Link>
             </li>
             <li className="py-2 text-sm hover:text-cyan-500 cursor-pointer">
-              <Link to="/dia-chi" className="block">
+              <Link to="/users/dia-chi" className="block">
                 Địa Chỉ
               </Link>
             </li>
@@ -83,8 +81,7 @@ const SidebarAccount: React.FC = () => {
           <div className="flex gap-3 items-center ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              viewBox="0 0 20 20" fill="currentColor"
               className="size-6 text-sky-600"
             >
               <path
@@ -140,7 +137,7 @@ const SidebarAccount: React.FC = () => {
       {/* Nội dung bên phải */}
       <div className="flex-1 bg-white overflow-y-auto min-h-screen">
         <div>
-          <ProfilePageModern />
+          <Outlet />
         </div>
       </div>
     </div>
