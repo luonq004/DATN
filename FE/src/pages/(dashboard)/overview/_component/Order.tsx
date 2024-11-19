@@ -18,15 +18,15 @@ import { ShoppingBasket, TrendingUp } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
 
 export const description = "A bar chart"
-const chartData = [
-    { week: "Monday", order: 186 },
-    { week: "Tuesday", order: 305 },
-    { week: "Wednesday", order: 237 },
-    { week: "Thursday", order: 73 },
-    { week: "Friday", order: 209 },
-    { week: "Saturday", order: 214 },
-    { week: "Sunday", order: 214 }
-]
+// const chartData = [
+//     { week: "Monday", order: 186 },
+//     { week: "Tuesday", order: 305 },
+//     { week: "Wednesday", order: 237 },
+//     { week: "Thursday", order: 73 },
+//     { week: "Friday", order: 209 },
+//     { week: "Saturday", order: 214 },
+//     { week: "Sunday", order: 214 }
+// ]
 const chartConfig = {
     order: {
         label: "Order",
@@ -34,22 +34,23 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-const Order = () => {
+const Order = ({ chartData }) => {
     return (
         <Card>
             <CardHeader>
                 <CardTitle>
                     <div className="flex items-center gap-x-2">
                         <ShoppingBasket className="text-current" />
-                        <span>Đơn hàng hàng ngày</span>
+                        <span>Tổng đơn hàng</span>
                     </div>
                 </CardTitle>
                 <CardDescription>
-                    Hiển thị tổng số hàng được mua trong tuần qua</CardDescription>
+                    Hiển thị tổng số hàng được mua trong thang qua
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
-                    <BarChart accessibilityLayer data={chartData}>
+                    <BarChart width={300} height={200} accessibilityLayer data={chartData}>
                         <CartesianGrid vertical={false} />
                         <XAxis
                             dataKey="week"

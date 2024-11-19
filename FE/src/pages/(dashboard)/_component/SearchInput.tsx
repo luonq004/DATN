@@ -10,8 +10,6 @@ const SearchInput = () => {
                 placeholder="Tìm kiếm "
             />
         </div>
-        // <>
-        // </>
     );
 };
 

@@ -29,7 +29,7 @@ import {
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Delete, ShoppingBasket } from 'lucide-react'
 
-const ProductList = () => {
+const OrderList = () => {
 
     return (
         <div className='border border-gray-300 rounded-md'>
@@ -558,4 +558,4 @@ const ProductList = () => {
     )
 }
 
-export default ProductList
+export default OrderList
