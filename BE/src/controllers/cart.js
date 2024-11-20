@@ -151,14 +151,29 @@ export const addToCart = async (req, res) => {
 
     //nếu có sp trùng lặp thì tăng số lượng
     if (existProductIndex !== -1) {
-      cart.products[existProductIndex].quantity += quantity;
+      // kiểm tra số lượng quantity khi thêm vào so với số lượng tồn kho
+      if (cart.products[existProductIndex].quantity + quantity <= cart.products[existProductIndex].variantItem.countOnStock) {
+        cart.products[existProductIndex].quantity += quantity;
+      } else {
+        return res
+          .status(StatusCodes.CONFLICT)
+          .json({ message: "Không thể vượt quá số lượng tồn kho" });
+      }
       // return res.status(StatusCodes.OK).json({ message: "Product found" });
     } else {
-      cart.products.push({
-        productItem: productId,
-        variantItem: variantId,
-        quantity: quantity,
-      });
+      // Sp mới thêm giỏ hàng lần đầu
+      // kiểm tra số lượng quantity khi thêm vào so với số lượng tồn kho
+      if (quantity <= variantValue.countOnStock) {
+        cart.products.push({
+          productItem: productId,
+          variantItem: variantId,
+          quantity: quantity,
+        });
+      } else {
+        return res
+          .status(StatusCodes.CONFLICT)
+          .json({ message: "Không thể vượt quá tồn kho" });
+      }
       // console.log(cart)
       // return res.status(StatusCodes.NOT_FOUND).json({ error: "Product not found" });
       await cart.save();
