@@ -78,11 +78,11 @@ const VoucherStorage = () => {
     if (isLoading) return <div>Loading...</div>;
     if (isError) return <div>Error</div>;
     return (
-        <div className='max-w-[1000px] py-10 px-16 flex flex-col gap-8 mx-auto'>
+        <div className='max-w-[1000px] h-screen py-10 px-16 flex flex-col gap-8 mx-auto'>
             <div className='text-2xl font-bold border-b border-zinc-400 pb-3'>
                 <h1>Kho Voucher</h1>
             </div>
-            <div className='flex flex-col max-h-[400px] overflow-y-auto gap-4'>
+            <div className='flex flex-col h-screen overflow-y-auto gap-4'>
                 {data?.map((item: any) => {
                     // console.log(matchedVoucher)
                     if (item.voucher.status === 'active' && item.countdown > 0) {
