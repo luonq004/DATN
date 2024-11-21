@@ -48,14 +48,6 @@ const ProfilePageModern: React.FC = () => {
       setFirstName(user.firstName || "");
       setLastName(user.lastName || "");
       setEmail(user.primaryEmailAddress?.emailAddress || "");
-<<<<<<< HEAD:FE/src/pages/(website)/user/_components/Profile.tsx
-
-      if (!imageFile) {
-        setPreviewUrl(user.imageUrl || "");
-      }
-
-=======
->>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c:FE/src/pages/(website)/user/_components/ProfileUser.tsx
       fetchUserData();
     }
   }, [user]);
@@ -197,8 +189,9 @@ const ProfilePageModern: React.FC = () => {
                 value={email}
                 readOnly={editField !== "email"}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`border border-gray-300 rounded-lg px-3 py-2 w-full ${editField === "email" ? "bg-white" : "bg-gray-100"
-                  }`}
+                className={`border border-gray-300 rounded-lg px-3 py-2 w-full ${
+                  editField === "email" ? "bg-white" : "bg-gray-100"
+                }`}
               />
               {editField !== "email" && (
                 <button
@@ -223,8 +216,9 @@ const ProfilePageModern: React.FC = () => {
                 value={phone}
                 readOnly={editField !== "phone"}
                 onChange={(e) => setPhone(e.target.value)}
-                className={`border border-gray-300 rounded-lg px-3 py-2 w-full ${editField === "phone" ? "bg-white" : "bg-gray-100"
-                  }`}
+                className={`border border-gray-300 rounded-lg px-3 py-2 w-full ${
+                  editField === "phone" ? "bg-white" : "bg-gray-100"
+                }`}
               />
               {editField !== "phone" && (
                 <button
