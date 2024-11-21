@@ -1,42 +1,62 @@
+import { User } from "@/common/types/User";
 import Confirm from "@/components/Confirm/Confirm";
-import { User } from "@/types/User";
 import {
-  SignedIn,
-  SignedOut,
-  SignIn,
-  useUser,
-} from "@clerk/clerk-react";
+  Dialog,
+  DialogContent,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
+import { SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import PaginationComponent from "./Pagination";
+import RegisterForm from "./RegisterForm";
 
 function ListUser() {
-  const { user } = useUser();
-  const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isConfirmBanOpen, setConfirmBanOpen] = useState(false);
   const [userToBan, setUserToBan] = useState<User | null>(null);
+  const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [isConfirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
+  const [userToRestore, setUserToRestore] = useState<User | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  
+
+  const totalUsers = allUsers.length;
+
+  // Lấy danh sách user hiển thị trên trang hiện tại
+  const currentUsers = allUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (user) {
-      fetchUsers();
-    }
-  }, [user]);
+    fetchUsers();
+  }, [includeDeleted]);
 
   const fetchUsers = async () => {
-    setIsLoading(true); 
+    setIsLoading(true);
     try {
-      const res = await axios.get("http://localhost:8080/api/users");
-      setUsers(res.data);
+      const res = await axios.get(
+        `http://localhost:8080/api/users?includeDeleted=${includeDeleted}`
+      );
+
+      const usersData = Array.isArray(res.data?.data) ? res.data.data : [];
+      setAllUsers(usersData);
+      console.log("Fetched users:", usersData);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -52,25 +72,78 @@ function ListUser() {
     return null;
   };
 
-  const deleteUser = async (clerkId: string) => {
+  const softDeleteUser = async (clerkId: string) => {
     const token = getCookie("__session") || localStorage.getItem("token");
 
     if (!token) {
-      console.error("Không tìm thấy token. Vui lòng đăng nhập lại.");
-      alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+      toast({
+        variant: "destructive",
+        title: "Xác thực thất bại",
+        description: "Không tìm thấy token, vui lòng đăng nhập lại.",
+      });
       return;
     }
 
     try {
-      await axios.delete(`http://localhost:8080/api/users/${clerkId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axios.post(
+        `http://localhost:8080/api/users/soft-delete/${clerkId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast({
+        title: "Xóa mềm thành công",
+        description:
+          "Tài khoản đã được xóa thành công, có thể khôi phục được tài khoản!",
       });
       fetchUsers();
     } catch (error) {
-      console.error("Lỗi khi xóa người dùng:", error);
-      alert("Đã xảy ra lỗi khi xóa người dùng. Vui lòng thử lại.");
+      toast({
+        variant: "destructive",
+        title: "Xóa mềm thất bại",
+        description: "Có lỗi xảy ra khi xóa tài khoản.",
+      });
+      console.error("Lỗi khi xóa tài khoản:", error);
+    }
+  };
+
+  const restoreSoftDeletedUser = async (clerkId: string) => {
+    const token = getCookie("__session") || localStorage.getItem("token");
+
+    if (!token) {
+      toast({
+        variant: "destructive",
+        title: "Xác thực thất bại",
+        description: "Không tìm thấy token, vui lòng đăng nhập lại.",
+      });
+      return;
+    }
+
+    try {
+      await axios.post(
+        `http://localhost:8080/api/users/restore/${clerkId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast({
+        title: "Khôi phục thành công",
+        description: "Tài khoản đã được khôi phục thành công!",
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Khôi phục thất bại",
+        description: "Có lỗi xảy ra khi khôi phục tài khoản.",
+      });
+      console.error("Lỗi khi khôi phục tài khoản:", error);
     }
   };
 
@@ -81,8 +154,22 @@ function ListUser() {
 
   const handleConfirmDelete = () => {
     if (selectedUser) {
-      deleteUser(selectedUser.clerkId);
+      softDeleteUser(selectedUser.clerkId);
       setModalOpen(false);
+    }
+  };
+
+  // hàm khôi phục tài khoản
+  const handleRestoreClick = (user: User) => {
+    setUserToRestore(user);
+    setConfirmRestoreOpen(true);
+  };
+
+  // hàm xác nhận khôi phục
+  const handleConfirmRestore = async () => {
+    if (userToRestore) {
+      await restoreSoftDeletedUser(userToRestore.clerkId);
+      setConfirmRestoreOpen(false);
     }
   };
 
@@ -90,13 +177,24 @@ function ListUser() {
     try {
       if (isBanned) {
         await axios.post(`http://localhost:8080/api/users/unban/${clerkId}`);
-        toast.success("Mở khóa tài khoản thành công!");
+        toast({
+          title: "Mở khóa tài khoản thành công",
+          description: "Tài khoản đã được mở khóa thành công!",
+        });
       } else {
         await axios.post(`http://localhost:8080/api/users/ban/${clerkId}`);
-        toast.success("Khóa tài khoản thành công!");
+        toast({
+          title: "Khóa tài khoản thành công",
+          description: "Tài khoản đã được khóa thành công!",
+        });
       }
       fetchUsers();
     } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Khóa tài khoản thất bại",
+        description: "Có lỗi xảy ra khi khóa tài khoản người dùng.",
+      });
       console.error("Error updating user status:", error);
     }
   };
@@ -116,13 +214,47 @@ function ListUser() {
   return (
     <div className="mx-auto p-8">
       <SignedIn>
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-semibold text-gray-900">
-            Danh Sách Người Dùng
+        <div className="flex flex-col md:flex-row justify-between md:items-center ">
+          <h1 className="text-3xl mb-5 md:mb-0 text-center font-semibold text-gray-900">
+            Danh Sách User
           </h1>
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <select
+              value={includeDeleted ? "deleted" : "active"}
+              onChange={(e) => setIncludeDeleted(e.target.value === "deleted")}
+              className="border px-4 py-2 rounded-md"
+            >
+              <option value="active">Tài khoản đang hoạt động</option>
+              <option value="deleted">Tài khoản đã bị xóa</option>
+            </select>
+            
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <button
+                  onClick={() => setIsOpen(true)}
+                  className="px-6 flex items-center gap-2 py-2 rounded-md bg-black text-white"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                  </svg>
+                  Thêm user
+                </button>
+              </DialogTrigger>
+
+              {/* Nội dung modal */}
+              <DialogContent className=" p-0">
+                <RegisterForm />
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="bg-white shadow-lg rounded-lg overflow-x-auto mt-5 mb-5">
           <table
             className={`min-w-full leading-normal ${
               isLoading ? "opacity-50" : ""
@@ -151,78 +283,107 @@ function ListUser() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.clerkId}>
-                  <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
-                    <img
-                      src={user.imageUrl}
-                      alt="User Avatar"
-                      className="w-12 h-12 rounded-full"
-                    />
-                  </td>
-                  <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
-                    <button
-                      onClick={() =>
-                        navigate(`/dashboard/users/detail/${user.clerkId}`)
-                      }
-                      className="text-blue-600 hover:underline"
-                    >
-                      {user.firstName} {user.lastName}
-                    </button>
-                  </td>
-                  <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm  max-w-xs break-words">
-                    {user.email}
-                  </td>
-                  <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm  max-w-xs break-words">
-                    {user.role}
-                  </td>
-                  <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
-                    {user.isBanned ? (
-                      <span className="text-red-600 font-semibold">
-                        Đã khóa
-                      </span>
-                    ) : (
-                      <span className="text-green-600 font-semibold">
-                        Hoạt động
-                      </span>
-                    )}
-                  </td>
-
-                  <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm items-center flex mt-3">
-                    <button
-                      onClick={() => handleBanClick(user)}
-                      className={`mr-4 ${
-                        user.isBanned ? "bg-green-500" : "bg-amber-500"
-                      } hover:bg-opacity-75 text-white font-bold py-2 px-4 rounded`}
-                    >
-                      {user.isBanned ? "Mở khóa" : "Khóa"}
-                    </button>
-
-                    <button
-                      onClick={() => handleDeleteClick(user)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="size-5"
+              {currentUsers.length > 0 ? (
+                currentUsers.map((user) => (
+                  <tr key={user.clerkId}>
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
+                      <img
+                        src={user.imageUrl}
+                        alt="User Avatar"
+                        className="w-12 h-12 object-contain rounded"
+                      />
+                    </td>
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
+                      <button
+                        onClick={() =>
+                          navigate(`/admin/users/detail/${user.clerkId}`)
+                        }
+                        className="text-blue-600 hover:underline"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
+                        {user.firstName} {user.lastName}
+                      </button>
+                    </td>
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm  max-w-xs break-words">
+                      {user.email}
+                    </td>
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm  max-w-xs break-words">
+                      {user.role}
+                    </td>
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
+                      {user.isDeleted ? (
+                        <span className="text-gray-600 font-semibold">
+                          Đã xóa
+                        </span>
+                      ) : user.isBanned ? (
+                        <span className="text-red-600 font-semibold">
+                          Đã khóa
+                        </span>
+                      ) : (
+                        <span className="text-green-600 font-semibold">
+                          Hoạt động
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm items-center flex mt-3">
+                      {user.isDeleted ? (
+                        <button
+                          onClick={() => handleRestoreClick(user)}
+                          className="mr-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                          Khôi phục
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleBanClick(user)}
+                            className={`mr-4 ${
+                              user.isBanned ? "bg-green-500" : "bg-amber-500"
+                            } hover:bg-opacity-75 text-white font-bold py-2 px-4 rounded`}
+                          >
+                            {user.isBanned ? "Mở khóa" : "Khóa"}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(user)}
+                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="size-5"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="text-center text-red-500">
+                    Không tìm thấy dữ liệu.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
       </SignedIn>
 
+      {/* Phân trang */}
+      <PaginationComponent
+        currentPage={currentPage}
+        totalItems={totalUsers}
+        itemsPerPage={itemsPerPage}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
       <SignedOut>
         <div className="flex justify-center items-center h-full">
           <SignIn />
@@ -234,7 +395,15 @@ function ListUser() {
         onClose={() => setModalOpen(false)}
         onConfirm={handleConfirmDelete}
         title="Xác nhận xóa người dùng"
-        message={`Bạn có chắc chắn muốn xóa user "<strong>${selectedUser?.firstName} ${selectedUser?.lastName}</strong>" ? Hành động này không thể hoàn tác.`}
+        message={`Bạn có chắc chắn muốn xóa user "<strong>${selectedUser?.firstName} ${selectedUser?.lastName}</strong>" ?`}
+      />
+
+      <Confirm
+        isOpen={isConfirmRestoreOpen}
+        title="Xác nhận khôi phục tài khoản"
+        message={`Bạn có chắc chắn muốn khôi phục tài khoản "<strong>${userToRestore?.firstName} ${userToRestore?.lastName}</strong>"?`}
+        onClose={() => setConfirmRestoreOpen(false)}
+        onConfirm={handleConfirmRestore}
       />
 
       {isConfirmBanOpen && (
@@ -252,7 +421,6 @@ function ListUser() {
           onConfirm={handleConfirmBan}
         />
       )}
-
     </div>
   );
 }

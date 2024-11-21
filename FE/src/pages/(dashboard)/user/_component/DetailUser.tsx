@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { User } from "@/types/User";
+import { User } from "@/common/types/User";
 
 const UserDetailPage = () => {
   const { clerkId } = useParams();
@@ -42,7 +42,7 @@ const UserDetailPage = () => {
     <div className=" mx-auto p-8 min-h-screen">
       {/* Phần thông tin người dùng */}
       <div className=" shadow rounded-xl p-8 flex flex-col items-center">
-        <h1 className="text-4xl mb-20 font-semibold">Hồ Sơ Người Dùng</h1>
+        <h1 className="sm:text-4xl text-xl mb-20 font-semibold">Hồ Sơ Người Dùng</h1>
         {/* Ảnh người dùng */}
         <div className="w-32 h-32 mb-6">
           <img
@@ -71,14 +71,6 @@ const UserDetailPage = () => {
             </p>
           </div>
 
-          {/* Thông tin thanh toán */}
-          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-            <h3 className="text-lg font-semibold text-teal-600 mb-3">
-              Thông tin thanh toán
-            </h3>
-            <p className="text-gray-700">Visa **** 4242</p>
-          </div>
-
           {/* Trạng thái tài khoản */}
           <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
             <h3 className="text-lg font-semibold text-teal-600 mb-3">
@@ -90,14 +82,6 @@ const UserDetailPage = () => {
               </span>
             </p>
           </div>
-
-          {/* Thông tin vai trò */}
-          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-            <h3 className="text-lg font-semibold text-teal-600 mb-3">
-              Vai trò
-            </h3>
-            <p className="text-gray-700">{user.role}</p>
-          </div>
         </div>
 
         {/* Lịch sử đơn hàng */}
@@ -105,46 +89,48 @@ const UserDetailPage = () => {
           <h3 className="text-xl font-semibold text-gray-800 mb-6">
             Lịch sử đơn hàng
           </h3>
-          <table className="min-w-full leading-normal">
-            <thead>
-              <tr>
-                <th className="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                  Mã đơn hàng
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                  Ngày đặt hàng
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                  Tổng tiền
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                  Trạng thái
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  #123
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  9 Tháng 9, 2023
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  250.000 VNĐ
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <span className="relative inline-block px-3 py-1 font-semibold text-green-600 leading-tight">
-                    <span
-                      aria-hidden
-                      className="absolute inset-0 bg-green-300 opacity-50 rounded-full"
-                    ></span>
-                    <span className="relative">Hoàn thành</span>
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className=" overflow-x-auto">
+            <table className="min-w-full leading-normal">
+              <thead>
+                <tr>
+                  <th className="px-5 py-3 text-nowrap border-b-2 border-gray-300 bg-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                    Mã đơn hàng
+                  </th>
+                  <th className="px-5 py-3 text-nowrap border-b-2 border-gray-300 bg-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                    Ngày đặt hàng
+                  </th>
+                  <th className="px-5 py-3 text-nowrap border-b-2 border-gray-300 bg-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                    Tổng tiền
+                  </th>
+                  <th className="px-5 py-3 text-nowrap border-b-2 border-gray-300 bg-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                    Trạng thái
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    #123
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    9 Tháng 9, 2023
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    250.000 VNĐ
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <span className="relative inline-block px-3 py-1 font-semibold text-green-600 leading-tight">
+                      <span
+                        aria-hidden
+                        className="absolute inset-0 bg-green-300 opacity-50 rounded-full"
+                      ></span>
+                      <span className="relative text-nowrap">Hoàn thành</span>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

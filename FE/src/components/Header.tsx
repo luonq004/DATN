@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SlHeart } from "react-icons/sl";
 import { IoBagHandleSharp } from "react-icons/io5";
 import { IoSearch } from "react-icons/io5";
@@ -6,19 +6,59 @@ import { IoIosClose } from "react-icons/io";
 
 import MobileNav from "@/components/MobileNav";
 
-import logo from "@/assets/logo.png";
-
 import { Link } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { useClerk, useUser } from "@clerk/clerk-react";
 
 const Header = () => {
   const { isSignedIn, user } = useUser();
-
+  const { openSignIn, openSignUp } = useClerk();
   const [isOpen, setIsOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [showUserInfo, setShowUserInfo] = useState(false);
+
+  const opensignin = async () => {
+    await openSignIn({
+      redirectUrl: "/",
+    });
+  };
+
+  const opensignup = async () => {
+    await openSignUp({
+      redirectUrl: "/",
+    });
+  };
+
+  const fetchLogo = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/logo");
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setLogoUrl(data[0].image);
+      }
+    } catch (error) {
+      console.error("Error fetching logo:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogo();
+  }, []);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      const timer = setTimeout(() => {
+        setShowUserInfo(true); // Sau 1 giây sẽ hiển thị thông tin người dùng
+      }, 1000);
+
+      return () => clearTimeout(timer); 
+    }
+  }, [isSignedIn]); // Chạy lại effect khi trạng thái người dùng thay đổi
+
   return (
     <>
       <header
-        className={`fixed left-0 top-0 w-full z-50 transition-all duration-300 ease-in-out`}
+        className={`fixed left-0 top-0 w-full z-40 transition-all duration-300 ease-in-out`}
       >
         {/* Header TOP */}
         <div
@@ -52,7 +92,7 @@ const Header = () => {
               {/* NAVIGATION */}
               <div className="w-full lg:w-7/12 text-right flex justify-between lg:justify-end items-center px-[15px]">
                 <div className="border-l border-r lg:border-r-0 border-[#eee] px-[15px] py-[10px] md:p-5 lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase">
-                  {isSignedIn ? (
+                  {isSignedIn  && showUserInfo ? (
                     <Link className="flex gap-2" to="/users">
                       <img
                         className="rounded-full w-[20px] h-[20px] object-cover"
@@ -67,14 +107,16 @@ const Header = () => {
                   ) : (
                     <>
                       <Link
-                        to="/signin"
+                        to="#"
+                        onClick={opensignin}
                         className="cursor-pointer hover:text-[#b8cd06] transition-all"
                       >
                         <b>Đăng nhập</b>
                       </Link>
                       &nbsp; hoặc &nbsp;
                       <Link
-                        to="/signup"
+                        to='#'
+                        onClick={opensignup}
                         className="cursor-pointer hover:text-[#b8cd06] transition-all"
                       >
                         <b>Đăng ký</b>
@@ -119,7 +161,7 @@ const Header = () => {
           <div className="border-x-0 lg:border-x-[50px] border-transparent h-full">
             <div className="flex h-full items-center">
               <Link to="/" className="w-4/12 md:w-2/12 px-[15px]">
-                <img className="w-20 md:w-36" src={logo} alt="Logo" />
+                <img className="w-20 md:w-36" src={logoUrl || "fallback_logo.jpg"} alt="Logo" />
               </Link>
 
               <div className="w-8/12 md:w-10/12 justify-items-end px-[15px]">

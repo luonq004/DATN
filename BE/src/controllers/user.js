@@ -22,6 +22,16 @@ export const saveUser = async (req, res) => {
     // Lấy thông tin người dùng từ Clerk
     const clerkUser = await clerkClient.users.getUser(clerkId);
 
+     // Kiểm tra trạng thái xóa  trên Clerk
+     const isDeletedOnClerk = clerkUser.privateMetadata?.isDeleted || false;
+ 
+     if (isDeletedOnClerk ) {
+       return res.status(403).json({
+         message:
+           "Người dùng đã bị xóa . Vui lòng khôi phục tài khoản trước khi thực hiện thao tác này.",
+       });
+     }
+
     // Kiểm tra trạng thái bị ban
     const isBanned = clerkUser.privateMetadata?.isBanned || false;
 
@@ -46,16 +56,7 @@ export const saveUser = async (req, res) => {
     });
 
     // Xử lý ảnh người dùng (nếu có file hình ảnh được upload)
-    let imageUrl = clerkUser.imageUrl; // Mặc định giữ nguyên URL ảnh cũ
-    if (req.file) {
-      const uploadResponse = await cloudinary.uploader.upload(req.file.path, {
-        folder: "profile_images",
-      });
-      imageUrl = uploadResponse.secure_url;
-
-      // Xóa file tạm
-      fs.unlinkSync(req.file.path);
-    }
+    let imageUrl = clerkUser.imageUrl;
 
     // Cập nhật hoặc tạo người dùng mới trong cơ sở dữ liệu
     const user = await Users.findOneAndUpdate(
@@ -87,20 +88,82 @@ export const saveUser = async (req, res) => {
   }
 };
 
-export const getAllUsers = async (req, res) => {
+export const createUser = async (req, res) => {
   try {
-    const users = await Users.find();
+    const { emailAddress, firstName, lastName, password, role, imageUrl } = req.body;
 
-    if (!users.length) {
-      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    // Kiểm tra dữ liệu đầu vào
+    if (!emailAddress || !firstName || !lastName || !password) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "Thiếu thông tin bắt buộc (email, firstName, lastName, password)",
+        });
     }
 
-    return res.status(200).json(users);
+    // 1. Tạo người dùng trên Clerk
+    const clerkUser = await clerkClient.users.createUser({
+      emailAddress: [emailAddress],
+      firstName,
+      lastName,
+      password,
+      publicMetadata: {
+        role: role || "User", // Default role là "User"
+      },
+    });
+
+    // 2. Lưu thông tin người dùng vào MongoDB
+    const newUser = new Users({
+      clerkId: clerkUser.id, // ID từ Clerk
+      email: emailAddress,
+      firstName,
+      lastName,
+      role: role || "User", // Sử dụng giá trị role từ đầu vào hoặc mặc định là "User"
+      imageUrl: imageUrl || clerkUser.imageUrl, 
+    });
+
+    await newUser.save();
+
+    // Trả về phản hồi
+    return res.status(201).json({
+      message: "Người dùng đã được tạo thành công trên Clerk và MongoDB!",
+      user: newUser,
+      clerkUser,
+    });
   } catch (error) {
-    console.error("Lỗi khi lấy tất cả người dùng:", error);
+    console.error("Lỗi khi tạo người dùng:", error);
+    return res.status(500).json({
+      message: "Đã xảy ra lỗi khi tạo người dùng",
+      error: error.message,
+    });
+  }
+};
+
+
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const { includeDeleted = "false" } = req.query;
+
+    // Chuyển includeDeleted thành boolean
+    const includeDeletedFlag = includeDeleted === "true";
+
+    // Tạo bộ lọc dữ liệu
+    const filter = includeDeletedFlag ? { isDeleted: true } : { isDeleted: false };
+
+    // Truy vấn tất cả người dùng
+    const users = await Users.find(filter);
+
+    // Trả về dữ liệu
+    return res.status(200).json({ data: users });
+  } catch (error) {
+    console.error("Error fetching users:", error);
     return res.status(500).json({ message: error.message });
   }
 };
+
+
 
 export const getUserById = async (req, res) => {
   try {
@@ -141,6 +204,7 @@ export const getUserById = async (req, res) => {
         gender: clerkUser.publicMetadata.gender,
         birthdate: clerkUser.publicMetadata.birthdate,
         isBanned: clerkUser.privateMetadata?.isBanned || false,
+        isDeleted: clerkUser.privateMetadata?.isDeleted || false,
       },
     };
 
@@ -153,39 +217,81 @@ export const getUserById = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const softDeleteUser = async (req, res) => {
+  const { clerkId } = req.params;
+
   try {
-    const { clerkId } = req.params;
-
-    if (!clerkId) {
-      return res
-        .status(400)
-        .send("ID người dùng không hợp lệ: clerkId là bắt buộc");
-    }
-
-    // Xóa người dùng khỏi MongoDB
-    const user = await Users.findOneAndDelete({ clerkId });
+    // Cập nhật trạng thái trong MongoDB
+    const user = await Users.findOneAndUpdate(
+      { clerkId },
+      { isDeleted: true },
+      { new: true }
+    );
 
     if (!user) {
-      return res
-        .status(404)
-        .send("Không tìm thấy người dùng trong cơ sở dữ liệu");
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
     }
 
-    // Xóa người dùng khỏi Clerk
+    // Cập nhật trạng thái xóa mềm trong Clerk
     try {
-      await clerkClient.users.deleteUser(clerkId);
-    } catch (clerkError) {
-      console.error("Lỗi khi xóa người dùng từ Clerk:", clerkError);
-      return res.status(500).send("Lỗi khi xóa người dùng từ Clerk");
+      await clerkClient.users.updateUser(clerkId, {
+        privateMetadata: { isDeleted: true },
+      });
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái trên Clerk:", error);
+      return res.status(500).json({
+        message: "Đã cập nhật người dùng trong MongoDB nhưng lỗi trên Clerk",
+      });
     }
 
-    res.status(200).send("Xóa người dùng thành công từ MongoDB và Clerk");
+    res.status(200).json({
+      message: "Xóa thành công trên cả Clerk và MongoDB",
+      user,
+    });
   } catch (error) {
-    console.error("Lỗi khi xóa người dùng:", error);
-    res.status(500).send("Lỗi khi xóa người dùng: " + error.message);
+    console.error("Lỗi khi xóa mềm người dùng:", error);
+    res.status(500).json({ message: "Lỗi khi xóa mềm người dùng" });
   }
 };
+
+
+export const restoreUser = async (req, res) => {
+  const { clerkId } = req.params;
+
+  try {
+    //  Cập nhật trạng thái trong MongoDB
+    const user = await Users.findOneAndUpdate(
+      { clerkId },
+      { isDeleted: false },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    //  Cập nhật trạng thái phục hồi trong Clerk
+    try {
+      await clerkClient.users.updateUser(clerkId, {
+        privateMetadata: { isDeleted: false },
+      });
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái trên Clerk:", error);
+      return res.status(500).json({
+        message: "Đã phục hồi người dùng trong MongoDB nhưng lỗi trên Clerk",
+      });
+    }
+
+    res.status(200).json({
+      message: "Người dùng đã được phục hồi trên cả Clerk và MongoDB",
+      user,
+    });
+  } catch (error) {
+    console.error("Lỗi khi phục hồi người dùng:", error);
+    res.status(500).json({ message: "Lỗi khi phục hồi người dùng" });
+  }
+};
+
 
 export const updateUser = async (req, res) => {
   try {
@@ -206,6 +312,7 @@ export const updateUser = async (req, res) => {
     }
 
     let imageUrl = updateData.imageUrl;
+<<<<<<< HEAD
 
     // Kiểm tra nếu có file hình ảnh mới được tải lên
     if (req.file) {
@@ -228,6 +335,8 @@ export const updateUser = async (req, res) => {
 
       console.log("URL ảnh mới từ Cloudinary:", imageUrl);
     }
+=======
+>>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
 
     // Cập nhật thông tin người dùng trên Clerk
     try {
@@ -243,6 +352,7 @@ export const updateUser = async (req, res) => {
         },
       });
 
+<<<<<<< HEAD
       // Kiểm tra phản hồi từ Clerk
       if (clerkResponse.imageUrl !== imageUrl) {
         console.error(
@@ -252,6 +362,8 @@ export const updateUser = async (req, res) => {
         console.log("Ảnh đã được cập nhật thành công trên Clerk.");
       }
 
+=======
+>>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
       console.log("Clerk update response: ", clerkResponse);
     } catch (clerkError) {
       console.error(
@@ -337,18 +449,39 @@ export const unbanUser = async (req, res) => {
   }
 };
 
-export const checkBanStatus = async (req, res) => {
+export const checkUserStatus = async (req, res) => {
   const { clerkId } = req.params;
+
   try {
     // Lấy thông tin người dùng từ Clerk
     const clerkUser = await clerkClient.users.getUser(clerkId);
 
-    // Kiểm tra trạng thái bị ban
-    const isBanned = clerkUser.privateMetadata?.isBanned || false;
+    if (!clerkUser) {
+      return res.status(404).json({ message: "Người dùng không tồn tại trên Clerk" });
+    }
 
-    res.status(200).json({ isBanned });
+    // Kiểm tra trạng thái bị ban và xóa mềm
+    const isBanned = clerkUser.privateMetadata?.isBanned || false;
+    const isDeleted = clerkUser.privateMetadata?.isDeleted || false;
+
+    // Lấy thông tin từ MongoDB để đảm bảo đồng bộ
+    const mongoUser = await Users.findOne({ clerkId });
+
+    if (!mongoUser) {
+      return res.status(404).json({ message: "Người dùng không tồn tại trong MongoDB" });
+    }
+
+    res.status(200).json({
+      isBanned,
+      isDeleted,
+      mongoDB: {
+        isDeleted: mongoUser.isDeleted,
+        isBanned: mongoUser.isBanned,
+      },
+    });
   } catch (error) {
-    console.error("Lỗi khi kiểm tra trạng thái ban:", error);
+    console.error("Lỗi khi kiểm tra trạng thái người dùng:", error);
     res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
   }
 };
+
