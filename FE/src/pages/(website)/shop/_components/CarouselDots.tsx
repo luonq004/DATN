@@ -7,8 +7,6 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import {
   Select,
   SelectContent,
@@ -18,11 +16,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { LayoutGrid, TableProperties } from "lucide-react";
-import ProductItem from "./ProductItem";
-import { useGetAllProduct } from "../actions/useGetAllProduct";
 import { Slide } from "@/common/types/Slide";
 import axios from "axios";
+import { useGetAllProduct } from "../actions/useGetAllProduct";
+import ProductItem from "./ProductItem";
 
 export function CarouselDots() {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -57,9 +54,9 @@ export function CarouselDots() {
     });
   }, [api]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div className="w-full lg:w-[75%] lg:order-1">
@@ -126,40 +123,6 @@ export function CarouselDots() {
             hiển thị <b>15</b> của <b>2 345</b> kết quả
           </p>
 
-          <Tabs className="mb-[10px] mr-5 hidden md:block">
-            <TabsList className="bg-white">
-              <TabsTrigger
-                className="border border-[#eee] rounded text-[#888] data-[state=active]:border-[#eee] w-10 mr-2 data-[state=active]:bg-[#b8cd06] data-[state=active]:text-white"
-                value="table"
-              >
-                <TableProperties />
-              </TabsTrigger>
-              <TabsTrigger
-                className="border border-[#eee] rounded text-[#888] data-[state=active]:border-[#eee] w-10 data-[state=active]:bg-[#b8cd06] data-[state=active]:text-white"
-                value="grid"
-              >
-                <LayoutGrid />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <div className="mt-0 mb-2 w-full md:w-auto lg:mr-5">
-            <Select>
-              <SelectTrigger className="focus:border-[#b8cd06] rounded-2xl outline-0 ring-0 focus:outline-0 focus:ring-0 focus:ring-offset-0 w-full md:w-[210px] mb-0 mt-0">
-                <SelectValue placeholder="SẢN PHẨM NỔI BẬT NHẤT" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="apple">Apple</SelectItem>
-                  <SelectItem value="banana">Banana</SelectItem>
-                  <SelectItem value="blueberry">Blueberry</SelectItem>
-                  <SelectItem value="grapes">Grapes</SelectItem>
-                  <SelectItem value="pineapple">Pineapple</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/*  */}
           <div className="mt-0 mb-2 w-full md:w-auto">
             <Select>
@@ -180,7 +143,7 @@ export function CarouselDots() {
 
         {/* PRODUCT */}
         {/* ============= GRID ============= */}
-        <ProductItem listProduct={listProduct} />
+        <ProductItem listProduct={listProduct} isLoading={isLoading} />
         {/* ============= GRID ============= */}
 
         {/* ==================================================================== */}

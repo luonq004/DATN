@@ -8,13 +8,17 @@ import MobileNav from "@/components/MobileNav";
 
 import { Link } from "react-router-dom";
 import { useClerk, useUser } from "@clerk/clerk-react";
+import { useUserContext } from "@/common/context/UserProvider";
 
 const Header = () => {
   const { isSignedIn, user } = useUser();
+  const { _id } = useUserContext();
   const { openSignIn, openSignUp } = useClerk();
   const [isOpen, setIsOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [showUserInfo, setShowUserInfo] = useState(false);
+
+  console.log(_id);
 
   const opensignin = async () => {
     await openSignIn({
@@ -196,12 +200,12 @@ const Header = () => {
                       </Link>
                     </li>
                     <li className="">
-                      <a
+                      <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
+                        to="/services"
                       >
                         Dịch vụ
-                      </a>
+                      </Link>
                     </li>
                     <li className="">
                       <a

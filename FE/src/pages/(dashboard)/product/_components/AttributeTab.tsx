@@ -79,6 +79,8 @@ const AttributeTab = ({
     dispatch({ type: "ADD_ATTRIBUTE", payload: chooseAttribute });
   }
 
+  console.log("valueOptions: ", stateAttribute.attributesChoose);
+
   return (
     <>
       <div className="flex gap-10 py-5">
@@ -87,6 +89,7 @@ const AttributeTab = ({
           value={valueOptions}
           noOptionsMessage={() => "Không có giá trị nào"}
           className="w-60"
+          isDisabled={stateAttribute.attributesChoose.length === 2}
           options={
             attributes
               .map((item) => ({
