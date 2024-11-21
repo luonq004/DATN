@@ -6,9 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
 import AccountLockedNotification from "@/components/UserbanError";
+import { useUserContext } from "@/common/context/UserProvider";
 
 const LayoutWebsite = () => {
   const { user } = useUser();
+  const { login } = useUserContext();
   const { signOut } = useClerk();
   const isUserSaved = useRef(false);
   const [isAccountLocked, setIsAccountLocked] = useState(false);
@@ -53,15 +55,24 @@ const LayoutWebsite = () => {
 
     if (user) {
       // Gọi saveUserToDatabase một lần
-      if (!isUserSaved.current) {
-        saveUserToDatabase(user.id);
-        isUserSaved.current = true;
-      }
-
+      const saveUserIfNeeded = async () => {
+        if (user && !isUserSaved.current) {
+          try {
+            // Gọi hàm saveUserToDatabase với await
+            const data = await saveUserToDatabase(user.id);
+            login(data._id); // Lưu _id vào context
+            isUserSaved.current = true; // Đánh dấu đã lưu
+          } catch (error) {
+            console.error("Lỗi khi lưu user vào database:", error);
+          }
+        }
+      };
       // Kiểm tra trạng thái khóa khi người dùng đăng nhập
       checkBanStatus(user.id);
+
+      saveUserIfNeeded();
     }
-  }, [user]);
+  }, [user, login]);
 
   const clearAccountLockedStatus = () => {
     // Xóa trạng thái từ localStorage và ẩn thông báo

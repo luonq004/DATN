@@ -1,6 +1,13 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
@@ -31,7 +38,7 @@ const CreateAddress = () => {
     setWard(wardName);
   };
 
-  const handleSave = async() => {
+  const handleSave = async () => {
     // Kiểm tra các trường không trống
     if (!name || !phone || !city || !district || !ward || !address) {
       toast({
@@ -41,8 +48,8 @@ const CreateAddress = () => {
       });
       return;
     }
-     // Kiểm tra các trường không trống và không chỉ có dấu cách
-     if (
+    // Kiểm tra các trường không trống và không chỉ có dấu cách
+    if (
       !name.trim() ||
       !phone.trim() ||
       !city.trim() ||
@@ -52,7 +59,8 @@ const CreateAddress = () => {
     ) {
       toast({
         title: "Lỗi!",
-        description: "Vui lòng điền đầy đủ thông tin hợp lệ, không chỉ chứa dấu cách.",
+        description:
+          "Vui lòng điền đầy đủ thông tin hợp lệ, không chỉ chứa dấu cách.",
         variant: "destructive",
       });
       return;
@@ -68,41 +76,54 @@ const CreateAddress = () => {
       });
       return;
     }
-    const country = "Việt Nam"
+    const country = "Việt Nam";
 
     const CreateAddress = {
-      name, phone, cityId: city, districtId:district, wardId:ward, addressDetail: address, country,
-      userId : _id,
-    }
+      name,
+      phone,
+      cityId: city,
+      districtId: district,
+      wardId: ward,
+      addressDetail: address,
+      country,
+      userId: _id,
+    };
     try {
-    await createAddress(CreateAddress);
-    setName("");
-    setPhone("");
-    setCity("");
-    setDistrict("");
-    setWard("");
-    setAddress("");
-    queryClient.invalidateQueries(["ADDRESS_", _id]);
+      await createAddress(CreateAddress);
+      setName("");
+      setPhone("");
+      setCity("");
+      setDistrict("");
+      setWard("");
+      setAddress("");
+      queryClient.invalidateQueries(["ADDRESS_", _id]);
 
-    toast({
-      title: "Thành công!",
-      description: "Thêm địa chỉ thành công.",
-      variant: "default",
-    });
-  } catch (error) {
-    console.error("Error updating address:", error);
-    toast({
-      title: "Lỗi!",
-      description: "Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.",
-      variant: "destructive",
-    });
-  }
+      toast({
+        title: "Thành công!",
+        description: "Thêm địa chỉ thành công.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error updating address:", error);
+      toast({
+        title: "Lỗi!",
+        description: "Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" type="button" className="text-[18px] add font-medium text-white " style={{backgroundColor: "#b8cd06", border: 0}}>Thêm địa chỉ mới</Button>
+        <Button
+          variant="outline"
+          type="button"
+          className="text-[18px] add font-medium text-white "
+          style={{ backgroundColor: "#b8cd06", border: 0 }}
+        >
+          Thêm địa chỉ mới
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -120,7 +141,7 @@ const CreateAddress = () => {
               onChange={(e) => setName(e.target.value)}
               className="col-span-3"
               required
-              style={{margin: 0}}
+              style={{ margin: 0 }}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -136,7 +157,7 @@ const CreateAddress = () => {
               required
               pattern="^[0-9]{10,11}$"
               title="Số điện thoại phải có từ 10 đến 11 chữ số"
-              style={{margin: 0}}
+              style={{ margin: 0 }}
             />
           </div>
 
@@ -150,7 +171,7 @@ const CreateAddress = () => {
                 onWardChange={handleWardChange}
                 city={city} // Truyền tỉnh thành đã chọn
                 district={district} // Truyền quận huyện đã chọn
-                ward={ward} 
+                ward={ward}
               />
             </div>
           </div>

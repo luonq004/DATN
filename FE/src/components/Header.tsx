@@ -51,7 +51,7 @@ const Header = () => {
         setShowUserInfo(true); // Sau 1 giây sẽ hiển thị thông tin người dùng
       }, 1000);
 
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
   }, [isSignedIn]); // Chạy lại effect khi trạng thái người dùng thay đổi
 
@@ -92,7 +92,7 @@ const Header = () => {
               {/* NAVIGATION */}
               <div className="w-full lg:w-7/12 text-right flex justify-between lg:justify-end items-center px-[15px]">
                 <div className="border-l border-r lg:border-r-0 border-[#eee] px-[15px] py-[10px] md:p-5 lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase">
-                  {isSignedIn  && showUserInfo ? (
+                  {isSignedIn && showUserInfo ? (
                     <Link className="flex gap-2" to="/users">
                       <img
                         className="rounded-full w-[20px] h-[20px] object-cover"
@@ -115,7 +115,7 @@ const Header = () => {
                       </Link>
                       &nbsp; hoặc &nbsp;
                       <Link
-                        to='#'
+                        to="#"
                         onClick={opensignup}
                         className="cursor-pointer hover:text-[#b8cd06] transition-all"
                       >
@@ -135,8 +135,8 @@ const Header = () => {
                 </div>
 
                 <div className="border-x border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase relative hidden lg:inline">
-                  <a
-                    href="/cart"
+                  <Link
+                    to="/cart"
                     className="cursor-pointer text-[#555] hover:text-[#b8cd06] transition-all flex items-center"
                   >
                     <b className="font-bold">your bag</b>
@@ -146,7 +146,7 @@ const Header = () => {
                         5
                       </span>
                     </span>
-                  </a>
+                  </Link>
                 </div>
 
                 {/* HumBurger Icon */}
@@ -161,7 +161,11 @@ const Header = () => {
           <div className="border-x-0 lg:border-x-[50px] border-transparent h-full">
             <div className="flex h-full items-center">
               <Link to="/" className="w-4/12 md:w-2/12 px-[15px]">
-                <img className="w-20 md:w-36" src={logoUrl || "fallback_logo.jpg"} alt="Logo" />
+                <img
+                  className="w-20 md:w-36"
+                  src={logoUrl || "fallback_logo.jpg"}
+                  alt="Logo"
+                />
               </Link>
 
               <div className="w-8/12 md:w-10/12 justify-items-end px-[15px]">

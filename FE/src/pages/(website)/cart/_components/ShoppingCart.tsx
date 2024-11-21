@@ -19,11 +19,13 @@ import { toast } from "@/components/ui/use-toast";
 import SkeletonCart from "./SkeletonCart";
 import CartRight from "./CartRight";
 import CartLeft from "./CartLeft";
+import { useUserContext } from "@/common/context/UserProvider";
 
 const ShopCart = () => {
   const [attribute, setAttribute] = useState<string | 1>("1");
 
-  const userId = "67370b2bba67ac60aea58be8"; // USER ID
+  const { _id } = useUserContext();
+
   const {
     cart,
     isLoading,
@@ -35,12 +37,12 @@ const ShopCart = () => {
     addVoucher,
     removeVoucher,
     changeVariant,
-  } = useCart(userId);
+  } = useCart(_id);
   // console.log(cart)
 
   function userAction(action: any, value: any) {
     const item = {
-      userId: userId,
+      userId: _id,
       ...value,
     };
     // console.log(item)

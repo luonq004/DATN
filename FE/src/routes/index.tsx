@@ -27,7 +27,7 @@ import SidebarAccount from "@/pages/(website)/user/_components/Sidebar";
 import ChangePassword from "@/pages/(website)/user/_components/UpdatePasswordUser";
 import ProfilePage from "@/pages/(website)/user/page";
 import { Route, Routes } from "react-router-dom";
-import Order from "../pages/(website)/cart/_components/Order";
+
 import ShoppingCart from "../pages/(website)/cart/_components/ShoppingCart";
 import CartPage from "../pages/(website)/cart/page";
 import LayoutWebsite from "../pages/(website)/layout";
@@ -50,17 +50,13 @@ const Router = () => {
           <Route path="users" element={<SidebarAccount />}>
             <Route index element={<ProfilePage />} />
             {/* địa chỉ */}
-<<<<<<< HEAD
             <Route path="dia-chi" element={<ListAddress />} />
 
             <Route path="voucher" element={<VoucherStorage />} />
             <Route path="password" element={<ChangePassword />} />
-=======
-            <Route path="dia-chi" element={<ListAddress/>}/>
-            <Route path="voucher" element={<VoucherStorage />} />
+
             {/* lịch sử mua hàng */}
             <Route path="order-history" element={<OrderHistory />} />
->>>>>>> f3322cd3147304c434d3d450723a3e2962574135
           </Route>
 
           <Route path="product/:id" element={<DetailPage />} />

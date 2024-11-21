@@ -60,6 +60,8 @@ const CheckOut = () => {
     isLoading: isLoadingAddresses,
     isError: adressError,
   } = useAddress(_id);
+  console.log(_id);
+
   // lấy dữ liệu giỏ hàng
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
   const onSubmit = async (data: FormOut) => {
@@ -89,12 +91,12 @@ const CheckOut = () => {
       }
     } catch (error: unknown) {
       console.error("Lỗi khi tạo đơn hàng: ", error);
-    
+
       if (axios.isAxiosError(error)) {
         // Kiểm tra nếu error là một AxiosError
         const errResponse: ErrorResponse = error.response?.data;
         const message = errResponse?.message || "Đã có lỗi xảy ra";
-    
+
         // Hiển thị thông báo lỗi từ backend
         toast({
           title: "Thất bại!",
@@ -108,7 +110,8 @@ const CheckOut = () => {
           description: "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
           variant: "default",
         });
-      }}
+      }
+    }
   };
   if (adressError) {
     return <div className="text-red-500">Lỗi khi tải địa chỉ.</div>;
