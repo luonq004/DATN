@@ -38,7 +38,7 @@ const CartLeft = ({ cart, attribute, setAttribute, userAction }: { cart: Icart, 
                         {/* Image  */}
                         <div className="Image_Product">
                             <div className="border border-[#dddcdc] rounded-[6px] p-1">
-                                <img className="w-full h-full" src={item.productItem.avatarMain} alt="img" />
+                                <img className="w-full h-full" src={item.productItem.image} alt="img" />
                             </div>
                         </div>
                         {/* information */}

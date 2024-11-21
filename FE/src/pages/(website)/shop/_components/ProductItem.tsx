@@ -16,7 +16,7 @@ const ProductItem = ({ listProduct }: { listProduct: IProduct[] }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 mt-6">
-      {listProduct.map((product) => (
+      { listProduct.data.map((product) => (
         <div
           className="product-item border-x border-[#f7f7f7] pt-[25px] px-[30px] pb-[5px] mb-[60px] overflow-hidden"
           key={product._id}

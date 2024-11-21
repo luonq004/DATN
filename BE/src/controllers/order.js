@@ -1,73 +1,77 @@
 import { StatusCodes } from "http-status-codes";
 import Address from "../models/Address";
 import Order from "../models/order";
-import Product from "../models/product";
+import Variant from "../models/variant";
+import cart from "../models/cart";
 
 //=========================tạo đơn hàng mới===============
 export const createOrder = async (req, res) => {
-    const { userId, addressId, products, payment, totalPrice, name } =
+    const { userId, addressId, products, payment, totalPrice, note } =
         req.body;
     try {
-        let finalAddressId = addressId;
+        let finalAddress = {};
+        // Kiểm tra xem addressId có được cung cấp không
         if (!addressId) {
-            const {
-                country,
-                cityId,
-                districtId,
-                wardId,
-                phone,
-                addressDetail,
-                email,
-            } = req.body;
-            // Tạo địa chỉ mới
-            const newAddress = new Address({
-                userId,
-                country,
-                cityId,
-                districtId,
-                wardId,
-                phone,
-                addressDetail,
-                email,
-                name,
-                isDefault: true,
-            });
-            // Lưu địa chỉ mới
-            const saveAddress = await newAddress.save();
-            finalAddressId = saveAddress._id;
-            // return res
-            //     .status(StatusCodes.CREATED)
-            //     .json({ message: "Địa chỉ đã được lưu", address: saveAddress });
+            return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ message: "addressId là bắt buộc" });
         }
-        // // Kiểm tra và cập nhật số lượng sản phẩm trong kho
-        // for (const item of products) {
-        //     const product = await Product.findById(item.productId);
+        if (!payment) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Phương thức thanh toán là bắt buộc" });
+        }
+        console.log("object", products.products)
+        if (!products || !Array.isArray(products.products) || products.products.length === 0) {
+            return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ message: "Không có sản phẩm trong giỏ hàng" });
+        }
 
-        //     // Nếu không tìm thấy sản phẩm
-        //     if (!product) {
-        //         return res.status(StatusCodes.NOT_FOUND).json({ message: `Sản phẩm với ID ${item.productId} không tồn tại` });
-        //     }
+        if (totalPrice < 0) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Giá trị đơn hàng không hợp lệ" });
+        }
+        if (!userId) {
+            return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ message: "userId là bắt buộc" });
+        }
 
-        //     // Kiểm tra nếu sản phẩm có đủ số lượng trong kho
-        //     if (product.quantity < item.quantity) {
-        //         return res.status(StatusCodes.BAD_REQUEST).json({ message: `Sản phẩm ${product.name} không đủ số lượng trong kho` });
-        //     }
+        // Truy vấn thông tin địa chỉ từ addressId
+        const address = await Address.findById(addressId);
+        if (!address) {
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .json({ message: "Địa chỉ không tồn tại" });
+        }
+        // Lấy thông tin chi tiết địa chỉ
+        finalAddress = address.toObject();
+        // Kiểm tra số lượng kho cho mỗi sản phẩm
+        for (let item of products.products) {
+            const { variantItem, quantity } = item;
+            // Kiểm tra và xử lý variantItem
+            const productVariant = await Variant.findById(variantItem._id);
+            if (!productVariant || productVariant.countOnStock < quantity) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    message: `Số lượng không đủ trong kho.`
+                });
+            }
 
-        //     // Trừ số lượng sản phẩm trong kho dựa trên số lượng đặt hàng
-        //     product.quantity -= item.quantity;
-        //     await product.save();
-        // }
+            // Trừ số lượng trong kho
+            productVariant.countOnStock -= quantity;
+            await productVariant.save();
+        }
+
         // Tạo đơn hàng
         const newOrder = new Order({
             userId,
-            addressId: finalAddressId,
+            addressId: finalAddress,
             products,
             payment,
+            note,
             totalPrice,
         });
         // Lưu đơn hàng
         const savedOrder = await newOrder.save();
-
+        await cart.deleteOne({ userId });
         return res
             .status(StatusCodes.CREATED)
             .json({ message: "Đơn hàng đã được tạo thành công", order: savedOrder });
