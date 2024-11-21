@@ -42,6 +42,7 @@ import RegisterForm from "@/pages/(dashboard)/user/_component/RegisterForm";
 import AttributesPage from "@/pages/(dashboard)/attribute/page";
 import AttributeValuePage from "@/pages/(dashboard)/attributeValue/page";
 import ProductDetail from "@/pages/(website)/product/page";
+import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
 
 const Router = () => {
   return (
@@ -115,6 +116,7 @@ const Router = () => {
           </Route>
           <Route path="voucher" element={<DemoPage />} />
           <Route path="orders" element={<AdminOrder />} />
+          <Route path="orders/orderdetails/:id" element={<OrderDetail />} />
         </Route>
       </Routes>
     </>

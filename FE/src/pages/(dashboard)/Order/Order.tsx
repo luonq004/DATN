@@ -1,95 +1,184 @@
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
-  SortingState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
-  RowSelectionState,
-} from "@tanstack/react-table"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import useOrder from "@/common/hooks/order/UseOrder";
+import { Link } from "react-router-dom";
 
-
-// Định nghĩa kiểu dữ liệu cho đơn hàng
 export type Order = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
+  id: string;
+  orderCode: string;
+  amount: number;
+  payment: string;
+  status: string;
+  createdAt: string;
+};
 
-// Dữ liệu mẫu cho bảng
-const orders: Order[] = [
-  { id: "1", amount: 100, status: "pending", email: "example1@gmail.com" },
-  { id: "2", amount: 200, status: "processing", email: "example2@gmail.com" },
-  { id: "3", amount: 150, status: "success", email: "example3@gmail.com" },
-  { id: "4", amount: 180, status: "failed", email: "example4@gmail.com" },
-  { id: "4", amount: 180, status: "failed", email: "example4@gmail.com" },
-]
+// Hàm gửi API cập nhật trạng thái
+const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  try {
+    const response = await fetch(`/api/orders/${orderId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
 
-// Định nghĩa các cột trong bảng
+    if (!response.ok) throw new Error("Failed to update status");
+    // toast.success("Cập nhật trạng thái thành công!");
+  } catch (error) {
+    console.error(error);
+    // toast.error("Cập nhật trạng thái thất bại!");
+  }
+};
+
+// Định nghĩa các cột
 const columns: ColumnDef<Order>[] = [
   {
-    accessorKey: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    accessorKey: "orderCode",
+    header: "Mã đơn hàng",
+    cell: ({ row }) => <div>{row.getValue("orderCode")}</div>,
   },
   {
     accessorKey: "amount",
-    header: "Amount",
+    header: "Tổng tiền",
     cell: ({ row }) => (
-      <div className="text-right">
-        {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-          row.getValue("amount")
-        )}
+      <div className="">
+        {new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(row.getValue("amount"))}
       </div>
     ),
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("status")}</div>,
+    accessorKey: "payment",
+    header: "Phương thức thanh toán",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("payment")}</div>
+    ),
   },
-]
+  {
+    accessorKey: "status",
+    header: "Trạng thái",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("status")}</div>
+    ),
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Ngày mua",
+    cell: ({ row }) => (
+      <div>
+        {new Date(row.getValue("createdAt")).toLocaleDateString("vi-VN", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })}
+      </div>
+    ),
+  },
+  {
+    id: "actions",
+    header: "Chức năng",
+    cell: ({ row }) => (
+      <div className="flex space-x-2">
+        <Link to={`/admin/orders/orderdetails/${row.original.id}`}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleViewDetails(row.original.id)}
+          >
+            Xem chi tiết
+          </Button>
+        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="primary" size="sm">
+              Cập nhật trạng thái
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {["Đang chờ", "Đang xử lý", "Đã hoàn thành", "Đã hủy"].map(
+              (status) => (
+                <DropdownMenuItem
+                  key={status}
+                  onClick={() => updateOrderStatus(row.original.id, status)}
+                  className="cursor-pointer"
+                >
+                  {status}
+                </DropdownMenuItem>
+              )
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    ),
+  },
+];
 
-// Component chính cho bảng đơn hàng
+const handleViewDetails = (orderId: string) => {
+  console.log("Xem chi tiết đơn hàng:", orderId);
+  // Thêm logic hiển thị chi tiết đơn hàng
+};
+
 const AdminOrder = () => {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const userId = "67370b2bba67ac60aea58be8";
+  // const { _id } = useUserContext() ?? {};
+  const { data, isLoading, isError } = useOrder(userId);
+
+  const orders: Order[] = React.useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
+    return data.map((order: any) => ({
+      id: order._id,
+      orderCode: order.orderCode || "N/A",
+      amount: order.totalPrice || 0,
+      payment: order.payment || "N/A",
+      status: order.status || "unknown",
+      createdAt: order.createdAt || "",
+    }));
+  }, [data]);
 
   const table = useReactTable({
     data: orders,
     columns,
-    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      rowSelection,
-    },
-  })
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center text-red-500">
+        Có lỗi xảy ra khi tải dữ liệu!
+      </div>
+    );
+  }
 
   return (
     <div className="w-full p-4">
@@ -122,26 +211,8 @@ const AdminOrder = () => {
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4 flex items-center justify-end space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
     </div>
-  )
-}
+  );
+};
 
 export default AdminOrder;
