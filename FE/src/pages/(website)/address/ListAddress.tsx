@@ -11,7 +11,7 @@ import { deleteAddressByUserId, updateAddressByUserId } from "../services/addres
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
-interface Address {
+export interface Address {
   _id: string;
   userId: string | number;
   country: string;
@@ -79,7 +79,7 @@ const handledefault = async(address : Address) => {
       {/* Địa chỉ của tôi */}
       <div className="flex justify-between border-b items-center">
         <h3 className="text-2xl font-medium mb-8 text-gray-800 mt-5">Địa chỉ của tôi</h3>
-        <div className="flex items-center px-4 text-white py-2 bg-[#b8cd06] gap-2">
+        <div className="flex items-center px-4 text-white bg-[#b8cd06] gap-2">
           <svg enableBackground="new 0 0 10 10" viewBox="0 0 10 10" x={0} y={0} className="shopee-svg-icon w-[14px] icon-plus-sign" style={{ color: "#fff", fill: "white" }}>
             <polygon points="10 4.5 5.5 4.5 5.5 0 4.5 0 4.5 4.5 0 4.5 0 5.5 4.5 5.5 4.5 10 5.5 10 5.5 5.5 10 5.5" />
           </svg>

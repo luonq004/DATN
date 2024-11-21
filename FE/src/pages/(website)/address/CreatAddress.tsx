@@ -102,7 +102,7 @@ const CreateAddress = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="text-xl add font-medium text-white " style={{backgroundColor: "#b8cd06", border: 0, padding: 0}}>Thêm địa chỉ mới</Button>
+        <Button variant="outline" type="button" className="text-[18px] add font-medium text-white " style={{backgroundColor: "#b8cd06", border: 0}}>Thêm địa chỉ mới</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

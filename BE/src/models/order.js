@@ -7,13 +7,13 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
 
-  //  tham chiếu đến Address
   addressId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Address",
-    required: true,
+    type: Object,
+    required: true, // Lưu thông tin chi tiết của địa chỉ
   },
-
+  note: {
+    type: String,
+  },
   // Danh sách sản phẩm
   products: [Object],
 
@@ -47,4 +47,3 @@ const orderSchema = new mongoose.Schema({
 const Order = mongoose.model("Order", orderSchema);
 
 export default Order;
-
