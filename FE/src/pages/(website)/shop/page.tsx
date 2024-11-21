@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { CarouselDots } from "./_components/CarouselDots";
 
 import CategoriesMenu from "./_components/CategoriesMenu";
+import { MainContent } from "./_components/MainContent";
 
 const ProductShopPage = () => {
   return (
@@ -26,7 +27,7 @@ const ProductShopPage = () => {
         {/* Khoang cach */}
         <div className="flex flex-col gap-4 lg:flex-row">
           {/* CAROUSEL */}
-          <CarouselDots />
+          <MainContent />
           {/* CAROUSEL */}
           {/*=========================  */}
           {/* CATEGORY */}

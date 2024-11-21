@@ -3,7 +3,6 @@ import slugify from "slugify";
 import Variant from "../models/variant";
 
 export const getAllProducts = async (req, res) => {
-
   const {
     _page = 1,
     _limit = 9,
@@ -25,27 +24,27 @@ export const getAllProducts = async (req, res) => {
     ? [{ path: "category", select: "name" }, { path: "attribites" }]
     : [];
 
-  // const query = {};
+  const query = {};
 
-  // if (_price) {
-  //   const [minPrice, maxPrice] = _price.split(",");
-  //   query.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
-  // } else {
-  //   query.price = { $gte: 0 };
-  // }
+  if (_price) {
+    const [minPrice, maxPrice] = _price.split(",");
+    query.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+  } else {
+    query.price = { $gte: 0 };
+  }
 
-  // if (_category) {
-  //   const categories = Array.isArray(_category) ? _category : [_category];
+  if (_category) {
+    const categories = Array.isArray(_category) ? _category : [_category];
 
-  //   // Sử dụng `$in` để kiểm tra nếu `category` trong sản phẩm khớp bất kỳ giá trị nào trong mảng
-  //   query.category = { $in: categories };
-  // }
+    // Sử dụng `$in` để kiểm tra nếu `category` trong sản phẩm khớp bất kỳ giá trị nào trong mảng
+    query.category = { $in: categories };
+  }
 
   try {
-    const result = await Product.paginate({}, { ...options });
+    const result = await Product.paginate(query, { ...options });
     // const result = await Product.find();
 
-    console.log(result)
+    console.log(result);
 
     const data = {
       data: result.docs,

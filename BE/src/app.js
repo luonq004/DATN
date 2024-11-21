@@ -51,9 +51,9 @@ app.use("/api", routerOrder);
 
 //routers
 app.use("/api", productRouter);
-app.use("/api/v1", attributeRouter);
+app.use("/api", attributeRouter);
 app.use("/api", attributeValueRouter);
-app.use('/api', paymentRouter);
+app.use("/api", paymentRouter);
 app.use("/api", routerCategory);
 app.use("/api", routerCart);
 app.use("/api", routerVoucher);

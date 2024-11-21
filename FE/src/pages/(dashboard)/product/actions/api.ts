@@ -14,7 +14,7 @@ export async function getProductEdit(id: string) {
 
 export async function getAtributes() {
   try {
-    const response = await axios.get("http://localhost:8080/api/v1/attributes");
+    const response = await axios.get("http://localhost:8080/api/attributes");
     return response?.data;
   } catch (error) {
     console.error(error);

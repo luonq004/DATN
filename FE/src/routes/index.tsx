@@ -5,7 +5,7 @@ import ProductPage from "@/pages/(dashboard)/product/page";
 import LayoutAdmin from "@/pages/(dashboard)/layout";
 import ListUser from "@/pages/(dashboard)/user/_component/ListUser";
 import CheckOut from "@/pages/(website)/cart/_components/CheckOut";
-import DetailPage from "@/pages/(website)/details/page";
+
 import ProductShopPage from "@/pages/(website)/shop/page";
 
 import AddLogoPage from "@/pages/(dashboard)/logo/_components/AddLogo";
@@ -39,6 +39,10 @@ import OrderHistory from "@/pages/(website)/orderHistory/OrderHistory";
 
 import RegisterForm from "@/pages/(dashboard)/user/_component/RegisterForm";
 
+import AttributesPage from "@/pages/(dashboard)/attribute/page";
+import AttributeValuePage from "@/pages/(dashboard)/attributeValue/page";
+import ProductDetail from "@/pages/(website)/product/page";
+
 const Router = () => {
   return (
     <>
@@ -59,7 +63,7 @@ const Router = () => {
             <Route path="order-history" element={<OrderHistory />} />
           </Route>
 
-          <Route path="product/:id" element={<DetailPage />} />
+          <Route path="product/:id" element={<ProductDetail />} />
 
           {/* <Route path="shop" element={<ShopPage />}>
             <Route index element={<ProductsAll />} />
@@ -87,6 +91,8 @@ const Router = () => {
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />
 
+          <Route path="attributes" element={<AttributesPage />} />
+
           <Route path="users" element={<UserPage />}>
             <Route index element={<ListUser />} />
             <Route path="detail/:clerkId" element={<UserDetailPage />} />
@@ -98,6 +104,9 @@ const Router = () => {
             <Route path="add" element={<AddSlider />} />
             <Route path="edit/:id" element={<UpdateSlider />} />
           </Route>
+
+          <Route path="attributes" element={<AttributesPage />} />
+          <Route path="attributesValues/:id" element={<AttributeValuePage />} />
 
           <Route path="logos" element={<LogoPage />}>
             <Route index element={<ListLogoPage />} />

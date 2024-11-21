@@ -22,6 +22,7 @@ import {
 } from "@/lib/utils";
 import { useUserContext } from "@/common/context/UserProvider";
 import axios from "axios";
+import { toast } from "@/components/ui/use-toast";
 
 const PreviewProduct = ({
   isOpen,
@@ -36,7 +37,7 @@ const PreviewProduct = ({
   const [current, setCurrent] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [productPopup, setProductPopup] = useState<IProduct>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [attributesChoose, setAttributesChoose] = useState<
     Record<string, string>
@@ -52,7 +53,7 @@ const PreviewProduct = ({
     if (!selectedIndex || productPopup?._id === selectedIndex) return;
 
     const fetchProduct = async () => {
-      // setIsLoading(true);
+      setIsLoading(true);
       setAttributesChoose({});
       const response = await fetch(
         `http://localhost:8080/api/products/${selectedIndex}`
@@ -63,7 +64,7 @@ const PreviewProduct = ({
     };
 
     fetchProduct();
-  }, [selectedIndex, isLoading]);
+  }, [selectedIndex]);
 
   useEffect(() => {
     if (!apiImage) {
@@ -86,11 +87,12 @@ const PreviewProduct = ({
   }, [onClose]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   const attributesProduct =
-    !isLoading && Object.entries(extractAttributes(productPopup?.variants));
+    !isLoading &&
+    Object.entries(extractAttributes(productPopup?.variants || []));
 
   const handleAttributeSelect = (type: string, value: string) => {
     setSelectedAttributes((prev) => {
@@ -170,10 +172,11 @@ const PreviewProduct = ({
       userId: _id,
     };
 
-    const response = await axios.post(
-      "http://localhost:8080/api/cart/add",
-      data
-    );
+    await axios.post("http://localhost:8080/api/cart/add", data);
+
+    toast({
+      title: "Thêm vào giỏ hàng thành công",
+    });
   };
 
   return createPortal(
@@ -269,74 +272,75 @@ const PreviewProduct = ({
             </p>
 
             {/* Attribute */}
-            {attributesProduct.map(([key, value]) => (
-              <div
-                className="mb-10 flex flex-col md:flex-row md:items-center"
-                key={key}
-              >
-                <span className="uppercase text-[13px] text-[#343434] font-raleway font-black mb-2 w-full md:w-4/12">
-                  {key}:
-                </span>
-
-                <ToggleGroup
-                  className="justify-start gap-2 w-full md:w-8/12 flex-wrap px-[15px]"
-                  type="single"
-                  // defaultValue={value[0].value}
+            {attributesProduct &&
+              attributesProduct.map(([key, value]) => (
+                <div
+                  className="mb-10 flex flex-col md:flex-row md:items-center"
+                  key={key}
                 >
-                  {(value as string[]).map((item: string, idx: number) => {
-                    if (item.split(":")[1].startsWith("#")) {
-                      return (
-                        <ToggleGroupItem
-                          onClick={() =>
-                            handleAttributeSelect(key, item.split(":")[0])
-                          }
-                          key={`${item.split(":")[0]}-${idx}`}
-                          className={`rounded-none border data-[state=on]:border-2 size-6 p-0 cusor-pointer transition-all`}
-                          value={item.split(":")[0]}
-                          style={{
-                            backgroundColor: item.split(":")[1],
-                          }}
-                          disabled={
-                            key in attributesChoose
-                              ? !attributesChoose[key][0].includes(
-                                  item.split(":")[0]
-                                )
-                              : false
-                          }
-                        ></ToggleGroupItem>
-                      );
-                    } else {
-                      return (
-                        <ToggleGroupItem
-                          onClick={() =>
-                            handleAttributeSelect(key, item.split(":")[0])
-                          }
-                          className="rounded-none border data-[state=on]:border-2 data-[state=on]:text-black transition-all uppercase px-3 h-8"
-                          value={item.split(":")[0]}
-                          key={item.split(":")[0]}
-                          // disabled={
-                          //   key in attributesChoose
-                          //     ? item
-                          //         .split(":")[0]
-                          //         .includes(attributesChoose[key][0])
-                          //     : false
-                          // }
-                          disabled={
-                            key in attributesChoose
-                              ? !attributesChoose[key][0].includes(
-                                  item.split(":")[0]
-                                )
-                              : false
-                          }
-                        >
-                          {item.split(":")[1]}
-                        </ToggleGroupItem>
-                      );
-                    }
-                  })}
-                </ToggleGroup>
-              </div>
-            ))}
+                  <span className="uppercase text-[13px] text-[#343434] font-raleway font-black mb-2 w-full md:w-4/12">
+                    {key}:
+                  </span>
+
+                  <ToggleGroup
+                    className="justify-start gap-2 w-full md:w-8/12 flex-wrap px-[15px]"
+                    type="single"
+                    // defaultValue={value[0].value}
+                  >
+                    {(value as string[]).map((item: string, idx: number) => {
+                      if (item.split(":")[1].startsWith("#")) {
+                        return (
+                          <ToggleGroupItem
+                            onClick={() =>
+                              handleAttributeSelect(key, item.split(":")[0])
+                            }
+                            key={`${item.split(":")[0]}-${idx}`}
+                            className={`rounded-none border data-[state=on]:border-2 size-6 p-0 cusor-pointer transition-all`}
+                            value={item.split(":")[0]}
+                            style={{
+                              backgroundColor: item.split(":")[1],
+                            }}
+                            disabled={
+                              key in attributesChoose
+                                ? !attributesChoose[key][0].includes(
+                                    item.split(":")[0]
+                                  )
+                                : false
+                            }
+                          ></ToggleGroupItem>
+                        );
+                      } else {
+                        return (
+                          <ToggleGroupItem
+                            onClick={() =>
+                              handleAttributeSelect(key, item.split(":")[0])
+                            }
+                            className="rounded-none border data-[state=on]:border-2 data-[state=on]:text-black transition-all uppercase px-3 h-8"
+                            value={item.split(":")[0]}
+                            key={item.split(":")[0]}
+                            // disabled={
+                            //   key in attributesChoose
+                            //     ? item
+                            //         .split(":")[0]
+                            //         .includes(attributesChoose[key][0])
+                            //     : false
+                            // }
+                            disabled={
+                              key in attributesChoose
+                                ? !attributesChoose[key][0].includes(
+                                    item.split(":")[0]
+                                  )
+                                : false
+                            }
+                          >
+                            {item.split(":")[1]}
+                          </ToggleGroupItem>
+                        );
+                      }
+                    })}
+                  </ToggleGroup>
+                </div>
+              ))}
 
             {/* Quantity */}
             <div className="mb-10 flex flex-col md:flex-row md:items-center">
