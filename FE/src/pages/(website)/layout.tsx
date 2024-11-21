@@ -1,4 +1,3 @@
-import { useUserContext } from "@/common/context/UserProvider";
 import { saveUserToDatabase } from "@/common/hooks/useCheckUser";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -12,21 +11,6 @@ const LayoutWebsite = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
   const isUserSaved = useRef(false);
-<<<<<<< HEAD
-  const { login } = useUserContext();
-
-  useEffect(() => {
-    const saveUserIfNeeded = async () => {
-      if (user && !isUserSaved.current) {
-        try {
-          // Gọi hàm saveUserToDatabase với await
-          const data = await saveUserToDatabase(user.id);
-          login(data._id); // Lưu _id vào context
-          isUserSaved.current = true; // Đánh dấu đã lưu
-        } catch (error) {
-          console.error("Lỗi khi lưu user vào database:", error);
-        }
-=======
   const [isAccountLocked, setIsAccountLocked] = useState(false);
   const [accountStatus, setAccountStatus] = useState<
     "banned" | "deleted" | null
@@ -58,8 +42,8 @@ const LayoutWebsite = () => {
   };
 
   useEffect(() => {
-     // Kiểm tra trạng thái tài khoản trong localStorage
-     if (localStorage.getItem("accountLocked") === "true") {
+    // Kiểm tra trạng thái tài khoản trong localStorage
+    if (localStorage.getItem("accountLocked") === "true") {
       setAccountStatus("banned");
       setIsAccountLocked(true);
     } else if (localStorage.getItem("accountDeleted") === "true") {
@@ -72,19 +56,12 @@ const LayoutWebsite = () => {
       if (!isUserSaved.current) {
         saveUserToDatabase(user.id);
         isUserSaved.current = true;
->>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
       }
-    };
 
-<<<<<<< HEAD
-    saveUserIfNeeded(); // Gọi hàm async bên trong useEffect
-  }, [user, login]);
-=======
       // Kiểm tra trạng thái khóa khi người dùng đăng nhập
       checkBanStatus(user.id);
     }
   }, [user]);
->>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
 
   const clearAccountLockedStatus = () => {
     // Xóa trạng thái từ localStorage và ẩn thông báo

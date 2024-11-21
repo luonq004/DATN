@@ -31,18 +31,11 @@ import Order from "../pages/(website)/cart/_components/Order";
 import ShoppingCart from "../pages/(website)/cart/_components/ShoppingCart";
 import CartPage from "../pages/(website)/cart/page";
 import LayoutWebsite from "../pages/(website)/layout";
-<<<<<<< HEAD
-import DemoPage from "@/pages/(dashboard)/voucher/page";
-import AboutUsPage from "@/pages/(website)/aboutus/page";
-import AdminOrder from "@/pages/(dashboard)/Order/Order";
-import PageServices from "@/pages/(website)/services/PageServices";
-import { SignIn, SignUp } from "@clerk/clerk-react";
+
 import ListAddress from "@/pages/(website)/address/ListAddress";
 import VoucherStorage from "@/pages/(website)/user/_components/VoucherStorage";
 
-=======
 import RegisterForm from "@/pages/(dashboard)/user/_component/RegisterForm";
->>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
 
 const Router = () => {
   return (
@@ -54,15 +47,12 @@ const Router = () => {
 
           <Route path="users" element={<SidebarAccount />}>
             <Route index element={<ProfilePage />} />
-<<<<<<< HEAD
 
             {/* địa chỉ */}
-            <Route path="dia-chi" element={<ListAddress/>}/>
+            <Route path="dia-chi" element={<ListAddress />} />
 
             <Route path="voucher" element={<VoucherStorage />} />
-=======
-            <Route path="password" element={<ChangePassword/>}/>
->>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
+            <Route path="password" element={<ChangePassword />} />
           </Route>
 
           <Route path="product/:id" element={<DetailPage />} />

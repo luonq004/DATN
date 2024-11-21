@@ -20,22 +20,15 @@ import {
 
 import { LayoutGrid, TableProperties } from "lucide-react";
 import ProductItem from "./ProductItem";
-<<<<<<< HEAD
 import { useGetAllProduct } from "../actions/useGetAllProduct";
-=======
 import { Slide } from "@/common/types/Slide";
 import axios from "axios";
->>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
 
 export function CarouselDots() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
-<<<<<<< HEAD
   const { isLoading, listProduct, error } = useGetAllProduct();
-=======
   const [slidesData, setSlidesData] = React.useState<Slide[]>([]);
->>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
-
 
   React.useEffect(() => {
     const fetchSlides = async () => {
