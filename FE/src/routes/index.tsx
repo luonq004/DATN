@@ -34,6 +34,8 @@ import PageServices from "@/pages/(website)/services/PageServices";
 import { SignIn, SignUp } from "@clerk/clerk-react";
 import ListAddress from "@/pages/(website)/address/ListAddress";
 import VoucherStorage from "@/pages/(website)/user/_components/VoucherStorage";
+import SuccessPage from "@/pages/(website)/cart/_components/SuccessPage ";
+import OrderHistory from "@/pages/(website)/orderHistory/OrderHistory";
 
 
 const Router = () => {
@@ -46,11 +48,11 @@ const Router = () => {
 
           <Route path="users" element={<SidebarAccount />}>
             <Route index element={<ProfilePage />} />
-
             {/* địa chỉ */}
             <Route path="dia-chi" element={<ListAddress/>}/>
-
             <Route path="voucher" element={<VoucherStorage />} />
+            {/* lịch sử mua hàng */}
+            <Route path="order-history" element={<OrderHistory />} />
           </Route>
 
           <Route path="product/:id" element={<DetailPage />} />
@@ -63,11 +65,11 @@ const Router = () => {
           <Route path="signin" element={<SignIn />} />
           <Route path="signup" element={<SignUp />} />
 
-          <Route path="services1" element={<PageServices />} />
+          <Route path="services" element={<PageServices />} />
           <Route path="cart" element={<CartPage />}>
             <Route index element={<ShoppingCart />} />
             <Route path="checkout" element={<CheckOut />} />
-            <Route path="order" element={<Order />} />
+            <Route path="order" element={<SuccessPage />} />
           </Route>
 
           <Route path="about" element={<AboutUsPage />} />

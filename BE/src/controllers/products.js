@@ -3,13 +3,18 @@ import slugify from "slugify";
 import Variant from "../models/variant";
 
 export const getAllProducts = async (req, res) => {
+
   const {
     _page = 1,
-    _limit = 12,
+    _limit = 9,
     _sort = "createAt",
     _order = "asc",
     _expand = true,
+    _price,
+    _category,
   } = req.query;
+
+  console.log(req.query);
 
   const options = {
     page: _page,
@@ -19,12 +24,30 @@ export const getAllProducts = async (req, res) => {
   const populateOptions = _expand
     ? [{ path: "category", select: "name" }, { path: "attribites" }]
     : [];
+
+  // const query = {};
+
+  // if (_price) {
+  //   const [minPrice, maxPrice] = _price.split(",");
+  //   query.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+  // } else {
+  //   query.price = { $gte: 0 };
+  // }
+
+  // if (_category) {
+  //   const categories = Array.isArray(_category) ? _category : [_category];
+
+  //   // Sử dụng `$in` để kiểm tra nếu `category` trong sản phẩm khớp bất kỳ giá trị nào trong mảng
+  //   query.category = { $in: categories };
+  // }
+
   try {
     const result = await Product.paginate({}, { ...options });
+    // const result = await Product.find();
 
-    if (result.docs.length === 0) throw new Error("No products found");
+    console.log(result)
 
-    const { data } = {
+    const data = {
       data: result.docs,
       pagination: {
         currentPage: result.page,
@@ -32,6 +55,11 @@ export const getAllProducts = async (req, res) => {
         totalItems: result.totalDocs,
       },
     };
+
+    // setTimeout(() => {
+    //   res.status(200).json(data);
+    // }, 2000);
+
     return res.status(200).json(data);
   } catch (error) {
     return res.status(400).json({ message: error.message });

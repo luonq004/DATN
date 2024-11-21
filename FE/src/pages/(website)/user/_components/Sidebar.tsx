@@ -78,7 +78,7 @@ const SidebarAccount: React.FC = () => {
 
         {/* Đơn hàng */}
         <div className="mb-4">
-          <div className="flex gap-3 items-center ">
+          <Link to={`order-history`} className="flex gap-3 items-center ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20" fill="currentColor"
@@ -101,7 +101,7 @@ const SidebarAccount: React.FC = () => {
             >
               Đơn Mua
             </h3>
-          </div>
+          </Link>
         </div>
 
         {/* Kho voucher */}
