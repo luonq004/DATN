@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
+   
     clerkId: {
       type: String,
       unique: true,
@@ -32,6 +33,10 @@ const userSchema = new Schema(
     isBanned: {
       type: Boolean,
       default: false,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false, 
     },
     imageUrl: {
       type: String,

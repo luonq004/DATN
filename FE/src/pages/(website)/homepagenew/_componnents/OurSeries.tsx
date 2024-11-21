@@ -191,7 +191,7 @@ const OurSeries = () => {
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
                       />
-                      
+
                       <div className="max-w-[100%]">
                         <h3 className="text-lg font-raleway text-[#343434] font-extrabold mb-2">
                           {product.title.split(" ")[0]}{" "}
@@ -240,10 +240,10 @@ const OurSeries = () => {
         {productGroups.map((_, index) => (
           <div
             key={index}
-            className={`rounded-full w-3 h-3 bg-white ${
+            className={`rounded-full duration-300 bg-white ${
               index === activeIndex
-                ? "border-[3px] w-4 h-4 border-[#b8cd06]"
-                : "border-[1px] border-gray-500"
+                ? "border-[#b8cd06] border-4 size-4"
+                : "border-gray-300 border-2 size-3"
             }`}
             onClick={() => handleDotClick(index)}
           ></div>

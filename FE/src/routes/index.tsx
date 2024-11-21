@@ -6,27 +6,32 @@ import LayoutAdmin from "@/pages/(dashboard)/layout";
 import ListUser from "@/pages/(dashboard)/user/_component/ListUser";
 import CheckOut from "@/pages/(website)/cart/_components/CheckOut";
 import DetailPage from "@/pages/(website)/details/page";
-import HomePage from "@/pages/(website)/homepage/page";
 import ProductShopPage from "@/pages/(website)/shop/page";
 
 import AddLogoPage from "@/pages/(dashboard)/logo/_components/AddLogo";
 import ListLogoPage from "@/pages/(dashboard)/logo/_components/ListLogo";
 import UpdateLogoPage from "@/pages/(dashboard)/logo/_components/UpdateLogo";
 import LogoPage from "@/pages/(dashboard)/logo/page";
+import AdminOrder from "@/pages/(dashboard)/Order/Order";
 import AddSlider from "@/pages/(dashboard)/slider/_components/AddSlide";
 import ListSlider from "@/pages/(dashboard)/slider/_components/ListSlider";
 import UpdateSlider from "@/pages/(dashboard)/slider/_components/UpdateSlider";
 import SliderPage from "@/pages/(dashboard)/slider/page";
 import UserDetailPage from "@/pages/(dashboard)/user/_component/DetailUser";
 import UserPage from "@/pages/(dashboard)/user/page";
+import DemoPage from "@/pages/(dashboard)/voucher/page";
+import AboutUsPage from "@/pages/(website)/aboutus/page";
 import HomePageNew from "@/pages/(website)/homepagenew/page";
+import PageServices from "@/pages/(website)/services/PageServices";
 import SidebarAccount from "@/pages/(website)/user/_components/Sidebar";
+import ChangePassword from "@/pages/(website)/user/_components/UpdatePasswordUser";
 import ProfilePage from "@/pages/(website)/user/page";
 import { Route, Routes } from "react-router-dom";
 import Order from "../pages/(website)/cart/_components/Order";
 import ShoppingCart from "../pages/(website)/cart/_components/ShoppingCart";
 import CartPage from "../pages/(website)/cart/page";
 import LayoutWebsite from "../pages/(website)/layout";
+<<<<<<< HEAD
 import DemoPage from "@/pages/(dashboard)/voucher/page";
 import AboutUsPage from "@/pages/(website)/aboutus/page";
 import AdminOrder from "@/pages/(dashboard)/Order/Order";
@@ -35,6 +40,9 @@ import { SignIn, SignUp } from "@clerk/clerk-react";
 import ListAddress from "@/pages/(website)/address/ListAddress";
 import VoucherStorage from "@/pages/(website)/user/_components/VoucherStorage";
 
+=======
+import RegisterForm from "@/pages/(dashboard)/user/_component/RegisterForm";
+>>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
 
 const Router = () => {
   return (
@@ -46,11 +54,15 @@ const Router = () => {
 
           <Route path="users" element={<SidebarAccount />}>
             <Route index element={<ProfilePage />} />
+<<<<<<< HEAD
 
             {/* địa chỉ */}
             <Route path="dia-chi" element={<ListAddress/>}/>
 
             <Route path="voucher" element={<VoucherStorage />} />
+=======
+            <Route path="password" element={<ChangePassword/>}/>
+>>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
           </Route>
 
           <Route path="product/:id" element={<DetailPage />} />
@@ -60,8 +72,8 @@ const Router = () => {
           </Route> */}
           {/* </Route> */}
 
-          <Route path="signin" element={<SignIn />} />
-          <Route path="signup" element={<SignUp />} />
+          {/* <Route path="signin" element={<SignIn />} />
+          <Route path="signup" element={<SignUp />} /> */}
 
           <Route path="services1" element={<PageServices />} />
           <Route path="cart" element={<CartPage />}>
@@ -74,17 +86,17 @@ const Router = () => {
 
           <Route path="shopping" element={<ProductShopPage />} />
         </Route>
+
         <Route path="admin" element={<LayoutAdmin />}>
           <Route path="dashboard" element={<DashBoardPage />} />
           <Route path="products" element={<ProductPage />} />
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />
-        </Route>
 
-        <Route path="/dashboard" element={<LayoutAdmin />}>
           <Route path="users" element={<UserPage />}>
             <Route index element={<ListUser />} />
             <Route path="detail/:clerkId" element={<UserDetailPage />} />
+            <Route path="create-user" element={<RegisterForm />} />
           </Route>
 
           <Route path="sliders" element={<SliderPage />}>

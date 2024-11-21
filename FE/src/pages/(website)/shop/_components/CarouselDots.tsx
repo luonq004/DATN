@@ -18,20 +18,39 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import banner from "@/assets/img/banner/banner-1.jpeg";
-import banner_2 from "@/assets/img/banner/banner-2.jpeg";
-import banner_3 from "@/assets/img/banner/banner-3.jpeg";
-
 import { LayoutGrid, TableProperties } from "lucide-react";
 import ProductItem from "./ProductItem";
+<<<<<<< HEAD
 import { useGetAllProduct } from "../actions/useGetAllProduct";
+=======
+import { Slide } from "@/common/types/Slide";
+import axios from "axios";
+>>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
 
 export function CarouselDots() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
+<<<<<<< HEAD
   const { isLoading, listProduct, error } = useGetAllProduct();
+=======
+  const [slidesData, setSlidesData] = React.useState<Slide[]>([]);
+>>>>>>> 4ea154dd7d2fc66dbf8622859ef5603e8db6b77c
 
-  const images = [banner, banner_3, banner_2];
+
+  React.useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/sliders?type=product"
+        );
+        setSlidesData(response.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu slide:", error);
+      }
+    };
+
+    fetchSlides();
+  }, []);
 
   React.useEffect(() => {
     if (!api) {
@@ -53,13 +72,13 @@ export function CarouselDots() {
     <div className="w-full lg:w-[75%] lg:order-1">
       <Carousel setApi={setApi} className="relative">
         <CarouselContent>
-          {images.map((image, index) => (
+          {slidesData.map((slide, index) => (
             <CarouselItem key={index}>
               <div className="rounded-lg overflow-hidden relative w-full h-full">
                 <div
                   className="bg-cover bg-center relative pb-[40%]"
                   style={{
-                    backgroundImage: `url(${image})`,
+                    backgroundImage: `url(${slide.backgroundImage})`,
                     backgroundPosition: "top",
                   }}
                 ></div>
@@ -69,13 +88,13 @@ export function CarouselDots() {
                   }`}
                 >
                   <span className="text-[#ffffff80] leading-6 text-sm">
-                    đừng quên!
+                    {slide.promotionText}
                   </span>
                   <h4 className="text-[#b8cd06] text-3xl leading-8 mb-[10px]">
-                    lên tới 70%
+                    {slide.textsale}
                   </h4>
                   <h4 className="text-white text-lg font-black mb-6">
-                    quần tốt nhất annas
+                    {slide.title}
                   </h4>
                   <a
                     className="bg-[#b8cd06] text-white text-[11px] font-bold leading-[18px] rounded-3xl block md:inline px-5 pt-3 pb-[10px]"
@@ -90,7 +109,7 @@ export function CarouselDots() {
         </CarouselContent>
 
         <div className="flex items-center mt-4 absolute bottom-[5%] left-1/2 translate-x-[-50%]">
-          {Array.from({ length: images.length }).map((_, index) => (
+          {Array.from({ length: slidesData.length }).map((_, index) => (
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}

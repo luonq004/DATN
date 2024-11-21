@@ -1,64 +1,31 @@
-import banner1 from "@/assets/img/header/banner1.jpg";
-import banner2 from "@/assets/img/header/banner2.jpeg";
-import banner3 from "@/assets/img/header/banner3.jpg";
-import product9 from "@/assets/products/product10.png";
-import { useRef, useState } from "react";
+import { Slide } from "@/common/types/Slide";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 import SwiperCore from "swiper";
-import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css/autoplay";
 import { Autoplay } from "swiper/modules";
-
-
-const slidesData = [
-  {
-    title: "REAL BEAT TRX",
-    subtitle: "PHIÊN BẢN CHUYÊN NGHIỆP",
-    description:
-      "In feugiat molestie tortor a malesuada. Etiam a venenatis ipsum. Proin pharetra elit at feugiat commodo vel placerat tincidunt sapien nec",
-    features: [
-      "20,000 giờ âm nhạc chất lượng cao",
-      "Cách âm hoàn hảo",
-      "Bảo hành 5 năm",
-    ],
-    price: "$195.00",
-    image: product9,
-    backgroundImage: banner1,
-  },
-  {
-    title: "REAL BEAT TRX",
-    subtitle: "PHIÊN BẢN CHUYÊN NGHIỆP",
-    description:
-      "In feugiat molestie tortor a malesuada. Etiam a venenatis ipsum. Proin pharetra elit at feugiat commodo vel placerat tincidunt sapien nec",
-    features: [
-      "20,000 giờ âm nhạc chất lượng cao",
-      "Cách âm hoàn hảo",
-      "Bảo hành 5 năm",
-    ],
-    price: "$195.00",
-    image: product9,
-    backgroundImage: banner2,
-  },
-  {
-    title: "REAL BEAT TRX",
-    subtitle: "PHIÊN BẢN CHUYÊN NGHIỆP",
-    description:
-      "In feugiat molestie tortor a malesuada. Etiam a venenatis ipsum. PProin pharetra elit at feugiat commodo vel placerat tincidunt sapien necroin pharetra elit at feugiat commodo vel placerat tincidunt sapien nec",
-    features: [
-      "20,000 giờ âm nhạc chất lượng cao",
-      "Cách âm hoàn hảo",
-      "Bảo hành 5 năm",
-    ],
-    price: "$195.00",
-    image: product9,
-    backgroundImage: banner3,
-  },
-  
-];
+import { Swiper, SwiperSlide } from "swiper/react";
 
 const Slider = () => {
+  const [slidesData, setSlidesData] = useState<Slide[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const swiperRef = useRef<SwiperCore | null>(null);
   const defaultGradientColor = "from-green-500 to-lime-400 to-cyan-500";
+
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/sliders?type=homepage"
+        );
+        setSlidesData(response.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu slide:", error);
+      }
+    };
+
+    fetchSlides();
+  }, []);
 
   const handleNext = () => {
     swiperRef.current?.slideNext();
@@ -70,7 +37,7 @@ const Slider = () => {
 
   const handleDotClick = (index: number) => {
     setCurrentIndex(index);
-    swiperRef.current?.slideTo(index); // Chuyển đến slide được nhấn
+    swiperRef.current?.slideTo(index); // Chuyển đến slide được click
   };
 
   return (
@@ -80,10 +47,10 @@ const Slider = () => {
           modules={[Autoplay]}
           slidesPerView={1}
           loop={true}
-          // autoplay={{
-          //   delay: 3000,
-          //   disableOnInteraction: false,
-          // }}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
           speed={600}
           onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
@@ -105,11 +72,11 @@ const Slider = () => {
               ></div>
 
               {index === 0 && (
-                <div className="flex flex-col md:flex-row items-center h-full justify-between  p-5 wqAZ:p-0 mt-5 md:mt-0 relative z-20 space-y-4 md:space-y-0">
+                <div className="flex flex-col md:flex-row md:items-center w-full h-full justify-between  p-5 wqAZ:p-0 mt-5 md:mt-0 relative z-20 space-y-4 md:space-y-0">
                   {/* Left Content */}
-                  <div className="text-slate-50 space-y-3 lg:pl-32">
+                  <div className="text-slate-50 w-full space-y-3 lg:pl-32">
                     <h5 className="text-sm font-questrial">{slide.subtitle}</h5>
-                    <h2 className="xl:text-7xl md:text-5xl text-4xl text-[#fff]  font-raleway font-extrabold mb-2">
+                    <h2 className="xl:text-6xl md:text-5xl text-4xl text-[#fff]  font-raleway font-extrabold mb-2">
                       {slide.title}
                     </h2>
                     <div className="flex items-center gap-1">
@@ -120,7 +87,7 @@ const Slider = () => {
                       {slide.description}
                     </p>
                     <ul className="space-y-3 text-sm py-6 font-questrial">
-                      {slide.features.map((feature, i) => (
+                      {slide.features?.map((feature, i) => (
                         <li key={i} className="flex items-center">
                           <span className="mr-2">
                             <svg
@@ -142,9 +109,14 @@ const Slider = () => {
                     </ul>
 
                     <div className="flex flex-col xl:flex-row font-questrial xl:items-center gap-5">
-                      <p className="text-lg text-left">
-                        GIÁ TỐT NHẤT: <span>{slide.price}</span>
-                      </p>
+                      <div className="text-lg text-left">
+                        <p className="text-lg">
+                          GIÁ TỐT NHẤT:{" "}
+                          <span>
+                            {slide.price?.toLocaleString("vi-VN")} VNĐ
+                          </span>
+                        </p>
+                      </div>
                       <div className="flex flex-col font-questrial md:flex-row text-xs gap-3">
                         <button className="group relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-bold overflow-hidden">
                           <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
@@ -190,32 +162,31 @@ const Slider = () => {
                   </div>
 
                   {/* Right Image */}
-                  <div className="flex justify-center md:mr-32 items-center">
+                  <div className="flex justify-center items-center w-full">
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className="md:w-[800px] lg:w-full w-[400px] mb-14 h-auto object-cover z-20"
+                      className="w-[400px] mb-14 md:w-[400px] h-auto object-cover z-20"
                     />
                   </div>
                 </div>
               )}
 
               {index === 1 && (
-                <div className="flex flex-col md:flex-row p-5 lg:p-0 mt-5 md:mt-0 justify-between items-center w-full h-full relative z-20"
-                >
+                <div className="flex flex-col md:flex-row p-5 lg:p-0 mt-5 md:mt-0 justify-between md:items-center w-full h-full relative z-20">
                   {/* Left Image */}
-                  <div className="md:flex md:ml-32 justify-center hidden items-center">
+                  <div className="md:flex hidden justify-center items-center w-full">
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className="md:w-[800px] lg:w-auto w-[400px] h-auto object-cover z-20"
+                      className="w-[400px] md:w-[400px] h-auto object-cover z-20"
                     />
                   </div>
 
                   {/* Right Content */}
-                  <div className="justify-center md:items-end md:text-right text-left text-slate-50 lg:space-y-4 space-y-2 lg:pr-32">
+                  <div className="w-full md:items-end md:text-right text-left text-slate-50 lg:space-y-4 space-y-2 lg:pr-32">
                     <h5 className="text-sm font-questrial">{slide.subtitle}</h5>
-                    <h2 className="xl:text-7xl md:text-5xl text-4xl font-raleway font-extrabold mb-2">
+                    <h2 className="xl:text-6xl md:text-5xl text-4xl font-raleway font-extrabold mb-2">
                       {slide.title}
                     </h2>
                     <div className="flex md:justify-end items-center gap-1">
@@ -226,7 +197,7 @@ const Slider = () => {
                       {slide.description}
                     </p>
                     <ul className="space-y-3 text-sm py-6 font-questrial">
-                      {slide.features.map((feature, i) => (
+                      {slide.features?.map((feature, i) => (
                         <li
                           key={i}
                           className="flex lg:items-center md:justify-end"
@@ -252,8 +223,10 @@ const Slider = () => {
 
                     <div className="flex flex-col xl:flex-row font-questrial md:justify-end xl:items-center gap-5">
                       <p className="text-lg">
-                        GIÁ TỐT NHẤT: <span>{slide.price}</span>
+                        GIÁ TỐT NHẤT:{" "}
+                        <span>{slide.price?.toLocaleString("vi-VN")} VNĐ</span>
                       </p>
+
                       <div className="flex flex-col md:flex-row md:justify-end text-xs gap-3 font-questrial">
                         <button className="group relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">
                           <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
@@ -302,7 +275,7 @@ const Slider = () => {
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className="md:w-[800px] w-[400px] mb-14 h-auto object-cover z-20"
+                      className="md:w-[600px] w-[400px] mb-14 h-auto object-cover z-20"
                     />
                   </div>
                 </div>
@@ -310,8 +283,10 @@ const Slider = () => {
 
               {index === 2 && (
                 <div className="flex flex-col mb-10 p-5 lg:p-0 mt-5 md:mt-0 lg:items-center lg:justify-center md:text-center w-full h-full space-y-5 z-20">
-                  <h5 className="text-sm text-slate-100 md:mt-20 lg:mt-0 z-20">{slide.subtitle}</h5>
-                  <h2 className="md:text-5xl xl:text-7xl text-4xl font-raleway font-extrabold text-white mb-2 z-20">
+                  <h5 className="text-sm text-slate-100 md:mt-20 lg:mt-0 z-20">
+                    {slide.subtitle}
+                  </h5>
+                  <h2 className="md:text-5xl xl:text-6xl text-4xl font-raleway font-extrabold text-white mb-2 z-20">
                     {slide.title}
                   </h2>
                   <div className="flex md:justify-center md:items-center gap-1 z-20">
@@ -322,7 +297,7 @@ const Slider = () => {
                     {slide.description}
                   </p>
                   <ul className="space-y-3 text-sm py-6 z-20">
-                    {slide.features.map((feature, i) => (
+                    {slide.features?.map((feature, i) => (
                       <li
                         key={i}
                         className="flex md:items-center md:justify-center text-slate-100"
@@ -393,7 +368,8 @@ const Slider = () => {
 
         <button
           onClick={handleNext}
-          className="absolute hidden lg:flex right-[-30px] top-1/2 z-30 transform -translate-y-1/2 bg-white rounded-full p-3 border-[5px] border-zinc-100"
+          className="absolute hidden lg:flex right-[-30px] top-1/2 z-30 transform -translate-y-1/2 bg-white 
+          rounded-full p-3 border-[5px] border-zinc-100"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -414,10 +390,10 @@ const Slider = () => {
           {slidesData.map((_, index) => (
             <div
               key={index}
-              className={`rounded-full w-3 h-3 cursor-pointer transition-all duration-500 ${
+              className={`rounded-full cursor-pointer transition-all duration-300 ${
                 index === currentIndex
-                  ? "border-[1px] w-6 h-3 border-white"
-                  : "border-[1px] border-white"
+                  ? "border-[#b8cd06] border-4 size-4"
+                  : "border-gray-300 border-2 size-3"
               }`}
               onClick={() => handleDotClick(index)}
             ></div>

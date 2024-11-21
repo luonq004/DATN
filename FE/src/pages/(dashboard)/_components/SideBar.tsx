@@ -68,7 +68,7 @@ const Sidebar = () => {
           },
           {
             title: "Users",
-            href: "/dashboard/users",
+            href: "/admin/users",
             icon: User,
             variant: "ghost",
           },
