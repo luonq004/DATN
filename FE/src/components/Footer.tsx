@@ -89,7 +89,7 @@ const Footer = () => {
             thế vững vàng, tập trung vào vị trí để đạt được kết quả tốt nhất.
           </p>
 
-          <ul className="mt-4 space-y-8">
+          <ul className="mt-4 space-y-6">
             <li className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

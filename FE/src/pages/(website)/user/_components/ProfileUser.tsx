@@ -1,21 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@clerk/clerk-react";
-import { toast } from "react-toastify";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import ImageUser from "./ImageUser";
 
 const ProfilePageModern: React.FC = () => {
   const { user } = useUser();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
   const [birthdate, setBirthdate] = useState("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [editField, setEditField] = useState<string | null>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
+  const { register, setValue, getValues } = useForm();
+  const imageUserRef = useRef<any>();
+  const { toast } = useToast();
 
   const fetchUserData = async () => {
     if (user) {
@@ -34,11 +37,6 @@ const ProfilePageModern: React.FC = () => {
         setPhone(userData.phone);
         setGender(userData.gender);
         setBirthdate(formatBirthdate(userData.birthdate));
-
-        const profileImageUrl = userData.publicMetadata?.profileImageUrl;
-        if (profileImageUrl) {
-          setPreviewUrl(profileImageUrl);
-        }
       } catch (error) {
         console.error("Error fetching user data from backend:", error);
       }
@@ -50,14 +48,9 @@ const ProfilePageModern: React.FC = () => {
       setFirstName(user.firstName || "");
       setLastName(user.lastName || "");
       setEmail(user.primaryEmailAddress?.emailAddress || "");
-      
-      if (!imageFile) {
-        setPreviewUrl(user.imageUrl || "");
-      }
-  
       fetchUserData();
     }
-  }, [user, imageFile]);
+  }, [user]);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -88,41 +81,35 @@ const ProfilePageModern: React.FC = () => {
     };
   }, [editField]);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageFile(file);
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSaveChanges = async () => {
-    const updateData: any = {
-      firstName,
-      lastName,
-      email,
-      phone,
-      gender,
-      birthdate,
-    };
-
-    const formData = new FormData();
-
-    // Thêm ảnh nếu có
-    if (imageFile) {
-      formData.append("profileImage", imageFile);
-    }
-
-    // Thêm các trường khác vào form data
-    Object.keys(updateData).forEach((key) => {
-      formData.append(key, updateData[key]);
-    });
-
     try {
+      // Gọi hàm updateProfileImage từ ref trước khi lưu các thay đổi khác
+      if (imageUserRef.current) {
+        await imageUserRef.current.updateProfileImage();
+      }
+
+      const updateData: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone: string;
+        gender: string;
+        birthdate: string;
+      } = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        gender,
+        birthdate,
+      };
+
+      const formData = new FormData();
+      (Object.keys(updateData) as Array<keyof typeof updateData>).forEach(
+        (key) => {
+          formData.append(key, updateData[key]);
+        }
+      );
       const clerkId = user?.id;
       const response = await axios.put(
         `http://localhost:8080/api/users/${clerkId}`,
@@ -133,20 +120,24 @@ const ProfilePageModern: React.FC = () => {
       );
 
       if (response.status === 200) {
-        toast.success("Cập nhật thành công!");
-        const timestamp = new Date().getTime();
-        setPreviewUrl(`${response.data.imageUrl}?${timestamp}`);
+        toast({
+          title: "Thành công",
+          description: "Thông tin người dùng đã được cập nhật thành công!",
+        });
       } else {
-        toast.error("Cập nhật không thành công, vui lòng thử lại.");
+        toast({
+          variant: "destructive",
+          title: "Thất bại",
+          description: "Có lỗi sảy ra khi cập nhật thông tin người dùng!",
+        });
       }
     } catch (error) {
       console.error("Error updating user info:", error);
-      toast.error("Có lỗi xảy ra, vui lòng thử lại!");
     }
   };
 
   return (
-    <div className="p-5 px-16 rounded-xl mx-auto">
+    <div className="p-5 lg:px-16 rounded-xl mx-auto mb-32">
       <h1 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-3 border-zinc-400 mt-5">
         Hồ sơ của tôi
       </h1>
@@ -154,12 +145,12 @@ const ProfilePageModern: React.FC = () => {
         Cập nhật thông tin hồ sơ để bảo mật tài khoản!
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2">
         <div>
           {/* First Name and Last Name Fields */}
           <div className="mb-8">
-            <div className="flex space-x-4">
-              <div>
+            <div className="flex flex-col md:flex-row md:space-x-4 ">
+              <div className="mb-3">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Họ
                 </label>
@@ -167,7 +158,7 @@ const ProfilePageModern: React.FC = () => {
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Tên"
+                  placeholder="Họ"
                   className="border border-gray-300 rounded-lg px-3 py-2 w-full"
                 />
               </div>
@@ -179,7 +170,7 @@ const ProfilePageModern: React.FC = () => {
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Họ"
+                  placeholder="Tên"
                   className="border border-gray-300 rounded-lg px-3 py-2 w-full"
                 />
               </div>
@@ -205,7 +196,7 @@ const ProfilePageModern: React.FC = () => {
               {editField !== "email" && (
                 <button
                   onClick={() => setEditField("email")}
-                  className="ml-2 w-48 text-blue-500 hover:text-blue-700 transition duration-150"
+                  className="ml-2 w-48 text-center text-blue-500 hover:text-blue-700 transition duration-150"
                 >
                   Thay đổi
                 </button>
@@ -232,7 +223,7 @@ const ProfilePageModern: React.FC = () => {
               {editField !== "phone" && (
                 <button
                   onClick={() => setEditField("phone")}
-                  className="ml-2 w-48 text-blue-500 hover:text-blue-700 transition duration-150"
+                  className="ml-2 w-48 text-center text-blue-500 hover:text-blue-700 transition duration-150"
                 >
                   Thay đổi
                 </button>
@@ -277,28 +268,11 @@ const ProfilePageModern: React.FC = () => {
         </div>
 
         {/* Profile Image Section */}
-        <div className="flex flex-col items-center justify-center">
-          <label className="block font-semibold text-gray-700 mb-4">
-            Ảnh đại diện
-          </label>
-          <div className="border border-gray-300 rounded-lg overflow-hidden">
-            {previewUrl ? (
-              <img
-                src={previewUrl}
-                alt="Profile"
-                className="w-40 h-40 object-cover"
-              />
-            ) : (
-              <div className="flex items-center justify-center w-40 h-40 bg-gray-100 p-6">
-                <span className="text-gray-400">Chưa có ảnh</span>
-              </div>
-            )}
-          </div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="mt-4 text-sm text-blue-500 cursor-pointer focus:ring-2 focus:ring-blue-500"
+
+        <div className="md:px-10 mt-6 ">
+          <ImageUser
+            ref={imageUserRef}
+            form={{ register, setValue, getValues }}
           />
         </div>
       </div>

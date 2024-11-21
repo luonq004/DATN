@@ -1,10 +1,10 @@
-import { Outlet } from "react-router-dom"
+import ProfilePageModern from "./_components/ProfileUser"
 
 const ProfilePage = () => {
   return (
-    <div className="flex justify-center mb-20">
-        <Outlet/>
-    </div>
+    <div className="flex">
+    <ProfilePageModern/>
+  </div>
   )
 }
 

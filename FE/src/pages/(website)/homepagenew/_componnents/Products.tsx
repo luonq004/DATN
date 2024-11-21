@@ -334,7 +334,6 @@ const Products = () => {
       </button>
 
       {/* Chấm đánh dấu*/}
-
       <div className="flex lg:hidden space-x-2 mt-8 justify-center items-center">
         {products.map((_, index) => (
           <div
