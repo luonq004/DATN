@@ -24,7 +24,7 @@ const SuccessPage = () => {
           </Button>
           <Button
             variant="default"
-            onClick={() => navigate("/order-history")}
+            onClick={() => navigate("/users/order-history")}
             className="bg-blue-500 text-white hover:bg-blue-600"
           >
             Xem lịch sử đơn hàng

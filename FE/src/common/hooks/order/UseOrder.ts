@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 const useOrder = (userId?: string , orderId?: string) => {
   // Sử dụng React Query để lấy dữ liệu
   const { data, ...rest } = useQuery({
-    queryKey: ["ORDER_HISTORY", userId, orderId], // Cập nhật key để gồm cả userId và addressId
+    queryKey: ["ORDER_HISTORY", userId, orderId, status], // Cập nhật key để gồm cả userId và addressId
     queryFn: async () => {
       if (userId) {
         return await getAllOrders(userId);  // Nếu có userId, lấy dữ liệu theo userId
