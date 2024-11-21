@@ -9,7 +9,6 @@ import {
   softDeleteUser,
   unbanUser,
   updateUser,
-  verifyPassword,
 } from "../controllers/user";
 import { checkAuthClerk } from "../middlewares/CheckAuthClerk";
 import upload from "../config/upload";
@@ -20,7 +19,6 @@ userRouter.get("/", getAllUsers);
 userRouter.get("/:clerkId", getUserById);
 userRouter.post("/soft-delete/:clerkId", checkAuthClerk, softDeleteUser);
 userRouter.post("/restore/:clerkId", checkAuthClerk, restoreUser);
-userRouter.post("/verify-password", verifyPassword);
 userRouter.put("/:clerkId",upload.single('profileImage'), updateUser);
 userRouter.post("/save-user", saveUser);
 userRouter.post("/create-user", createUser);
