@@ -5,7 +5,6 @@ import StatusMenu from "./StatusMenu";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
-import cartEmpty from "@/assets/images/cart-empty.png";
 
 interface ErrorResponse {
   response?: {
@@ -26,7 +25,7 @@ const OrderHistory = () => {
   const { _id } = useUserContext() ?? {}; // Lấy _id từ UserContext
   const queryClient = useQueryClient(); // Đặt useQueryClient ở trên đầu
   const { data, isLoading } = useOrder(_id); // Destructure loading and error status
-  const [selectedStatus, setSelectedStatus] = useState<string>("đang chờ");
+  const [selectedStatus, setSelectedStatus] = useState<string>("chờ xác nhận");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const cancelOrder = async (orderId: string) => {
@@ -37,7 +36,7 @@ const OrderHistory = () => {
       }); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
-        toast({
+      toast({
           title: "Thành công",
           description: "Đơn hàng đã được hủy thành công.",
           variant: "default",
@@ -175,7 +174,8 @@ const OrderHistory = () => {
 
               <div className="mt-4 font-semibold text-lg text-right">
                 Tổng tiền: {formatCurrencyVND(order.totalPrice)}
-                {order.status === "đang chờ" && (
+                {(order.status === "chờ xác nhận" ||
+                  order.status === "chờ lấy hàng") && (
                   <button
                     className="px-4 ml-[2%] py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                     onClick={() => cancelOrder(order._id)}
