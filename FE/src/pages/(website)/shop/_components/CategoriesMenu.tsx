@@ -44,7 +44,7 @@ const CategoriesMenu = () => {
       )}
       <ul className="categories-menu">
         {data?.map((category: ICategory) => (
-          <li className="relative group" key={category._id}>
+          <li className="relative group !list-none" key={category._id}>
             <span
               className={`text-[11px] text-[#888] hover:text-[#b8cd06] leading-4 border-b border-b-[#efefef] py-[15px] font-bold w-full block transition-all duration-300 cursor-pointer ${
                 filterTypeCategory === category._id ? "text-[#b8cd06]" : ""

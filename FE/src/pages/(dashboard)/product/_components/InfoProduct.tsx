@@ -1,4 +1,3 @@
-import { FormTypeProductCommon } from "@/common/types/validate";
 import { useReducer, useState } from "react";
 
 import {
@@ -24,28 +23,41 @@ import { reducer } from "./reducer";
 import { Attribute, Data, State } from "@/common/types/Product";
 import { getSelectedValues, getUniqueTypesFromFields } from "@/lib/utils";
 import { useFieldArray } from "react-hook-form";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { useGetAtributes } from "../actions/useGetAttributes";
 import VariationTab from "./VariationTab";
+import { FormTypeProductVariation } from "@/common/types/validate";
+
+const formats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "blockquote",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+  "image",
+];
 
 const InfoGeneralProduct: React.FC<{
   id: boolean;
-  form: FormTypeProductCommon;
-  typeProduct: string;
-  handleChangeTab: (value: string) => void;
+  form: FormTypeProductVariation;
   filteredData: Attribute[];
   attributeValue: Data[][];
   duplicate: number[];
-}> = ({
-  id,
-  form,
-  typeProduct,
-  handleChangeTab,
-  filteredData,
-  attributeValue,
-  duplicate,
-}) => {
+}> = ({ id, form, filteredData, attributeValue, duplicate }) => {
   const [valuetab, setValueTab] = useState("inventory");
   const { atributes } = useGetAtributes();
+
+  const value = form.watch("descriptionDetail");
+
+  const handleChange = (content: string) => {
+    form.setValue("descriptionDetail", content); // Ghi giá trị vào React Hook Form
+  };
 
   const initialState: State = {
     attributesChoose: filteredData,
@@ -58,8 +70,6 @@ const InfoGeneralProduct: React.FC<{
   const [selectedValues, setSelectedValues] = useState<Record<string, any>>(
     getSelectedValues(attributeValue, atributes)
   );
-
-  // console.log(selectedValues);
 
   const handleAttributeValueChange = (
     attributeId: string,
@@ -84,6 +94,8 @@ const InfoGeneralProduct: React.FC<{
 
   const typeFields: string[] = getUniqueTypesFromFields(fields) as string[];
 
+  console.log("typeFields: ", typeFields);
+
   return (
     <div className="w-3/4">
       <FormField
@@ -103,46 +115,6 @@ const InfoGeneralProduct: React.FC<{
           </FormItem>
         )}
       />
-
-      {typeProduct === "simple" && (
-        <>
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    className="border rounded-sm h-8 px-2 mb-4"
-                    placeholder="Price"
-                    {...field}
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="priceSale"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    className="border rounded-sm h-8 px-2 mb-4"
-                    placeholder="Price Sale"
-                    {...field}
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </>
-      )}
 
       <FormField
         control={form.control}
@@ -176,42 +148,19 @@ const InfoGeneralProduct: React.FC<{
                 className="flex"
               >
                 <TabsList className="flex flex-col justify-start gap-2 h-auto bg-white border-r rounded-none p-0">
-                  {typeProduct == "simple"
-                    ? tabProductData
-                        .filter((tab) => tab.label !== "Variations")
-                        .map((tab) => (
-                          <TabsTrigger
-                            key={tab.value}
-                            className="py-3 w-full data-[state=active]:bg-slate-200 hover:bg-slate-100 data-[state=active]:rounded-none"
-                            value={tab.value}
-                          >
-                            {tab.label}
-                          </TabsTrigger>
-                        ))
-                    : tabProductData
-                        .filter((tab) => tab.label !== "General")
-                        .map((tab) => (
-                          <TabsTrigger
-                            key={tab.value}
-                            className="py-3 w-full data-[state=active]:bg-slate-200 hover:bg-slate-100 data-[state=active]:rounded-none"
-                            value={tab.value}
-                          >
-                            {tab.label}
-                          </TabsTrigger>
-                        ))}
+                  {tabProductData.map((tab) => (
+                    <TabsTrigger
+                      key={tab.value}
+                      className="py-3 w-full data-[state=active]:bg-slate-200 hover:bg-slate-100 data-[state=active]:rounded-none"
+                      value={tab.value}
+                    >
+                      {tab.label}
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
 
                 {/* Tab Content */}
-                {typeProduct == "simple" && (
-                  <TabsContent value="general" className="px-3 pt-2">
-                    General product information goes here General product
-                    information goes here General product information goes here
-                    General product information goes here. General product
-                    information goes here General product information goes here
-                    General product information goes hereGeneral product
-                    information goes here General product information goes here
-                  </TabsContent>
-                )}
+
                 {/* <TabsContent className="px-3 pt-2" value="inventory">
                   Manage your inventory here.
                 </TabsContent> */}
@@ -226,9 +175,6 @@ const InfoGeneralProduct: React.FC<{
                   value="attributes"
                 >
                   <AttributeTab
-                    id={id}
-                    form={form}
-                    fields={fields}
                     attributes={atributes}
                     stateAttribute={stateAttribute}
                     dispatch={dispatch}
@@ -256,22 +202,29 @@ const InfoGeneralProduct: React.FC<{
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-
-        <select
-          className="absolute text-sm top-3 w-24 lg:w-48 left-40 outline-none hover:cursor-pointer"
-          value={typeProduct}
-          onChange={(e) => {
-            form.reset();
-            setValueTab("inventory");
-            handleChangeTab(e.target.value);
-          }}
-        >
-          <option value="simple">Simple product</option>
-          <option value="variable">Variable product</option>
-        </select>
       </div>
 
-      {/* <Skeleton className="w-[200px] h-[40px] rounded-full bg-slate-800 " /> */}
+      <ReactQuill
+        className="bg-white mt-9"
+        theme="snow"
+        value={value}
+        onChange={handleChange} // Sử dụng handleChange
+        modules={{
+          toolbar: [
+            [{ header: "1" }, { header: "2" }],
+            ["bold", "italic", "underline", "strike", "blockquote"],
+            [
+              // { list: "ordered" },
+              { list: "bullet" },
+              { indent: "-1" },
+              { indent: "+1" },
+            ],
+            ["link", "image"],
+            ["clean"],
+          ],
+        }}
+        formats={formats}
+      />
     </div>
   );
 };

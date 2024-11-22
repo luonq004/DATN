@@ -45,6 +45,7 @@ export const productSchema = z.object({
     .optional(),
   deleted: z.boolean().optional(),
   description: z.string().min(1),
+  descriptionDetail: z.string().optional(),
   name: z.string().min(1),
   category: z.array(z.string()).optional(),
   image: z
@@ -55,7 +56,7 @@ export const productSchema = z.object({
     .optional(),
   price: z.coerce.number().optional(),
   priceSale: z.coerce.number().optional(),
-  reviews: z.array(z.object({})).optional(), // Cấu trúc cho reviews nếu cần
+  // reviews: z.array(z.object({})).optional(), // Cấu trúc cho reviews nếu cần
   updatedAt: z
     .string()
     .transform((val) => new Date(val))
@@ -93,7 +94,9 @@ export const productSimpleSchema = z
       ])
       .optional(),
     description: z.string().min(1),
+    descriptionDetail: z.string().optional(),
     price: z.coerce.number(),
+    // countOnStock: z.coerce.number(),
     priceSale: z.coerce.number().optional(),
   })
   .refine(

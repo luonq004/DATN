@@ -7,7 +7,7 @@ import { Form } from "@/components/ui/form";
 import InfoGeneralProduct from "../_components/InfoProduct";
 
 // Validate Fields
-import { productSchema, productSimpleSchema } from "@/common/types/validate";
+import { productSchema } from "@/common/types/validate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -27,16 +27,11 @@ import { useUpdateProduct } from "../actions/useUpdateProduct";
 
 const ProductAddPage = () => {
   const { id } = useParams();
-  const [typeProduct, setTypeProduct] = useState("simple");
   const [duplicate, setDuplicate] = useState<number[]>([]);
   const { createProduct, isCreatting } = useCreateProduct();
   const { updateProduct, isUpdating } = useUpdateProduct();
 
   const { isLoadingAtributes, atributes } = useGetAtributes();
-
-  function handleChangeTab(value: string) {
-    setTypeProduct(value);
-  }
 
   useEffect(() => {
     if (!id) document.title = "Page: Create Product";
@@ -55,22 +50,14 @@ const ProductAddPage = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const schemaProduct =
-    typeProduct === "simple" ? productSimpleSchema : productSchema;
+  // const schemaProduct =
+  //   typeProduct === "simple" ? productSimpleSchema : productSchema;
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof schemaProduct>>({
-    resolver: zodResolver(schemaProduct),
+  const form = useForm<z.infer<typeof productSchema>>({
+    resolver: zodResolver(productSchema),
     defaultValues: id
       ? product
-      : typeProduct === "simple"
-      ? {
-          name: "",
-          description: "",
-          price: 0,
-          priceSale: 0,
-          type: "simple",
-        }
       : {
           name: "",
           description: "",
@@ -90,7 +77,6 @@ const ProductAddPage = () => {
               countOnStock: 0,
             },
           ],
-          reviews: [],
           createdAt: "",
           updatedAt: "",
           deleted: false,
@@ -104,26 +90,17 @@ const ProductAddPage = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof schemaProduct>) {
+  function onSubmit(values: z.infer<typeof productSchema>) {
     console.log("values: ", values);
     if (id) {
-      if (typeProduct !== "simple") {
-        const duplicateValues = checkForDuplicateVariants(values);
-        setDuplicate(duplicateValues);
-
-        if (!duplicateValues.length) updateProduct({ data: values, id });
-      } else {
-        updateProduct({ data: values, id });
-      }
+      const duplicateValues = checkForDuplicateVariants(values);
+      setDuplicate(duplicateValues);
+      if (!duplicateValues.length) updateProduct({ data: values, id });
     } else {
-      if (typeProduct !== "simple") {
-        const duplicateValues = checkForDuplicateVariants(values);
-        setDuplicate(duplicateValues);
+      const duplicateValues = checkForDuplicateVariants(values);
+      setDuplicate(duplicateValues);
 
-        if (!duplicateValues.length) createProduct(values);
-      } else {
-        createProduct(values);
-      }
+      if (!duplicateValues.length) createProduct(values);
     }
   }
 
@@ -156,8 +133,6 @@ const ProductAddPage = () => {
             <InfoGeneralProduct
               id={id ? true : false}
               form={form}
-              typeProduct={typeProduct}
-              handleChangeTab={handleChangeTab}
               filteredData={filteredData}
               attributeValue={attributeValue}
               duplicate={duplicate}

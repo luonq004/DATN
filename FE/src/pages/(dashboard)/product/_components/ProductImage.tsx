@@ -1,4 +1,4 @@
-import { FormTypeProductCommon } from "@/common/types/validate";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import {
   Accordion,
   AccordionContent,
@@ -8,7 +8,7 @@ import {
 import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 
-const ProductImage = ({ form }: { form: FormTypeProductCommon }) => {
+const ProductImage = ({ form }: { form: FormTypeProductVariation }) => {
   const [previewImagesMain, setPreviewImagesMain] = useState<string | File>(
     form.getValues("image") || ""
   );

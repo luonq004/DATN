@@ -6,10 +6,10 @@ export const sidebarLinks = [
 ];
 
 export const tabProductData = [
-  {
-    value: "general",
-    label: "General",
-  },
+  // {
+  //   value: "general",
+  //   label: "General",
+  // },
   // {
   //   value: "inventory",
   //   label: "Inventory",

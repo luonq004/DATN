@@ -13,6 +13,7 @@ export interface IProduct {
   name: string;
   type: string;
   category: string[];
+  countOnStock: number;
   price: number;
   description: string;
   image: string;
@@ -21,6 +22,13 @@ export interface IProduct {
   deleted: boolean;
   updatedAt: Date;
   variants: Variant[];
+  comments: {
+    _id: string;
+    userId: string;
+    content: string;
+    rating: number;
+    createdAt: Date;
+  };
 }
 
 export interface Variant {

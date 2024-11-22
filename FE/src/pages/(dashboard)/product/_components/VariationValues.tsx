@@ -1,4 +1,4 @@
-import { FormTypeProductCommon } from "@/common/types/validate";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import { Button } from "@/components/ui/button";
 import { FieldErrors } from "react-hook-form";
 
@@ -7,7 +7,7 @@ const VariationValues = ({
   indexValue,
   removeFields,
 }: {
-  form: FormTypeProductCommon;
+  form: FormTypeProductVariation;
   indexValue: number;
   removeFields: (index: number) => void;
 }) => {

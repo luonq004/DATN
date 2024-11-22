@@ -1,9 +1,12 @@
 const Button = ({
   quantity,
   setQuantity,
+  countOnStock,
+  handleAddToCart,
 }: {
   quantity: number;
   setQuantity: React.Dispatch<React.SetStateAction<number>>;
+  countOnStock: number;
 }) => {
   return (
     /* Quantity */
@@ -33,7 +36,7 @@ const Button = ({
         >
           +
         </button>
-        <span className="ml-4 text-xs">13312 sản phẩm có sẵn</span>
+        <span className="ml-4 text-xs">{countOnStock} sản phẩm có sẵn</span>
       </div>
     </div>
   );

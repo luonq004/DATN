@@ -1,5 +1,5 @@
 import { Attribute, State, Variant } from "@/common/types/Product";
-import { FormTypeProductCommon } from "@/common/types/validate";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import { FieldArrayWithId } from "react-hook-form";
 
 import { FaCloudUploadAlt } from "react-icons/fa";
@@ -33,7 +33,7 @@ const VariationTab = ({
   fields: FieldArrayWithId<Variant>[];
   stateAttribute: State;
   typeFields: string[];
-  form: FormTypeProductCommon;
+  form: FormTypeProductVariation;
   attributes: Attribute[];
   replaceFields: (fields: Variant[]) => void;
   removeFields: (index: number) => void;
@@ -106,7 +106,7 @@ const VariationTab = ({
     )
   );
 
-  console.log(matchingAttributes);
+  // console.log(fields[0].values.name);
 
   return (
     <>
@@ -131,112 +131,115 @@ const VariationTab = ({
         </Button>
       </div>
       <div>
-        {fields.map((field, index) => {
-          return (
-            <div
-              className={`py-4 border-b ${
-                duplicate.includes(index) ? "border-red-500 border" : ""
-              }`}
-              key={field.id}
-            >
-              <Collapsible key={field.id}>
-                <div className="flex gap-3 relative">
-                  <CollapsibleTrigger className="text-left font-bold w-2/3">
-                    #{index + 1}
-                  </CollapsibleTrigger>
-                  {matchingAttributes?.map((attribute, indx) => {
-                    return (
-                      <div key={attribute._id}>
-                        <select
-                          className="w-24 py-1"
-                          value={form.watch(
-                            `variants.${index}.values.${indx}._id`
-                          )} // Sử dụng `value` và theo dõi giá trị
-                          {...form.register(
-                            `variants.${index}.values.${indx}._id` as const,
-                            {
-                              onChange: (e) => {
-                                form.setValue(
-                                  `variants.${index}.values.${indx}._id`,
-                                  e.target.value
-                                );
-                              },
-                            }
+        {fields[0].values[0].name != "" &&
+          fields.map((field, index) => {
+            return (
+              <div
+                className={`py-4 border-b ${
+                  duplicate.includes(index) ? "border-red-500 border" : ""
+                }`}
+                key={field.id}
+              >
+                <Collapsible key={field.id}>
+                  <div className="flex gap-3 relative">
+                    <CollapsibleTrigger className="text-left font-bold w-2/3">
+                      #{index + 1}
+                    </CollapsibleTrigger>
+                    {matchingAttributes?.map((attribute, indx) => {
+                      return (
+                        <div key={attribute._id}>
+                          <select
+                            className="w-24 py-1"
+                            value={form.watch(
+                              `variants.${index}.values.${indx}._id`
+                            )} // Sử dụng `value` và theo dõi giá trị
+                            {...form.register(
+                              `variants.${index}.values.${indx}._id` as const,
+                              {
+                                onChange: (e) => {
+                                  form.setValue(
+                                    `variants.${index}.values.${indx}._id`,
+                                    e.target.value
+                                  );
+                                },
+                              }
+                            )}
+                          >
+                            {attribute.values.map((value) => {
+                              return (
+                                <option key={value._id} value={value._id}>
+                                  {value.name}
+                                </option>
+                              );
+                            })}
+                          </select>
+
+                          {form.formState.errors.variants && (
+                            <p className="text-red-600">
+                              {form.formState.errors.variants.message}
+                            </p> // Lỗi chung cho variants
                           )}
-                        >
-                          {attribute.values.map((value) => {
-                            return (
-                              <option key={value._id} value={value._id}>
-                                {value.name}
-                              </option>
-                            );
-                          })}
-                        </select>
-
-                        {form.formState.errors.variants && (
-                          <p className="text-red-600">
-                            {form.formState.errors.variants.message}
-                          </p> // Lỗi chung cho variants
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-                <CollapsibleContent className="mt-4">
-                  <div className="pt-4 border-t">
-                    <div className="mt-2 flex border-b border-gray-300 pb-4">
-                      <input
-                        className={`input-file__${field.id}`}
-                        {...form.register(`variants.${index}.image`)}
-                        type="file"
-                        hidden
-                        onChange={(e) => handleImageChange(e, field.id, index)}
-                      />
-
-                      {/* Preview Image */}
-                      <div
-                        onClick={() => {
-                          const inputElement = document.querySelector(
-                            `.input-file__${field.id}`
-                          );
-                          if (inputElement) {
-                            (inputElement as HTMLInputElement).click();
-                          }
-                        }}
-                        className="h-[100px] w-[100px] border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center"
-                      >
-                        {previewImages[field.id] ? (
-                          <img
-                            src={previewImages[field.id] || ""}
-                            alt="Preview"
-                            className="object-cover w-[90px] h-[90px]"
-                          />
-                        ) : (
-                          <FaCloudUploadAlt className="text-4xl  text-blue-400" />
-                        )}
-                      </div>
-                      <div className="self-end ml-auto">
-                        <label className="block">Số lượng tồn kho</label>
-                        <input
-                          type="text"
-                          {...form.register(
-                            `variants.${index}.countOnStock` as const
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    <VariationValues
-                      form={form}
-                      indexValue={index}
-                      removeFields={removeFields}
-                    />
+                        </div>
+                      );
+                    })}
                   </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-          );
-        })}
+                  <CollapsibleContent className="mt-4">
+                    <div className="pt-4 border-t">
+                      <div className="mt-2 flex border-b border-gray-300 pb-4">
+                        <input
+                          className={`input-file__${field.id}`}
+                          {...form.register(`variants.${index}.image`)}
+                          type="file"
+                          hidden
+                          onChange={(e) =>
+                            handleImageChange(e, field.id, index)
+                          }
+                        />
+
+                        {/* Preview Image */}
+                        <div
+                          onClick={() => {
+                            const inputElement = document.querySelector(
+                              `.input-file__${field.id}`
+                            );
+                            if (inputElement) {
+                              (inputElement as HTMLInputElement).click();
+                            }
+                          }}
+                          className="h-[100px] w-[100px] border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center"
+                        >
+                          {previewImages[field.id] ? (
+                            <img
+                              src={previewImages[field.id] || ""}
+                              alt="Preview"
+                              className="object-cover w-[90px] h-[90px]"
+                            />
+                          ) : (
+                            <FaCloudUploadAlt className="text-4xl  text-blue-400" />
+                          )}
+                        </div>
+                        <div className="self-end ml-auto">
+                          <label className="block">Số lượng tồn kho</label>
+                          <input
+                            type="text"
+                            {...form.register(
+                              `variants.${index}.countOnStock` as const
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      <VariationValues
+                        form={form}
+                        indexValue={index}
+                        removeFields={removeFields}
+                      />
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+            );
+          })}
       </div>
     </>
   );

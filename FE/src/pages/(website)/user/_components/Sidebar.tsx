@@ -1,4 +1,4 @@
-import { SignOutButton, useUser } from "@clerk/clerk-react";
+import { SignOutButton, UserButton, useUser } from "@clerk/clerk-react";
 import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import SidebarMobile from "./SidebarMobile";
@@ -132,7 +132,7 @@ const SidebarAccount: React.FC = () => {
 
         {/* Đăng xuất */}
 
-        <SignOutButton>
+        <SignOutButton redirectUrl="/">
           <button className="mt-10 flex items-center gap-3 ">
             <svg
               xmlns="http://www.w3.org/2000/svg"

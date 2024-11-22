@@ -1,8 +1,8 @@
-import { FormTypeProductCommon } from "@/common/types/validate";
-import ProductImage from "./ProductImage";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import CategoryProduct from "./CategoryProduct";
+import ProductImage from "./ProductImage";
 
-const StatusProduct = ({ form }: { form: FormTypeProductCommon }) => {
+const StatusProduct = ({ form }: { form: FormTypeProductVariation }) => {
   return (
     <div className="w-1/4 flex flex-col gap-3">
       <p>Publish</p>

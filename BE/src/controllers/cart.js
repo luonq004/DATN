@@ -24,7 +24,7 @@ const updateTotal = async (cart) => {
       let status = voucher.status;
 
       //nếu trạng thái inactive sẽ bị xóa khỏi giỏ hàng
-      if (status === 'inactive') {
+      if (status === "inactive") {
         cart.voucher = cart.voucher.filter((item) => item._id !== voucher._id);
       }
 
@@ -152,7 +152,10 @@ export const addToCart = async (req, res) => {
     //nếu có sp trùng lặp thì tăng số lượng
     if (existProductIndex !== -1) {
       // kiểm tra số lượng quantity khi thêm vào so với số lượng tồn kho
-      if (cart.products[existProductIndex].quantity + quantity <= cart.products[existProductIndex].variantItem.countOnStock) {
+      if (
+        cart.products[existProductIndex].quantity + quantity <=
+        cart.products[existProductIndex].variantItem.countOnStock
+      ) {
         cart.products[existProductIndex].quantity += quantity;
       } else {
         return res
