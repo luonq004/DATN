@@ -4,9 +4,11 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ImageUser from "./ImageUser";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePageModern: React.FC = () => {
   const { user } = useUser();
+  const navigate = useNavigate()
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -44,13 +46,19 @@ const ProfilePageModern: React.FC = () => {
   };
 
   useEffect(() => {
+     // Nếu user không tồn tại, chuyển hướng về trang chủ
+     if (!user) {
+      navigate("/");
+      return;
+    }
+
     if (user) {
       setFirstName(user.firstName || "");
       setLastName(user.lastName || "");
       setEmail(user.primaryEmailAddress?.emailAddress || "");
       fetchUserData();
     }
-  }, [user]);
+  }, [user,navigate]);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (

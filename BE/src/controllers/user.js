@@ -90,48 +90,64 @@ export const saveUser = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { emailAddress, firstName, lastName, password, role, imageUrl } =
-      req.body;
+    const { emailAddress, firstName, lastName, password, role, imageUrl } = req.body;
 
     // Kiểm tra dữ liệu đầu vào
     if (!emailAddress || !firstName || !lastName || !password) {
       return res.status(400).json({
-        message:
-          "Thiếu thông tin bắt buộc (email, firstName, lastName, password)",
+        message: "Thiếu thông tin bắt buộc (email, firstName, lastName, password)",
       });
     }
 
-    // 1. Tạo người dùng trên Clerk
-    const clerkUser = await clerkClient.users.createUser({
-      emailAddress: [emailAddress],
-      firstName,
-      lastName,
-      password,
-      publicMetadata: {
-        role: role || "User", // Default role là "User"
-      },
-    });
+    try {
+      // Tạo người dùng trên Clerk
+      const clerkUser = await clerkClient.users.createUser({
+        emailAddress: [emailAddress],
+        firstName,
+        lastName,
+        password,
+        publicMetadata: {
+          role: role || "User", // Default role là "User"
+        },
+      });
 
-    // 2. Lưu thông tin người dùng vào MongoDB
-    const newUser = new Users({
-      clerkId: clerkUser.id, // ID từ Clerk
-      email: emailAddress,
-      firstName,
-      lastName,
-      role: role || "User", // Sử dụng giá trị role từ đầu vào hoặc mặc định là "User"
-      imageUrl: imageUrl || clerkUser.imageUrl,
-    });
+      // Lưu thông tin người dùng vào MongoDB
+      const newUser = new Users({
+        clerkId: clerkUser.id,
+        email: emailAddress,
+        firstName,
+        lastName,
+        role: role || "User",
+        imageUrl: imageUrl || clerkUser.imageUrl,
+      });
 
-    await newUser.save();
+      await newUser.save();
 
-    // Trả về phản hồi
-    return res.status(201).json({
-      message: "Người dùng đã được tạo thành công trên Clerk và MongoDB!",
-      user: newUser,
-      clerkUser,
-    });
+      // Trả về phản hồi thành công
+      return res.status(201).json({
+        message: "Người dùng đã được tạo thành công!",
+        user: newUser,
+      });
+    } catch (error) {
+      // Xử lý lỗi từ Clerk API
+      if (error.errors) {
+        const clerkErrors = error.errors.map((err) => ({
+          code: err.code,
+          message: err.message,
+        }));
+
+        return res.status(422).json({
+          message: "Lỗi khi tạo người dùng",
+          errors: clerkErrors,
+        });
+      }
+
+      throw error; // Nếu không phải lỗi từ Clerk, ném lỗi để xử lý tiếp
+    }
   } catch (error) {
     console.error("Lỗi khi tạo người dùng:", error);
+
+    // Trả lỗi không xác định
     return res.status(500).json({
       message: "Đã xảy ra lỗi khi tạo người dùng",
       error: error.message,
@@ -153,6 +169,26 @@ export const getAllUsers = async (req, res) => {
 
     // Truy vấn tất cả người dùng
     const users = await Users.find(filter);
+
+    const validUsers = [];
+
+    // Lọc người dùng thông qua Clerk
+    for (const user of users) {
+      try {
+        const clerkUser = await clerkClient.users.getUser(user.clerkId);
+
+        // Nếu người dùng tồn tại trên Clerk, thêm vào danh sách hợp lệ
+        if (clerkUser) {
+          validUsers.push(user);
+        }
+      } catch (error) {
+        console.warn(
+          `Người dùng với ID ${user.clerkId} không tồn tại trên Clerk. Đang xóa khỏi MongoDB...`
+        );
+        // Xóa khỏi MongoDB nếu Clerk không tìm thấy người dùng
+        await Users.deleteOne({ clerkId: user.clerkId });
+      }
+    }
 
     // Trả về dữ liệu
     return res.status(200).json({ data: users });

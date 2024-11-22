@@ -3,10 +3,11 @@ import Confirm from "@/components/Confirm/Confirm";
 import {
   Dialog,
   DialogContent,
-  DialogTrigger
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
+import { SignedIn, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -22,11 +23,11 @@ function ListUser() {
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [isConfirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
   const [userToRestore, setUserToRestore] = useState<User | null>(null);
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  
 
   const totalUsers = allUsers.length;
 
@@ -51,7 +52,9 @@ function ListUser() {
       );
 
       const usersData = Array.isArray(res.data?.data) ? res.data.data : [];
+
       setAllUsers(usersData);
+
       console.log("Fetched users:", usersData);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -59,6 +62,7 @@ function ListUser() {
       setIsLoading(false);
     }
   };
+  
 
   const getCookie = (name: string) => {
     const value = `; ${document.cookie}`;
@@ -227,12 +231,26 @@ function ListUser() {
               <option value="active">Tài khoản đang hoạt động</option>
               <option value="deleted">Tài khoản đã bị xóa</option>
             </select>
-            
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+
+            <Dialog open={isOpen} onOpenChange={setIsOpen} >
               <DialogTrigger asChild>
-                <button
-                  onClick={() => setIsOpen(true)}
-                  className="px-6 flex items-center gap-2 py-2 rounded-md bg-black text-white"
+                <DialogTitle
+                   onClick={(e) => {
+                    // Kiểm tra quyền khi nhấn vào nút
+                    if (user?.publicMetadata?.role !== "Admin") {
+                      e.preventDefault(); 
+                      // Nếu không phải Admin, hiển thị toast thông báo và ngừng mở form
+                      toast({
+                        variant: "destructive", // Toast hiển thị màu đỏ (thông báo lỗi)
+                        title: "Quyền truy cập bị từ chối",
+                        description: "Chỉ Admin mới có thể tạo người dùng mới.", // Mô tả lỗi
+                      });
+                      return; // Ngừng thực hiện hành động mở form
+                    }
+                    // Nếu là Admin, mở Dialog
+                    setIsOpen(true); 
+                  }}
+                  className="px-6 font-normal text-[15px] cursor-pointer flex items-center gap-2 py-2 rounded-md bg-black text-white"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -243,12 +261,15 @@ function ListUser() {
                     <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
                   </svg>
                   Thêm user
-                </button>
+                </DialogTitle>
               </DialogTrigger>
 
               {/* Nội dung modal */}
-              <DialogContent className=" p-0">
-                <RegisterForm />
+              <DialogContent className="p-0">
+                <RegisterForm
+                  onClose={() => setIsOpen(false)} // hàm đóng form
+                  onSuccess={fetchUsers} // Hàm cập nhật danh sách người dùng
+                />
               </DialogContent>
             </Dialog>
           </div>
@@ -384,11 +405,6 @@ function ListUser() {
         itemsPerPage={itemsPerPage}
         onPageChange={(page) => setCurrentPage(page)}
       />
-      <SignedOut>
-        <div className="flex justify-center items-center h-full">
-          <SignIn />
-        </div>
-      </SignedOut>
 
       <Confirm
         isOpen={isModalOpen}

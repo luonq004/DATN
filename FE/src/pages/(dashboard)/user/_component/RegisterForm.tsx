@@ -10,16 +10,21 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 
-const RegisterForm = () => {
+interface RegisterFormProps {
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
   const {
     register,
     handleSubmit,
+    setError,
+    reset, 
     formState: { errors },
   } = useForm();
 
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   const onSubmit = async (data: any) => {
@@ -29,19 +34,61 @@ const RegisterForm = () => {
         title: "Đăng ký thành công",
         description: "Tài khoản đã được tạo thành công!",
       });
-      navigate("/admin/users");
-    } catch (error) {
-      console.error("Error creating user:", error);
-      toast({
-        variant: "destructive",
-        title: "Đăng ký thất bại",
-        description: "Có lỗi xảy ra khi tạo tài khoản.",
-      });
+      reset(); // Reset form
+      onClose(); // Đóng form
+      onSuccess(); // Cập nhật danh sách người dùng
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        const backendMessage = error.response.data.message;
+        const backendErrors = error.response.data.errors;
+  
+        // Xử lý lỗi cụ thể từ backend
+        if (backendErrors) {
+          backendErrors.forEach((err: any) => {
+            if (err.code === "form_identifier_exists") {
+              setError("emailAddress", {
+                type: "manual",
+                message: "Email đã được sử dụng. Vui lòng thử email khác.",
+              });
+            }
+  
+            if (err.code === "form_password_pwned") {
+              setError("password", {
+                type: "manual",
+                message: "Mật khẩu yếu. Vui lòng chọn mật khẩu mạnh hơn.",
+              });
+            }
+  
+            // Hiển thị lỗi trong toast
+            toast({
+              variant: "destructive",
+              title: "Lỗi đăng ký",
+              description: err.message,
+            });
+          });
+        } else {
+          // Hiển thị lỗi tổng quát nếu không có chi tiết
+          toast({
+            variant: "destructive",
+            title: "Đăng ký thất bại",
+            description: backendMessage || "Có lỗi xảy ra. Vui lòng thử lại.",
+          });
+        }
+      } else {
+        // Lỗi kết nối hoặc lỗi không xác định
+        toast({
+          variant: "destructive",
+          title: "Đăng ký thất bại",
+          description: "Không thể kết nối với server. Vui lòng thử lại sau.",
+        });
+      }
     }
   };
+  
+  
 
   return (
-    <div className="min-h-screen flex items-center justify-center ">
+    <div className="min-h-full flex items-center justify-center ">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-center">Đăng ký tài khoản</CardTitle>
@@ -123,8 +170,8 @@ const RegisterForm = () => {
                 {...register("password", {
                   required: "Mật khẩu là bắt buộc",
                   minLength: {
-                    value: 6,
-                    message: "Mật khẩu phải có ít nhất 6 ký tự",
+                    value: 8,
+                    message: "Mật khẩu phải có ít nhất 8 ký tự",
                   },
                 })}
                 placeholder="Mật khẩu"
@@ -148,6 +195,7 @@ const RegisterForm = () => {
               >
                 <option value="User">User</option>
                 <option value="Admin">Admin</option>
+                <option value="Employee">Employee</option>
               </select>
             </div>
           </form>

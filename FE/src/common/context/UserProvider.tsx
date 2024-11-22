@@ -59,7 +59,7 @@ function UserInfoProvider({ children }: { children: React.ReactNode }) {
 function useUserContext() {
   const context = useContext(UserContext);
 
-  if (context === undefined)
+  if (context === null)
     throw new Error("UserContext was outside the UserProvider");
 
   return context;
