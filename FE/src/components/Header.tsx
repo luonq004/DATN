@@ -136,7 +136,7 @@ const Header = () => {
 
                 <div className="border-x border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase relative hidden lg:inline">
                   <a
-                    href="#"
+                    href="/cart"
                     className="cursor-pointer text-[#555] hover:text-[#b8cd06] transition-all flex items-center"
                   >
                     <b className="font-bold">your bag</b>

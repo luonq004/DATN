@@ -31,6 +31,10 @@ import Order from "../pages/(website)/cart/_components/Order";
 import ShoppingCart from "../pages/(website)/cart/_components/ShoppingCart";
 import CartPage from "../pages/(website)/cart/page";
 import LayoutWebsite from "../pages/(website)/layout";
+
+import ListAddress from "@/pages/(website)/address/ListAddress";
+import VoucherStorage from "@/pages/(website)/user/_components/VoucherStorage";
+
 import RegisterForm from "@/pages/(dashboard)/user/_component/RegisterForm";
 
 const Router = () => {
@@ -43,7 +47,12 @@ const Router = () => {
 
           <Route path="users" element={<SidebarAccount />}>
             <Route index element={<ProfilePage />} />
-            <Route path="password" element={<ChangePassword/>}/>
+
+            {/* địa chỉ */}
+            <Route path="dia-chi" element={<ListAddress />} />
+
+            <Route path="voucher" element={<VoucherStorage />} />
+            <Route path="password" element={<ChangePassword />} />
           </Route>
 
           <Route path="product/:id" element={<DetailPage />} />

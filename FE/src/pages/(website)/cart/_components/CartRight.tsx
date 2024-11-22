@@ -58,11 +58,11 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
             <div className='flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6'>
                 <div className='Subtotal flex flex-col gap-4'>
                     <div className='flex justify-between'>
-                        <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Subtotal</p>
+                        <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Tổng phụ</p>
                         <p className=''>$<span>{cart?.subTotal}.00</span></p>
                     </div>
                     <div className='flex justify-between'>
-                        <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Discount</p>
+                        <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Giảm giá</p>
                         <p className=''>$<span>{cart?.discount}.00</span></p>
                     </div>
                 </div>
@@ -72,14 +72,14 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                         <div>
                             <Button variant="outline" className='w-full p-2 rounded-md bg-slate-200 grid grid-cols-[30px_auto_20px] justify-normal'>
                                 <div className='items-start'><Ticket /></div>
-                                <div className='text-start truncate'>Select or enter a voucher</div>
+                                <div className='text-start truncate'>Chọn hoặc nhập Voucher</div>
                                 <div className='items-end'><ChevronRight /></div>
                             </Button>
                         </div>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[625px]">
                         <DialogHeader>
-                            <DialogTitle>Discount and Voucher</DialogTitle>
+                            <DialogTitle>Voucher của bạn</DialogTitle>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                             <Form {...form}>
@@ -91,7 +91,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
-                                                        <Input placeholder='Discount code' className='w-full' {...field} />
+                                                        <Input placeholder='Mã giảm giá...' className='w-full' {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -99,7 +99,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                                         />
                                     </div>
                                     <button className='py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none' type="submit">
-                                        Apply Coupon
+                                        Áp dụng
                                     </button>
 
                                     <FormMessage />
@@ -133,7 +133,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                 </Link>
                 <hr />
                 <div className='Payments flex flex-col gap-4'>
-                    <p className='text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]'>SECURE PAYMENTS PROVIDED BY</p>
+                    <p className='text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]'>THANH TOÁN AN TOÀN ĐƯỢC CUNG CẤP BỞI</p>
                     <div className='flex gap-3'>
                         <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
                             <img src={idk} alt="" />

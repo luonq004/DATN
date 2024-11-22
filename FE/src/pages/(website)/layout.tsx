@@ -42,8 +42,8 @@ const LayoutWebsite = () => {
   };
 
   useEffect(() => {
-     // Kiểm tra trạng thái tài khoản trong localStorage
-     if (localStorage.getItem("accountLocked") === "true") {
+    // Kiểm tra trạng thái tài khoản trong localStorage
+    if (localStorage.getItem("accountLocked") === "true") {
       setAccountStatus("banned");
       setIsAccountLocked(true);
     } else if (localStorage.getItem("accountDeleted") === "true") {

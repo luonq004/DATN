@@ -118,16 +118,23 @@ const VoucherForm = ({ id }: any) => {
         })
     }
 
-    function onSubmit(data: any) {
+    function onSubmit(item: any) {
+        const startDateUTC = new Date(data.startDate).toISOString();
+        const dobFromUTC = new Date(new Date(item.dob.from).getTime()).toISOString();
+
+        const endDateUTC = new Date(data.endDate).toISOString();
+        const dobToUTC = new Date(new Date(item.dob.to).getTime()).toISOString();
+
         const info = {
-            ...data,
+            ...item,
             _id: id,
             status: status,
-            startDate: new Date(new Date(data.dob.from).getTime() + 7 * 60 * 60 * 1000),
-            endDate: new Date(new Date(data.dob.to).getTime() + 7 * 60 * 60 * 1000)
+            startDate: startDateUTC === dobFromUTC ? data.startDate : new Date(new Date(item.dob.from).getTime() + 7 * 60 * 60 * 1000),
+            endDate: endDateUTC === dobToUTC ? data.endDate : new Date(new Date(item.dob.to).getTime() + 7 * 60 * 60 * 1000),
         }
-        const { dob, ...item } = info
-        updateVoucher.mutate(item, {
+        const { dob, ...data2 } = info
+
+        updateVoucher.mutate(data2, {
             onSuccess: () => {
                 toast({
                     title: 'Sucsess',
@@ -135,6 +142,7 @@ const VoucherForm = ({ id }: any) => {
                 })
             }
         })
+        // console.log(data2)
     }
 
     if (isLoading) <div>Is Loading...</div>
@@ -148,6 +156,7 @@ const VoucherForm = ({ id }: any) => {
                     <Input
                         disabled={openEdit === id ? false : true}
                         placeholder='Code...'
+                        className='mb-0'
                         {...register('code', { required: true, minLength: 3, maxLength: 255 })}
                     />
                     {errors?.code?.message && <span className='text-red-500'>{errors?.code?.message.toString()}</span>}
@@ -182,6 +191,7 @@ const VoucherForm = ({ id }: any) => {
                     <Input
                         disabled={openEdit === id ? false : true}
                         placeholder='discount...'
+                        className='mb-0'
                         {...register('discount', { required: true, minLength: 3, maxLength: 255 })}
                     />
                     {errors?.discount?.message && <span className='text-red-500'>{errors?.discount?.message.toString()}</span>}
@@ -192,6 +202,7 @@ const VoucherForm = ({ id }: any) => {
                     <Input
                         disabled={openEdit === id ? false : true}
                         placeholder='countOnStock...'
+                        className='mb-0'
                         {...register('countOnStock', { required: true, minLength: 3, maxLength: 255 })}
                     />
                     {errors?.countOnStock?.message && <span className='text-red-500'>{errors?.countOnStock?.message.toString()}</span>}

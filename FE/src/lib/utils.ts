@@ -1,7 +1,7 @@
 import {
   Attribute,
   Data,
-  IProduct2,
+  IProduct,
   Value,
   Variant,
 } from "@/common/types/Product";
@@ -12,7 +12,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getUniqueTypes(product: IProduct2) {
+export const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("vi-VN").format(value);
+
+// ===================================================================
+
+export function getUniqueTypes(product: IProduct) {
   const types = new Set(); // Sử dụng Set để đảm bảo không có giá trị trùng lặp
 
   // Duyệt qua tất cả các biến thể (variants) của sản phẩm
@@ -48,7 +53,7 @@ export function areArraysEqual(arr1: string[], arr2: string[]): boolean {
   return arr1.every((item) => arr2.includes(item));
 }
 
-export function getUniqueAttributeValue(product: IProduct2): Data[][] {
+export function getUniqueAttributeValue(product: IProduct): Data[][] {
   return product.variants.reduce<Data[][]>((acc, variant) => {
     variant.values.forEach((item: Value) => {
       const { type, value } = item;
@@ -136,7 +141,7 @@ export function updateFields(array1: Variant[], array2: Variant[]) {
 }
 
 // Check trùng values
-export const checkForDuplicateVariants = (data: IProduct2) => {
+export const checkForDuplicateVariants = (data: IProduct) => {
   const variantSet = new Map<string, number>(); // Lưu vị trí của từng variant key
   const duplicateIndices: number[] = []; // Lưu vị trí của các biến thể bị trùng
 
@@ -156,4 +161,54 @@ export const checkForDuplicateVariants = (data: IProduct2) => {
   });
 
   return duplicateIndices; // Trả về mảng vị trí của các biến thể bị trùng
+};
+
+//
+
+export const extractAttributes = (variants: any) => {
+  const attributes: any = {};
+
+  variants.forEach((variant) => {
+    variant.values.forEach((value) => {
+      const type = value.type;
+      if (!attributes[type]) {
+        attributes[type] = new Set();
+      }
+      attributes[type].add(`${value._id}:${value.value}`);
+    });
+  });
+
+  // Chuyển đổi Set thành Array cho mỗi thuộc tính
+  Object.keys(attributes).forEach((key) => {
+    attributes[key] = Array.from(attributes[key]);
+  });
+
+  return attributes;
+};
+
+export const filterAndFormatAttributes = (
+  product: IProduct,
+  type: string,
+  value: string
+) => {
+  const filteredVariants = product.variants.filter((variant) =>
+    variant.values.some((attr) => attr.type === type && attr._id === value)
+  );
+
+  const result: Record<string, string[]> = {};
+
+  filteredVariants.forEach((variant) => {
+    variant.values.forEach((attr) => {
+      if (attr.type !== type) {
+        if (!result[attr.type]) {
+          result[attr.type] = [];
+        }
+        if (!result[attr.type].includes(attr._id)) {
+          result[attr.type].push(attr._id);
+        }
+      }
+    });
+  });
+
+  return result;
 };

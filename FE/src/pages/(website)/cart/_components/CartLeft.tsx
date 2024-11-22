@@ -15,12 +15,11 @@ const CartLeft = ({ cart, attribute, setAttribute, userAction }: { cart: Icart, 
         // console.log(number)
         setAttribute(idCart);
     }
-
     return (
         <div className="Your_Cart flex flex-col gap-6">
             {/* Top  */}
             <div className="Top flex justify-between pb-6 border-b border-[#C8C9CB]">
-                <p className="font-medium text-[24px] max-sm:text-[16px]">Your Cart</p>
+                <p className="font-medium text-[24px] max-sm:text-[16px]">Giỏ hàng</p>
                 <p className="text-[#9D9EA2] max-sm:text-[14px] transition-all duration-500">({cart?.products.length})</p>
             </div>
             {/* End Top  */}
@@ -31,7 +30,7 @@ const CartLeft = ({ cart, attribute, setAttribute, userAction }: { cart: Icart, 
                 {cart?.products.length === 0 && (
                     <div className="flex flex-col items-center justify-center">
                         <img src={cartEmpty} alt="cart-empty" className='w-1/5' />
-                        <p className="text-[#9D9EA2] max-sm:text-[14px]">Your cart is empty</p>
+                        <p className="text-[#9D9EA2] max-sm:text-[14px]">Giỏ hàng trống</p>
                     </div>
                 )}
                 {cart?.products.map((item: any, index: number) => (

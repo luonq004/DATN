@@ -7,8 +7,9 @@ function App() {
   return (
     <>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <Toaster />
         <Router />
+        <Toaster />
+        {/* <ToastContainer /> */}
       </ThemeProvider>
     </>
   );

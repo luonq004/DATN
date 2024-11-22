@@ -1,11 +1,11 @@
-import ProfilePageModern from "./_components/ProfileUser"
+import ProfilePageModern from "./_components/ProfileUser";
 
 const ProfilePage = () => {
   return (
     <div className="flex">
-    <ProfilePageModern/>
-  </div>
-  )
-}
+      <ProfilePageModern />
+    </div>
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;

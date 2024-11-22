@@ -131,7 +131,8 @@ export const createProduct = async (req, res) => {
     if (!variants) {
       const data = await Product({
         name,
-        image,
+        image:
+          "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
         price,
         priceSale,
         description,
@@ -145,23 +146,33 @@ export const createProduct = async (req, res) => {
       });
     } else {
       const variantsId = [];
+      let price = Infinity;
 
       for (let i = 0; i < variants.length; i++) {
         const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+
+        if (price > variants[i].price) {
+          price = variants[i].price;
+        }
 
         const variant = await Variant({
           price: variants[i].price,
           priceSale: variants[i].priceSale,
           values,
           countOnStock: variants[i].countOnStock,
-          image: variants[i].image,
+          image:
+            "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
+          // image: variants[i].image,
         }).save();
         variantsId.push(variant._id);
       }
 
       const data = await Product({
         name,
-        image,
+        price,
+        type: "variable",
+        image:
+          "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
         category,
         description,
         slug: slugify(req.body.name, "-"),

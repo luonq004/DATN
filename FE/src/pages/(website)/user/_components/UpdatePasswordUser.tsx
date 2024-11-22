@@ -23,12 +23,29 @@ function ChangePassword() {
     const { currentPassword, newPassword, confirmPassword } = data;
 
     if (!user) {
-      alert("Người dùng chưa đăng nhập");
+      toast({
+        variant: "destructive",
+        title: "Thất bại",
+        description: "Người dùng chưa đăng nhập!",
+      });
+      return;
+    }
+
+    if (newPassword === currentPassword) {
+      toast({
+        variant: "destructive",
+        title: "Thất bại",
+        description: "Mật khẩu mới không được giống với mật khẩu hiện tại!",
+      });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+      toast({
+        variant: "destructive",
+        title: "Thất bại",
+        description: "Mật khẩu mới và xác nhận mật khẩu không khớp!",
+      });
       return;
     }
 
@@ -73,7 +90,7 @@ function ChangePassword() {
         toast({
           variant: "destructive",
           title: "Thất bại",
-          description: "Mật khẩu này đã xuất hiện trong các vụ rò rỉ dữ liệu. Vui lòng chọn mật khẩu khác an toàn hơn.",
+          description: "Mật khẩu mới đã xuất hiện trong các vụ rò rỉ dữ liệu. Vui lòng chọn mật khẩu khác an toàn hơn.",
         });
       } else {
         toast({

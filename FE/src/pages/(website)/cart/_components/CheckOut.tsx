@@ -1,6 +1,6 @@
-import { FormOut } from "@/common/types/formCheckOut";
+import { Cart, FormOut } from "@/common/types/formCheckOut";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
@@ -27,6 +27,10 @@ import visa from "@/assets/icons/Visa.svg";
 import bitcoin from "@/assets/icons/Bitcoin.svg";
 import interac from "@/assets/icons/Interac.svg";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import useAddress from "@/common/hooks/address/useAddress";
+import { useUserContext } from "@/common/context/UserProvider";
+import { Alert } from "@/components/ui/alert";
 
 const CheckOut = () => {
   const navigate = useNavigate();
@@ -38,6 +42,7 @@ const CheckOut = () => {
       phone: "",
       email: "",
       paymentMethod: "",
+      addressDetail: "",
       note: "",
     },
   });
@@ -51,7 +56,28 @@ const CheckOut = () => {
   const [selectedCityId, setSelectedCityId] = useState<string>("");
   const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
   const [selectedWardId, setSelectedWardId] = useState<string>("");
+  const [ carts, setcarts ] = useState<Cart | null>(null);
+  const { _id } = useUserContext() ?? {};
+  const { data: addresses, } = useAddress(_id);
+  console.log("addresses", addresses)
+  // lấy dữ liệu giỏ hàng
+    useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/cart/${_id}`
+        );
+        setcarts(response.data); // Cập nhật dữ liệu vào state
+      } catch (err) {
+        // setError(err.message);
+      } finally {
+        // setLoading(false);
+      }
+    };
 
+    fetchCartData();
+  }, [_id]);
+  
   const handleCityChange = (cityId: string) => {
     setSelectedCityId(cityId);
   };
@@ -64,18 +90,36 @@ const CheckOut = () => {
     setSelectedWardId(wardId);
   };
 
-  const onSubmit = (data: FormOut) => {
+  const onSubmit = async(data: FormOut) => {
     if (!selectedCityId || !selectedDistrictId || !selectedWardId) {
       alert("Bạn phải chọn đầy đủ thông tin địa chỉ!");
       return;
     }
-    console.log({
+    const orderData = {
       ...data,
       cityId: selectedCityId,
       districtId: selectedDistrictId,
       wardId: selectedWardId,
-    });
-    navigate("/cart/order");
+      products: carts,
+      userId: _id,
+      payment: data.paymentMethod,
+      totalPrice: carts?.total ?? 0,
+    };
+    try {
+      // Gửi yêu cầu tạo đơn hàng đến backend
+      const response = await axios.post(
+        'http://localhost:8080/api/create-order',
+        orderData
+      );
+      if (response.status === 201) {
+        // Đơn hàng đã được tạo thành công
+        <Alert variant="default">Tạo địa chỉ thành công!</Alert> 
+        navigate("/cart/order");  // Điều hướng đến trang đơn hàng
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo đơn hàng: ", error);
+      alert("Đã có lỗi xảy ra, vui lòng thử lại sau.");
+    }
   };
 
   return (
@@ -86,19 +130,19 @@ const CheckOut = () => {
       >
         <div>
           <div className="flex justify-between pb-6 mb-4 border-b border-b-[#C8C9CB]">
-            <h3 className="text-[24px] font-medium">Shipping</h3>
+            <h3 className="text-[24px] font-medium">GIAO HÀNG</h3>
             <span className="text-[#9D9EA2]">(3)</span>
           </div>
 
           <FormField
             control={control}
             name="name"
-            rules={{ required: "Full name is required" }}
+            rules={{ required: "HỌ VÀ TÊN KHÔNG ĐƯỢC ĐỂ TRỐNG!" }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">FULL NAME*</FormLabel>
+                <FormLabel className="text-black">HỌ VÀ TÊN*</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your full name" {...field} />
+                  <Input placeholder="NHẬP TÊN ĐẦY ĐỦ CỦA BẠN!" {...field} />
                 </FormControl>
                 <FormMessage>{errors.name?.message}</FormMessage>
               </FormItem>
@@ -111,7 +155,7 @@ const CheckOut = () => {
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">COUNTRY / REGION *</FormLabel>
+                <FormLabel className="text-black">ĐỊA CHỈ*</FormLabel>
                 <FormControl>
                   <Country
                     {...field}
@@ -129,19 +173,19 @@ const CheckOut = () => {
             control={control}
             name="phone"
             rules={{
-              required: "Phone number is required",
+              required: "SỐ ĐIỆN THOẠI KHÔNG ĐƯỢC ĐỂ TRỐNG!",
               minLength: {
                 value: 10,
-                message: "Phone number must be at least 10 digits",
+                message: "SÔ ĐIỆN THOẠI PHẢI CÓ ÍT NHẤT 10 CHỮ SỐ",
               },
               pattern: {
                 value: /^[0-9]+$/,
-                message: "Phone number is not valid",
+                message: "SỐ ĐIỆN THOẠI KHÔNG HỢP LỆ",
               },
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">PHONE (optional)</FormLabel>
+                <FormLabel className="text-black">SỐ ĐIỆN THOẠI*</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter your phone number" {...field} />
                 </FormControl>
@@ -153,15 +197,15 @@ const CheckOut = () => {
             control={control}
             name="email"
             rules={{
-              required: "Email address is required",
+              required: "ĐỊA CHỈ EMAIL LÀ BẮT BUỘC!",
               pattern: {
                 value: /^\S+@\S+$/i,
-                message: "Email address is not valid",
+                message: "ĐỊA CHỈ EMAIL KHÔNG HỢP LỆ",
               },
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">EMAIL ADDRESS *</FormLabel>
+                <FormLabel className="text-black">ĐỊA CHỈ EMAIL *</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter your email" {...field} />
                 </FormControl>
@@ -169,16 +213,29 @@ const CheckOut = () => {
               </FormItem>
             )}
           />
-
+          <FormField
+            control={control}
+            name="addressDetail"
+            rules={{ required: "ĐỊA CHỈ CHI TIẾT KHÔNG ĐƯỢC ĐỂ TRỐNG" }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">ĐỊA CHỈ CHI TIẾT*</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="NHẬP ĐỊA CHỈ CHI TIẾT CỦA BẠN VÀO ĐÂY!" {...field} />
+                </FormControl>
+                <FormMessage>{errors.note?.message}</FormMessage>
+              </FormItem>
+            )}
+          />
           <FormField
             control={control}
             name="note"
-            rules={{ required: "Note is required" }}
+            rules={{ required: "GHI CHÚ KHÔNG ĐƯỢC ĐỂ TRỐNG" }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-black">NOTE *</FormLabel>
+                <FormLabel className="text-black">GHI CHÚ*</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Type your message here." {...field} />
+                  <Textarea placeholder="NHẬP TIN NHẮN CỦA BẠN VÀO ĐÂY!" {...field} />
                 </FormControl>
                 <FormMessage>{errors.note?.message}</FormMessage>
               </FormItem>
@@ -191,7 +248,7 @@ const CheckOut = () => {
             <div className="Subtotal flex flex-col gap-4">
               <div className="flex justify-between">
                 <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-                  Subtotal
+                  Tổng tiền
                 </p>
                 <p className="">
                   $<span>360.00</span>
@@ -199,13 +256,13 @@ const CheckOut = () => {
               </div>
               <div className="flex justify-between">
                 <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-                  Shipping
+                  Vận chuyển
                 </p>
                 <p className="">New York, US</p>
               </div>
               <div className="flex justify-between">
                 <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-                  Discount
+                  Giảm giá
                 </p>
                 <p className="">
                   $<span>0</span>
@@ -213,7 +270,7 @@ const CheckOut = () => {
               </div>
               <div className="flex justify-between">
                 <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-                  Shipping Costs
+                  Chi phí vận chuyển
                 </p>
                 <p className="">
                   $<span>50.00</span>
@@ -221,24 +278,23 @@ const CheckOut = () => {
               </div>
             </div>
             <div className="Code-Sale flex items-center justify-between gap-4">
-              <Input placeholder="Coupon code" style={{ margin: 0 }} />
+              <Input placeholder="Mã giảm giá" style={{ margin: 0 }} />
               <div className="py-3 px-5 rounded-full text-light-400 text-[14px] bg-light-50 whitespace-nowrap cursor-pointer transition-all duration-300 hover:bg-light-100 select-none">
-                Apply Coupon
+               Áp dụng phiếu giảm giá
               </div>
             </div>
             <hr />
             <div className="flex gap-5 ">
               <Checkbox className="w-[22px] h-[22px]" id="terms" />
               <span className="text-[#717378] text-[14px]">
-                I confirm that my address is 100% correct and WILL NOT hold Top
-                Shelf BC liable if this shipment is sent to an incorrect
-                address. *
+              Tôi xác nhận rằng địa chỉ của tôi là chính xác 100% và SẼ KHÔNG bắt Top Shelf BC 
+              phải chịu trách nhiệm nếu lô hàng này được gửi đến địa chỉ không chính xác. *
               </span>
             </div>
             <div className="flex gap-5 ">
               <Checkbox className="w-[22px] h-[22px]" id="emailUpdates" />
               <span className="text-[#717378] text-[14px]">
-                Sign me up to receive email updates and news (optional)
+              Đăng ký để nhận email cập nhật và tin tức (tùy chọn)
               </span>
             </div>
             {/* ============= PAYMENTMEDTHOD=============== */}
@@ -246,7 +302,7 @@ const CheckOut = () => {
               <FormField
                 control={control}
                 name="paymentMethod"
-                rules={{ required: "Payment method is required" }}
+                rules={{ required: "VUI LÒNG CHỌN PHƯƠNG THỨC THANH TOÁN!" }}
                 render={({ field }) => (
                   <FormItem>
                     <Select
@@ -254,7 +310,7 @@ const CheckOut = () => {
                       defaultValue={field.value}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select payment method" />
+                        <SelectValue placeholder="Chọn phương thức thanh toán" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Vnay">Vnay</SelectItem>
@@ -270,8 +326,8 @@ const CheckOut = () => {
             </div>
             {/* ============= PAYMENTMEDTHOD=============== */}
 
-            <button className="bg-[#C8C9CB] hover:bg-light-400 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none">
-              <div>Place Order</div>
+            <button type="submit" className="bg-[#C8C9CB] hover:bg-light-400 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none">
+              <div>ĐẶT HÀNG</div>
               <div className="">|</div>
               <div>
                 $<span>547.00</span>
@@ -279,7 +335,7 @@ const CheckOut = () => {
             </button>
             <div className="Payments flex flex-col gap-4">
               <p className="text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]">
-                SECURE PAYMENTS PROVIDED BY
+                THANH TOÁN ĐƯỢC CUNG CẤP BỞI
               </p>
               <div className="flex gap-3">
                 <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
