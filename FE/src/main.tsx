@@ -9,6 +9,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { UserInfoProvider } from "./common/context/UserProvider.tsx";
+import { AuthProvider } from "./common/context/AuthContext.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,7 +31,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <UserInfoProvider>
           <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-            <App />
+            <AuthProvider>
+              <App />
+            </AuthProvider>
             <ReactQueryDevtools initialIsOpen={false} />
           </ClerkProvider>
         </UserInfoProvider>

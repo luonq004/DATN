@@ -84,11 +84,30 @@ export const createOrder = async (req, res) => {
 };
 
 // ============================ Lấy tất cả đơn hàng ===========================
-export const getAllOrders = async (req, res) => {
+export const getAllOrdersByUserId = async (req, res) => {
     const { userId } = req.params;
     try {
         // Tìm tất cả đơn hàng và populate thông tin userId và addressId
         const orders = await Order.find({ userId });
+        // Kiểm tra nếu không có đơn hàng
+        if (orders.length === 0) {
+            return res.status(404).json({ message: "Không có đơn hàng nào" });
+        }
+        // Trả về danh sách đơn hàng
+        return res.status(StatusCodes.OK).json(orders);
+    } catch (error) {
+        return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({
+                message: "Lỗi khi lấy danh sách đơn hàng",
+                error: error.message,
+            });
+    }
+};
+export const getAllOrders = async (req, res) => {
+    try {
+        // Tìm tất cả đơn hàng và populate thông tin userId và addressId
+        const orders = await Order.find();
         // Kiểm tra nếu không có đơn hàng
         if (orders.length === 0) {
             return res.status(404).json({ message: "Không có đơn hàng nào" });
@@ -143,5 +162,67 @@ export const getOrderCode = async (req, res) => {
         return res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
             .json({ message: "Lỗi server", error: error.message });
+    }
+};
+// ============================ Cập nhật trạng thái đơn hàng ===========================
+export const updateOrderStatus = async (req, res) => {
+    const { id } = req.params;
+    const { newStatus } = req.body;
+
+    try {
+        // Kiểm tra trạng thái mới
+        if (!newStatus || !["đang chờ", "đang xử lý", "đã hoàn thành", "đã hủy"].includes(newStatus)) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "Trạng thái không hợp lệ. Các trạng thái hợp lệ: 'đang chờ', 'đang xử lý', 'đã hoàn thành', 'đã hủy'."
+            });
+        }
+
+        // Tìm đơn hàng theo id
+        const order = await Order.findById(id);
+        console.log("orderId", id)
+        if (!order) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy đơn hàng" });
+        }
+
+        // Kiểm tra trạng thái hiện tại của đơn hàng và áp dụng các điều kiện
+        const currentStatus = order.status;
+
+        // Nếu trạng thái là "đang chờ", không thể quay lại
+        if (currentStatus === "đang chờ" && newStatus === "đang chờ") {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Trạng thái đang chờ không thể quay lại" });
+        }
+
+        // Nếu trạng thái là "đang xử lý", không thể quay lại "đang chờ" và không thể hủy
+        if (currentStatus === "đang xử lý") {
+            if (newStatus === "đang chờ") {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Không thể quay lại trạng thái đang chờ" });
+            }
+        }
+
+        // Nếu trạng thái là "đã hoàn thành", không thể quay lại trạng thái trước đó hoặc hủy
+        if (currentStatus === "đã hoàn thành") {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Không thể thay đổi trạng thái khi đơn hàng đã hoàn thành" });
+        }
+
+        // Nếu trạng thái là "đã hủy", không thể thay đổi trạng thái nữa
+        if (currentStatus === "đã hủy") {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Không thể thay đổi trạng thái khi đơn hàng đã hủy" });
+        }
+
+        // Cập nhật trạng thái nếu không gặp lỗi
+        order.status = newStatus;
+        await order.save();
+
+        // Trả về kết quả
+        return res.status(StatusCodes.OK).json({
+            message: "Cập nhật trạng thái đơn hàng thành công.",
+            order: order
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: "Lỗi khi cập nhật trạng thái đơn hàng",
+            error: error.message,
+        });
     }
 };

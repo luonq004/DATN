@@ -6,7 +6,9 @@ const OrderDetail = () => {
   const { id } = useParams();
   const { data } = useOrder(undefined, id);
 
-  if (!data) return <div>Đang tải dữ liệu...</div>;
+  if (!data) return <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
+  <div className="spinner"></div>
+</div>;
 
   const { addressId, note, products, payment, status, totalPrice, orderCode, createdAt } = data;
 

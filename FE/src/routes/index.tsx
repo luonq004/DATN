@@ -43,6 +43,7 @@ import AttributesPage from "@/pages/(dashboard)/attribute/page";
 import AttributeValuePage from "@/pages/(dashboard)/attributeValue/page";
 import ProductDetail from "@/pages/(website)/product/page";
 import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
+import NotFound from "@/components/Notfound";
 
 const Router = () => {
   return (
@@ -84,6 +85,8 @@ const Router = () => {
           <Route path="about" element={<AboutUsPage />} />
 
           <Route path="shopping" element={<ProductShopPage />} />
+
+          <Route path="*" element={<NotFound />} />
         </Route>
 
         <Route path="admin" element={<LayoutAdmin />}>
@@ -97,7 +100,13 @@ const Router = () => {
           <Route path="users" element={<UserPage />}>
             <Route index element={<ListUser />} />
             <Route path="detail/:clerkId" element={<UserDetailPage />} />
-            <Route path="create-user" element={<RegisterForm />} />
+            <Route path="create-user" element={ 
+              <RegisterForm
+                  onClose={() => console.log("Form đóng lại")}
+                  onSuccess={() => console.log("Đăng ký thành công")}
+                />
+              }
+            />
           </Route>
 
           <Route path="sliders" element={<SliderPage />}>

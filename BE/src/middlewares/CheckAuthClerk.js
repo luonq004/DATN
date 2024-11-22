@@ -9,8 +9,6 @@ export const checkAuthClerk = async (req, res, next) => {
 
     const token = tokenFromCookie || tokenFromHeader;
 
-    console.log("Token nhận được:", token);
-
     if (!token) {
         return res.status(401).json({ error: "Không tìm thấy token. Người dùng phải đăng nhập." });
     }
