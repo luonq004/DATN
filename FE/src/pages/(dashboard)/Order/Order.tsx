@@ -49,10 +49,9 @@ interface ErrorResponse {
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const AdminOrder = () => {
-  const userId = "67370b2bba67ac60aea58be8";
   const queryClient = useQueryClient(); // Đặt useQueryClient ở trên đầu
 
-  const { data, isLoading, isError } = useOrder(userId);
+  const { data, isLoading, isError } = useOrder();
 
   const orders: Order[] = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];

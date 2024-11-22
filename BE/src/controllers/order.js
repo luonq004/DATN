@@ -84,11 +84,30 @@ export const createOrder = async (req, res) => {
 };
 
 // ============================ Lấy tất cả đơn hàng ===========================
-export const getAllOrders = async (req, res) => {
+export const getAllOrdersByUserId = async (req, res) => {
     const { userId } = req.params;
     try {
         // Tìm tất cả đơn hàng và populate thông tin userId và addressId
         const orders = await Order.find({ userId });
+        // Kiểm tra nếu không có đơn hàng
+        if (orders.length === 0) {
+            return res.status(404).json({ message: "Không có đơn hàng nào" });
+        }
+        // Trả về danh sách đơn hàng
+        return res.status(StatusCodes.OK).json(orders);
+    } catch (error) {
+        return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({
+                message: "Lỗi khi lấy danh sách đơn hàng",
+                error: error.message,
+            });
+    }
+};
+export const getAllOrders = async (req, res) => {
+    try {
+        // Tìm tất cả đơn hàng và populate thông tin userId và addressId
+        const orders = await Order.find();
         // Kiểm tra nếu không có đơn hàng
         if (orders.length === 0) {
             return res.status(404).json({ message: "Không có đơn hàng nào" });

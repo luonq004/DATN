@@ -5,6 +5,8 @@ import StatusMenu from "./StatusMenu";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import cartEmpty from "@/assets/images/cart-empty.png";
+
 interface ErrorResponse {
   response?: {
     data: {
@@ -23,35 +25,18 @@ const apiUrl = import.meta.env.VITE_API_URL;
 const OrderHistory = () => {
   const { _id } = useUserContext() ?? {}; // Lấy _id từ UserContext
   const queryClient = useQueryClient(); // Đặt useQueryClient ở trên đầu
-  const { data, isLoading, isError } = useOrder(_id); // Destructure loading and error status
+  const { data, isLoading } = useOrder(_id); // Destructure loading and error status
   const [selectedStatus, setSelectedStatus] = useState<string>("đang chờ");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
-        <div className="spinner"></div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className=" min-h-[50vh] flex justify-center items-center text-red-500">
-        Có lỗi xảy ra khi tải đơn hàng. Vui lòng thử lại sau.
-      </div>
-    );
-  }
   const cancelOrder = async (orderId: string) => {
-    const newStatus = "đã hủy"
+    const newStatus = "đã hủy";
     try {
-      const response = await axios.put(`${apiUrl}/update-order/${orderId}`,
-        {
-          newStatus,
-        }
-      ); // Đường dẫn API hủy đơn hàng
+      const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
+        newStatus,
+      }); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
-       queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
+        queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
         toast({
           title: "Thành công",
           description: "Đơn hàng đã được hủy thành công.",
@@ -76,18 +61,11 @@ const OrderHistory = () => {
             variant: "destructive",
           });
         }
-      }}
+      }
+    }
   };
-  if (!Array.isArray(data)) {
-    return (
-      <div className="text-center text-red-500">
-        Dữ liệu đơn hàng không hợp lệ.
-      </div>
-    );
-  }
-
   // Lọc đơn hàng theo trạng thái và mã đơn hàng
-  const filteredOrders = data
+  const filteredOrders = (data || [])
     .filter((order) => order.status === selectedStatus)
     .filter((order) =>
       order.orderCode.toLowerCase().includes(searchQuery.toLowerCase())
@@ -114,7 +92,11 @@ const OrderHistory = () => {
 
       {/* Danh sách đơn hàng */}
       <div className="space-y-4">
-        {filteredOrders.length > 0 ? (
+        {isLoading ? (
+          <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
+            <div className="spinner"></div>
+          </div>
+        ) : filteredOrders.length > 0 ? (
           filteredOrders.map((order) => (
             <div key={order._id} className="p-4 border rounded-lg shadow-md">
               <div className="flex justify-between items-center">

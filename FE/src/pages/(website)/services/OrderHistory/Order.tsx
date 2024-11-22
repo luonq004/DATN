@@ -2,9 +2,18 @@ import axios from 'axios';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 // Lấy tất cả đơn hàng của người dùng
-const getAllOrders = async (userId : string) => {
+const getAllOrdersByUsesId = async (userId : string) => {
   try {
     const response = await axios.get(`${apiUrl}/get-all-orders/${userId}`);
+    return response.data; // Trả về danh sách đơn hàng
+  } catch (error) {
+    console.error("Lỗi khi lấy tất cả đơn hàng:", error);
+    throw new Error('Không thể lấy dữ liệu đơn hàng');
+  }
+};
+const getAllOrders = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/get-all-orders`);
     return response.data; // Trả về danh sách đơn hàng
   } catch (error) {
     console.error("Lỗi khi lấy tất cả đơn hàng:", error);
@@ -23,4 +32,4 @@ const getOrderById = async (orderId : string) => {
   }
 };
 
-export { getAllOrders, getOrderById };
+export { getAllOrders, getOrderById, getAllOrdersByUsesId };
