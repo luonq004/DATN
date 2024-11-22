@@ -4,6 +4,7 @@ import {
   getAllOrders,
   getOrderCode,
   getOrdersById,
+  updateOrderStatus,
 } from "../controllers/order";
 
 const routerOrder = Router();
@@ -15,4 +16,5 @@ routerOrder.get("/get-all-orders/:userId", getAllOrders);
 routerOrder.get("/get-orders/:orderId", getOrdersById);
 // - Tra cứu đơn hàng theo mã đơn hàng
 routerOrder.get("/get-ordersCode/:orderCode", getOrderCode);
+routerOrder.put("/update-order/:id", updateOrderStatus);
 export default routerOrder;

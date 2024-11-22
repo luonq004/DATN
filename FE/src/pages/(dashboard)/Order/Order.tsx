@@ -8,12 +8,6 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Table,
   TableBody,
   TableCell,
@@ -23,6 +17,17 @@ import {
 } from "@/components/ui/table";
 import useOrder from "@/common/hooks/order/UseOrder";
 import { Link } from "react-router-dom";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  SelectGroup,
+} from "@/components/ui/select";
+import axios from "axios";
+import { toast } from "@/components/ui/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type Order = {
   id: string;
@@ -33,116 +38,20 @@ export type Order = {
   createdAt: string;
 };
 
-// Hàm gửi API cập nhật trạng thái
-const updateOrderStatus = async (orderId: string, newStatus: string) => {
-  try {
-    const response = await fetch(`/api/orders/${orderId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    });
+interface ErrorResponse {
+  response?: {
+    data: {
+      message: string;
+    };
+  };
+}
 
-    if (!response.ok) throw new Error("Failed to update status");
-    // toast.success("Cập nhật trạng thái thành công!");
-  } catch (error) {
-    console.error(error);
-    // toast.error("Cập nhật trạng thái thất bại!");
-  }
-};
-
-// Định nghĩa các cột
-const columns: ColumnDef<Order>[] = [
-  {
-    accessorKey: "orderCode",
-    header: "Mã đơn hàng",
-    cell: ({ row }) => <div>{row.getValue("orderCode")}</div>,
-  },
-  {
-    accessorKey: "amount",
-    header: "Tổng tiền",
-    cell: ({ row }) => (
-      <div className="">
-        {new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(row.getValue("amount"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "payment",
-    header: "Phương thức thanh toán",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("payment")}</div>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Trạng thái",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Ngày mua",
-    cell: ({ row }) => (
-      <div>
-        {new Date(row.getValue("createdAt")).toLocaleDateString("vi-VN", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })}
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    header: "Chức năng",
-    cell: ({ row }) => (
-      <div className="flex space-x-2">
-        <Link to={`/admin/orders/orderdetails/${row.original.id}`}>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleViewDetails(row.original.id)}
-          >
-            Xem chi tiết
-          </Button>
-        </Link>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="primary" size="sm">
-              Cập nhật trạng thái
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {["Đang chờ", "Đang xử lý", "Đã hoàn thành", "Đã hủy"].map(
-              (status) => (
-                <DropdownMenuItem
-                  key={status}
-                  onClick={() => updateOrderStatus(row.original.id, status)}
-                  className="cursor-pointer"
-                >
-                  {status}
-                </DropdownMenuItem>
-              )
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    ),
-  },
-];
-
-const handleViewDetails = (orderId: string) => {
-  console.log("Xem chi tiết đơn hàng:", orderId);
-  // Thêm logic hiển thị chi tiết đơn hàng
-};
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const AdminOrder = () => {
   const userId = "67370b2bba67ac60aea58be8";
-  // const { _id } = useUserContext() ?? {};
+  const queryClient = useQueryClient(); // Đặt useQueryClient ở trên đầu
+
   const { data, isLoading, isError } = useOrder(userId);
 
   const orders: Order[] = React.useMemo(() => {
@@ -156,6 +65,113 @@ const AdminOrder = () => {
       createdAt: order.createdAt || "",
     }));
   }, [data]);
+// Hàm cập nhật trạng thái được truyền queryClient từ component
+const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  try {
+    const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
+      newStatus,
+    });
+
+    if (response.status === 200) {
+      // Invalidating the cache for "ADDRESS_" query when the status is updated
+      queryClient.invalidateQueries(["ORDER_HISTORY", userId]);
+      toast({
+        title: "Thành công!",
+        description: "Cập nhật trạng thái thành công!",
+        variant: "default",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    const err = error as ErrorResponse;
+    if (err.response && err.response.data) {
+      toast({
+        title: "Lỗi",
+        description:
+          err.response.data.message || "Cập nhật trạng thái thất bại!",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Lỗi kết nối",
+        description: "Lỗi kết nối server!",
+        variant: "destructive",
+      });
+    }
+  }
+};
+
+  const columns: ColumnDef<Order>[] = React.useMemo(
+    () => [
+      {
+        header: "Mã đơn hàng",
+        accessorKey: "orderCode",
+      },
+      {
+        header: "Số tiền",
+        accessorKey: "amount",
+      },
+      {
+        header: "Phương thức thanh toán",
+        accessorKey: "payment",
+      },
+      {
+        header: "Trạng thái",
+        accessorKey: "status",
+      },
+      {
+        header: "Ngày tạo",
+        accessorKey: "createdAt",
+      },
+      {
+        header: "Thao tác",
+        accessorKey: "id",
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            {/* Nút xem chi tiết */}
+            <Link to={`/admin/orders/orderdetails/${row.original.id}`}>
+              <Button variant="secondary" size="sm">
+                Xem chi tiết
+              </Button>
+            </Link>
+
+            {/* Dropdown để thay đổi trạng thái */}
+            <div className="*:m-0">
+              <Select
+                value={row.original.status}
+                onValueChange={async (newStatus) => {
+                  if (newStatus !== row.original.status) {
+                    await updateOrderStatus(row.original.id, newStatus);
+                    row.original.status = newStatus; // Cập nhật trạng thái mới cho dòng
+                  }
+                }}
+                disabled={
+                  row.original.status === "đã hoàn thành" ||
+                  row.original.status === "đã hủy"
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {["đang chờ", "đang xử lý", "đã hoàn thành", "đã hủy"].map(
+                      (status) => (
+                        <SelectItem key={status} value={status}>
+                          {status}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
   const table = useReactTable({
     data: orders,
@@ -180,6 +196,7 @@ const AdminOrder = () => {
     );
   }
 
+  
   return (
     <div className="w-full p-4">
       <Table>
