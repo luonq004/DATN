@@ -9,12 +9,16 @@ import PolicyCart from './PolicyCart'
 import SizeColorSelector from './SizeColorSelect'
 import { Link } from 'react-router-dom'
 
-const CartLeft = ({ cart, attribute, setAttribute, userAction }: { cart: Icart, attribute: any, setAttribute: (idCart: string) => void, userAction: (action: { type: string }, payload: any) => void }) => {
+const CartLeft = ({ cart, attribute, setAttribute, userAction, isLoading, isError }: { cart: Icart, attribute: any, setAttribute: (idCart: string) => void, userAction: (action: { type: string }, payload: any) => void, isLoading: Boolean, isError: Boolean }) => {
 
     const hanldeOnChangeAttribute = (idCart: string) => {
         // console.log(number)
         setAttribute(idCart);
     }
+
+    if (isLoading) return <div>is Loading</div>
+    if (isError) return <div>is Error</div>
+
     return (
         <div className="Your_Cart flex flex-col gap-6">
             {/* Top  */}

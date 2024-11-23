@@ -35,7 +35,9 @@ const SizeColorSelector = ({
     },
   });
 
-  const { data: attri } = useQuery({
+  // console.log('data', data)
+
+  const { data: attri, isLoading: AttriLoading, isError: AttriError } = useQuery({
     queryKey: ["attribute", idProduct],
     queryFn: async () => {
       const { data } = await axios.get(`http://localhost:8080/api/attributes`);
@@ -48,7 +50,7 @@ const SizeColorSelector = ({
   );
   const str = variantOfProduct?.values.flatMap((value: any) => value.name);
 
-  console.log(data);
+  // console.log(data);
   // console.log(attri)
   // console.log(selectedValue)
   // console.log(idVariant)
@@ -100,7 +102,7 @@ const SizeColorSelector = ({
     const seenIds = new Set();
 
     const uniqueValues = data?.variants.flatMap((variant: any) => {
-      // console.log(variant)
+      // console.log('variant', variant)
       return variant.values.filter(
         (value: any) =>
           attr.values.some((attrValue: any) => attrValue._id === value._id) &&
@@ -122,9 +124,9 @@ const SizeColorSelector = ({
     let filterVariants = data?.variants;
 
     // Lọc các variant dựa trên các thuộc tính đã chọn
-    Object.keys(selectedValue).forEach((attributeId: any) => {
+    selectedValue && Object.keys(selectedValue)?.forEach((attributeId: any) => {
       const valueVariant = selectedValue[attributeId];
-      filterVariants = filterVariants.filter((variant: any) =>
+      filterVariants = filterVariants?.filter((variant: any) =>
         variant.values.some((value: any) => value._id === valueVariant)
       );
     });
@@ -152,10 +154,10 @@ const SizeColorSelector = ({
   const saveVariant = (selectedValue: any) => {
     // Tìm variant khớp với tất cả các thuộc tính đã chọn
     const matchedVariant = data?.variants.find((variant: any) => {
-      if (Object.keys(selectedValue).length !== variant.values.length) return;
+      if (Object.keys(selectedValue)?.length !== variant.values.length) return;
 
       // Kiểm tra xem variant có chứa tất cả các thuộc tính đã chọn không
-      return Object.keys(selectedValue).every((attributeId) => {
+      return Object.keys(selectedValue)?.every((attributeId) => {
         return variant.values.some(
           (value: any) => value._id === selectedValue[attributeId]
         );
@@ -176,6 +178,8 @@ const SizeColorSelector = ({
 
   if (isLoading) return <div>Is Loading</div>;
   if (isError) return <div>Is Error</div>;
+  if (AttriLoading) return <div>Is Loading Attribute</div>;
+  if (AttriError) return <div>Is Error Attribute</div>;
   return (
     <>
       <div
@@ -186,9 +190,8 @@ const SizeColorSelector = ({
       >
         {str?.join(", ")}
         <div
-          className={`transition-all duration-500 ${
-            attribute === idCart ? "rotate-180" : ""
-          }`}
+          className={`transition-all duration-500 ${attribute === idCart ? "rotate-180" : ""
+            }`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -205,11 +208,10 @@ const SizeColorSelector = ({
       </div>
       <div
         className={`absolute flex flex-col gap-3 bg-background py-3 px-4 left-1/2 max-sm:left-[50%] max-[450px]:left-0 -translate-x-1/2 border rounded-md transition-all duration-300 select-none shadow-2xl
-                ${
-                  attribute === idCart
-                    ? "opacity-100 top-[130%] z-10"
-                    : "opacity-0 top-[90%] z-[-1]"
-                }`}
+                ${attribute === idCart
+            ? "opacity-100 top-[130%] z-10"
+            : "opacity-0 top-[90%] z-[-1]"
+          }`}
       >
         {variantProduct?.map((item: any) => {
           if (item.values.length < 1) return;
@@ -222,20 +224,18 @@ const SizeColorSelector = ({
                     <div
                       key={itemOther._id}
                       className={`relative border-2 px-5 py-4 rounded-md 
-                                            ${
-                                              !compatibleAttributeValues[
-                                                item._id
-                                              ]?.includes(itemOther._id)
-                                                ? "opacity-50 cursor-not-allowed"
-                                                : "hover:border-background1 cursor-pointer transition-all"
-                                            } 
-                                            ${
-                                              selectedValue[item._id]?.includes(
-                                                itemOther._id
-                                              )
-                                                ? "border-background1"
-                                                : ""
-                                            }`}
+                                            ${!compatibleAttributeValues[
+                          item._id
+                        ]?.includes(itemOther._id)
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:border-background1 cursor-pointer transition-all"
+                        } 
+                                            ${selectedValue[item._id]?.includes(
+                          itemOther._id
+                        )
+                          ? "border-background1"
+                          : ""
+                        }`}
                       onClick={() => {
                         if (
                           compatibleAttributeValues[item._id]?.includes(
