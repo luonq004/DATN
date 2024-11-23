@@ -44,6 +44,7 @@ import AttributeValuePage from "@/pages/(dashboard)/attributeValue/page";
 import ProductDetail from "@/pages/(website)/product/page";
 import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
 import NotFound from "@/components/Notfound";
+import PaymentComponent from "@/pages/(dashboard)/PaymentComponent/PaymentComponent";
 
 const Router = () => {
   return (
@@ -79,6 +80,7 @@ const Router = () => {
           <Route path="cart" element={<CartPage />}>
             <Route index element={<ShoppingCart />} />
             <Route path="checkout" element={<CheckOut />} />
+            <Route path="checkout/payment" element={<PaymentComponent />} />
             <Route path="order" element={<SuccessPage />} />
           </Route>
 

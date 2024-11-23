@@ -24,7 +24,7 @@ import logoRouter from "./routers/Logo";
 import categoriesRouter from "./routers/Categories";
 import collectionRouter from "./routers/Collections";
 import userRouter from "./routers/Users";
-import paymentRouter from "./routers/PaymentRouter";
+import PaymentRouter from "./routers/PaymentRouter";
 
 const app = express();
 
@@ -53,7 +53,7 @@ app.use("/api", routerOrder);
 app.use("/api", productRouter);
 app.use("/api", attributeRouter);
 app.use("/api", attributeValueRouter);
-app.use("/api", paymentRouter);
+app.use("/api", PaymentRouter);
 app.use("/api", routerCategory);
 app.use("/api", routerCart);
 app.use("/api", routerVoucher);
