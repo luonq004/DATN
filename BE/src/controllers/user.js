@@ -40,8 +40,9 @@ export const saveUser = async (req, res) => {
 
     // Xác định vai trò cho người dùng
     const role = existingUser
-      ? existingUser.role
-      : (await Users.countDocuments()) === 0
+    ? existingUser.role
+    : clerkUser.publicMetadata?.role || 
+      (await Users.countDocuments()) === 0
       ? "Admin"
       : "User";
 
@@ -90,12 +91,14 @@ export const saveUser = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { emailAddress, firstName, lastName, password, role, imageUrl } = req.body;
+    const { emailAddress, firstName, lastName, password, role, imageUrl } =
+      req.body;
 
     // Kiểm tra dữ liệu đầu vào
     if (!emailAddress || !firstName || !lastName || !password) {
       return res.status(400).json({
-        message: "Thiếu thông tin bắt buộc (email, firstName, lastName, password)",
+        message:
+          "Thiếu thông tin bắt buộc (email, firstName, lastName, password)",
       });
     }
 
