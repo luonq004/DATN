@@ -8,7 +8,7 @@ const PolicyCart = () => {
             <div className='flex gap-4 flex-col'>
                 <p className='text-[16px] max-sm:text-[14px]'>Vận chuyển</p>
                 <div className='flex flex-col border border-[#F4F4F4] rounded-[12px] p-4 gap-4'>
-                    <div className='Icon flex justify-center items-center w-1 h-1 bg-light-50 p-6 rounded-full'>
+                    <div className='Icon flex justify-center items-center w-1 h-1 bg-[#b8cd06] p-6 rounded-full'>
                         <img className='max-w-max' src={minius} alt="" />
                     </div>
                     <p className='sm:text-[18px] text-[14px] max-sm:truncate'>
@@ -22,7 +22,7 @@ const PolicyCart = () => {
             <div className='flex gap-4 flex-col'>
                 <p className='text-[16px] max-sm:text-[14px]'>Thời gian</p>
                 <div className='flex flex-col border border-[#F4F4F4] rounded-[12px] p-4 gap-4'>
-                    <div className='Icon flex justify-center items-center w-1 h-1 bg-light-50 p-6 rounded-full'>
+                    <div className='Icon flex justify-center items-center w-1 h-1 bg-[#b8cd06] p-6 rounded-full'>
                         <img className='max-w-max' src={boxtime} alt="" />
                     </div>
                     <p className='sm:text-[18px] text-[14px] max-sm:truncate'>
@@ -36,7 +36,7 @@ const PolicyCart = () => {
             <div className='flex gap-4 flex-col'>
                 <p className='text-[16px] max-sm:text-[14px] max-[450px]:truncate'>Miễn phí hoàn trả</p>
                 <div className='flex flex-col border border-[#F4F4F4] rounded-[12px] p-4 gap-4'>
-                    <div className='Icon flex justify-center items-center w-1 h-1 bg-light-50 p-6 rounded-full'>
+                    <div className='Icon flex justify-center items-center w-1 h-1 bg-[#b8cd06] p-6 rounded-full'>
                         <img className='max-w-max' src={trucktime} alt="" />
                     </div>
                     <p className='sm:text-[18px] text-[14px] max-sm:truncate'>

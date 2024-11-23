@@ -19,7 +19,6 @@ export const createOrder = async (req, res) => {
         if (!payment) {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: "Phương thức thanh toán là bắt buộc" });
         }
-        console.log("object", products.products)
         if (!products || !Array.isArray(products.products) || products.products.length === 0) {
             return res
                 .status(StatusCodes.BAD_REQUEST)
@@ -171,42 +170,84 @@ export const updateOrderStatus = async (req, res) => {
 
     try {
         // Kiểm tra trạng thái mới
-        if (!newStatus || !["đang chờ", "đang xử lý", "đã hoàn thành", "đã hủy"].includes(newStatus)) {
+        const validStatuses = ["chờ xác nhận", "chờ lấy hàng", "chờ giao hàng", "đã hoàn thành", "đã hủy"];
+        if (!newStatus || !validStatuses.includes(newStatus)) {
             return res.status(StatusCodes.BAD_REQUEST).json({
-                message: "Trạng thái không hợp lệ. Các trạng thái hợp lệ: 'đang chờ', 'đang xử lý', 'đã hoàn thành', 'đã hủy'."
+                message: `Trạng thái không hợp lệ. Các trạng thái hợp lệ: ${validStatuses.join(", ")}.`
             });
         }
 
         // Tìm đơn hàng theo id
         const order = await Order.findById(id);
-        console.log("orderId", id)
         if (!order) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy đơn hàng" });
         }
 
-        // Kiểm tra trạng thái hiện tại của đơn hàng và áp dụng các điều kiện
+        // Kiểm tra trạng thái hiện tại của đơn hàng
         const currentStatus = order.status;
 
-        // Nếu trạng thái là "đang chờ", không thể quay lại
-        if (currentStatus === "đang chờ" && newStatus === "đang chờ") {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Trạng thái đang chờ không thể quay lại" });
+        // Logic xử lý trạng thái
+        switch (currentStatus) {
+            case "chờ xác nhận":
+                if (newStatus === "chờ xác nhận") {
+                    return res.status(StatusCodes.BAD_REQUEST).json({
+                        message: "Trạng thái chờ xác nhận không thể quay lại."
+                    });
+                }
+                break;
+
+            case "chờ lấy hàng":
+                if (newStatus === "chờ xác nhận") {
+                    return res.status(StatusCodes.BAD_REQUEST).json({
+                        message: "Không thể quay lại trạng thái chờ xác nhận từ chờ lấy hàng."
+                    });
+                }
+                break;
+
+            case "chờ giao hàng":
+                if (newStatus === "chờ xác nhận" || newStatus === "chờ lấy hàng") {
+                    return res.status(StatusCodes.BAD_REQUEST).json({
+                        message: "Không thể quay lại trạng thái trước từ chờ giao hàng."
+                    });
+                }
+                break;
+
+            case "đã hoàn thành":
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    message: "Không thể thay đổi trạng thái khi đơn hàng đã hoàn thành."
+                });
+
+            case "đã hủy":
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    message: "Không thể thay đổi trạng thái khi đơn hàng đã hủy."
+                });
+
+            default:
+                break;
         }
 
-        // Nếu trạng thái là "đang xử lý", không thể quay lại "đang chờ" và không thể hủy
-        if (currentStatus === "đang xử lý") {
-            if (newStatus === "đang chờ") {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Không thể quay lại trạng thái đang chờ" });
+        // Hoàn lại số lượng sản phẩm nếu trạng thái chuyển thành "đã hủy"
+        if (newStatus === "đã hủy" && ["chờ xác nhận", "chờ lấy hàng"].includes(currentStatus)) {
+            for (let outerItem of order.products) {
+                if (!Array.isArray(outerItem.products)) {
+                    console.error("outerItem.products không phải là mảng:", outerItem);
+                    continue;
+                }
+
+                for (let item of outerItem.products) {
+                    const { variantItem, quantity } = item;
+                    if (!variantItem || !variantItem._id) {
+                        console.error("variantItem hoặc _id không tồn tại:", item);
+                        continue;
+                    }
+
+                    const productVariant = await Variant.findById(variantItem._id);
+                    if (productVariant) {
+                        productVariant.countOnStock += quantity; // Hoàn lại số lượng
+                        await productVariant.save();
+                    }
+                }
             }
-        }
-
-        // Nếu trạng thái là "đã hoàn thành", không thể quay lại trạng thái trước đó hoặc hủy
-        if (currentStatus === "đã hoàn thành") {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Không thể thay đổi trạng thái khi đơn hàng đã hoàn thành" });
-        }
-
-        // Nếu trạng thái là "đã hủy", không thể thay đổi trạng thái nữa
-        if (currentStatus === "đã hủy") {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Không thể thay đổi trạng thái khi đơn hàng đã hủy" });
         }
 
         // Cập nhật trạng thái nếu không gặp lỗi

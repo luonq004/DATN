@@ -14,16 +14,24 @@ const CartLeft = ({
   attribute,
   setAttribute,
   userAction,
+  isLoading,
+  isError,
 }: {
   cart: Icart;
   attribute: any;
   setAttribute: (idCart: string) => void;
   userAction: (action: { type: string }, payload: any) => void;
+  isLoading: Boolean;
+  isError: Boolean;
 }) => {
   const hanldeOnChangeAttribute = (idCart: string) => {
     // console.log(number)
     setAttribute(idCart);
   };
+
+  if (isLoading) return <div>is Loading</div>;
+  if (isError) return <div>is Error</div>;
+
   return (
     <div className="Your_Cart flex flex-col gap-6">
       {/* Top  */}
@@ -44,7 +52,6 @@ const CartLeft = ({
             <p className="text-[#9D9EA2] max-sm:text-[14px]">Giỏ hàng trống</p>
           </div>
         )}
-
         {cart?.products.map((item: any, index: number) => (
           <div
             key={index}

@@ -73,7 +73,7 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
 
     if (response.status === 200) {
       // Invalidating the cache for "ADDRESS_" query when the status is updated
-      queryClient.invalidateQueries(["ORDER_HISTORY", userId]);
+      queryClient.invalidateQueries(["ORDER_HISTORY"]);
       toast({
         title: "Thành công!",
         description: "Cập nhật trạng thái thành công!",
@@ -154,7 +154,7 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {["đang chờ", "đang xử lý", "đã hoàn thành", "đã hủy"].map(
+                    {[ "chờ xác nhận", "chờ lấy hàng", "chờ giao hàng", "đã hoàn thành", "đã hủy"].map(
                       (status) => (
                         <SelectItem key={status} value={status}>
                           {status}

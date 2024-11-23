@@ -54,8 +54,6 @@ function ListUser() {
       const usersData = Array.isArray(res.data?.data) ? res.data.data : [];
 
       setAllUsers(usersData);
-
-      console.log("Fetched users:", usersData);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
