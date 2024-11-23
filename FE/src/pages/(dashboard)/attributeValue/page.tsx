@@ -16,6 +16,8 @@ const AttributeValuePage = () => {
     return <div>Loading...</div>;
   }
 
+  // console.log("atributeValues", atributeValues);
+
   return (
     <Container>
       <div className="flex justify-between">

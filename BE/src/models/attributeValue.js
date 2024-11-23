@@ -7,9 +7,10 @@ const attributeValueSchema = new mongoose.Schema(
       required: true,
     },
 
+    // Type phải giống với tên cuả attribute
     type: {
       type: String,
-      // required: true
+      required: true,
     },
 
     value: {

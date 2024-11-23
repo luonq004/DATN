@@ -39,6 +39,8 @@ export const columnAttributeValues: ColumnDef<IAttributeValues>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
+      const { attributesValues } = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -49,9 +51,9 @@ export const columnAttributeValues: ColumnDef<IAttributeValues>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem>
-              {/* <Link to={`/dashboard/attributesValues/${row.original.name}`}> */}
-              Xem thêm
-              {/* </Link> */}
+              <Link to={`/admin/attributesValues/${row.original._id}/edit`}>
+                Sửa
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>Xóa</DropdownMenuItem>
           </DropdownMenuContent>

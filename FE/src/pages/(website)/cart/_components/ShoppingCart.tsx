@@ -114,6 +114,8 @@ const ShopCart = () => {
   if (isLoading) return <SkeletonCart />;
   if (isError) return <div>Is Error</div>;
 
+  console.log(cart);
+
   return (
     <>
       {/* Cart  */}

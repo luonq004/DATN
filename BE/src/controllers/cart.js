@@ -100,18 +100,21 @@ export const getCartByUserId = async (req, res) => {
 export const addToCart = async (req, res) => {
   const { userId, productId, variantId, quantity } = req.body;
 
+  console.log(req.body);
+
   try {
     let cart = await Cart.findOne({ userId: userId })
       .populate("products.productItem")
       .populate("products.variantItem")
       .populate("voucher");
 
-    // console.log("CART: ", cart);
+    console.log("CART: ", cart);
 
     const product = await Product.findOne({ _id: productId });
     const variantValue = await Variant.findOne({ _id: variantId });
 
-    // console.log(variantVproductalue);
+    // console.log("PR: ", product._id);
+    // console.log(variantValue);
 
     if (!product || !variantValue) {
       return res
@@ -142,12 +145,17 @@ export const addToCart = async (req, res) => {
       console.log("CREATE CART");
     }
 
+    console.log("CONTINUE");
+
     //ktra sp trùng lặp trong giỏ hàng
     const existProductIndex = cart.products.findIndex(
       (item) =>
+        // console.log("ITEM: ", item)
         item.productItem._id.toString() == productId &&
         item.variantItem._id.toString() == variantId
     );
+
+    console.log("EXIST: ", existProductIndex);
 
     //nếu có sp trùng lặp thì tăng số lượng
     if (existProductIndex !== -1) {

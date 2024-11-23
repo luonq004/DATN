@@ -10,6 +10,16 @@ import { Link, useLocation } from "react-router-dom";
 import { useClerk, useUser } from "@clerk/clerk-react";
 import { useUserContext } from "@/common/context/UserProvider";
 
+const menuItems = [
+  { label: "Trang chủ", to: "/" },
+  { label: "Về chúng tôi", to: "/about" },
+  { label: "Sản phẩm", to: "/shopping" },
+  { label: "Dịch vụ", to: "/services" },
+  // { label: "Bài viết", href: "#" },
+  // { label: "Trưng bày", to: "/" },
+  // { label: "Liên hệ", href: "#" },
+];
+
 const Header = () => {
   const { isSignedIn, user } = useUser();
   const { _id } = useUserContext();
@@ -179,7 +189,22 @@ const Header = () => {
               <div className="w-8/12 md:w-10/12 justify-items-end px-[15px]">
                 <nav className="hidden lg:block">
                   <ul className="flex">
-                    <li className="!list-none">
+                    {menuItems.map((item) => (
+                      <li className="!list-none" key={item.to}>
+                        <Link
+                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${
+                            pathname === item.to
+                              ? "bg-[#b8cd06] text-white"
+                              : ""
+                          }`}
+                          to={item.to}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+
+                    {/* <li className="!list-none">
                       <a
                         className="text-[11px] leading-4 uppercase font-bold rounded-2xl px-5 py-[9px] bg-[#b8cd06] text-white hover:shadow-custom transition-all"
                         href="#"
@@ -235,7 +260,7 @@ const Header = () => {
                       >
                         Liên hệ
                       </a>
-                    </li>
+                    </li> */}
                     <li className="!list-none">
                       <IoSearch
                         className="text-2xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"

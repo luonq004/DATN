@@ -18,6 +18,8 @@ const LayoutWebsite = () => {
     "banned" | "deleted" | null
   >(null);
 
+  // console.log("user", user);
+
   // Hàm để kiểm tra trạng thái khóa
   const checkBanStatus = async (userId: string) => {
     try {
@@ -60,7 +62,8 @@ const LayoutWebsite = () => {
           try {
             // Gọi hàm saveUserToDatabase với await
             const data = await saveUserToDatabase(user.id);
-            login(data._id); // Lưu _id vào context
+            // console.log("data", data);
+            login(data); // Lưu _id vào context
             isUserSaved.current = true; // Đánh dấu đã lưu
           } catch (error) {
             console.error("Lỗi khi lưu user vào database:", error);

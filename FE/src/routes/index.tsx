@@ -44,6 +44,9 @@ import AttributeValuePage from "@/pages/(dashboard)/attributeValue/page";
 import ProductDetail from "@/pages/(website)/product/page";
 import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
 import NotFound from "@/components/Notfound";
+import UpdateAttributePage from "@/pages/(dashboard)/attribute/edit/page";
+import CreateAttributePage from "@/pages/(dashboard)/attribute/add/page";
+import UpdateAttributeValuePage from "@/pages/(dashboard)/attributeValue/edit/page";
 
 const Router = () => {
   return (
@@ -76,15 +79,14 @@ const Router = () => {
           <Route path="signup" element={<SignUp />} /> */}
 
           <Route path="services" element={<PageServices />} />
+          <Route path="about" element={<AboutUsPage />} />
+          <Route path="shopping" element={<ProductShopPage />} />
+
           <Route path="cart" element={<CartPage />}>
             <Route index element={<ShoppingCart />} />
             <Route path="checkout" element={<CheckOut />} />
             <Route path="order" element={<SuccessPage />} />
           </Route>
-
-          <Route path="about" element={<AboutUsPage />} />
-
-          <Route path="shopping" element={<ProductShopPage />} />
 
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -95,13 +97,13 @@ const Router = () => {
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />
 
-          <Route path="attributes" element={<AttributesPage />} />
-
           <Route path="users" element={<UserPage />}>
             <Route index element={<ListUser />} />
             <Route path="detail/:clerkId" element={<UserDetailPage />} />
-            <Route path="create-user" element={ 
-              <RegisterForm
+            <Route
+              path="create-user"
+              element={
+                <RegisterForm
                   onClose={() => console.log("Form đóng lại")}
                   onSuccess={() => console.log("Đăng ký thành công")}
                 />
@@ -116,7 +118,18 @@ const Router = () => {
           </Route>
 
           <Route path="attributes" element={<AttributesPage />} />
+          <Route path="attributes/edit/:id" element={<UpdateAttributePage />} />
+          <Route path="attributes/add" element={<CreateAttributePage />} />
+
           <Route path="attributesValues/:id" element={<AttributeValuePage />} />
+          <Route
+            path="attributesValues/:id/add"
+            element={<AttributeValuePage />}
+          />
+          <Route
+            path="attributesValues/:id/edit"
+            element={<UpdateAttributeValuePage />}
+          />
 
           <Route path="logos" element={<LogoPage />}>
             <Route index element={<ListLogoPage />} />
