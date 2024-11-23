@@ -230,7 +230,7 @@ const SizeColorSelector = ({
                           ? "opacity-50 cursor-not-allowed"
                           : "hover:border-background1 cursor-pointer transition-all"
                         } 
-                                            ${selectedValue[item._id]?.includes(
+                                            ${selectedValue && selectedValue[item._id]?.includes(
                           itemOther._id
                         )
                           ? "border-background1"
