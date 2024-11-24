@@ -12,13 +12,16 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+
 import {
   areArraysEqual,
   formatDataLikeFields,
+  getAttributesUsedInArray,
   getUniqueTypesFromFields,
   updateFields,
 } from "@/lib/utils";
 import VariationValues from "./VariationValues";
+import { uploadFile } from "@/lib/upload";
 
 const VariationTab = ({
   fields,
@@ -47,7 +50,6 @@ const VariationTab = ({
     [key: string]: string | null;
   }>({});
 
-  // Initialize the preview images for the edit scenario
   useEffect(() => {
     const initialImages = fields.reduce((acc, field) => {
       if (field.image) {
@@ -58,7 +60,7 @@ const VariationTab = ({
     setPreviewImages(initialImages);
   }, [fields]);
 
-  const handleImageChange = (
+  const handleImageChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     id: string,
     index: number
@@ -66,15 +68,29 @@ const VariationTab = ({
     const file = e.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
+
       setPreviewImages((prev) => ({
         ...prev,
         [id]: imageUrl,
       }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        form.setValue(`variants.${index}.image`, reader.result as string);
-      };
-      reader.readAsDataURL(file);
+
+      form.setValue(`variants.${index}.image`, file);
+
+      // try {
+      //   const uploadedUrl = await uploadFile(file);
+      //   if (uploadedUrl) {
+      //     // Lưu URL của ảnh vào form
+      //     setPreviewImages((prev) => ({
+      //       ...prev,
+      //       [id]: uploadedUrl,
+      //     }));
+      //     form.setValue(`variants.${index}.image`, uploadedUrl);
+      //     console.log("Uploaded URL: ", uploadedUrl);
+      //   }
+      // } catch (error) {
+      //   console.error("Lỗi upload ảnh:", error);
+      //   alert("Có lỗi xảy ra khi upload ảnh. Vui lòng thử lại!");
+      // }
     }
   };
 
@@ -93,20 +109,16 @@ const VariationTab = ({
           : formatDataLikeFields(stateAttribute.valuesMix);
 
         replaceFields(newFields);
+        newFields.forEach((field, index) => {
+          field.values.forEach((value, indx) => {
+            form.setValue(`variants.${index}.values.${indx}._id`, value._id);
+          });
+        });
       }
     }
   };
 
-  const matchingAttributes = attributes.filter((attribute) =>
-    fields.some((field) =>
-      field.values.some(
-        (productValue: string) =>
-          attribute.name === (productValue.type as string)
-      )
-    )
-  );
-
-  // console.log(fields[0].values.name);
+  const matchingAttributes = getAttributesUsedInArray(fields, attributes);
 
   return (
     <>
@@ -152,18 +164,13 @@ const VariationTab = ({
                             className="w-24 py-1"
                             value={form.watch(
                               `variants.${index}.values.${indx}._id`
-                            )} // Sử dụng `value` và theo dõi giá trị
-                            {...form.register(
-                              `variants.${index}.values.${indx}._id` as const,
-                              {
-                                onChange: (e) => {
-                                  form.setValue(
-                                    `variants.${index}.values.${indx}._id`,
-                                    e.target.value
-                                  );
-                                },
-                              }
-                            )}
+                            )} // Theo dõi giá trị của trường
+                            onChange={(e) => {
+                              form.setValue(
+                                `variants.${index}.values.${indx}._id`,
+                                e.target.value
+                              );
+                            }}
                           >
                             {attribute.values.map((value) => {
                               return (
@@ -188,12 +195,12 @@ const VariationTab = ({
                       <div className="mt-2 flex border-b border-gray-300 pb-4">
                         <input
                           className={`input-file__${field.id}`}
-                          {...form.register(`variants.${index}.image`)}
                           type="file"
                           hidden
+                          {...form.register(`variants.${index}.image`)} // Đảm bảo rằng form register đã được sử dụng
                           onChange={(e) =>
                             handleImageChange(e, field.id, index)
-                          }
+                          } // Gọi hàm xử lý khi file thay đổi
                         />
 
                         {/* Preview Image */}

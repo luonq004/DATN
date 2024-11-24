@@ -117,6 +117,30 @@ export function getSelectedValues(
   }, {});
 }
 
+export const getAttributesUsedInArray = (array1, attributes) => {
+  const usedAttributes = [];
+
+  // Duyệt qua từng item trong array1
+  array1.forEach((product) => {
+    product.values.forEach((productValue) => {
+      // Tìm các attribute trong array2 mà có giá trị trùng với productValue
+      attributes.forEach((attribute) => {
+        if (
+          attribute.values.some(
+            (attrValue) => attrValue.value === productValue.value
+          )
+        ) {
+          if (!usedAttributes.find((attr) => attr._id === attribute._id)) {
+            usedAttributes.push(attribute);
+          }
+        }
+      });
+    });
+  });
+
+  return usedAttributes;
+};
+
 export function formatDataLikeFields(valeMix: Data[][]) {
   return valeMix.map((group) => ({
     price: 0,

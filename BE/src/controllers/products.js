@@ -191,9 +191,9 @@ export const createProduct = async (req, res) => {
         priceSale: variants[i].priceSale,
         values,
         countOnStock: variants[i].countOnStock,
-        image:
-          "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
-        // image: variants[i].image,
+        // image:
+        //   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
+        image: variants[i].image,
       }).save();
       variantsId.push(variant._id);
     }
@@ -203,8 +203,9 @@ export const createProduct = async (req, res) => {
       price: priceFinal,
       priceSale: priceSaleFinal,
       countOnStock: count,
-      image:
-        "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
+      // image:
+      //   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
+      image,
       category,
       description,
       descriptionDetail,

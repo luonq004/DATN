@@ -24,12 +24,16 @@ import { Attribute } from "@/common/types/Product";
 import StatusProduct from "../_components/StatusProduct";
 import { useCreateProduct } from "../actions/useCreateProduct";
 import { useUpdateProduct } from "../actions/useUpdateProduct";
+import { string } from "joi";
+import { uploadFile, UploadFiles } from "@/lib/upload";
 
 const ProductAddPage = () => {
   const { id } = useParams();
   const [duplicate, setDuplicate] = useState<number[]>([]);
   const { createProduct, isCreatting } = useCreateProduct();
-  const { updateProduct, isUpdating } = useUpdateProduct();
+  const { updateProduct, isUpdating } = useUpdateProduct(id!);
+
+  const [isDoing, setIsDoing] = useState(false);
 
   const { isLoadingAtributes, atributes } = useGetAtributes();
 
@@ -89,22 +93,31 @@ const ProductAddPage = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof productSchema>) {
-    console.log("values: ", values);
+  async function onSubmit(values: z.infer<typeof productSchema>) {
+    // console.log("values: ", values);
+    setIsDoing(true);
+
     if (id) {
       const duplicateValues = checkForDuplicateVariants(values);
       setDuplicate(duplicateValues);
-      if (!duplicateValues.length) updateProduct({ data: values, id });
+      if (!duplicateValues.length) {
+        const result = await UploadFiles(values);
+        updateProduct({ data: result, id });
+      }
     } else {
       const duplicateValues = checkForDuplicateVariants(values);
       setDuplicate(duplicateValues);
 
-      if (!duplicateValues.length) createProduct(values);
+      if (!duplicateValues.length) {
+        const result = await UploadFiles(values);
+        createProduct(result);
+      }
     }
+
+    if (!isCreatting || !isUpdating) setIsDoing(false);
   }
 
-  if (isLoading || isLoadingAtributes || isCreatting || isUpdating)
-    return <Container>Loading...</Container>;
+  if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
 
   // console.log(duplicate);
 
@@ -118,6 +131,8 @@ const ProductAddPage = () => {
 
   const attributeValue = id ? getUniqueAttributeValue(product) : [];
   // console.log("attributeValue: ", attributeValue);
+
+  // console.log(form.watch("variants"));
 
   return (
     <Container>
@@ -140,7 +155,9 @@ const ProductAddPage = () => {
             {/* Info Categories and More... */}
             <StatusProduct form={form} />
           </div>
-          <Button type="submit">Submit</Button>
+          <Button disabled={isDoing} type="submit">
+            Submit
+          </Button>
         </form>
       </Form>
     </Container>

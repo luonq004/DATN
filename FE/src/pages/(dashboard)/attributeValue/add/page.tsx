@@ -105,7 +105,7 @@ const CreateAttributeValuePage = () => {
             {typeValue === "text" ? "Đổi sang màu" : "Đổi sang chữ"}
           </Button>
         </div>
-        <FormField
+        {/* <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
@@ -118,7 +118,7 @@ const CreateAttributeValuePage = () => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <Button disabled={isCreating} type="submit">
           {isCreating ? "Đang tạo..." : "Tạo"}
         </Button>
