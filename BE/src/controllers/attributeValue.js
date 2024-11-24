@@ -33,6 +33,7 @@ export const getAttributeValueByAttributeId = async (req, res) => {
     }).populate({
       path: "values",
       model: "AttributeValue",
+      match: { deleted: false },
       select: "-__v",
     });
     if (data.length < 0) {
@@ -66,17 +67,27 @@ export const createAttributeValue = async (req, res) => {
 
 export const updateAttributeValue = async (req, res) => {
   try {
+    const { name, type, value } = req.body;
+
+    console.log(req.params.id);
+    console.log(req.body);
+
     const response = await AttributeValue.findOneAndUpdate(
       { _id: req.params.id },
-      req.body,
+      { name, type, value },
       { new: true }
     );
+
+    console.log(response);
+
     if (response.length < 0) {
-      return res.status(404).json({ message: "No Attribute Value found" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy giá trị thuộc tính" });
     }
 
     return res.status(200).json({
-      message: "Giá trị attribute đã được cập nhật",
+      message: "Giá trị thuộc tính đã được cập nhật",
       data: response,
     });
   } catch (error) {

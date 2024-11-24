@@ -94,8 +94,6 @@ const InfoGeneralProduct: React.FC<{
 
   const typeFields: string[] = getUniqueTypesFromFields(fields) as string[];
 
-  console.log("typeFields: ", typeFields);
-
   return (
     <div className="w-3/4">
       <FormField

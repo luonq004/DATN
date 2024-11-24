@@ -89,15 +89,32 @@ export function getUniqueAttributeValue(product: IProduct): Data[][] {
 
 export function getSelectedValues(
   valueAttributeProduct: Data[][],
-  attribute: Attribute[]
+  attributes: Attribute[]
 ) {
-  return attribute.reduce((acc, attribute, index) => {
-    const matchedValues = valueAttributeProduct[index]; // Lấy các giá trị tương ứng từ array1 theo index
-    if (matchedValues) {
-      acc[attribute._id] = matchedValues; // Gán mảng giá trị từ array1 vào acc với khóa là _id của attribute
-    }
+  return attributes.reduce((acc, attribute, index) => {
+    // console.log("valueAttributeProduct: ", valueAttributeProduct);
+
+    valueAttributeProduct.filter((item) => {
+      if (attribute.name == item[0].type) {
+        acc[attribute._id] = item;
+      }
+    });
+
     return acc;
-  }, {} as Record<string, (typeof valueAttributeProduct)[0]>);
+
+    // console.log("attr: ", attr);
+
+    // const matchedValues = valueAttributeProduct[index]; // Lấy các giá trị tương ứng từ array1 theo index
+
+    // console.log("matchedValues: ", matchedValues);
+
+    // if (attribute.name == matchedValues?.[0].type) {
+    //   // console.log("mâttch: ", acc);
+    //   // console.log("acc[attribute._id]: ", acc);
+    //   acc[attribute._id] = matchedValues; // Gán mảng giá trị từ array1 vào acc với khóa là _id của attribute
+    // }
+    // return acc;
+  }, {});
 }
 
 export function formatDataLikeFields(valeMix: Data[][]) {

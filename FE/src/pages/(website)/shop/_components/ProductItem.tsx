@@ -74,8 +74,8 @@ const ProductItem = ({
                   // src={clothesNorth}
                   alt="Image Product"
                 />
-                <div className="preview-btn valign-middle lg:ml-[-87px]">
-                  <div className="relative w-full uppercase">
+                <div className="preview-btn valign-middle md:!ml-[-89px] lg:!ml-[-85px] xl:!ml-[-100px]">
+                  <div className="relative mx-auto uppercase">
                     <Link
                       to={`/product/${product._id}`}
                       className="btn bg-[#343434] px-[30px] pt-[17px] pb-[15px] block text-center mb-[10px] text-[11px] font-bold text-white rounded-full font-raleway lg:w-[175px]"

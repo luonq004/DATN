@@ -47,6 +47,7 @@ import NotFound from "@/components/Notfound";
 import UpdateAttributePage from "@/pages/(dashboard)/attribute/edit/page";
 import CreateAttributePage from "@/pages/(dashboard)/attribute/add/page";
 import UpdateAttributeValuePage from "@/pages/(dashboard)/attributeValue/edit/page";
+import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
 
 const Router = () => {
   return (
@@ -129,6 +130,11 @@ const Router = () => {
           <Route
             path="attributesValues/:id/edit"
             element={<UpdateAttributeValuePage />}
+          />
+
+          <Route
+            path="attributesValues/add/:id"
+            element={<CreateAttributeValuePage />}
           />
 
           <Route path="logos" element={<LogoPage />}>

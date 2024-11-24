@@ -77,6 +77,7 @@ export const getCartByUserId = async (req, res) => {
       })
       .populate({
         path: "products.variantItem",
+        match: { deleted: false },
         populate: { path: "values" },
       })
       .populate("voucher");
@@ -90,7 +91,9 @@ export const getCartByUserId = async (req, res) => {
       return res.status(StatusCodes.OK).json(cart);
     }
 
-    cart = await updateTotal(cart);
+    console.log(cart);
+
+    // cart = await updateTotal(cart);
     return res.status(StatusCodes.OK).json(cart);
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });

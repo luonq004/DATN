@@ -48,7 +48,7 @@ export const getAllProducts = async (req, res) => {
     const result = await Product.paginate(query, { ...options });
     // const result = await Product.find();
 
-    console.log(result);
+    // console.log(result);
 
     const data = {
       data: result.docs,
@@ -77,6 +77,7 @@ export const getProductById = async (req, res) => {
         populate: {
           path: "values",
           model: "AttributeValue",
+          match: { deleted: false },
           select: "-__v", // Loại bỏ __v cho các trường values
         },
         select: "-__v", // Loại bỏ __v cho các trường variants
@@ -234,10 +235,16 @@ export const updateProduct = async (req, res) => {
 
     const slug = slugify(req.body.name, "-");
 
+    // console.log("Variant:", variants);
+
     const variantsId = [];
     let priceFinal = Infinity;
     let priceSaleFinal = -Infinity;
     let count = 0;
+
+    const data = await Product.findOne({ _id: req.params.id });
+
+    // console.log("Data:", data);
 
     for (let i = 0; i < variants.length; i++) {
       // const values = variants[i].values.map((obj) => Object.values(obj)[0]);
@@ -265,6 +272,8 @@ export const updateProduct = async (req, res) => {
         );
         variantsId.push(variant._id);
       } else {
+        // Nếu không có _id cũ thì xóa mềm variant cũ
+
         const values = variants[i].values.map((obj) => Object.values(obj)[0]);
         const variant = await Variant({
           price: variants[i].price,
@@ -277,7 +286,15 @@ export const updateProduct = async (req, res) => {
       }
     }
 
-    const data = await Product.findOneAndUpdate(
+    const variantsIdSet = new Set(variantsId.map((id) => id.toString()));
+
+    data.variants.forEach((variant) => {
+      if (!variantsIdSet.has(variant["_id"].toString())) {
+        hiddenVariant(variant["_id"]);
+      }
+    });
+
+    const dataRes = await Product.findOneAndUpdate(
       { _id: req.params.id },
       {
         name,
@@ -296,7 +313,7 @@ export const updateProduct = async (req, res) => {
 
     return res.json({
       message: "Cập nhật sản phẩm thành công",
-      data,
+      dataRes,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -314,3 +331,8 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Hidden variant when delete product or create new variant
+async function hiddenVariant(variantId) {
+  await Variant.findOneAndUpdate({ _id: variantId }, { deleted: true });
+}

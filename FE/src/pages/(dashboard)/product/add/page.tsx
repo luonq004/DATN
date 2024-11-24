@@ -85,7 +85,6 @@ const ProductAddPage = () => {
           category: [],
           image: "",
           type: "variable",
-          // slug: "",
         },
   });
 
