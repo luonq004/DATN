@@ -28,6 +28,7 @@ import {
 import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { OrderProduct } from "@/common/types/Product";
 
 export type Order = {
   id: string;
@@ -49,13 +50,14 @@ interface ErrorResponse {
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const AdminOrder = () => {
-  const queryClient = useQueryClient(); // Đặt useQueryClient ở trên đầu
+  const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useOrder();
+  const [search, setSearch] = React.useState<string>("");
 
   const orders: Order[] = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
-    return data.map((order: any) => ({
+    return data.map((order: OrderProduct) => ({
       id: order._id,
       orderCode: order.orderCode || "N/A",
       amount: order.totalPrice || 0,
@@ -64,41 +66,39 @@ const AdminOrder = () => {
       createdAt: order.createdAt || "",
     }));
   }, [data]);
-// Hàm cập nhật trạng thái được truyền queryClient từ component
-const updateOrderStatus = async (orderId: string, newStatus: string) => {
-  try {
-    const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
-      newStatus,
-    });
 
-    if (response.status === 200) {
-      // Invalidating the cache for "ADDRESS_" query when the status is updated
-      queryClient.invalidateQueries(["ORDER_HISTORY"]);
-      toast({
-        title: "Thành công!",
-        description: "Cập nhật trạng thái thành công!",
-        variant: "default",
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
+        newStatus,
       });
+
+      if (response.status === 200) {
+        queryClient.invalidateQueries(["ORDER_HISTORY"]);
+        toast({
+          title: "Thành công!",
+          description: "Cập nhật trạng thái thành công!",
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      const err = error as ErrorResponse;
+      if (err.response && err.response.data) {
+        toast({
+          title: "Lỗi",
+          description:
+            err.response.data.message || "Cập nhật trạng thái thất bại!",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: "Lỗi kết nối server!",
+          variant: "destructive",
+        });
+      }
     }
-  } catch (error) {
-    console.error(error);
-    const err = error as ErrorResponse;
-    if (err.response && err.response.data) {
-      toast({
-        title: "Lỗi",
-        description:
-          err.response.data.message || "Cập nhật trạng thái thất bại!",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Lỗi kết nối",
-        description: "Lỗi kết nối server!",
-        variant: "destructive",
-      });
-    }
-  }
-};
+  };
 
   const columns: ColumnDef<Order>[] = React.useMemo(
     () => [
@@ -127,14 +127,12 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
         accessorKey: "id",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            {/* Nút xem chi tiết */}
             <Link to={`/admin/orders/orderdetails/${row.original.id}`}>
               <Button variant="secondary" size="sm">
                 Xem chi tiết
               </Button>
             </Link>
 
-            {/* Dropdown để thay đổi trạng thái */}
             <div className="*:m-0">
               <Select
                 value={row.original.status}
@@ -154,7 +152,7 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {[ "chờ xác nhận", "chờ lấy hàng", "chờ giao hàng", "đã hoàn thành", "đã hủy"].map(
+                    {["chờ xác nhận", "chờ lấy hàng", "chờ giao hàng", "đã hoàn thành", "đã hủy"].map(
                       (status) => (
                         <SelectItem key={status} value={status}>
                           {status}
@@ -172,11 +170,26 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
     []
   );
 
+  const filteredOrders = React.useMemo(() => {
+    return orders.filter(order =>
+      order.orderCode.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [orders, search]);
+
+  const [paginationState, setPaginationState] = React.useState({
+    pageIndex: 0,  // Trang đầu tiên
+    pageSize: 10,   // Số hàng mỗi trang
+  });
+
   const table = useReactTable({
-    data: orders,
+    data: filteredOrders,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination: paginationState,
+    },
+    onPaginationChange: setPaginationState, // Cập nhật trạng thái phân trang khi chuyển trang
   });
 
   if (isLoading) {
@@ -195,9 +208,17 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
     );
   }
 
-  
   return (
     <div className="w-full p-4">
+      <div className="mb-4 w-[15%]">
+        <input
+          type="text"
+          className="border w-full border-gray-300 p-2 rounded"
+          placeholder="Tìm kiếm theo mã đơn hàng"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -227,6 +248,48 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
           ))}
         </TableBody>
       </Table>
+      <div className="mt-4 flex justify-between items-center">
+        <div>
+          <span>
+            {table.getState().pagination.pageIndex + 1} /{" "}
+            {table.getPageCount()}
+          </span>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          >
+            {"<<"}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            {"<"}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            {">"}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+          >
+            {">>"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

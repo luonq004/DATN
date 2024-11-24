@@ -1,14 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import { Link } from "react-router-dom";
+import ActionCell from "./ActionCell";
 
 interface IAttributeValues {
   _id: string;
@@ -62,25 +54,6 @@ export const columnAttribute: ColumnDef<IAttribute>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Link to={`/dashboard/attributesValues/${row.original._id}`}>
-                Xem thêm
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>Xóa</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <ActionCell id={row.original._id} />,
   },
 ];

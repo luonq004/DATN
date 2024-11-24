@@ -37,10 +37,14 @@ import { toast } from "@/components/ui/use-toast";
 interface ErrorResponse {
   message: string;
 }
-
+/// thông tin thanh toán 
+// số thẻ 9704198526191432198
+// tên : 	NGUYEN VAN A
+// ngày 07/15
 const CheckOut = () => {
   const navigate = useNavigate();
   // const queryClient = useQueryClient();
+  
   const form = useForm<FormOut>({
     defaultValues: {
       addressId: "",
@@ -60,7 +64,6 @@ const CheckOut = () => {
     isLoading: isLoadingAddresses,
     isError: adressError,
   } = useAddress(_id);
-  console.log(_id);
 
   // lấy dữ liệu giỏ hàng
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
@@ -75,20 +78,33 @@ const CheckOut = () => {
     };
     try {
       // Gửi yêu cầu tạo đơn hàng đến backend
-      const response = await axios.post(
-        "http://localhost:8080/api/create-order",
-        orderData
-      );
-      if (response.status === 201) {
-        // Đơn hàng đã được tạo thành công
-        toast({
-          title: "Thành công!",
-          description: "Thêm đơn hàng thành công.",
-          variant: "default",
-        });
-        // queryClient.invalidateQueries(["CART", _id]);
-        navigate("/cart/order"); // Điều hướng đến trang đơn hàng
-      }
+        const response = await axios.post(
+          "http://localhost:8080/api/create-order",
+          orderData
+        );
+        const createOrder = response.data;
+        const orderCode = createOrder?.order?.orderCode;
+        if(data.paymentMethod === "Vnpay"){
+          const response = await axios.post('http://localhost:8080/api/create_payment_url', {
+            amount: carts?.total ?? 0,
+            orderCode: orderCode,
+            bankCode: 'VNB',
+          });
+          const paymentUrl = response.data.redirectUrl;
+          console.log("paymentUrl", paymentUrl);
+          window.location.href = paymentUrl;
+        }
+        if (data.paymentMethod === "COD" && response.status === 201) {
+          // Đơn hàng đã được tạo thành công
+          toast({
+            title: "Thành công!",
+            description: "Đặt hàng thành công.",
+            variant: "default",
+          });
+          // queryClient.invalidateQueries(["CART", _id]);
+          navigate("/cart/order"); // Điều hướng đến trang đơn hàng
+        }
+      
     } catch (error: unknown) {
       console.error("Lỗi khi tạo đơn hàng: ", error);
 
@@ -371,7 +387,7 @@ const CheckOut = () => {
                           <SelectValue placeholder="Chọn phương thức thanh toán" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Vnay">Vnay</SelectItem>
+                          <SelectItem value="Vnpay">Vnpay</SelectItem>
                           <SelectItem value="Momo">Momo</SelectItem>
                           <SelectItem value="COD">COD</SelectItem>
                         </SelectContent>

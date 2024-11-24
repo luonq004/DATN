@@ -3,11 +3,13 @@ import SkeletonCart from "./SkeletonCart";
 import useCart from "@/common/hooks/useCart";
 import { useState } from "react";
 import CheckOutSubmitVoucher from "./CheckOutSubmitVoucher";
+import { useUserContext } from "@/common/context/UserProvider";
 
 const CheckOutVoucher = () => {
     const [, setAttribute] = useState<string | 1>("1");
 
-  const userId = "67370b2bba67ac60aea58be8"; // USER ID
+    const { _id } = useUserContext() ?? {};
+
   const {
     cart,
     isLoading,
@@ -15,12 +17,12 @@ const CheckOutVoucher = () => {
     addVoucher,
     removeVoucher,
     changeVariant,
-  } = useCart(userId);
+  } = useCart(_id);
   // console.log(cart)
 
   function userAction(action: any, value: any) {
     const item = {
-      userId: userId,
+      userId: _id,
       ...value,
     };
     // console.log(item)

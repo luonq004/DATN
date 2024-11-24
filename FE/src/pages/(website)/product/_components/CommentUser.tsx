@@ -1,42 +1,62 @@
 import { TiStarFullOutline } from "react-icons/ti";
+import { format } from "date-fns";
 
-const CommentUser = () => {
+interface IUser {
+  _id: string;
+  imageUrl: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface CommentProps {
+  comment: {
+    _id: string;
+    userId: IUser;
+    content: string;
+    rating: number;
+    createdAt: Date;
+  };
+}
+
+const CommentUser: React.FC<CommentProps> = ({ comment }) => {
   return (
     <div className="border-b mt-[25px]">
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-3">
           <img
             className="size-12 rounded-full"
-            src="http://unionagency.one/exzo/img/testimonial-1.jpg"
+            src={comment.userId.imageUrl}
             alt="Ảnh người dùng"
           />
 
           <div>
             <span className="text-base leading-[18px] block mb-1">
-              Quoc Luong
+              {comment.userId.firstName} {comment.userId.lastName}
             </span>
             <div className="flex">
-              <TiStarFullOutline className="text-[#b8cd06]" />
-              <TiStarFullOutline className="text-[#b8cd06]" />
-              <TiStarFullOutline className="text-[#b8cd06]" />
-              <TiStarFullOutline className="text-[#b8cd06]" />
-              <TiStarFullOutline className="text-gray-300" />
+              {Array.from({ length: 5 }).map((_, index) => (
+                <TiStarFullOutline
+                  key={index}
+                  className={`${
+                    index < comment?.rating ? "text-[#b8cd06]" : "text-gray-300"
+                  }`}
+                />
+              ))}
             </div>
           </div>
         </div>
 
-        <span>20:45 APR 07 / 15</span>
+        <span>{format(comment.createdAt, "HH:mm dd/M/yyyy")}</span>
       </div>
 
       {/* Content Comment */}
       <div className="text-[#888] text-[14px] leading-5 pb-[25px]">
-        Sed sodales sed orci molestie tristique. Nunc dictum, erat id molestie
-        vestibulum, ex leo vestibulum justo, luctus tempor erat sem quis diam.
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-        efficitur vulputate elit.
+        {comment?.content}
       </div>
     </div>
   );
 };
 
 export default CommentUser;
+
+// format(date, "HH:mm MMM dd / yy")

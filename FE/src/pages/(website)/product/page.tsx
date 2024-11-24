@@ -1,17 +1,20 @@
 import { Link, useParams } from "react-router-dom";
 import ProductInfo from "./_components/ProductInfo";
+import SeeMore from "./_components/SeeMore";
+import SkeletonProduct from "./_components/SkeletonProduct";
 import SliderImage from "./_components/SliderImage";
 import { useGetProductById } from "./actions/useGetProductById";
-import { IoBagHandleSharp } from "react-icons/io5";
-import { SlHeart } from "react-icons/sl";
-import SeeMore from "./_components/SeeMore";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { isLoading, product, error } = useGetProductById(id!);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mb-4">
+        <SkeletonProduct />
+      </div>
+    );
   }
 
   if (error || !product) {
@@ -29,9 +32,7 @@ const ProductDetail = () => {
         <Link to="/shopping" className="bread">
           Shopping
         </Link>
-        <Link to={`/product/${product._id}`} className="bread">
-          Baggy
-        </Link>
+        <Link to={`/product/${product._id}`}>{product.name}</Link>
       </div>
       {/* Khoang cach */}
       <div className="h-4 md:h-12 lg:h-24 mb-0"></div>
@@ -48,32 +49,14 @@ const ProductDetail = () => {
           <ProductInfo product={product} />
 
           {/* BUTTON */}
-          <div className="flex flex-col md:flex-row gap-2 text-[11px] font-raleway font-bold">
-            <button
-              className="btn-add text-white uppercase flex-1"
-              // onClick={handleAddToCart}
-            >
-              <span className="btn-add__wrapper text-[11px] px-[30px] rounded-full bg-[#343434] pt-[17px] pb-[15px] font-raleway">
-                <span className="icon">
-                  <IoBagHandleSharp />
-                </span>
-                <span className="text">thêm giỏ hàng</span>
-              </span>
-            </button>
-            <button className="btn-add text-white uppercase flex-1">
-              <span className="btn-add__wrapper text-[11px] px-[30px] border rounded-full text-[#343434] pt-[17px] pb-[15px] font-raleway">
-                <span className="icon">
-                  <SlHeart />
-                </span>
-                <span className="text">thêm yêu thích</span>
-              </span>
-            </button>
-          </div>
         </div>
       </div>
       {/* See More */}
       <div className="h-[35px] md:h-[70px]"></div>
-      <SeeMore />
+      <SeeMore
+        descriptionDetail={product.descriptionDetail}
+        comments={product?.comments}
+      />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import Comment from "../models/comment";
+import Product from "../models/product";
 import User from "../models/users";
 
 export const createComment = async (req, res) => {
@@ -22,7 +23,7 @@ export const createComment = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Không tìm thấy user" });
     }
-    product.comment.push(comment._id);
+    product.comments.push(comment._id);
 
     await product.save();
 

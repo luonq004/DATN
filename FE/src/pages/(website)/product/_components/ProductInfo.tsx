@@ -9,12 +9,19 @@ import { TiStarFullOutline } from "react-icons/ti";
 import ButtonQuantity from "./ButtonQuantity";
 
 import Attributes from "./Attributes";
+import { IoBagHandleSharp } from "react-icons/io5";
+import { SlHeart } from "react-icons/sl";
+import { useAddToCart } from "../../shop/actions/useAddToCart";
+import { useUserContext } from "@/common/context/UserProvider";
 
 interface ProductInfoProps {
   product: IProduct;
 }
 
 const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
+  const { addCart, isAdding } = useAddToCart();
+  const { _id } = useUserContext();
+
   const [attributesChoose, setAttributesChoose] = useState<
     Record<string, string[]>
   >({});
@@ -85,6 +92,22 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         )
       : null;
 
+  const countStock = variantChoose
+    ? variantChoose.countOnStock
+    : product.countOnStock;
+
+  const handleAddToCart = async () => {
+    if (!variantChoose) return;
+    const data = {
+      productId: product?._id,
+      variantId: variantChoose._id,
+      quantity: quantity,
+      userId: _id,
+    };
+
+    addCart(data);
+  };
+
   return (
     <div>
       <h2 className="text-3xl leading-8 uppercase font-black font-raleway text-[#343434] mb-[25px]">
@@ -129,7 +152,35 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
 
       {/* Quantity  */}
       {/* Thieu add to cart */}
-      <ButtonQuantity quantity={quantity} setQuantity={setQuantity} />
+      <ButtonQuantity
+        quantity={quantity}
+        setQuantity={setQuantity}
+        countOnStock={countStock}
+      />
+
+      <div className="flex flex-col md:flex-row gap-2 text-[11px] font-raleway font-bold overflow-hidden">
+        <button
+          className={`btn-add text-white uppercase flex-1 ${
+            isAdding ? "cursor-not-allowed" : ""
+          }`}
+          onClick={handleAddToCart}
+        >
+          <span className="btn-add__wrapper text-[11px] px-[30px] rounded-full bg-[#343434] pt-[17px] pb-[15px] font-raleway">
+            <span className="icon">
+              <IoBagHandleSharp />
+            </span>
+            <span className="text">thêm giỏ hàng</span>
+          </span>
+        </button>
+        <button className="btn-add text-white uppercase flex-1">
+          <span className="btn-add__wrapper text-[11px] px-[30px] border rounded-full text-[#343434] pt-[17px] pb-[15px] font-raleway">
+            <span className="icon">
+              <SlHeart />
+            </span>
+            <span className="text">thêm yêu thích</span>
+          </span>
+        </button>
+      </div>
     </div>
   );
 };

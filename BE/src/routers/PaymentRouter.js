@@ -11,7 +11,7 @@ const vnp_TmnCode = "M2BGNLVO";
 const vnp_HashSecret = "ULMM8YS61BMO50XPX9061VC53AL5O7GU";
 const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 const vnp_Api = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-const vnp_ReturnUrl = "http://localhost:8080/order/vnpay_return";
+const vnp_ReturnUrl = "http://localhost:5173/order/vnpay_return";
 
 // Các route
 PaymentRouter.get('/', (req, res) => {
@@ -32,8 +32,8 @@ PaymentRouter.get('/refund', (req, res) => {
 
 // Tạo URL thanh toán
 PaymentRouter.post('/create_payment_url', async (req, res) => {
-    process.env.TZ = 'Asia/Ho_Chi_Minh';
 
+    process.env.TZ = 'Asia/Ho_Chi_Minh';
     const date = new Date();
     const createDate = format(date, 'yyyyMMddHHmmss');
     const ipAddr = req.headers['x-forwarded-for'] ||
@@ -43,6 +43,7 @@ PaymentRouter.post('/create_payment_url', async (req, res) => {
 
     const orderId = format(date, 'ddHHmmss');
     const amount = req.body.amount;
+    const orderCode = req.body.orderCode;
     const bankCode = req.body.bankCode;
     let locale = req.body.language || 'vn';
     const currCode = 'VND';
@@ -53,8 +54,8 @@ PaymentRouter.post('/create_payment_url', async (req, res) => {
         vnp_TmnCode: vnp_TmnCode,
         vnp_Locale: locale,
         vnp_CurrCode: currCode,
-        vnp_TxnRef: orderId,
-        vnp_OrderInfo: `Thanh toan cho ma GD: ${orderId}`,
+        vnp_TxnRef: orderCode,
+        vnp_OrderInfo: `Thanh toan cho ma GD: ${orderCode}`,
         vnp_OrderType: 'other',
         vnp_Amount: amount * 100,
         vnp_ReturnUrl: vnp_ReturnUrl,
@@ -74,7 +75,8 @@ PaymentRouter.post('/create_payment_url', async (req, res) => {
     vnp_Params['vnp_SecureHash'] = signed;
     const redirectUrl = vnp_Url + '?' + new URLSearchParams(vnp_Params).toString();
     console.log('Redirect URL:', redirectUrl);
-    res.redirect(redirectUrl);
+    // res.redirect(redirectUrl);
+    res.json({ redirectUrl });
 });
 
 // Xử lý trả về từ VNPay
@@ -87,7 +89,8 @@ PaymentRouter.get('/vnpay_return', (req, res) => {
 
     vnp_Params = sortObject(vnp_Params);
 
-    const signData = qs.stringify(vnp_Params, { encode: false });
+    const signData = new URLSearchParams(vnp_Params).toString();
+    // Tạo chữ ký HMAC SHA-512 giống như trong /create_payment_url
     const signed = crypto.createHmac('sha512', vnp_HashSecret)
         .update(Buffer.from(signData, 'utf-8'))
         .digest('hex');

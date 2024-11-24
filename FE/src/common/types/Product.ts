@@ -8,11 +8,14 @@
 //   // status: "pending" | "processing" | "success" | "failed";
 // }
 
+import { Address } from "@/pages/(website)/address/ListAddress";
+
 export interface IProduct {
   _id: string;
   name: string;
   type: string;
   category: string[];
+  countOnStock: number;
   price: number;
   description: string;
   image: string;
@@ -21,6 +24,99 @@ export interface IProduct {
   deleted: boolean;
   updatedAt: Date;
   variants: Variant[];
+  comments: {
+    _id: string;
+    userId: string;
+    content: string;
+    rating: number;
+    createdAt: Date;
+  };
+}
+interface Address {
+  _id: string;
+  userId: string;
+  country: string;
+  cityId: string;
+  districtId: string;
+  wardId: string;
+  phone: string;
+  name: string;
+  addressDetail: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+  __v: number;
+}
+
+export interface ProductItem {
+  _id: string;
+  name: string;
+  slug: string;
+  category: Category[];
+  image: string;
+  price: number;
+  type: string;
+  description: string;
+  deleted: boolean;
+  reviews: any[];  // Nếu bạn có kiểu dữ liệu cho reviews, bạn có thể thay đổi kiểu này
+  variants: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VariantItem {
+  _id: string;
+  price: number;
+  priceSale: number;
+  values: { _id: string; name: string; type: string; value: string; __v: number }[];
+  countOnStock: number;
+  image: string;
+  type?: string;
+  name?: string;
+  deleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderProduct {
+  _id: string;
+  payment?:string;
+  userId: string;
+  orderCode: string;
+  status: string;
+  products: {
+    productItem: ProductItem;
+    variantItem: VariantItem;
+    quantity: number;
+    _id: string;
+  }[];
+  voucher: any[];  // Cập nhật kiểu nếu có dữ liệu voucher
+  total: number;
+  totalPrice: number;
+  createdAt: string;
+  updatedAt: string;
+  discount: number;
+  subTotal: number;
+}
+
+export interface Order {
+  _id: string;
+  userId: string;
+  addressId: Address;
+  note: string;
+  products: OrderProduct[];
+  payment: string;
+  status: string;
+  totalPrice: number;
+  orderCode: string;
+  createdAt: string;
+  __v: number;
 }
 
 export interface Variant {

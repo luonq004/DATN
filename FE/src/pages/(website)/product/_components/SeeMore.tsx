@@ -1,29 +1,29 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CommentUser from "./CommentUser";
-import { useState } from "react";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import CommentUser from "./CommentUser";
 
-const SeeMore = () => {
-  const [value, setValue] = useState("");
+interface IUser {
+  _id: string;
+  imageUrl: string;
+  firstName: string;
+  lastName: string;
+}
 
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-    "code-block",
-  ];
-
+const SeeMore = ({
+  comments,
+  descriptionDetail,
+}: {
+  comments: {
+    _id: string;
+    userId: IUser;
+    content: string;
+    rating: number;
+    createdAt: Date;
+  }[];
+  descriptionDetail: string;
+}) => {
   return (
-    <div className="md:px-6">
+    <div className="md:px-6 list-disc">
       <Tabs defaultValue="comment">
         <TabsList className="flex w-full grid-cols-2 justify-center bg-transparent">
           <div className="pr-4 border-r">
@@ -44,33 +44,18 @@ const SeeMore = () => {
           </div>
         </TabsList>
         <TabsContent value="description">
-          <ReactQuill
-            theme="snow"
-            value={value}
-            onChange={setValue}
-            modules={{
-              toolbar: [
-                [{ header: "1" }, { header: "2" }],
-                ["bold", "italic", "underline", "strike", "blockquote"],
-                [
-                  { list: "ordered" },
-                  { list: "bullet" },
-                  { indent: "-1" },
-                  { indent: "+1" },
-                ],
-                ["link", "image"],
-                ["clean"],
-                ["clean"],
-              ],
-            }}
-            formats={formats}
-            // readOnly={isDisabled}
+          <div
+            className="detail mt-[30px] md:mt-[60px]"
+            dangerouslySetInnerHTML={{ __html: descriptionDetail }}
           />
         </TabsContent>
         <TabsContent value="comment">
           <div className="h-[30px] md:h-[60px]"></div>
-          {Array.from({ length: 5 }).map((_, index) => (
+          {/* {Array.from({ length: 5 }).map((_, index) => (
             <CommentUser key={index} />
+          ))} */}
+          {comments.map((comment) => (
+            <CommentUser key={comment._id} comment={comment} />
           ))}
         </TabsContent>
       </Tabs>

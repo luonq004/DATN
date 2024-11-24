@@ -125,7 +125,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                         </div> */}
                 <hr />
                 <Link to={`checkout`}>
-                    <div className='bg-[#C8C9CB] hover:bg-light-400 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
+                    <div className='bg-[#C8C9CB] hover:bg-[#b8cd06] transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
                         <div>Checkout</div>
                         <div className=''>|</div>
                         <div>$<span>{cart?.total}.00</span></div>

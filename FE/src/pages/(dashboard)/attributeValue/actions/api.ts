@@ -11,3 +11,23 @@ export async function getAllAttributeValue(type: string) {
     console.log(error);
   }
 }
+
+export async function getAttributeValue(id: string) {
+  try {
+    const response = await axios.get(`${apiUrl}/attributevalue/${id}`);
+    return response?.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// export async function updateAttributeValue(type: string) {
+//   try {
+//     const response = await axios.get(
+//       `${apiUrl}/attributevalueByAttributeID/${type}`
+//     );
+//     return response?.data;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }

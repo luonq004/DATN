@@ -1,5 +1,5 @@
 import { useCategory } from "@/common/hooks/useCategory";
-import { FormTypeProductCommon } from "@/common/types/validate";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import {
   Accordion,
   AccordionContent,
@@ -21,7 +21,7 @@ type Category = {
   slug: string;
 };
 
-const CategoryProduct = ({ form }: { form: FormTypeProductCommon }) => {
+const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
   const { category, isLoadingCategory } = useCategory();
 
   if (isLoadingCategory) return <div>Loading...</div>;

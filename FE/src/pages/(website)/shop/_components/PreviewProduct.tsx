@@ -21,8 +21,8 @@ import {
   formatCurrency,
 } from "@/lib/utils";
 import { useUserContext } from "@/common/context/UserProvider";
-import axios from "axios";
-import { toast } from "@/components/ui/use-toast";
+
+import { useAddToCart } from "../actions/useAddToCart";
 
 const PreviewProduct = ({
   isOpen,
@@ -38,6 +38,8 @@ const PreviewProduct = ({
   const [quantity, setQuantity] = useState(1);
   const [productPopup, setProductPopup] = useState<IProduct>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { addCart, isAdding } = useAddToCart();
 
   const [attributesChoose, setAttributesChoose] = useState<
     Record<string, string>
@@ -163,7 +165,6 @@ const PreviewProduct = ({
       : null;
 
   const handleAddToCart = async () => {
-    console.log("Add to cart");
     if (!variantChoose) return;
     const data = {
       productId: productPopup?._id,
@@ -172,12 +173,12 @@ const PreviewProduct = ({
       userId: _id,
     };
 
-    await axios.post("http://localhost:8080/api/cart/add", data);
-
-    toast({
-      title: "Thêm vào giỏ hàng thành công",
-    });
+    addCart(data);
   };
+
+  const countStock = variantChoose
+    ? variantChoose.countOnStock
+    : productPopup?.countOnStock;
 
   return createPortal(
     <div
@@ -368,14 +369,21 @@ const PreviewProduct = ({
                 >
                   +
                 </button>
+
+                <span className="ml-4 text-xs font-q">
+                  {countStock} sản phẩm có sẵn
+                </span>
               </div>
             </div>
 
             {/* BUTTON */}
             <div className="flex flex-col md:flex-row gap-2 text-[11px] font-raleway font-bold">
               <button
-                className="btn-add text-white uppercase flex-1"
+                className={`btn-add text-white uppercase flex-1 ${
+                  isAdding ? "cursor-not-allowed" : ""
+                }`}
                 onClick={handleAddToCart}
+                disabled={isAdding}
               >
                 <span className="btn-add__wrapper text-[11px] px-[30px] rounded-full bg-[#343434] pt-[17px] pb-[15px] font-raleway">
                   <span className="icon">

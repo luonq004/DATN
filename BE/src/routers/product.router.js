@@ -7,6 +7,7 @@ import {
   getProductForEdit,
   updateProduct,
 } from "../controllers/products";
+import { checkAuthClerk } from "../middlewares/CheckAuthClerk";
 // import { checkAuth } from "../middlewares/checkAuth";
 
 const router = express.Router();

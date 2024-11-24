@@ -24,7 +24,9 @@ import { useUserContext } from "@/common/context/UserProvider";
 const ShopCart = () => {
   const [attribute, setAttribute] = useState<string | 1>("1");
 
-  const { _id } = useUserContext();
+  const { _id }: any = useUserContext();
+
+  console.log(_id)
 
   const {
     cart,
@@ -38,7 +40,7 @@ const ShopCart = () => {
     removeVoucher,
     changeVariant,
   } = useCart(_id);
-  // console.log(cart)
+  console.log(cart)
 
   function userAction(action: any, value: any) {
     const item = {
@@ -114,6 +116,8 @@ const ShopCart = () => {
   if (isLoading) return <SkeletonCart />;
   if (isError) return <div>Is Error</div>;
 
+  console.log(cart);
+
   return (
     <>
       {/* Cart  */}
@@ -125,6 +129,8 @@ const ShopCart = () => {
           attribute={attribute}
           setAttribute={setAttribute}
           userAction={userAction}
+          isLoading={isLoading}
+          isError={isError}
         />
         {/* End Cart__Left  */}
 

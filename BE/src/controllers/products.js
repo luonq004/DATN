@@ -21,7 +21,11 @@ export const getAllProducts = async (req, res) => {
     sort: { [_sort]: _order === "desc" ? -1 : 1 },
   };
   const populateOptions = _expand
-    ? [{ path: "category", select: "name" }, { path: "attribites" }]
+    ? [
+        { path: "category", select: "name" },
+        { path: "attribites" },
+        { path: "comments" },
+      ]
     : [];
 
   const query = {};
@@ -65,20 +69,6 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-// export const getAllProducts = async (req, res) => {
-//   try {
-//     const data = await Product.find()
-//       .populate("category")
-//       .populate("attributes");
-//     if (data.length < 0) {
-//       return res.status(404).json({ message: "No products found" });
-//     }
-//     res.json(data);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 export const getProductById = async (req, res) => {
   try {
     const data = await Product.findOne({ _id: req.params.id })
@@ -91,11 +81,25 @@ export const getProductById = async (req, res) => {
         },
         select: "-__v", // Loại bỏ __v cho các trường variants
       })
+      .populate({
+        path: "comments",
+        match: { deleted: false },
+        populate: {
+          path: "userId",
+          model: "Users",
+          select: { firstName: 1, lastName: 1, imageUrl: 1 },
+        },
+      })
       .select("-__v"); // Loại bỏ __v cho sản phẩm chính
 
     if (!data) {
       return res.status(404).json({ message: "No products found" });
     }
+
+    // setTimeout(() => {
+    //   res.json(data);
+    // }, 5000);
+
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -150,67 +154,67 @@ export const getProductForEdit = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, image, price, priceSale, description, category, variants } =
-      req.body;
+    const {
+      name,
+      image,
+      price,
+      priceSale,
+      description,
+      descriptionDetail,
+      category,
+      variants,
+    } = req.body;
 
     const slug = slugify(req.body.name, "-");
 
-    if (!variants) {
-      const data = await Product({
-        name,
-        image:
-          "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
-        price,
-        priceSale,
-        description,
-        category,
-        slug,
-      }).save();
+    const variantsId = [];
+    let priceFinal = Infinity;
+    let priceSaleFinal = -Infinity;
+    let count = 0;
 
-      return res.status(201).json({
-        message: "Tạo sản phẩm thành công",
-        data,
-      });
-    } else {
-      const variantsId = [];
-      let price = Infinity;
+    for (let i = 0; i < variants.length; i++) {
+      const values = variants[i].values.map((obj) => Object.values(obj)[0]);
 
-      for (let i = 0; i < variants.length; i++) {
-        const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+      count += variants[i].countOnStock;
 
-        if (price > variants[i].price) {
-          price = variants[i].price;
-        }
-
-        const variant = await Variant({
-          price: variants[i].price,
-          priceSale: variants[i].priceSale,
-          values,
-          countOnStock: variants[i].countOnStock,
-          image:
-            "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
-          // image: variants[i].image,
-        }).save();
-        variantsId.push(variant._id);
+      if (priceFinal > variants[i].price) {
+        priceFinal = variants[i].price;
       }
 
-      const data = await Product({
-        name,
-        price,
-        type: "variable",
+      if (priceSaleFinal < variants[i].priceSale) {
+        priceSaleFinal = variants[i].priceSale;
+      }
+
+      const variant = await Variant({
+        price: variants[i].price,
+        priceSale: variants[i].priceSale,
+        values,
+        countOnStock: variants[i].countOnStock,
         image:
           "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
-        category,
-        description,
-        slug: slugify(req.body.name, "-"),
-        variants: variantsId,
+        // image: variants[i].image,
       }).save();
-
-      return res.status(201).json({
-        message: "Tạo sản phẩm thành công",
-        data,
-      });
+      variantsId.push(variant._id);
     }
+
+    const data = await Product({
+      name,
+      price: priceFinal,
+      priceSale: priceSaleFinal,
+      countOnStock: count,
+      image:
+        "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
+      category,
+      description,
+      descriptionDetail,
+      slug: slugify(req.body.name, "-"),
+      variants: variantsId,
+    }).save();
+
+    return res.status(201).json({
+      message: "Tạo sản phẩm thành công",
+      data,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -218,74 +222,82 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const { name, image, price, priceSale, description, category, variants } =
-      req.body;
+    const {
+      name,
+      image,
+      priceSale,
+      description,
+      descriptionDetail,
+      category,
+      variants,
+    } = req.body;
 
     const slug = slugify(req.body.name, "-");
-    if (!variants) {
-      const data = await Product.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-          name,
-          image,
-          price,
-          priceSale,
-          description,
-          category,
-          slug,
-        },
-        { new: true }
-      );
-      return res.json(data);
-    } else {
-      const variantsId = [];
 
-      for (let i = 0; i < variants.length; i++) {
-        // const values = variants[i].values.map((obj) => Object.values(obj)[0]);
-        if (variants[i]._id) {
-          const variant = await Variant.findOneAndUpdate(
-            { _id: variants[i]._id },
-            {
-              price: variants[i].price,
-              priceSale: variants[i].priceSale,
-              // values,
-              countOnStock: variants[i].countOnStock,
-              image: variants[i].image,
-            },
-            { new: true }
-          );
-          variantsId.push(variant._id);
-        } else {
-          const values = variants[i].values.map((obj) => Object.values(obj)[0]);
-          const variant = await Variant({
-            price: variants[i].price,
-            priceSale: variants[i].priceSale,
-            values,
-            countOnStock: variants[i].countOnStock,
-            image: variants[i].image,
-          }).save();
-          variantsId.push(variant._id);
-        }
+    const variantsId = [];
+    let priceFinal = Infinity;
+    let priceSaleFinal = -Infinity;
+    let count = 0;
+
+    for (let i = 0; i < variants.length; i++) {
+      // const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+      count += variants[i].countOnStock;
+
+      if (priceFinal > variants[i].price) {
+        priceFinal = variants[i].price;
       }
 
-      const data = await Product.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-          name,
-          image,
-          category,
-          description,
-          slug: slugify(req.body.name, "-"),
-          variants: variantsId,
-        },
-        { new: true }
-      );
+      if (priceSaleFinal < variants[i].priceSale) {
+        priceSaleFinal = variants[i].priceSale;
+      }
 
-      return res.json({
-        message: "Cập nhật sản phẩm thành công",
-        data,
-      });
+      if (variants[i]._id) {
+        const variant = await Variant.findOneAndUpdate(
+          { _id: variants[i]._id },
+          {
+            price: variants[i].price,
+            priceSale: variants[i].priceSale,
+            // values,
+            countOnStock: variants[i].countOnStock,
+            image: variants[i].image,
+          },
+          { new: true }
+        );
+        variantsId.push(variant._id);
+      } else {
+        const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+        const variant = await Variant({
+          price: variants[i].price,
+          priceSale: variants[i].priceSale,
+          values,
+          countOnStock: variants[i].countOnStock,
+          image: variants[i].image,
+        }).save();
+        variantsId.push(variant._id);
+      }
     }
+
+    const data = await Product.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        name,
+        price: priceFinal,
+        priceSale: priceSaleFinal,
+        countOnStock: count,
+        image,
+        category,
+        description,
+        descriptionDetail,
+        slug: slugify(req.body.name, "-"),
+        variants: variantsId,
+      },
+      { new: true }
+    );
+
+    return res.json({
+      message: "Cập nhật sản phẩm thành công",
+      data,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

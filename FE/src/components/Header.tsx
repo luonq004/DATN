@@ -6,9 +6,19 @@ import { IoIosClose } from "react-icons/io";
 
 import MobileNav from "@/components/MobileNav";
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useClerk, useUser } from "@clerk/clerk-react";
 import { useUserContext } from "@/common/context/UserProvider";
+
+const menuItems = [
+  { label: "Trang chủ", to: "/" },
+  { label: "Về chúng tôi", to: "/about" },
+  { label: "Sản phẩm", to: "/shopping" },
+  { label: "Dịch vụ", to: "/services" },
+  // { label: "Bài viết", href: "#" },
+  // { label: "Trưng bày", to: "/" },
+  // { label: "Liên hệ", href: "#" },
+];
 
 const Header = () => {
   const { isSignedIn, user } = useUser();
@@ -18,7 +28,11 @@ const Header = () => {
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [showUserInfo, setShowUserInfo] = useState(false);
 
-  console.log(_id);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const opensignin = async () => {
     await openSignIn({
@@ -175,7 +189,22 @@ const Header = () => {
               <div className="w-8/12 md:w-10/12 justify-items-end px-[15px]">
                 <nav className="hidden lg:block">
                   <ul className="flex">
-                    <li className="">
+                    {menuItems.map((item) => (
+                      <li className="!list-none" key={item.to}>
+                        <Link
+                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${
+                            pathname === item.to
+                              ? "bg-[#b8cd06] text-white"
+                              : ""
+                          }`}
+                          to={item.to}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+
+                    {/* <li className="!list-none">
                       <a
                         className="text-[11px] leading-4 uppercase font-bold rounded-2xl px-5 py-[9px] bg-[#b8cd06] text-white hover:shadow-custom transition-all"
                         href="#"
@@ -183,7 +212,7 @@ const Header = () => {
                         Trang chủ
                       </a>
                     </li>
-                    <li className="">
+                    <li className="!list-none">
                       <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
                         to="/about"
@@ -191,7 +220,7 @@ const Header = () => {
                         Về chúng tôi
                       </Link>
                     </li>
-                    <li className="">
+                    <li className="!list-none">
                       <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
                         to="/shopping"
@@ -199,7 +228,7 @@ const Header = () => {
                         Sản phẩm
                       </Link>
                     </li>
-                    <li className="">
+                    <li className="!list-none">
                       <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
                         to="/services"
@@ -207,7 +236,7 @@ const Header = () => {
                         Dịch vụ
                       </Link>
                     </li>
-                    <li className="">
+                    <li className="!list-none">
                       <a
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
                         href="#"
@@ -215,7 +244,7 @@ const Header = () => {
                         Bài viết
                       </a>
                     </li>
-                    <li className="">
+                    <li className="!list-none">
                       <Link
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
                         to="/"
@@ -224,15 +253,15 @@ const Header = () => {
                       </Link>
                     </li>
 
-                    <li className="">
+                    <li className="!list-none">
                       <a
                         className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
                         href="#"
                       >
                         Liên hệ
                       </a>
-                    </li>
-                    <li className="">
+                    </li> */}
+                    <li className="!list-none">
                       <IoSearch
                         className="text-2xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                         onClick={() => setIsOpen(!isOpen)}

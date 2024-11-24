@@ -24,7 +24,7 @@ const updateTotal = async (cart) => {
       let status = voucher.status;
 
       //nếu trạng thái inactive sẽ bị xóa khỏi giỏ hàng
-      if (status === 'inactive') {
+      if (status === "inactive") {
         cart.voucher = cart.voucher.filter((item) => item._id !== voucher._id);
       }
 
@@ -100,23 +100,26 @@ export const getCartByUserId = async (req, res) => {
 export const addToCart = async (req, res) => {
   const { userId, productId, variantId, quantity } = req.body;
 
+  console.log(req.body);
+
   try {
     let cart = await Cart.findOne({ userId: userId })
       .populate("products.productItem")
       .populate("products.variantItem")
       .populate("voucher");
 
-    // console.log("CART: ", cart);
+    console.log("CART: ", cart);
 
     const product = await Product.findOne({ _id: productId });
     const variantValue = await Variant.findOne({ _id: variantId });
 
-    // console.log(variantVproductalue);
+    // console.log("PR: ", product._id);
+    // console.log(variantValue);
 
     if (!product || !variantValue) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Product or Variant not found" });
+        .json({ message: "Không tìm thấy Product hoặc Biến thể của Product" });
     }
 
     //Check variantId có trong SP đó hay ko
@@ -126,7 +129,7 @@ export const addToCart = async (req, res) => {
     if (exitVariantProduct === -1) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Variant of Product not found" });
+        .json({ message: "Không tìm thấy Biến thể" });
     }
 
     console.log("ADD TO CART");
@@ -142,17 +145,25 @@ export const addToCart = async (req, res) => {
       console.log("CREATE CART");
     }
 
+    console.log("CONTINUE");
+
     //ktra sp trùng lặp trong giỏ hàng
     const existProductIndex = cart.products.findIndex(
       (item) =>
+        // console.log("ITEM: ", item)
         item.productItem._id.toString() == productId &&
         item.variantItem._id.toString() == variantId
     );
 
+    console.log("EXIST: ", existProductIndex);
+
     //nếu có sp trùng lặp thì tăng số lượng
     if (existProductIndex !== -1) {
       // kiểm tra số lượng quantity khi thêm vào so với số lượng tồn kho
-      if (cart.products[existProductIndex].quantity + quantity <= cart.products[existProductIndex].variantItem.countOnStock) {
+      if (
+        cart.products[existProductIndex].quantity + quantity <=
+        cart.products[existProductIndex].variantItem.countOnStock
+      ) {
         cart.products[existProductIndex].quantity += quantity;
       } else {
         return res
@@ -228,12 +239,12 @@ export const increase = async (req, res) => {
       } else {
         return res
           .status(StatusCodes.CONFLICT)
-          .json({ message: "Max countOnStock" });
+          .json({ message: "Tồn kho đạt giới hạn" });
       }
     } else {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Product not found" });
+        .json({ message: "Không tìm thấy sản phẩm" });
     }
 
     // cart.products.push({ productItem: products, variantItem: variant, quantity: quantity })
@@ -290,7 +301,7 @@ export const decrease = async (req, res) => {
     } else {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ error: "Product not found" });
+        .json({ error: "Không tìm thấy sản phẩm" });
     }
 
     // cart.products.push({ productItem: products, variantItem: variant, quantity: quantity })
@@ -315,7 +326,7 @@ export const removeCartProduct = async (req, res) => {
     if (!cart) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Cart not found" });
+        .json({ message: "Không tìm thấy giỏ hàng" });
     }
 
     //tìm sp và lọc ra khỏi giỏ hàng
@@ -344,7 +355,7 @@ export const updateQuantity = async (req, res) => {
     if (!cart) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Cart not found" });
+        .json({ message: "Không tìm thấy giỏ hàng" });
     }
 
     //tìm sp mình nhấn tăng trong giỏ hàng
@@ -367,12 +378,12 @@ export const updateQuantity = async (req, res) => {
       } else {
         return res
           .status(StatusCodes.CONFLICT)
-          .json({ message: "Max countOnStock" });
+          .json({ message: "Tồn kho đạt giới hạn" });
       }
     } else {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Product not found" });
+        .json({ message: "Không tìm thấy sản phẩm" });
     }
 
     // cart.products.push({ productItem: products, variantItem: variant, quantity: quantity })
@@ -397,14 +408,14 @@ export const addVoucher = async (req, res) => {
     if (!cart) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Cart not found" });
+        .json({ message: "Không tìm thấy giỏ hàng" });
     }
 
     const voucher = await Voucher.findOne({ code: voucherCode });
     if (!voucher) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Voucher not found" });
+        .json({ message: "Không tìm thấy Voucher" });
     }
 
     //check hạn sử dụng
@@ -490,14 +501,14 @@ export const revomeVoucherCart = async (req, res) => {
     if (!cart) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Cart not found" });
+        .json({ message: "Không tìm thấy giỏ hàng" });
     }
 
     const voucher = await Voucher.findOne({ code: voucherCode });
     if (!voucher) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Voucher not found" });
+        .json({ message: "Không tìm thấy Voucher" });
     }
 
     // tăng số lượng của voucher
@@ -546,7 +557,7 @@ export const changeVariant = async (req, res) => {
     if (!product || !variantValue) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Product or Variant not found" });
+        .json({ message: "Không tìm thấy Product hoặc Biến thể của Product" });
     }
 
     //Check newVariantId có trong SP đó hay ko
@@ -556,7 +567,7 @@ export const changeVariant = async (req, res) => {
     if (exitVariantProduct === -1) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "New Variant of Product not found" });
+        .json({ message: "Biến thể mới không tồn tại" });
     }
 
     //kiểm tra xem biến thể mới có bị trùng lặp không

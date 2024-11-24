@@ -7,7 +7,7 @@ export function useGetAtributes() {
     data: atributes,
     error,
   } = useQuery({
-    queryKey: ["Atributes"],
+    queryKey: ["Attributes"],
     queryFn: getAllAttribute,
   });
 

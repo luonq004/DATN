@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export interface Address {
   _id: string;
   userId: string | number;
+  createdAt: string; 
   country: string;
   cityId: string | number;
   districtId: string | number;
@@ -73,7 +74,7 @@ const handledefault = async(address : Address) => {
     setIsDialogOpen(false); // Đóng dialog nếu huỷ
     setAddressToDelete(null); // Xóa địa chỉ đã chọn
   };
-  const sortedAddresses = data?.sort((a, b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0));
+  const sortedAddresses = data?.sort((a : Address, b : Address) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0));
   return (
     <div className="container p-5">
       {/* Địa chỉ của tôi */}
