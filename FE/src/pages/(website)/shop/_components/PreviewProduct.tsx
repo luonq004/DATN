@@ -358,13 +358,15 @@ const PreviewProduct = ({
                 >
                   -
                 </button>
-                <span className="border flex justify-center items-center h-full w-24 text-center text-[#333]">
-                  {quantity}
-                </span>
+                <input
+                  className="border py-2"
+                  onChange={(e) => setQuantity(e.target.value)}
+                  value={quantity}
+                />
                 <button
                   className="cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333]"
                   onClick={() => {
-                    if (quantity < 10) setQuantity(quantity + 1);
+                    setQuantity(+quantity + 1);
                   }}
                 >
                   +

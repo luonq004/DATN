@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useGetAtributes } from "./actions/useGetAllAttributeValues";
 import Container from "../_components/Container";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,9 @@ const AttributeValuePage = () => {
     <Container>
       <div className="flex justify-between">
         <h2>Attribute value</h2>
-        <Button className="bg-green-400">Add new</Button>
+        <Link to={`/admin/attributesValues/add/${id}`}>
+          <Button className="bg-green-400">Add new</Button>
+        </Link>
       </div>
       <div className="min-h-80 mt-5">
         <DataTable

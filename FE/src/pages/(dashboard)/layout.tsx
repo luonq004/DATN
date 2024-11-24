@@ -11,39 +11,29 @@ const LayoutAdmin = () => {
 
   const { role } = useUserContext();
 
-  // useEffect(() => {
-  //   if (!isLoaded) {
-  //     return; // Chờ đến khi user được tải xong
-  //   }
+  useEffect(() => {
+    if (!isLoaded) {
+      return; // Chờ đến khi user được tải xong
+    }
 
-  //   // Kiểm tra quyền truy cập
-  //   if (
-  //     user &&
-  //     (user.publicMetadata.role === "Admin" ||
-  //       user.publicMetadata.role === "Employee")
-  //   ) {
-  //     setIsAuthorized(true); // Xác nhận quyền truy cập
-  //   } else {
-  //     navigate("*", { replace: true });
-  //   }
-  // }, [user, isLoaded, navigate]);
+    // Kiểm tra quyền truy cập
+    if (
+      user &&
+      (user.publicMetadata.role === "Admin" ||
+        user.publicMetadata.role === "Employee")
+    ) {
+      setIsAuthorized(true); // Xác nhận quyền truy cập
+    } else {
+      navigate("*", { replace: true });
+    }
+  }, [user, isLoaded, navigate]);
 
-  // // Trì hoãn render giao diện khi đang kiểm tra quyền truy cập
-  // if (!isLoaded || !isAuthorized) {
-  //   return null;
-  // }
-
-  // console.log("user", user);
-
-  // if (!isLoaded) {
-  //   return null; // Chờ đến khi user được tải xong
-  // }
+  // Trì hoãn render giao diện khi đang kiểm tra quyền truy cập
+  if (!isLoaded || !isAuthorized) {
+    return null;
+  }
 
   // console.log("user", user);
-
-  // if (user && user.firstName !== "Anh") {
-  //   navigate("*", { replace: true });
-  // }
 
   // Nếu đã xác thực quyền truy cập, render giao diện
   return (

@@ -1,6 +1,6 @@
+import { useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,13 +12,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-import { useParams } from "react-router-dom";
+import { z } from "zod";
 import { useEffect, useState } from "react";
-import { useGetAttributeValueByID } from "../actions/useGetAttributeValueByID";
-import { useUpdateAttributeValue } from "../actions/useUpdateAttributeValue";
-
-// import { useUpdateAttributeByID } from "../actions/useUpdateAttributeByID";
+import { useGetAttributeByID } from "../../attribute/actions/useGetAttributeByID";
+import { useCreateAttributeValue } from "../actions/useCreateAttributeValue";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -33,14 +30,12 @@ const formSchema = z.object({
   }),
 });
 
-const UpdateAttributeValuePage = () => {
-  const { id } = useParams<{ id: string }>();
+const CreateAttributeValuePage = () => {
+  const { id } = useParams();
   const [typeValue, setTypeValue] = useState<string>("text");
 
-  const { isLoadingAtributeValue, atributeValue, error } =
-    useGetAttributeValueByID(id!);
-
-  const { updateAttributeValue, isUpdating } = useUpdateAttributeValue(id!);
+  const { isLoadingAtribute, atribute } = useGetAttributeByID(id!);
+  const { createAttributeValue, isCreating } = useCreateAttributeValue(id!);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,23 +48,18 @@ const UpdateAttributeValuePage = () => {
   });
 
   // 2. Define a submit handler.
-  useEffect(() => {
-    if (atributeValue) {
-      form.reset(atributeValue);
-      if (atributeValue.value.startsWith("#")) {
-        setTypeValue("color");
-      }
-    }
-  }, [atributeValue, form]);
-
-  if (isLoadingAtributeValue) {
-    return <div>Loading...</div>;
-  }
-
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
-    updateAttributeValue({ ...values, _id: id });
+    createAttributeValue(values);
   }
+
+  useEffect(() => {
+    if (atribute) {
+      form.reset({ type: atribute.name });
+    }
+  }, [atribute, form]);
+
+  if (isLoadingAtribute) return <div>Loading...</div>;
+
   return (
     <Form {...form}>
       <form
@@ -114,10 +104,8 @@ const UpdateAttributeValuePage = () => {
           >
             {typeValue === "text" ? "Đổi sang màu" : "Đổi sang chữ"}
           </Button>
-
-          {/* <Button className="self-end">asd</Button> */}
         </div>
-        <FormField
+        {/* <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
@@ -130,12 +118,13 @@ const UpdateAttributeValuePage = () => {
               <FormMessage />
             </FormItem>
           )}
-        />
-        <Button disabled={isUpdating} type="submit">
-          {isUpdating ? "Đang cập nhật" : "Cập nhật"}
+        /> */}
+        <Button disabled={isCreating} type="submit">
+          {isCreating ? "Đang tạo..." : "Tạo"}
         </Button>
       </form>
     </Form>
   );
 };
-export default UpdateAttributeValuePage;
+
+export default CreateAttributeValuePage;

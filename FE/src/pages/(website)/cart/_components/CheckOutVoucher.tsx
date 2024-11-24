@@ -6,18 +6,13 @@ import CheckOutSubmitVoucher from "./CheckOutSubmitVoucher";
 import { useUserContext } from "@/common/context/UserProvider";
 
 const CheckOutVoucher = () => {
-    const [, setAttribute] = useState<string | 1>("1");
+  const [, setAttribute] = useState<string | 1>("1");
 
-    const { _id } = useUserContext() ?? {};
+  const { _id } = useUserContext();
 
-  const {
-    cart,
-    isLoading,
-    isError,
-    addVoucher,
-    removeVoucher,
-    changeVariant,
-  } = useCart(_id);
+  // const userId = "67370b2bba67ac60aea58be8"; // USER ID
+  const { cart, isLoading, isError, addVoucher, removeVoucher, changeVariant } =
+    useCart(_id);
   // console.log(cart)
 
   function userAction(action: any, value: any) {
@@ -62,9 +57,9 @@ const CheckOutVoucher = () => {
 
   return (
     <div>
-        <CheckOutSubmitVoucher  cart={cart} userAction={userAction}/>
+      <CheckOutSubmitVoucher cart={cart} userAction={userAction} />
     </div>
-  )
-}
+  );
+};
 
-export default CheckOutVoucher
+export default CheckOutVoucher;

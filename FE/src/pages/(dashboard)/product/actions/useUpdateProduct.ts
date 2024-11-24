@@ -1,7 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
-export const useUpdateProduct = () => {
+export const useUpdateProduct = (idP: string) => {
+  const queryClient = useQueryClient();
+
   const { mutate: updateProduct, isPending: isUpdating } = useMutation({
     mutationFn: async ({ data, id }: { data: unknown; id: string }) => {
       try {
@@ -16,9 +18,11 @@ export const useUpdateProduct = () => {
       }
     },
 
-    // onSuccess: () => {
-    //   console.log("Success");
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["Product", idP],
+      });
+    },
   });
 
   return { updateProduct, isUpdating };

@@ -18,6 +18,7 @@ export const getAllAttribute = async (req, res) => {
     const attribute = await Attribute.find({ deleted: false })
       .populate({
         path: "values",
+        match: { deleted: false },
         model: "AttributeValue",
         select: "-__v",
       })
