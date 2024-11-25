@@ -35,6 +35,7 @@ import CreateAddress from "../../address/CreatAddress";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import AddressDialog from "./AddressDialog ";
+import sendOrderConfirmationEmail from "./sendEmail";
 // import { useQueryClient } from "@tanstack/react-query";
 interface ErrorResponse {
   message: string;
@@ -100,6 +101,10 @@ const CheckOut = () => {
         console.log("paymentUrl", paymentUrl);
         window.location.href = paymentUrl;
       }
+      if (data.paymentMethod === "Vnpay" && response.status === 201) {
+        await sendOrderConfirmationEmail("hai31569@gmail.com", orderCode);
+      }
+
       if (data.paymentMethod === "COD" && response.status === 201) {
         // Đơn hàng đã được tạo thành công
         toast({
@@ -109,6 +114,9 @@ const CheckOut = () => {
         });
         // queryClient.invalidateQueries(["CART", _id]);
         navigate("/cart/order"); // Điều hướng đến trang đơn hàng
+        // Gửi email xác nhận đơn hàng
+        await sendOrderConfirmationEmail("hai31569@gmail.com", orderCode);
+
       }
     } catch (error: unknown) {
       console.error("Lỗi khi tạo đơn hàng: ", error);
@@ -405,7 +413,6 @@ const CheckOut = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Vnpay">Vnpay</SelectItem>
-                          <SelectItem value="Momo">Momo</SelectItem>
                           <SelectItem value="COD">COD</SelectItem>
                         </SelectContent>
                       </Select>

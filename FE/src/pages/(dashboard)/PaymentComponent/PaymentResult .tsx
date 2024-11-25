@@ -23,7 +23,7 @@ const PaymentResult = () => {
   const { _id } = useUserContext() ?? {}; // Lấy _id từ UserContext
  // Lấy mã đơn hàng từ URL
  const orderId = searchParams.get("vnp_TxnRef");
- console.log("orderId", orderId)
+
   useEffect(() => {
     const fetchResult = async () => {
       try {
@@ -85,11 +85,6 @@ useEffect(() => {
             queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
   
             // Hiển thị thông báo thành công
-            toast({
-              title: "Thành công",
-              description: "Đặt hàng thành công.",
-              variant: "default",
-            });
           } 
         } else {
           const newStatus = "đã hủy"; // Trạng thái mới của đơn hàng khi giao dịch thất bại
@@ -110,11 +105,6 @@ useEffect(() => {
         }
       } catch (error) {
         console.error("Lỗi khi hủy đơn hàng:", error);
-        toast({
-          title: "Lỗi",
-          description: "Có lỗi xảy ra.",
-          variant: "default",
-        });
       }
     };
   

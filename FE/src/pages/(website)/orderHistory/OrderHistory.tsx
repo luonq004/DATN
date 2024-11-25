@@ -84,15 +84,22 @@ const OrderHistory = () => {
 
   // Lọc đơn hàng theo trạng thái và mã đơn hàng
   const filteredOrders = (data || [])
-    .filter((order : Order) => order.status === selectedStatus)
+    .filter((order: Order) => order.status === selectedStatus)
     .filter((order: Order) =>
       order.orderCode.toLowerCase().includes(searchQuery.toLowerCase())
-    ).sort((a: Order, b: Order) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    )
+    .sort(
+      (a: Order, b: Order) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
   // Xử lý phân trang
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const handlePageChange = (page: number) => {
@@ -151,28 +158,42 @@ const OrderHistory = () => {
                           {/* sản phẩm */}
                           <div className="flex items-center space-x-4 space-y-4">
                             <img
-                              src={item.productItem?.image || "/default-image.jpg"}
-                              alt={item.productItem?.name || "Sản phẩm không có tên"}
+                              src={
+                                item.productItem?.image || "/default-image.jpg"
+                              }
+                              alt={
+                                item.productItem?.name ||
+                                "Sản phẩm không có tên"
+                              }
                               className="w-16 h-16 object-cover"
                             />
                             <div>
                               <div className="font-medium">
-                                {item.productItem?.name || "Sản phẩm không có tên"}
+                                {item.productItem?.name ||
+                                  "Sản phẩm không có tên"}
                               </div>
-                              <div className="text-sm">Số lượng: {item.quantity}</div>
                               <div className="text-sm">
-                                {item.variantItem.values.map((value: VariantItem, index: number) => (
-                                  <div key={value._id}>
-                                    {value.type}: {value.name}
-                                    {index < item.variantItem.values.length - 1 ? "," : ""}
-                                  </div>
-                                ))}
+                                Số lượng: {item.quantity}
+                              </div>
+                              <div className="text-sm">
+                                {item.variantItem.values.map(
+                                  (value: VariantItem, index: number) => (
+                                    <div key={value._id}>
+                                      {value.type}: {value.name}
+                                      {index <
+                                      item.variantItem.values.length - 1
+                                        ? ","
+                                        : ""}
+                                    </div>
+                                  )
+                                )}
                               </div>
                             </div>
                           </div>
                           <div>
                             <span className="text-[#81cd06]">
-                              Giá: {formatCurrencyVND(item.variantItem?.price ?? 0)}
+                              Giá:{" "}
+                              {formatCurrencyVND(item.variantItem?.price ?? 0)}
                             </span>
                           </div>
                         </div>
@@ -188,7 +209,8 @@ const OrderHistory = () => {
 
               <div className="mt-4 font-semibold text-lg text-right">
                 Tổng tiền: {formatCurrencyVND(order.totalPrice)}
-                {(order.status === "chờ xác nhận" || order.status === "chờ lấy hàng") && (
+                {(order.status === "chờ xác nhận" ||
+                  order.status === "chờ lấy hàng") && (
                   <button
                     className="px-4 ml-[2%] py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                     onClick={() => cancelOrder(order._id)}
@@ -212,14 +234,14 @@ const OrderHistory = () => {
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              href="#"
+              className="cursor-pointer"
               onClick={() => handlePageChange(currentPage - 1)}
             />
           </PaginationItem>
           {[...Array(totalPages).keys()].map((page) => (
             <PaginationItem key={page + 1}>
               <PaginationLink
-                href="#"
+                className="cursor-pointer"
                 onClick={() => handlePageChange(page + 1)}
                 isActive={page + 1 === currentPage}
               >
@@ -229,7 +251,7 @@ const OrderHistory = () => {
           ))}
           <PaginationItem>
             <PaginationNext
-              href="#"
+              className="cursor-pointer"
               onClick={() => handlePageChange(currentPage + 1)}
             />
           </PaginationItem>
