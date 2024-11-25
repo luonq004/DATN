@@ -33,18 +33,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import CheckOutVoucher from "./CheckOutVoucher";
 import CreateAddress from "../../address/CreatAddress";
 import { toast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import AddressDialog from "./AddressDialog ";
 // import { useQueryClient } from "@tanstack/react-query";
 interface ErrorResponse {
   message: string;
 }
-/// thông tin thanh toán 
+/// thông tin thanh toán
 // số thẻ 9704198526191432198
 // tên : 	NGUYEN VAN A
 // ngày 07/15
 const CheckOut = () => {
   const navigate = useNavigate();
   // const queryClient = useQueryClient();
-  
+
   const form = useForm<FormOut>({
     defaultValues: {
       addressId: "",
@@ -64,7 +66,8 @@ const CheckOut = () => {
     isLoading: isLoadingAddresses,
     isError: adressError,
   } = useAddress(_id);
-
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const handleDialogClose = () => setDialogOpen(false);
   // lấy dữ liệu giỏ hàng
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
   const onSubmit = async (data: FormOut) => {
@@ -78,33 +81,35 @@ const CheckOut = () => {
     };
     try {
       // Gửi yêu cầu tạo đơn hàng đến backend
+      const response = await axios.post(
+        "http://localhost:8080/api/create-order",
+        orderData
+      );
+      const createOrder = response.data;
+      const orderCode = createOrder?.order?.orderCode;
+      if (data.paymentMethod === "Vnpay") {
         const response = await axios.post(
-          "http://localhost:8080/api/create-order",
-          orderData
-        );
-        const createOrder = response.data;
-        const orderCode = createOrder?.order?.orderCode;
-        if(data.paymentMethod === "Vnpay"){
-          const response = await axios.post('http://localhost:8080/api/create_payment_url', {
+          "http://localhost:8080/api/create_payment_url",
+          {
             amount: carts?.total ?? 0,
             orderCode: orderCode,
-            bankCode: 'VNB',
-          });
-          const paymentUrl = response.data.redirectUrl;
-          console.log("paymentUrl", paymentUrl);
-          window.location.href = paymentUrl;
-        }
-        if (data.paymentMethod === "COD" && response.status === 201) {
-          // Đơn hàng đã được tạo thành công
-          toast({
-            title: "Thành công!",
-            description: "Đặt hàng thành công.",
-            variant: "default",
-          });
-          // queryClient.invalidateQueries(["CART", _id]);
-          navigate("/cart/order"); // Điều hướng đến trang đơn hàng
-        }
-      
+            bankCode: "VNB",
+          }
+        );
+        const paymentUrl = response.data.redirectUrl;
+        console.log("paymentUrl", paymentUrl);
+        window.location.href = paymentUrl;
+      }
+      if (data.paymentMethod === "COD" && response.status === 201) {
+        // Đơn hàng đã được tạo thành công
+        toast({
+          title: "Thành công!",
+          description: "Đặt hàng thành công.",
+          variant: "default",
+        });
+        // queryClient.invalidateQueries(["CART", _id]);
+        navigate("/cart/order"); // Điều hướng đến trang đơn hàng
+      }
     } catch (error: unknown) {
       console.error("Lỗi khi tạo đơn hàng: ", error);
 
@@ -142,6 +147,7 @@ const CheckOut = () => {
   if (defaultAddress) {
     form.setValue("addressId", defaultAddress._id); // Đặt giá trị vào form state
   }
+
   return (
     <Form {...form}>
       <form
@@ -205,9 +211,20 @@ const CheckOut = () => {
                               />
                             </div>
                           ))}
-                      <div className="ml-[2.5%] text-blue-600 cursor-pointer flex-shrink-0 flex-1">
+                          <div className="ml-[2%] px-4  text-[#b8cd06]"
+                          style={{ border: "1px solid #b8cd06"}}>
+                            Mặc Định
+                          </div>
+                      <div className="ml-[2.5%] text-blue-600 cursor-pointer flex-shrink-0 flex-1"
+                      onClick={() => setDialogOpen(true)}
+                      >
                         Thay đổi
                       </div>
+                      {/* Dialog */}
+                      <AddressDialog
+                        isOpen={isDialogOpen}
+                        onClose={handleDialogClose}
+                      />
                     </>
                   )}
                 </>

@@ -12,7 +12,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
 export interface Address {
-  _id: string;
+  _id?: string;
   userId: string | number;
   createdAt: string; 
   country: string;
