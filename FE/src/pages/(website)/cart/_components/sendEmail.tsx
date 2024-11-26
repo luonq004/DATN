@@ -30,6 +30,7 @@ const sendOrderConfirmationEmail = async (to: string, orderCode: string) => {
     const emailContent = `
       <h1>Cảm ơn bạn đã đặt hàng!</h1>
       <p>Mã đơn hàng: <strong>${order.orderCode}</strong></p>
+      <p>Trạng thái đơn hàng: <strong>${order.status}</strong></p>
       <p>Danh sách sản phẩm:</p>
       <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
         <thead>

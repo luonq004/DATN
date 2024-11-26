@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/common/context/UserProvider";
+import { useUser } from "@clerk/clerk-react";
+import sendOrderConfirmationEmail from "@/pages/(website)/cart/_components/sendEmail";
 type PaymentResult = {
   code: string;
 };
@@ -20,8 +22,11 @@ const PaymentResult = () => {
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useUser();
+  const Gmail = user?.primaryEmailAddress?.emailAddress;
   const { _id } = useUserContext() ?? {}; // Lấy _id từ UserContext
  // Lấy mã đơn hàng từ URL
+
  const orderId = searchParams.get("vnp_TxnRef");
 
   useEffect(() => {
@@ -80,21 +85,25 @@ useEffect(() => {
           const response = await axios.put(`${apiUrl}/update-order/${orderDetails._id}`, {
             newStatus,
           });
-  
+          if(Gmail){
+            await sendOrderConfirmationEmail(Gmail, orderId);
+          }
           if (response.status === 200) {
             queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
   
             // Hiển thị thông báo thành công
           } 
-        } else {
+        } 
+      else {
           const newStatus = "đã hủy"; // Trạng thái mới của đơn hàng khi giao dịch thất bại
           const response = await axios.put(`${apiUrl}/update-order/${orderDetails._id}`, {
             newStatus,
           });
-  
+          if(Gmail){
+            await sendOrderConfirmationEmail(Gmail, orderId);
+          }
           if (response.status === 200) {
             queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
-  
             // Hiển thị thông báo thành công
             toast({
               title: "Thanh toán thất bại!",
@@ -107,11 +116,10 @@ useEffect(() => {
         console.error("Lỗi khi hủy đơn hàng:", error);
       }
     };
-  
-    if (result?.code === "00" || result?.code !== "00") {
-      cancelOrder(); // Gọi hàm hủy đơn hàng nếu giao dịch thành công hoặc thất bại
+    if ((result?.code === "00" || result?.code !== "00") && Gmail) {
+      cancelOrder(); // Chỉ gọi hàm khi có giá trị `result` và `Gmail`.
     }
-  }, [result, orderDetails, _id, apiUrl]); // Đảm bảo có các phụ thuộc đúng
+  }, [result, orderDetails, _id, apiUrl, Gmail]); // Đảm bảo có các phụ thuộc đúng
   
   if (loading)
     return (

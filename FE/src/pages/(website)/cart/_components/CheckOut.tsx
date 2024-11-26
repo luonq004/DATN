@@ -36,6 +36,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import AddressDialog from "./AddressDialog ";
 import sendOrderConfirmationEmail from "./sendEmail";
+import { useUser } from "@clerk/clerk-react";
 // import { useQueryClient } from "@tanstack/react-query";
 interface ErrorResponse {
   message: string;
@@ -61,7 +62,9 @@ const CheckOut = () => {
     formState: { errors },
   } = form;
 
+  const { user } = useUser();
   const { _id } = useUserContext() ?? {};
+  const Gmail = user?.primaryEmailAddress?.emailAddress;
   const {
     data: addresses,
     isLoading: isLoadingAddresses,
@@ -101,10 +104,6 @@ const CheckOut = () => {
         console.log("paymentUrl", paymentUrl);
         window.location.href = paymentUrl;
       }
-      if (data.paymentMethod === "Vnpay" && response.status === 201) {
-        await sendOrderConfirmationEmail("hai31569@gmail.com", orderCode);
-      }
-
       if (data.paymentMethod === "COD" && response.status === 201) {
         // Đơn hàng đã được tạo thành công
         toast({
@@ -115,7 +114,7 @@ const CheckOut = () => {
         // queryClient.invalidateQueries(["CART", _id]);
         navigate("/cart/order"); // Điều hướng đến trang đơn hàng
         // Gửi email xác nhận đơn hàng
-        await sendOrderConfirmationEmail("hai31569@gmail.com", orderCode);
+        await sendOrderConfirmationEmail(Gmail, orderCode);
 
       }
     } catch (error: unknown) {
