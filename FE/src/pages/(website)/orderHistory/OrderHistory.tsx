@@ -81,6 +81,40 @@ const OrderHistory = () => {
       }
     }
   };
+  const paymentMethod = async (orderId: OrderProduct) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/create_payment_url",
+        {
+          amount: orderId.totalPrice,
+          orderCode: orderId.orderCode,
+          bankCode: "VNB",
+        }
+      );
+      const paymentUrl = response.data.redirectUrl;
+      window.location.href = paymentUrl;
+      if (response.status === 200) {
+        queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
+      }
+    } catch (error) {
+      console.error(error);
+      const err = error as ErrorResponse;
+      if (err.response && err.response.data) {
+        toast({
+          title: "Lỗi",
+          description:
+            err.response.data.message || "Cập nhật trạng thái thất bại!",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: "Lỗi kết nối server!",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   // Lọc đơn hàng theo trạng thái và mã đơn hàng
   const filteredOrders = (data || [])
@@ -92,7 +126,6 @@ const OrderHistory = () => {
       (a: Order, b: Order) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-
   // Xử lý phân trang
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
@@ -105,7 +138,6 @@ const OrderHistory = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
   return (
     <div className="container p-6">
       {/* Status Menu */}
@@ -218,6 +250,15 @@ const OrderHistory = () => {
                     Hủy đơn hàng
                   </button>
                 )}
+                {order.status === "chờ xác nhận" &&
+                  order.payment === "Vnpay" && (
+                    <button
+                      className="px-4 ml-[2%] py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                      onClick={() => paymentMethod(order)}
+                    >
+                      Thanh toán ngay
+                    </button>
+                  )}
               </div>
             </div>
           ))

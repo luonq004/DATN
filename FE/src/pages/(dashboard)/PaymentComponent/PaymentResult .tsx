@@ -9,6 +9,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/common/context/UserProvider";
 import { useUser } from "@clerk/clerk-react";
 import sendOrderConfirmationEmail from "@/pages/(website)/cart/_components/sendEmail";
+import sendOrderHuyConfirmationEmail from "@/pages/(website)/cart/_components/sendHuyenail";
 type PaymentResult = {
   code: string;
 };
@@ -100,7 +101,7 @@ useEffect(() => {
             newStatus,
           });
           if(Gmail){
-            await sendOrderConfirmationEmail(Gmail, orderId);
+            await sendOrderHuyConfirmationEmail(Gmail, orderId);
           }
           if (response.status === 200) {
             queryClient.invalidateQueries(["ORDER_HISTORY", _id]);

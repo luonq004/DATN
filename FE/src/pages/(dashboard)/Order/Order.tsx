@@ -48,6 +48,18 @@ interface ErrorResponse {
 }
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('vi-VN', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  }).format(date);
+};
 
 const AdminOrder = () => {
   const queryClient = useQueryClient();
@@ -64,7 +76,7 @@ const AdminOrder = () => {
       payment: order.payment || "N/A",
       status: order.status || "unknown",
       createdAt: order.createdAt || "",
-    }));
+    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); 
   }, [data]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -99,6 +111,82 @@ const AdminOrder = () => {
       }
     }
   };
+  const cancelOrder = async (orderId: string) => {
+    const newStatus = "đã hủy";
+    try {
+      const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
+        newStatus,
+      }); // Đường dẫn API hủy đơn hàng
+      if (response.status === 200) {
+        queryClient.invalidateQueries(["ORDER_HISTORY", orderId]);
+        toast({
+          title: "Thành công",
+          description: "Đơn hàng đã được hủy thành công.",
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      const err = error as ErrorResponse;
+      if (err.response && err.response.data) {
+        toast({
+          title: "Lỗi",
+          description:
+            err.response.data.message || "Cập nhật trạng thái thất bại!",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: "Lỗi kết nối server!",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  // Kiểm tra nếu đơn hàng cần hủy sau 5 phút từ thời điểm tạo đơn hàng
+  React.useEffect(() => {
+    // Lưu trữ các ID của timeout để clear sau
+    const timers: ReturnType<typeof setTimeout>[] = [];
+  
+    // Lặp qua các đơn hàng để kiểm tra
+    orders.forEach((order) => {
+      // Chỉ xử lý các đơn hàng có trạng thái "chờ xác nhận" và payment là "Vnpay"
+      if (order.status === "chờ xác nhận" && order.payment === "Vnpay") {
+        // sendOrderErrorConfirmationEmail("hai31569@gmail.com",order.orderCode)
+        const createdAt = new Date(order.createdAt);
+        const currentTime = new Date();
+        const timeElapsed = currentTime.getTime() - createdAt.getTime();
+  
+        // Kiểm tra nếu đơn hàng đã được tạo hơn 5 phút
+        if (timeElapsed >= 300000) {
+          // Nếu quá 5 phút, hủy đơn hàng ngay lập tức
+          cancelOrder(order.id);
+        } else {
+          // Nếu chưa đến 5 phút, cài đặt hủy sau khoảng thời gian còn lại
+          const remainingTime = 300000 - timeElapsed;
+  
+          // Cài đặt một timeout để hủy đơn hàng sau khoảng thời gian còn lại
+          const timerId = setTimeout(() => {
+            // Kiểm tra lại trạng thái của đơn hàng trước khi hủy
+            if (order.status === "chờ xác nhận") {
+              cancelOrder(order.id);
+            }
+          }, remainingTime);
+  
+          // Lưu timerId để có thể clear sau nếu trạng thái thay đổi
+          timers.push(timerId);
+        }
+      }
+    });
+  
+    // Cleanup function để hủy các timeout cũ khi component unmount hoặc orders thay đổi
+    return () => {
+      // Hủy tất cả các timeout nếu component bị unmount hoặc orders thay đổi
+      timers.forEach((timerId) => clearTimeout(timerId));
+    };
+  }, [orders]); 
 
   const columns: ColumnDef<Order>[] = React.useMemo(
     () => [
@@ -121,6 +209,7 @@ const AdminOrder = () => {
       {
         header: "Ngày tạo",
         accessorKey: "createdAt",
+        cell: ({ row }) => formatDate(row.original.createdAt),
       },
       {
         header: "Thao tác",
@@ -178,7 +267,7 @@ const AdminOrder = () => {
 
   const [paginationState, setPaginationState] = React.useState({
     pageIndex: 0,  // Trang đầu tiên
-    pageSize: 10,   // Số hàng mỗi trang
+    pageSize: 8,   // Số hàng mỗi trang
   });
 
   const table = useReactTable({
