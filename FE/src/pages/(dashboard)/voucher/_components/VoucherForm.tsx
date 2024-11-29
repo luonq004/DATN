@@ -170,7 +170,7 @@ const VoucherForm = ({ id }: any) => {
                         defaultValue=""
                         render={({ field }) => (
                             <Select disabled={openEdit === id ? false : true} onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className="w-[180px]">
+                                <SelectTrigger className="w-[180px] m-0">
                                     <SelectValue placeholder="Select a category" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -216,7 +216,7 @@ const VoucherForm = ({ id }: any) => {
                         defaultValue=""
                         render={({ field }) => (
                             <Select disabled={openEdit === id ? false : true} onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className="w-[180px]">
+                                <SelectTrigger className="w-[180px] m-0">
                                     <SelectValue placeholder="Select a type" />
                                 </SelectTrigger>
                                 <SelectContent>

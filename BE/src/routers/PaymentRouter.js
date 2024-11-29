@@ -7,11 +7,12 @@ import qs from 'qs';
 const PaymentRouter = express.Router();
 
 // Dữ liệu truyền vào
-const vnp_TmnCode = "M2BGNLVO";
-const vnp_HashSecret = "ULMM8YS61BMO50XPX9061VC53AL5O7GU";
-const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-const vnp_Api = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-const vnp_ReturnUrl = "http://localhost:5173/order/vnpay_return";
+// Truy cập các biến môi trường
+const vnp_TmnCode = process.env.VNP_TMN_CODE;
+const vnp_HashSecret = process.env.VNP_HASH_SECRET;
+const vnp_Url = process.env.VNP_URL;
+const vnp_Api = process.env.VNP_API;
+const vnp_ReturnUrl = process.env.VNP_RETURN_URL;
 
 // Các route
 PaymentRouter.get('/', (req, res) => {

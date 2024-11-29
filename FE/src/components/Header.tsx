@@ -16,7 +16,7 @@ const menuItems = [
   { label: "Về chúng tôi", to: "/about" },
   { label: "Sản phẩm", to: "/shopping" },
   { label: "Dịch vụ", to: "/services" },
-  // { label: "Bài viết", href: "#" },
+  { label: "Tin tức", to: "/blog" },
   // { label: "Trưng bày", to: "/" },
   // { label: "Liên hệ", href: "#" },
 ];

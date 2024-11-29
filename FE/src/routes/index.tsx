@@ -33,20 +33,27 @@ import CartPage from "../pages/(website)/cart/page";
 import LayoutWebsite from "../pages/(website)/layout";
 
 import ListAddress from "@/pages/(website)/address/ListAddress";
-import VoucherStorage from "@/pages/(website)/user/_components/VoucherStorage";
 import SuccessPage from "@/pages/(website)/cart/_components/SuccessPage ";
 import OrderHistory from "@/pages/(website)/orderHistory/OrderHistory";
+import VoucherStorage from "@/pages/(website)/user/_components/VoucherStorage";
 
 import RegisterForm from "@/pages/(dashboard)/user/_component/RegisterForm";
 
-import AttributesPage from "@/pages/(dashboard)/attribute/page";
-import AttributeValuePage from "@/pages/(dashboard)/attributeValue/page";
-import ProductDetail from "@/pages/(website)/product/page";
-import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
 import NotFound from "@/components/Notfound";
-import UpdateAttributePage from "@/pages/(dashboard)/attribute/edit/page";
 import CreateAttributePage from "@/pages/(dashboard)/attribute/add/page";
+import UpdateAttributePage from "@/pages/(dashboard)/attribute/edit/page";
+import AttributesPage from "@/pages/(dashboard)/attribute/page";
 import UpdateAttributeValuePage from "@/pages/(dashboard)/attributeValue/edit/page";
+import AttributeValuePage from "@/pages/(dashboard)/attributeValue/page";
+import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
+import BlogCard from "@/pages/(website)/blog/_components/BlogCard";
+import ProductDetail from "@/pages/(website)/product/page";
+import Detail from "@/pages/(website)/blog/_components/Detail";
+import ListBlog from "@/pages/(dashboard)/blog/_components/ListBlog";
+import BlogPage from "@/pages/(website)/blog/page";
+import BlogPages from "@/pages/(dashboard)/blog/Page";
+import AddBlog from "@/pages/(dashboard)/blog/_components/AddBlog";
+import EditBlog from "@/pages/(dashboard)/blog/_components/EditBlog";
 import PaymentResult from "@/pages/(dashboard)/PaymentComponent/PaymentResult ";
 import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
 import WishListPage from "@/pages/(website)/wishlist/page";
@@ -82,6 +89,12 @@ const Router = () => {
           <Route path="signup" element={<SignUp />} /> */}
 
           <Route path="services" element={<PageServices />} />
+
+          <Route path="blog" element={<BlogPage />}>
+            <Route index element={<BlogCard />} />
+            <Route path="detail/:id" element={<Detail />} />
+          </Route>
+
           <Route path="about" element={<AboutUsPage />} />
           <Route path="shopping" element={<ProductShopPage />} />
           <Route path="wishlist" element={<WishListPage />} />
@@ -97,7 +110,7 @@ const Router = () => {
         </Route>
 
         <Route path="admin" element={<LayoutAdmin />}>
-          <Route path="dashboard" element={<DashBoardPage />} />
+          <Route index path="dashboard" element={<DashBoardPage />} />
           <Route path="products" element={<ProductPage />} />
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />
@@ -114,6 +127,12 @@ const Router = () => {
                 />
               }
             />
+          </Route>
+
+          <Route path="blogs" element={<BlogPages/>}>
+            <Route index element={<ListBlog />} />
+            <Route path="add" element={<AddBlog />} />
+            <Route path="edit/:id" element={<EditBlog />} />
           </Route>
 
           <Route path="sliders" element={<SliderPage />}>

@@ -1,5 +1,5 @@
 import express from 'express'
-import { addToCart, addVoucher, changeVariant, decrease, getCartByUserId, increase, removeCartProduct, updateCart, updateQuantity, revomeVoucherCart } from '../controllers/cart';
+import { addToCart, addVoucher, changeVariant, decrease, getCartByUserId, increase, removeCartProduct, updateCart, updateQuantity, revomeVoucherCart, selectedAllItem, selectedOneItem } from '../controllers/cart';
 import { checkVoucherUsed } from '../middlewares/checkVoucherUsed';
 const routerCart = express.Router();
 
@@ -11,8 +11,9 @@ routerCart.put('/cart/remove', removeCartProduct);
 routerCart.put('/cart/update', updateQuantity);
 routerCart.put('/cart/add-voucher', checkVoucherUsed, addVoucher);
 routerCart.put('/cart/remove-voucher', revomeVoucherCart);
-routerCart.put('/cart/change-variant', changeVariant)
-
+routerCart.put('/cart/change-variant', changeVariant);
+routerCart.put('/cart/selected-all', selectedAllItem);
+routerCart.put('/cart/selected-one', selectedOneItem);
 
 routerCart.put('/cart/update/:id', updateCart);
 

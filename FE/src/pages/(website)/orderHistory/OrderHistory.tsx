@@ -81,24 +81,63 @@ const OrderHistory = () => {
       }
     }
   };
+  const paymentMethod = async (orderId: OrderProduct) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/create_payment_url",
+        {
+          amount: orderId.totalPrice,
+          orderCode: orderId.orderCode,
+          bankCode: "VNB",
+        }
+      );
+      const paymentUrl = response.data.redirectUrl;
+      window.location.href = paymentUrl;
+      if (response.status === 200) {
+        queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
+      }
+    } catch (error) {
+      console.error(error);
+      const err = error as ErrorResponse;
+      if (err.response && err.response.data) {
+        toast({
+          title: "Lỗi",
+          description:
+            err.response.data.message || "Cập nhật trạng thái thất bại!",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: "Lỗi kết nối server!",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   // Lọc đơn hàng theo trạng thái và mã đơn hàng
   const filteredOrders = (data || [])
-    .filter((order : Order) => order.status === selectedStatus)
+    .filter((order: Order) => order.status === selectedStatus)
     .filter((order: Order) =>
       order.orderCode.toLowerCase().includes(searchQuery.toLowerCase())
-    ).sort((a: Order, b: Order) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
+    )
+    .sort(
+      (a: Order, b: Order) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   // Xử lý phân trang
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
   return (
     <div className="container p-6">
       {/* Status Menu */}
@@ -151,28 +190,42 @@ const OrderHistory = () => {
                           {/* sản phẩm */}
                           <div className="flex items-center space-x-4 space-y-4">
                             <img
-                              src={item.productItem?.image || "/default-image.jpg"}
-                              alt={item.productItem?.name || "Sản phẩm không có tên"}
+                              src={
+                                item.productItem?.image || "/default-image.jpg"
+                              }
+                              alt={
+                                item.productItem?.name ||
+                                "Sản phẩm không có tên"
+                              }
                               className="w-16 h-16 object-cover"
                             />
                             <div>
                               <div className="font-medium">
-                                {item.productItem?.name || "Sản phẩm không có tên"}
+                                {item.productItem?.name ||
+                                  "Sản phẩm không có tên"}
                               </div>
-                              <div className="text-sm">Số lượng: {item.quantity}</div>
                               <div className="text-sm">
-                                {item.variantItem.values.map((value: VariantItem, index: number) => (
-                                  <div key={value._id}>
-                                    {value.type}: {value.name}
-                                    {index < item.variantItem.values.length - 1 ? "," : ""}
-                                  </div>
-                                ))}
+                                Số lượng: {item.quantity}
+                              </div>
+                              <div className="text-sm">
+                                {item.variantItem.values.map(
+                                  (value: VariantItem, index: number) => (
+                                    <div key={value._id}>
+                                      {value.type}: {value.name}
+                                      {index <
+                                      item.variantItem.values.length - 1
+                                        ? ","
+                                        : ""}
+                                    </div>
+                                  )
+                                )}
                               </div>
                             </div>
                           </div>
                           <div>
                             <span className="text-[#81cd06]">
-                              Giá: {formatCurrencyVND(item.variantItem?.price ?? 0)}
+                              Giá:{" "}
+                              {formatCurrencyVND(item.variantItem?.price ?? 0)}
                             </span>
                           </div>
                         </div>
@@ -188,7 +241,8 @@ const OrderHistory = () => {
 
               <div className="mt-4 font-semibold text-lg text-right">
                 Tổng tiền: {formatCurrencyVND(order.totalPrice)}
-                {(order.status === "chờ xác nhận" || order.status === "chờ lấy hàng") && (
+                {(order.status === "chờ xác nhận" ||
+                  order.status === "chờ lấy hàng") && (
                   <button
                     className="px-4 ml-[2%] py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                     onClick={() => cancelOrder(order._id)}
@@ -196,6 +250,15 @@ const OrderHistory = () => {
                     Hủy đơn hàng
                   </button>
                 )}
+                {order.status === "chờ xác nhận" &&
+                  order.payment === "Vnpay" && (
+                    <button
+                      className="px-4 ml-[2%] py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                      onClick={() => paymentMethod(order)}
+                    >
+                      Thanh toán ngay
+                    </button>
+                  )}
               </div>
             </div>
           ))
@@ -212,14 +275,14 @@ const OrderHistory = () => {
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              href="#"
+              className="cursor-pointer"
               onClick={() => handlePageChange(currentPage - 1)}
             />
           </PaginationItem>
           {[...Array(totalPages).keys()].map((page) => (
             <PaginationItem key={page + 1}>
               <PaginationLink
-                href="#"
+                className="cursor-pointer"
                 onClick={() => handlePageChange(page + 1)}
                 isActive={page + 1 === currentPage}
               >
@@ -229,7 +292,7 @@ const OrderHistory = () => {
           ))}
           <PaginationItem>
             <PaginationNext
-              href="#"
+              className="cursor-pointer"
               onClick={() => handlePageChange(currentPage + 1)}
             />
           </PaginationItem>

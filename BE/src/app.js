@@ -27,6 +27,9 @@ import userRouter from "./routers/Users";
 import PaymentRouter from "./routers/PaymentRouter";
 import commentRouter from "./routers/comment";
 import wishlistRouter from "./routers/wishlist";
+import BlogRouter from "./routers/blog";
+import sendEmailRouter from "./routers/send-email";
+import dashboardRouter from "./routers/dashboard";
 
 const app = express();
 
@@ -64,14 +67,17 @@ app.post("/api/variant/add", createVariant);
 app.delete("/api/variant/:id", removeVariant);
 // app.post("/api/user/add", createUser);
 // app.use("/api", authRouter);
-
+// Sử dụng Router gửi email
+app.use("/api", sendEmailRouter);
 app.use("/api/sliders", sliderRouter);
 app.use("/api/logo", logoRouter);
+app.use("/api/blogs", BlogRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/collections", collectionRouter);
 app.use("/api/users", userRouter);
 app.use("/api/comment", commentRouter);
 app.use("/api", wishlistRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

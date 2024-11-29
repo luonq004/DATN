@@ -7,11 +7,11 @@ import VoucherUsage from "../models/voucherUsage";
 
 const updateTotal = async (cart) => {
   let total = cart.products.reduce(
-    (acc, item) => acc + item.variantItem.price * item.quantity,
+    (acc, item) => { return item.selected ? acc + item.variantItem.price * item.quantity : acc },
     0
   );
-  // console.log(cart.voucher)
   cart.subTotal = total;
+  // console.log(cart.voucher)
   let totalDiscount = 0;
 
   if (cart.voucher && cart.voucher.length > 0) {
@@ -74,11 +74,12 @@ export const getCartByUserId = async (req, res) => {
           { path: "attribute", options: { strictPopulate: false } }, // Bỏ qua kiểm tra schema
           { path: "category", options: { strictPopulate: false } },
         ],
+        match: { deleted: false },
       })
       .populate({
         path: "products.variantItem",
-        match: { deleted: false },
         populate: { path: "values" },
+        match: { deleted: false },
       })
       .populate("voucher");
     if (!cart) {
@@ -91,9 +92,10 @@ export const getCartByUserId = async (req, res) => {
       return res.status(StatusCodes.OK).json(cart);
     }
 
-    console.log(cart);
-
-    // cart = await updateTotal(cart);
+    const products = cart.products.filter((product) => product.productItem !== null && product.variantItem !== null);
+    cart.products = products;
+    await cart.save();
+    cart = await updateTotal(cart);
     return res.status(StatusCodes.OK).json(cart);
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
@@ -475,7 +477,7 @@ export const addVoucher = async (req, res) => {
     // await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
 
     // thêm vào danh sách đã sử dụng voucher
-    // await VoucherUsage.create({ userId: userId, voucherId: voucher._id });
+    await VoucherUsage.create({ userId: userId, voucherId: voucher._id });
 
     cart.voucher.push(voucher._id);
     // console.log(cart)
@@ -598,13 +600,79 @@ export const changeVariant = async (req, res) => {
     }
 
     cart.products[itemIndex].variantItem = newVariantId;
-    cart.products[itemIndex].quantity = 1;
+    // cart.products[itemIndex].quantity = 1;
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
+
+export const selectedOneItem = async (req, res) => {
+  try {
+    const { userId, productId, variantId } = req.body;
+    const cart = await Cart.findOne({ userId: userId });
+
+    if (!cart) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Không tìm thấy giỏ hàng" });
+    }
+
+    const existProductIndex = cart.products.findIndex(
+      (item) =>
+        item.productItem.toString() == productId &&
+        item.variantItem.toString() == variantId
+    );
+
+    if (existProductIndex !== -1) {
+      cart.products[existProductIndex].selected = !cart.products[existProductIndex]
+        .selected;
+    } else {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Không tìm thấy sản phẩm" });
+    }
+
+    await cart.save();
+    return res.status(StatusCodes.OK).json(cart);
+  } catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+}
+
+export const selectedAllItem = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const cart = await Cart.findOne({ userId: userId });
+
+    if (!cart) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Không tìm thấy giỏ hàng" });
+    }
+
+    //kiểm tra tất cả sản phẩm đã được chọn chưa
+    const selected = cart.products.every((item) => item.selected === true);
+
+    //nếu tất cả sản phẩm đã được chọn thì bỏ chọn tất cả
+    if (selected) {
+      cart.products.forEach((item) => {
+        item.selected = false;
+      });
+    } else {
+      cart.products.forEach((item) => {
+        item.selected = true;
+      });
+    }
+
+    await cart.save();
+    return res.status(StatusCodes.OK).json(cart);
+
+  } catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+}
 
 // test
 export const updateCart = async (req, res) => {

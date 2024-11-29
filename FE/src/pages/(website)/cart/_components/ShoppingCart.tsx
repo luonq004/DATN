@@ -1,18 +1,4 @@
 import { useState } from "react";
-
-//products
-import ImgProduct from "@/assets/products/product-1.svg";
-
-//icons
-import minius from "@/assets/icons/transaction-minus.svg";
-import boxtime from "@/assets/icons/box-time.svg";
-import trucktime from "@/assets/icons/truck-time.svg";
-import idk from "@/assets/icons/idk.svg";
-import visa from "@/assets/icons/Visa.svg";
-import bitcoin from "@/assets/icons/Bitcoin.svg";
-import interac from "@/assets/icons/Interac.svg";
-import SizeColorSelector from "./SizeColorSelect";
-
 //other
 import useCart from "@/common/hooks/useCart";
 import { toast } from "@/components/ui/use-toast";
@@ -39,6 +25,8 @@ const ShopCart = () => {
     addVoucher,
     removeVoucher,
     changeVariant,
+    selectedOneItem,
+    selectedAllItem
   } = useCart(_id);
   console.log(cart);
 
@@ -109,6 +97,14 @@ const ShopCart = () => {
             setAttribute("1");
           },
         });
+        break;
+
+      case "selectedOne":
+        selectedOneItem.mutate(item);
+        break;
+
+      case "selectedAll":
+        selectedAllItem.mutate(item);
         break;
     }
   }
