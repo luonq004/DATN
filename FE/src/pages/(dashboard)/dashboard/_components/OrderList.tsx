@@ -1,13 +1,8 @@
 import useOrder from "@/common/hooks/order/UseOrder";
-import { columnsOrder } from "./columnsOrder"
-import { DataTableOrder } from "./dataTableOrder"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
+import { DataTableOrder } from "./dataTableOrder";
+import { columnsOrder } from "./columnsOrder";
 
 export function OrderList() {
     const { data, isLoading, isError } = useOrder();
