@@ -53,6 +53,8 @@ const AdminOrder = () => {
 
   const { data, isLoading, isError } = useOrder();
 
+  console.log('dataOrder: ', data);
+
   const orders: Order[] = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
     return data.map((order: any) => ({
@@ -64,41 +66,41 @@ const AdminOrder = () => {
       createdAt: order.createdAt || "",
     }));
   }, [data]);
-// Hàm cập nhật trạng thái được truyền queryClient từ component
-const updateOrderStatus = async (orderId: string, newStatus: string) => {
-  try {
-    const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
-      newStatus,
-    });
+  // Hàm cập nhật trạng thái được truyền queryClient từ component
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
+        newStatus,
+      });
 
-    if (response.status === 200) {
-      // Invalidating the cache for "ADDRESS_" query when the status is updated
-      queryClient.invalidateQueries(["ORDER_HISTORY"]);
-      toast({
-        title: "Thành công!",
-        description: "Cập nhật trạng thái thành công!",
-        variant: "default",
-      });
+      if (response.status === 200) {
+        // Invalidating the cache for "ADDRESS_" query when the status is updated
+        queryClient.invalidateQueries(["ORDER_HISTORY"]);
+        toast({
+          title: "Thành công!",
+          description: "Cập nhật trạng thái thành công!",
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      const err = error as ErrorResponse;
+      if (err.response && err.response.data) {
+        toast({
+          title: "Lỗi",
+          description:
+            err.response.data.message || "Cập nhật trạng thái thất bại!",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: "Lỗi kết nối server!",
+          variant: "destructive",
+        });
+      }
     }
-  } catch (error) {
-    console.error(error);
-    const err = error as ErrorResponse;
-    if (err.response && err.response.data) {
-      toast({
-        title: "Lỗi",
-        description:
-          err.response.data.message || "Cập nhật trạng thái thất bại!",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Lỗi kết nối",
-        description: "Lỗi kết nối server!",
-        variant: "destructive",
-      });
-    }
-  }
-};
+  };
 
   const columns: ColumnDef<Order>[] = React.useMemo(
     () => [
@@ -154,7 +156,7 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {[ "chờ xác nhận", "chờ lấy hàng", "chờ giao hàng", "đã hoàn thành", "đã hủy"].map(
+                    {["chờ xác nhận", "chờ lấy hàng", "chờ giao hàng", "đã hoàn thành", "đã hủy"].map(
                       (status) => (
                         <SelectItem key={status} value={status}>
                           {status}
@@ -195,7 +197,7 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
     );
   }
 
-  
+
   return (
     <div className="w-full p-4">
       <Table>
@@ -207,9 +209,9 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
               ))}
             </TableRow>

@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Link } from 'react-router-dom';
 import Icart from '@/common/types/cart';
+import { formatCurrency } from '@/lib/utils';
 
 const formSchema = z.object({
     voucherCode: z.string().min(2, {
@@ -52,18 +53,20 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
         userAction({ type: 'removeVoucher' }, { voucherCode: item })
     }
 
+    const productSelected = cart?.products.filter((item: any) => item.selected === true) || []
+
 
     return (
         <div className='Cart__Right'>
             <div className='flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6'>
                 <div className='Subtotal flex flex-col gap-4'>
                     <div className='flex justify-between'>
-                        <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Tổng phụ</p>
-                        <p className=''>$<span>{cart?.subTotal}.00</span></p>
+                        <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Tổng phụ ({productSelected?.length} sản phẩm)</p>
+                        <p className=''><span>{formatCurrency(cart?.subTotal || 0)} VNĐ</span></p>
                     </div>
                     <div className='flex justify-between'>
                         <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Giảm giá</p>
-                        <p className=''>$<span>{cart?.discount}.00</span></p>
+                        <p className=''><span>{formatCurrency(cart?.discount || 0)} VNĐ</span></p>
                     </div>
                 </div>
 
@@ -109,26 +112,12 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                         </div>
                     </DialogContent>
                 </Dialog>
-                {/* <div className='Free-Ship flex flex-col pt-4 gap-4 border-t border-[#F4F4F4]'>
-                            <div className='relative'>
-                                <div className='bg-[#F4F4F4] w-full h-[6px] rounded-full'></div>
-                                <div className={`absolute bottom-0 bg-light-400 w-1/2 h-[6px] rounded-full `}></div>
-                            </div>
-                            <div className='flex flex-col gap-[6px] max-sm:*:text-[14px]'>
-                                <p>Get Free <b className='font-medium text-[#17AF26]'>Shipping</b> for orders over <span className='text-red-500 font-medium'>$<span>100.00</span></span></p>
-                                <div className='font-medium flex'>
-                                    <div className='underline transition-all hover:text-light-400 hover:no-underline'>
-                                        <a href="#">Continue Shopping</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> */}
                 <hr />
                 <Link to={`checkout`}>
                     <div className='bg-[#C8C9CB] hover:bg-[#b8cd06] transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
                         <div>Checkout</div>
                         <div className=''>|</div>
-                        <div>$<span>{cart?.total}.00</span></div>
+                        <div><span>{formatCurrency(cart?.total || 0)} VNĐ</span></div>
                     </div>
                 </Link>
                 <hr />

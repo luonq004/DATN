@@ -36,7 +36,7 @@ const useCart = (userId: string) => {
     // !!userId => chuyển đổi sang dạng boolean. Nếu userId ko rỗng -> trả về true, kích hoạt truy vấn. Nếu userId rỗng thì ngược lại
   });
 
-  const addItem = () => {};
+  const addItem = () => { };
 
   const cartActiton = (action: string) => {
     return useMutation({
@@ -72,6 +72,8 @@ const useCart = (userId: string) => {
     addVoucher: cartActiton("add-voucher"),
     removeVoucher: cartActiton("remove-voucher"),
     changeVariant: cartActiton("change-variant"),
+    selectedOneItem: cartActiton("selected-one"),
+    selectedAllItem: cartActiton("selected-all"),
   };
 };
 

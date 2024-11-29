@@ -207,7 +207,7 @@ const SizeColorSelector = ({
         </div>
       </div>
       <div
-        className={`absolute flex flex-col gap-3 bg-background py-3 px-4 left-1/2 max-sm:left-[50%] max-[450px]:left-0 -translate-x-1/2 border rounded-md transition-all duration-300 select-none shadow-2xl
+        className={`absolute flex flex-col gap-3 bg-background py-3 px-4 left-1/2 max-sm:left-[0%] -translate-x-1/2 border rounded-md transition-all duration-300 select-none shadow-2xl
                 ${attribute === idCart
             ? "opacity-100 top-[130%] z-10"
             : "opacity-0 top-[90%] z-[-1]"

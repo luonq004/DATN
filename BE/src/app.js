@@ -26,6 +26,7 @@ import collectionRouter from "./routers/Collections";
 import userRouter from "./routers/Users";
 import paymentRouter from "./routers/PaymentRouter";
 import commentRouter from "./routers/comment";
+import dashboardRouter from "./routers/dashboarch";
 
 const app = express();
 
@@ -70,6 +71,7 @@ app.use("/api/categories", categoriesRouter);
 app.use("/api/collections", collectionRouter);
 app.use("/api/users", userRouter);
 app.use("/api/comment", commentRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

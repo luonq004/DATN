@@ -39,6 +39,8 @@ const ShopCart = () => {
     addVoucher,
     removeVoucher,
     changeVariant,
+    selectedOneItem,
+    selectedAllItem
   } = useCart(_id);
   console.log(cart)
 
@@ -109,6 +111,14 @@ const ShopCart = () => {
             setAttribute("1");
           },
         });
+        break;
+
+      case "selectedOne":
+        selectedOneItem.mutate(item);
+        break;
+
+      case "selectedAll":
+        selectedAllItem.mutate(item);
         break;
     }
   }
