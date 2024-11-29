@@ -8,6 +8,8 @@ import Icart from "@/common/types/cart";
 import PolicyCart from "./PolicyCart";
 import SizeColorSelector from "./SizeColorSelect";
 import { Link } from "react-router-dom";
+import { Check } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 const CartLeft = ({
   cart,
@@ -43,6 +45,49 @@ const CartLeft = ({
       </div>
       {/* End Top  */}
 
+      {/* Selected All */}
+      <div className="w-full grid grid-cols-[auto_37%] justify-between items-center gap-x-4 bg-gray-100 py-1.5">
+        <div className="flex gap-x-5 items-center">
+          {(cart?.products?.filter((item: any) => item.selected === true).length === cart?.products.length)
+            ?
+            <div className="flex items-center">
+              <div
+                className="inline-flex justify-center p-0.5 items-center rounded-sm bg-[#b8cd06] cursor-pointer"
+                onClick={() => userAction(
+                  { type: "selectedAll" }, {}
+                )}
+              >
+                <Check strokeWidth={'3px'} size={16} color="white" />
+              </div>
+            </div>
+            :
+            <div className="flex items-center">
+              <div
+                className="inline-flex p-[9px] rounded-sm border border-[#0000008a] cursor-pointer"
+                onClick={() => userAction(
+                  { type: "selectedAll" }, {}
+                )}
+              >
+              </div>
+            </div>
+          }
+          <div>
+            <span>Sản phẩm</span>
+          </div>
+        </div>
+        <div className="w-full flex justify-between">
+          <div>
+            <span>Số lượng</span>
+          </div>
+          <div>
+            <span>Giá</span>
+          </div>
+          <div>
+            <span>Xóa</span>
+          </div>
+        </div>
+      </div>
+
       {/* Mid  */}
       <div className="Mid flex flex-col gap-6">
         {/* Cart__Product */}
@@ -55,8 +100,41 @@ const CartLeft = ({
         {cart?.products.map((item: any, index: number) => (
           <div
             key={index}
-            className="grid transition-all duration-500 grid-cols-[81px_auto] max-sm:grid-cols-[75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6"
+            className="grid transition-all duration-500 grid-cols-[18px_81px_auto] max-sm:grid-cols-[18_px_75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6"
           >
+            <div className="inline-flex justify-center items-start select-none">
+              {item.selected && item.selected === true
+                ?
+                (
+                  <div
+                    className="rounded-sm p-0.5 bg-[#b8cd06] cursor-pointer"
+                    onClick={() => userAction(
+                      { type: "selectedOne" },
+                      {
+                        productId: item.productItem._id,
+                        variantId: item.variantItem._id,
+                      }
+                    )}
+                  >
+                    <Check strokeWidth={'3px'} size={16} color="white" />
+                  </div>
+                )
+                :
+                (
+                  <div
+                    className="p-[9px] rounded-sm border border-[#0000008a] cursor-pointer"
+                    onClick={() => userAction(
+                      { type: "selectedOne" },
+                      {
+                        productId: item.productItem._id,
+                        variantId: item.variantItem._id,
+                      }
+                    )}
+                  >
+                  </div>
+                )
+              }
+            </div>
             {/* Image  */}
             <div className="Image_Product">
               <div className="border border-[#dddcdc] rounded-[6px] p-1">
@@ -72,7 +150,7 @@ const CartLeft = ({
               <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
                 <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
                   <div className="hover:text-black">
-                    <Link to={`#`}>{item.productItem.name}</Link>
+                    <Link to={`/product/${item.productItem._id}`}>{item.productItem.name}</Link>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 max-sm:col-start-1">
@@ -132,7 +210,7 @@ const CartLeft = ({
 
                 <div className="">
                   <p>
-                    $<span>{item.variantItem.price}.00</span>
+                    <span>{formatCurrency(item.variantItem.price)} VNĐ</span>
                   </p>
                 </div>
                 <div
