@@ -122,12 +122,13 @@ const SidebarAccount: React.FC = () => {
             />
           </svg>
 
-          <h3
+          <Link
+            to="/users/voucher"
             className="text-base font-medium cursor-pointer"
             onClick={() => setActiveMenu(null)}
           >
             Kho Voucher
-          </h3>
+          </Link>
         </div>
 
         {/* Đăng xuất */}

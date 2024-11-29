@@ -5,6 +5,22 @@ import StatusMenu from "./StatusMenu";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"; // Import pagination components
+import { OrderProduct, VariantItem } from "@/common/types/Product";
+interface Order {
+  _id: string;
+  orderCode: string;
+  createdAt: string; // Hoặc Date nếu bạn lưu ngày dưới dạng đối tượng Date
+  status: string;
+  totalPrice: number;
+}
 
 interface ErrorResponse {
   response?: {
@@ -13,12 +29,14 @@ interface ErrorResponse {
     };
   };
 }
+
 const formatCurrencyVND = (amount: number): string => {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   }).format(amount);
 };
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const OrderHistory = () => {
@@ -27,6 +45,8 @@ const OrderHistory = () => {
   const { data, isLoading } = useOrder(_id); // Destructure loading and error status
   const [selectedStatus, setSelectedStatus] = useState<string>("chờ xác nhận");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 2; // Số đơn hàng hiển thị mỗi trang
 
   const cancelOrder = async (orderId: string) => {
     const newStatus = "đã hủy";
@@ -36,40 +56,88 @@ const OrderHistory = () => {
       }); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
-      toast({
+        toast({
           title: "Thành công",
           description: "Đơn hàng đã được hủy thành công.",
           variant: "default",
         });
       }
     } catch (error) {
-      {
-        console.error(error);
-        const err = error as ErrorResponse;
-        if (err.response && err.response.data) {
-          toast({
-            title: "Lỗi",
-            description:
-              err.response.data.message || "Cập nhật trạng thái thất bại!",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Lỗi kết nối",
-            description: "Lỗi kết nối server!",
-            variant: "destructive",
-          });
-        }
+      console.error(error);
+      const err = error as ErrorResponse;
+      if (err.response && err.response.data) {
+        toast({
+          title: "Lỗi",
+          description:
+            err.response.data.message || "Cập nhật trạng thái thất bại!",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: "Lỗi kết nối server!",
+          variant: "destructive",
+        });
       }
     }
   };
+  const paymentMethod = async (orderId: OrderProduct) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/create_payment_url",
+        {
+          amount: orderId.totalPrice,
+          orderCode: orderId.orderCode,
+          bankCode: "VNB",
+        }
+      );
+      const paymentUrl = response.data.redirectUrl;
+      window.location.href = paymentUrl;
+      if (response.status === 200) {
+        queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
+      }
+    } catch (error) {
+      console.error(error);
+      const err = error as ErrorResponse;
+      if (err.response && err.response.data) {
+        toast({
+          title: "Lỗi",
+          description:
+            err.response.data.message || "Cập nhật trạng thái thất bại!",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: "Lỗi kết nối server!",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   // Lọc đơn hàng theo trạng thái và mã đơn hàng
   const filteredOrders = (data || [])
-    .filter((order) => order.status === selectedStatus)
-    .filter((order) =>
+    .filter((order: Order) => order.status === selectedStatus)
+    .filter((order: Order) =>
       order.orderCode.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort(
+      (a: Order, b: Order) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
+  // Xử lý phân trang
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   return (
     <div className="container p-6">
       {/* Status Menu */}
@@ -95,8 +163,8 @@ const OrderHistory = () => {
           <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
             <div className="spinner"></div>
           </div>
-        ) : filteredOrders.length > 0 ? (
-          filteredOrders.map((order) => (
+        ) : currentOrders.length > 0 ? (
+          currentOrders.map((order: OrderProduct) => (
             <div key={order._id} className="p-4 border rounded-lg shadow-md">
               <div className="flex justify-between items-center">
                 <div>
@@ -108,8 +176,7 @@ const OrderHistory = () => {
                   </div>
                 </div>
                 <div className="text-green-500 font-semibold text-lg">
-                  <span className="text-black">Trạng thái:</span> ({" "}
-                  {order.status} )
+                  <span className="text-black">Trạng thái:</span> {order.status}
                 </div>
               </div>
 
@@ -142,7 +209,7 @@ const OrderHistory = () => {
                               </div>
                               <div className="text-sm">
                                 {item.variantItem.values.map(
-                                  (value: any, index: number) => (
+                                  (value: VariantItem, index: number) => (
                                     <div key={value._id}>
                                       {value.type}: {value.name}
                                       {index <
@@ -157,7 +224,7 @@ const OrderHistory = () => {
                           </div>
                           <div>
                             <span className="text-[#81cd06]">
-                              Giá :{" "}
+                              Giá:{" "}
                               {formatCurrencyVND(item.variantItem?.price ?? 0)}
                             </span>
                           </div>
@@ -183,16 +250,54 @@ const OrderHistory = () => {
                     Hủy đơn hàng
                   </button>
                 )}
+                {order.status === "chờ xác nhận" &&
+                  order.payment === "Vnpay" && (
+                    <button
+                      className="px-4 ml-[2%] py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                      onClick={() => paymentMethod(order)}
+                    >
+                      Thanh toán ngay
+                    </button>
+                  )}
               </div>
             </div>
           ))
         ) : (
           <div className="text-center text-gray-500">
             Không có đơn hàng nào với trạng thái "{selectedStatus}"{" "}
-            {searchQuery && ` và mã đơn hàng "${searchQuery}`}.
+            {searchQuery && ` và mã đơn hàng "${searchQuery}"`} .
           </div>
         )}
       </div>
+
+      {/* Phân trang */}
+      <Pagination className="mt-8">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              className="cursor-pointer"
+              onClick={() => handlePageChange(currentPage - 1)}
+            />
+          </PaginationItem>
+          {[...Array(totalPages).keys()].map((page) => (
+            <PaginationItem key={page + 1}>
+              <PaginationLink
+                className="cursor-pointer"
+                onClick={() => handlePageChange(page + 1)}
+                isActive={page + 1 === currentPage}
+              >
+                {page + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              className="cursor-pointer"
+              onClick={() => handlePageChange(currentPage + 1)}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

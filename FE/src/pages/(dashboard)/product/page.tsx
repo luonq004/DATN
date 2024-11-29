@@ -154,18 +154,18 @@ const data = [
 
 const ProductPage = () => {
   const [searchParams] = useSearchParams();
-  const currentLayout = searchParams.get("layout") ?? "table";
+  // const currentLayout = searchParams.get("layout") ?? "table";
 
   return (
     <Container>
       <Header />
 
       <div className="min-h-80 mt-5">
-        {currentLayout === "table" ? (
-          <DataTable columns={columnProducts} data={data} />
-        ) : (
+        {/* {currentLayout === "table" ? ( */}
+        <DataTable columns={columnProducts} data={data} />
+        {/* ) : (
           <DataGrid data={data} />
-        )}
+        )} */}
       </div>
     </Container>
   );

@@ -1,19 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import { Link } from "react-router-dom";
+import ActionCell from "./ActionCell";
 
 interface IAttributeValues {
   _id: string;
   name: string;
-  values: string;
+  value: string;
   type: string;
 }
 
@@ -33,32 +25,26 @@ export const columnAttributeValues: ColumnDef<IAttributeValues>[] = [
   {
     accessorKey: "value",
     header: "Giá trị",
+    cell: ({ row }) => {
+      const isColor = row.original.value.startsWith("#");
+      return (
+        <span
+          className={`block ${isColor ? "size-5 rounded-full" : ""}`}
+          style={{
+            backgroundColor: isColor ? row.original.value : undefined,
+            color: isColor ? "white" : "black", // Đổi màu chữ nếu cần
+          }}
+        >
+          {!isColor && row.original.value}
+        </span>
+        // <span>{row.original.value}</span>
+      );
+    },
   },
 
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => {
-      const { attributesValues } = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Link to={`/admin/attributesValues/${row.original._id}/edit`}>
-                Sửa
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>Xóa</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <ActionCell id={row.original._id} />,
   },
 ];

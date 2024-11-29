@@ -9,6 +9,7 @@ import MobileNav from "@/components/MobileNav";
 import { Link, useLocation } from "react-router-dom";
 import { useClerk, useUser } from "@clerk/clerk-react";
 import { useUserContext } from "@/common/context/UserProvider";
+import useCart from "@/common/hooks/useCart";
 
 const menuItems = [
   { label: "Trang chủ", to: "/" },
@@ -27,6 +28,10 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [showUserInfo, setShowUserInfo] = useState(false);
+
+  const { cart, isLoading } = useCart(_id);
+
+  // console.log("cart", cart);
 
   const { pathname } = useLocation();
 
@@ -157,11 +162,11 @@ const Header = () => {
                     to="/cart"
                     className="cursor-pointer text-[#555] hover:text-[#b8cd06] transition-all flex items-center"
                   >
-                    <b className="font-bold">your bag</b>
+                    <b className="font-bold">giỏ hàng</b>
                     <span className="relative">
                       <IoBagHandleSharp className="text-xl ml-1 mr-2" />
                       <span className="absolute -top-2 -right-1 bg-[#b8cd06] text-white text-[10px] w-[20px] h-[20px] text-center rounded-full">
-                        5
+                        {cart?.products?.length || 0}
                       </span>
                     </span>
                   </Link>
@@ -204,63 +209,6 @@ const Header = () => {
                       </li>
                     ))}
 
-                    {/* <li className="!list-none">
-                      <a
-                        className="text-[11px] leading-4 uppercase font-bold rounded-2xl px-5 py-[9px] bg-[#b8cd06] text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Trang chủ
-                      </a>
-                    </li>
-                    <li className="!list-none">
-                      <Link
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        to="/about"
-                      >
-                        Về chúng tôi
-                      </Link>
-                    </li>
-                    <li className="!list-none">
-                      <Link
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        to="/shopping"
-                      >
-                        Sản phẩm
-                      </Link>
-                    </li>
-                    <li className="!list-none">
-                      <Link
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        to="/services"
-                      >
-                        Dịch vụ
-                      </Link>
-                    </li>
-                    <li className="!list-none">
-                      <a
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Bài viết
-                      </a>
-                    </li>
-                    <li className="!list-none">
-                      <Link
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        to="/"
-                      >
-                        Trưng bày
-                      </Link>
-                    </li>
-
-                    <li className="!list-none">
-                      <a
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Liên hệ
-                      </a>
-                    </li> */}
                     <li className="!list-none">
                       <IoSearch
                         className="text-2xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
@@ -279,7 +227,7 @@ const Header = () => {
                   <span className="relative mr-2">
                     <IoBagHandleSharp className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
                     <span className="absolute size-5 rounded-full text-white text-[11px] leading-5 text-center bg-[#b8cd06] top-[-39%] right-[-23%]">
-                      5
+                      {cart?.products?.length || 0}
                     </span>
                   </span>
                 </div>

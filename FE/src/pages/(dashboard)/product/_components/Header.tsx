@@ -6,10 +6,10 @@ import { Link, useSearchParams } from "react-router-dom";
 const Header = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const currentLayout = searchParams.get("layout") || "table";
+  const currentLayout = searchParams.get("display") || "display";
 
   function handleChange(layout: string) {
-    searchParams.set("layout", layout);
+    searchParams.set("display", layout);
 
     // if (searchParams.get("page")) searchParams.set("page", "1");
     setSearchParams(searchParams);
@@ -26,12 +26,8 @@ const Header = () => {
         >
           <div className="flex items-center">
             <TabsList>
-              <TabsTrigger value="table">
-                <TableProperties />
-              </TabsTrigger>
-              <TabsTrigger value="grid">
-                <LayoutGrid />
-              </TabsTrigger>
+              <TabsTrigger value="display">Danh sách hiển thị</TabsTrigger>
+              <TabsTrigger value="hidden">Danh sách ẩn</TabsTrigger>
             </TabsList>
           </div>
         </Tabs>

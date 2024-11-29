@@ -63,7 +63,8 @@ const AttributeTab = ({
     dispatch({ type: "ADD_ATTRIBUTE", payload: chooseAttribute });
   }
 
-  console.log("valueOptions: ", stateAttribute.attributesChoose);
+  // console.log("valueOptions: ", stateAttribute.attributesChoose);
+  // console.log("selectedValues: ", selectedValues);
 
   return (
     <>

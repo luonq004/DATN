@@ -10,12 +10,17 @@ const attributeValueSchema = new mongoose.Schema(
     // Type phải giống với tên cuả attribute
     type: {
       type: String,
-      required: true,
+      // required: true,
     },
 
     value: {
       type: String,
       required: true,
+    },
+
+    deleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true, versionKey: false }

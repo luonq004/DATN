@@ -1,6 +1,9 @@
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
+const ACCEPTED_FILE_TYPES = ["image/png", "image/jpeg", "image/gif"];
+
 // Định nghĩa schema cho một đối tượng variant
 export const variantSchema = z
   .object({
@@ -26,8 +29,11 @@ export const variantSchema = z
       })
     ),
     countOnStock: z.coerce.number().gte(1),
-    image: z.string().optional(),
-    deleted: z.boolean().default(false).optional(),
+    // image: z.string().optional(),
+    image: z.union([
+      z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
+      z.instanceof(File).optional(), // File là tùy chọn
+    ]),
   })
   .refine(
     (data) => data.priceSale === undefined || data.priceSale < data.price,

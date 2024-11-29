@@ -24,9 +24,11 @@ import logoRouter from "./routers/Logo";
 import categoriesRouter from "./routers/Categories";
 import collectionRouter from "./routers/Collections";
 import userRouter from "./routers/Users";
-import paymentRouter from "./routers/PaymentRouter";
+import PaymentRouter from "./routers/PaymentRouter";
 import commentRouter from "./routers/comment";
 import BlogRouter from "./routers/blog";
+import sendEmailRouter from "./routers/send-email";
+import dashboardRouter from "./routers/dashboard";
 
 const app = express();
 
@@ -55,7 +57,7 @@ app.use("/api", routerOrder);
 app.use("/api", productRouter);
 app.use("/api", attributeRouter);
 app.use("/api", attributeValueRouter);
-app.use("/api", paymentRouter);
+app.use("/api", PaymentRouter);
 app.use("/api", routerCategory);
 app.use("/api", routerCart);
 app.use("/api", routerVoucher);
@@ -64,7 +66,8 @@ app.post("/api/variant/add", createVariant);
 app.delete("/api/variant/:id", removeVariant);
 // app.post("/api/user/add", createUser);
 // app.use("/api", authRouter);
-
+// Sử dụng Router gửi email
+app.use("/api", sendEmailRouter);
 app.use("/api/sliders", sliderRouter);
 app.use("/api/logo", logoRouter);
 app.use("/api/blogs", BlogRouter);
@@ -72,6 +75,7 @@ app.use("/api/categories", categoriesRouter);
 app.use("/api/collections", collectionRouter);
 app.use("/api/users", userRouter);
 app.use("/api/comment", commentRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

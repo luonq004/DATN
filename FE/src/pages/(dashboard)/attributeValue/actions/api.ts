@@ -21,13 +21,34 @@ export async function getAttributeValue(id: string) {
   }
 }
 
-// export async function updateAttributeValue(type: string) {
-//   try {
-//     const response = await axios.get(
-//       `${apiUrl}/attributevalueByAttributeID/${type}`
-//     );
-//     return response?.data;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+export async function createAttributeValues(
+  id: string,
+  data: {
+    name: string;
+    type: string;
+    value: string;
+  }
+) {
+  try {
+    const response = await axios.post(`${apiUrl}/attributevalue/${id}`, data);
+    return response?.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function updateAttributeValueByID(
+  id: string,
+  data: {
+    name: string;
+    type: string;
+    value: string;
+  }
+) {
+  try {
+    const response = await axios.put(`${apiUrl}/attributevalue/${id}`, data);
+    return response?.data;
+  } catch (error) {
+    console.log(error);
+  }
+}

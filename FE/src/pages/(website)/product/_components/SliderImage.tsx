@@ -37,8 +37,9 @@ const SliderImage: React.FC<ProductCarouselProps> = ({ variants }) => {
               <img
                 className="w-full"
                 src={
-                  // variant.image ||
-                  "http://unionagency.one/exzo/img/product-preview-4.jpg"
+                  variant.image
+                  //  ||
+                  // "http://unionagency.one/exzo/img/product-preview-4.jpg"
                 }
                 alt="Anh san pham"
                 loading="lazy"

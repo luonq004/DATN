@@ -54,6 +54,8 @@ import BlogPage from "@/pages/(website)/blog/page";
 import BlogPages from "@/pages/(dashboard)/blog/Page";
 import AddBlog from "@/pages/(dashboard)/blog/_components/AddBlog";
 import EditBlog from "@/pages/(dashboard)/blog/_components/EditBlog";
+import PaymentResult from "@/pages/(dashboard)/PaymentComponent/PaymentResult ";
+import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
 
 const Router = () => {
   return (
@@ -100,6 +102,7 @@ const Router = () => {
             <Route path="checkout" element={<CheckOut />} />
             <Route path="order" element={<SuccessPage />} />
           </Route>
+          <Route path="/order/vnpay_return" element={<PaymentResult />} />
 
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -148,6 +151,11 @@ const Router = () => {
           <Route
             path="attributesValues/:id/edit"
             element={<UpdateAttributeValuePage />}
+          />
+
+          <Route
+            path="attributesValues/add/:id"
+            element={<CreateAttributeValuePage />}
           />
 
           <Route path="logos" element={<LogoPage />}>

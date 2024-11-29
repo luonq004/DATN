@@ -1,10 +1,15 @@
+import { useUserContext } from "@/common/context/UserProvider";
 import { toast } from "@/components/ui/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 import axios from "axios";
 
 export const useAddToCart = () => {
+  const queryClient = useQueryClient();
+
+  const { _id } = useUserContext();
+
   const { mutate: addCart, isPending: isAdding } = useMutation({
     mutationFn: (data: unknown) => axios.post(`${apiUrl}/cart/add`, data),
 
@@ -12,6 +17,10 @@ export const useAddToCart = () => {
       toast({
         className: "bg-green-400 text-white h-auto",
         title: "Thêm vào giỏ hàng thành công",
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["CART", _id],
       });
     },
 

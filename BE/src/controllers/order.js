@@ -106,7 +106,7 @@ export const getAllOrdersByUserId = async (req, res) => {
 export const getAllOrders = async (req, res) => {
     try {
         // Tìm tất cả đơn hàng và populate thông tin userId và addressId
-        const orders = await Order.find();
+        const orders = await Order.find().populate("userId").sort({ createdAt: -1 });
         // Kiểm tra nếu không có đơn hàng
         if (orders.length === 0) {
             return res.status(404).json({ message: "Không có đơn hàng nào" });

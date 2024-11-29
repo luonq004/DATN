@@ -12,11 +12,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import { useCreateAttribute } from "../actions/useCreateAttribute";
-// import { useGetAttributeByID } from "../actions/useGetAttributeByID";
+
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetAttributeValueByID } from "../actions/useGetAttributeValueByID";
+import { useUpdateAttributeValue } from "../actions/useUpdateAttributeValue";
 
 // import { useUpdateAttributeByID } from "../actions/useUpdateAttributeByID";
 
@@ -35,16 +35,20 @@ const formSchema = z.object({
 
 const UpdateAttributeValuePage = () => {
   const { id } = useParams<{ id: string }>();
+  const [typeValue, setTypeValue] = useState<string>("text");
+
   const { isLoadingAtributeValue, atributeValue, error } =
     useGetAttributeValueByID(id!);
 
-  // const { isLoadingAtribute, atribute, error } = useGetAttributeByID(id!);
+  const { updateAttributeValue, isUpdating } = useUpdateAttributeValue(id!);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      value: "",
+      type: "",
     },
   });
 
@@ -52,6 +56,9 @@ const UpdateAttributeValuePage = () => {
   useEffect(() => {
     if (atributeValue) {
       form.reset(atributeValue);
+      if (atributeValue.value.startsWith("#")) {
+        setTypeValue("color");
+      }
     }
   }, [atributeValue, form]);
 
@@ -60,7 +67,8 @@ const UpdateAttributeValuePage = () => {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // updateAttribute({ ...values, _id: id });
+    // console.log(values);
+    updateAttributeValue({ ...values, _id: id });
   }
   return (
     <Form {...form}>
@@ -83,7 +91,7 @@ const UpdateAttributeValuePage = () => {
           )}
         />
 
-        <div>
+        <div className="">
           <FormField
             control={form.control}
             name="value"
@@ -91,13 +99,23 @@ const UpdateAttributeValuePage = () => {
               <FormItem>
                 <FormLabel>Giá trị thuộc tính</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input type={typeValue} placeholder="shadcn" {...field} />
                 </FormControl>
 
                 <FormMessage />
               </FormItem>
             )}
           />
+          <Button
+            type="button"
+            onClick={() => {
+              setTypeValue(typeValue === "text" ? "color" : "text");
+            }}
+          >
+            {typeValue === "text" ? "Đổi sang màu" : "Đổi sang chữ"}
+          </Button>
+
+          {/* <Button className="self-end">asd</Button> */}
         </div>
         <FormField
           control={form.control}
@@ -113,12 +131,8 @@ const UpdateAttributeValuePage = () => {
             </FormItem>
           )}
         />
-        <Button
-          // disabled={isUpdating}
-          type="submit"
-        >
-          Cập nhật
-          {/* {isUpdating ? "Đang cập nhật" : "Cập nhật"} */}
+        <Button disabled={isUpdating} type="submit">
+          {isUpdating ? "Đang cập nhật" : "Cập nhật"}
         </Button>
       </form>
     </Form>
