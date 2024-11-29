@@ -30,7 +30,7 @@ export const columnsOrder: ColumnDef<{ id: string; amount: number; status: strin
         accessorKey: "customer",
         header: "Người mua",
         cell: ({ row }) => {
-            console.log(row)
+            // console.log(row)
             return (
                 <div className="flex items-center gap-2">
                     <Avatar>

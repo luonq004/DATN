@@ -28,7 +28,7 @@ export function OrderList() {
         }));
     }, [data]);
 
-    console.log(newData);
+    // console.log(newData);
     if (isLoading) return <div>Loading...</div>
     if (isError) return <div>Error</div>
     return (

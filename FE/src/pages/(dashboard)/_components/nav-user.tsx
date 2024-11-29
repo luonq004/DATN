@@ -29,6 +29,8 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
+import { SignOutButton } from "@clerk/clerk-react"
+import { Link } from 'react-router-dom';
 
 export function NavUser({
     user,
@@ -82,11 +84,15 @@ export function NavUser({
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
-                                <Sparkles />
-                                Upgrade to Pro
+                                <Link to={'/'}>
+                                    <div className="flex cursor-pointer gap-x-2">
+                                        <Sparkles />
+                                        Trở lại trang chủ
+                                    </div>
+                                </Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
+                        {/* <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 <BadgeCheck />
@@ -100,11 +106,15 @@ export function NavUser({
                                 <Bell />
                                 Notifications
                             </DropdownMenuItem>
-                        </DropdownMenuGroup>
+                        </DropdownMenuGroup> */}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                            <LogOut />
-                            Log out
+                            <SignOutButton redirectUrl="/">
+                                <div className="flex cursor-pointer gap-x-2">
+                                    <LogOut />
+                                    Log out
+                                </div>
+                            </SignOutButton>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

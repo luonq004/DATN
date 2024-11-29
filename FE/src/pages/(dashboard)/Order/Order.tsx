@@ -76,7 +76,7 @@ const AdminOrder = () => {
       payment: order.payment || "N/A",
       status: order.status || "unknown",
       createdAt: order.createdAt || "",
-    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); 
+    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [data]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -149,7 +149,7 @@ const AdminOrder = () => {
   React.useEffect(() => {
     // Lưu trữ các ID của timeout để clear sau
     const timers: ReturnType<typeof setTimeout>[] = [];
-  
+
     // Lặp qua các đơn hàng để kiểm tra
     orders.forEach((order) => {
       // Chỉ xử lý các đơn hàng có trạng thái "chờ xác nhận" và payment là "Vnpay"
@@ -158,7 +158,7 @@ const AdminOrder = () => {
         const createdAt = new Date(order.createdAt);
         const currentTime = new Date();
         const timeElapsed = currentTime.getTime() - createdAt.getTime();
-  
+
         // Kiểm tra nếu đơn hàng đã được tạo hơn 5 phút
         if (timeElapsed >= 300000) {
           // Nếu quá 5 phút, hủy đơn hàng ngay lập tức
@@ -166,7 +166,7 @@ const AdminOrder = () => {
         } else {
           // Nếu chưa đến 5 phút, cài đặt hủy sau khoảng thời gian còn lại
           const remainingTime = 300000 - timeElapsed;
-  
+
           // Cài đặt một timeout để hủy đơn hàng sau khoảng thời gian còn lại
           const timerId = setTimeout(() => {
             // Kiểm tra lại trạng thái của đơn hàng trước khi hủy
@@ -174,19 +174,19 @@ const AdminOrder = () => {
               cancelOrder(order.id);
             }
           }, remainingTime);
-  
+
           // Lưu timerId để có thể clear sau nếu trạng thái thay đổi
           timers.push(timerId);
         }
       }
     });
-  
+
     // Cleanup function để hủy các timeout cũ khi component unmount hoặc orders thay đổi
     return () => {
       // Hủy tất cả các timeout nếu component bị unmount hoặc orders thay đổi
       timers.forEach((timerId) => clearTimeout(timerId));
     };
-  }, [orders]); 
+  }, [orders]);
 
   const columns: ColumnDef<Order>[] = React.useMemo(
     () => [
@@ -317,9 +317,9 @@ const AdminOrder = () => {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
               ))}
             </TableRow>

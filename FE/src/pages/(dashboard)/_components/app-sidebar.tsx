@@ -1,9 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {
-    Command,
-} from "lucide-react"
+import Logo from "@/assets/logo_no_text.png"
 
 import {
     Sidebar,
@@ -27,8 +25,10 @@ import {
 } from "lucide-react";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
+import { useUser } from "@clerk/clerk-react";
 
 // This is sample data.
+// const { user } = useUser();
 const data = {
     user: {
         name: "shadcn",
@@ -90,6 +90,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { user } = useUser();
+    const dataUser = React.useMemo(() => {
+        return {
+            name: user?.fullName || "Admin",
+            avatar: user?.imageUrl || "https://github.com/shadcn.png",
+            email: user?.primaryEmailAddress?.emailAddress || "admin@gmail.com"
+        }
+    }, [user])
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
@@ -97,12 +106,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <a href="#">
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                    <Command className="size-4" />
+                                <div className="flex aspect-square size-8 p-1 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                                    <img src={Logo} alt="Logo" />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-semibold">Acme Inc</span>
-                                    <span className="truncate text-xs">Enterprise</span>
+                                    <span className="truncate font-semibold">FabricFocus</span>
+                                    <span className="truncate text-xs">Quản trị</span>
                                 </div>
                             </a>
 
@@ -114,7 +123,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavMain items={data.navMain} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={dataUser} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
