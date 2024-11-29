@@ -1,12 +1,22 @@
 import { Router } from "express";
-import { createOrder, getAllOrders, getOrdersById, revenue, Top10_productOrder } from "../controllers/order";
+import {
+  createOrder,
+  getAllOrders,
+  getAllOrdersByUserId,
+  getOrderCode,
+  getOrdersById,
+  updateOrderStatus,
+} from "../controllers/order";
 
 const routerOrder = Router();
 // tạo đơn hàng
 routerOrder.post("/create-order", createOrder);
-routerOrder.get("/get-all-orders/:userId", getAllOrders);
+//  Lấy tất cả đơn hàng
+routerOrder.get("/get-all-orders/:userId", getAllOrdersByUserId);
+routerOrder.get("/get-all-orders", getAllOrders);
+// Lấy đơn hàng theo Id
 routerOrder.get("/get-orders/:orderId", getOrdersById);
-routerOrder.get(`/orders/top10_products`, Top10_productOrder);
-routerOrder.get(`/revenue`, revenue);
-
+// - Tra cứu đơn hàng theo mã đơn hàng
+routerOrder.get("/get-ordersCode/:orderCode", getOrderCode);
+routerOrder.put("/update-order/:id", updateOrderStatus);
 export default routerOrder;
