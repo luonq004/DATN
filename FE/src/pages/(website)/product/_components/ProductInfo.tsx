@@ -101,7 +101,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     const data = {
       productId: product?._id,
       variantId: variantChoose._id,
-      quantity: quantity,
+      quantity: +quantity,
       userId: _id,
     };
 

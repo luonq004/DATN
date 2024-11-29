@@ -11,9 +11,8 @@ export const getAllProducts = async (req, res) => {
     _expand = true,
     _price,
     _category,
+    _status = "display",
   } = req.query;
-
-  console.log(req.query);
 
   const options = {
     page: _page,
@@ -22,9 +21,13 @@ export const getAllProducts = async (req, res) => {
   };
   const populateOptions = _expand
     ? [
-        { path: "category", select: "name" },
-        { path: "attribites" },
-        { path: "comments" },
+        { path: "category", match: { deleted: false }, select: "name" },
+        { path: "attribites", match: { deleted: false } },
+        { path: "comments", match: { deleted: false } },
+        {
+          path: "variants",
+          match: { deleted: false },
+        },
       ]
     : [];
 
@@ -44,14 +47,20 @@ export const getAllProducts = async (req, res) => {
     query.category = { $in: categories };
   }
 
+  if (_status === "hidden") {
+    query.deleted = true;
+  } else {
+    query.deleted = false;
+  }
+
   try {
     const result = await Product.paginate(query, { ...options });
-    // const result = await Product.find();
+    const populatedDocs = await Product.populate(result.docs, populateOptions);
 
     // console.log(result);
 
     const data = {
-      data: result.docs,
+      data: populatedDocs,
       pagination: {
         currentPage: result.page,
         totalPages: result.totalPages,

@@ -25,9 +25,17 @@ const Button = ({
         >
           -
         </button>
-        <span className="border flex justify-center items-center h-full w-24 text-center text-[#333]">
-          {quantity}
-        </span>
+        <input
+          className="border py-2 text-center outline-0 max-w-24"
+          onChange={(e) => {
+            const input = e.target.value;
+
+            if (/^\d+$/.test(input) && Number(input) > 0) {
+              setQuantity(+e.target.value);
+            }
+          }}
+          value={quantity}
+        />
         <button
           className="cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333]"
           onClick={() => {

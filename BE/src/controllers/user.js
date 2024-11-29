@@ -1,9 +1,10 @@
-import dotenv from "dotenv";
+import dotenv, { populate } from "dotenv";
 import { StatusCodes } from "http-status-codes";
 import Users from "../models/users";
 import clerkClient from "../config/clerk";
 import cloudinary from "../config/cloudinary";
 import fs from "fs";
+import Product from "../models/product";
 
 dotenv.config();
 
@@ -40,9 +41,8 @@ export const saveUser = async (req, res) => {
 
     // Xác định vai trò cho người dùng
     const role = existingUser
-    ? existingUser.role
-    : clerkUser.publicMetadata?.role || 
-      (await Users.countDocuments()) === 0
+      ? existingUser.role
+      : clerkUser.publicMetadata?.role || (await Users.countDocuments()) === 0
       ? "Admin"
       : "User";
 
@@ -511,5 +511,80 @@ export const checkUserStatus = async (req, res) => {
   } catch (error) {
     console.error("Lỗi khi kiểm tra trạng thái người dùng:", error);
     res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+  }
+};
+
+// WISHLIST
+
+export const addToWishlist = async (req, res) => {
+  const { productId } = req.body;
+
+  try {
+    const user = await Users.findOne({ _id: req.params.userId });
+
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    if (!productId) {
+      return res.status(400).json({ message: "Thiếu thông tin sản phẩm" });
+    }
+
+    const product = await Product.findOne({
+      _id: productId,
+      deleted: false,
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+    }
+
+    if (user.wishList.includes(productId)) {
+      user.wishList = user.wishList.filter(
+        (id) => id._id.toString() !== productId
+      );
+      await user.save();
+      return res.status(200).json({ message: "Xóa sản phẩm wishlist" });
+    }
+
+    user.wishList.push(productId);
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: "Thêm sản phẩm vào wishlist thành công" });
+  } catch (error) {
+    return res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+  }
+};
+
+export const getWishlist = async (req, res) => {
+  try {
+    const user = await Users.findOne({ _id: req.params.userId }).populate({
+      path: "wishList",
+      populate: {
+        path: "variants",
+        model: "Variant",
+        match: { deleted: false },
+        // options: { strictPopulate: false },
+        populate: {
+          path: "values",
+          model: "AttributeValue",
+          match: { deleted: false },
+          // options: { strictPopulate: false },
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    return res.status(200).json({
+      data: user.wishList,
+      count: user.wishListCount,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
   }
 };

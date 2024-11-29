@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -21,6 +22,11 @@ export const useUpdateProduct = (idP: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["Product", idP],
+      });
+
+      toast({
+        variant: "success",
+        title: "Cập nhật sản phẩm thành công",
       });
     },
   });

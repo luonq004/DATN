@@ -149,12 +149,12 @@ const Header = () => {
                 </div>
 
                 <div className="border-l border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase hidden lg:inline">
-                  <a
-                    href="#"
+                  <Link
+                    to="/wishlist"
                     className="cursor-pointer hover:text-[#b8cd06] transition-all"
                   >
                     <SlHeart className="text-xl" />
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="border-x border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase relative hidden lg:inline">

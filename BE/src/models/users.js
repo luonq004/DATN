@@ -2,7 +2,6 @@ import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
-   
     clerkId: {
       type: String,
       unique: true,
@@ -36,7 +35,7 @@ const userSchema = new Schema(
     },
     isDeleted: {
       type: Boolean,
-      default: false, 
+      default: false,
     },
     imageUrl: {
       type: String,
@@ -82,6 +81,16 @@ const userSchema = new Schema(
         },
       },
     ],
+
+    // wishList: [
+    //   products: [
+    //     {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Product",
+    //     },
+
+    //   ]
+    // ],
   },
   {
     collection: "users",
@@ -89,7 +98,6 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-
 
 const Users = mongoose.model("Users", userSchema);
 export default Users;

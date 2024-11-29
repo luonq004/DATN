@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { CarouselDots } from "./_components/CarouselDots";
 
 import CategoriesMenu from "./_components/CategoriesMenu";
 import { MainContent } from "./_components/MainContent";
@@ -12,13 +11,12 @@ const ProductShopPage = () => {
 
         {/* BREADCRUM */}
         <div className="text-[11px] leading-[18px] uppercase text-[#888] breadcrumbs">
-          <a className="bread" href="#">
+          <Link className="bread" to="/">
             Trang chủ
-          </a>
-          <a className="bread" href="#">
-            Quần
-          </a>
-          <Link to="/shopping">Baggy</Link>
+          </Link>
+          <Link className="bread" to="/shopping">
+            Shopping
+          </Link>
         </div>
         {/* BREADCRUM */}
 

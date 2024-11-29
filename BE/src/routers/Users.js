@@ -1,9 +1,11 @@
 import { Router } from "express";
 import {
+  addToWishlist,
   banUser,
   createUser,
   getAllUsers,
   getUserById,
+  getWishlist,
   restoreUser,
   saveUser,
   softDeleteUser,
@@ -24,5 +26,9 @@ userRouter.post("/save-user", saveUser);
 userRouter.post("/create-user", createUser);
 userRouter.post("/ban/:clerkId", banUser);
 userRouter.post("/unban/:clerkId", unbanUser);
+
+// Wishlist
+userRouter.get("/getWishlist/:userId", getWishlist);
+userRouter.post("/addToWishList/:userId", addToWishlist);
 
 export default userRouter;

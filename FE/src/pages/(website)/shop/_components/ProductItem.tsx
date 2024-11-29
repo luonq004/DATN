@@ -12,6 +12,9 @@ import { IoEyeOutline } from "react-icons/io5";
 import PreviewProduct from "./PreviewProduct";
 import SkeletonProduct from "./SkeletonProduct";
 import { Link } from "react-router-dom";
+import { useAddToWishList } from "../../wishlist/action/useAddToWishList";
+import { useUserContext } from "@/common/context/UserProvider";
+import { useGetWishList } from "../../wishlist/action/useGetWishList";
 
 type ProductItemProps = {
   data: IProduct[];
@@ -30,19 +33,26 @@ const ProductItem = ({
   isLoading: boolean;
 }) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const { _id } = useUserContext();
   const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
+  const { wishList, isError } = useGetWishList(_id);
+  const { addWishList, isAdding } = useAddToWishList();
 
   if (isLoading) {
     return <SkeletonProduct />;
   }
 
-  // console.log("listProduct", listProduct?.data);
+  const destrucId =
+    wishList && wishList?.products?.map((item) => item.productItem._id);
+
+  // console.log("destrucId", destrucId);
 
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-3 mt-6">
         {listProduct?.data.length > 0 &&
           listProduct?.data.map((product) => (
+            // console.log("product", product),
             <div
               // className="product-item border-x border-[#f7f7f7] pt-[25px] px-[30px] pb-[5px] mb-[60px] overflow-hidden"
               className="product-item border-x border-[#f7f7f7] px-[30px] pb-[5px] mb-[60px] overflow-hidden"
@@ -113,14 +123,14 @@ const ProductItem = ({
                   {/* <span className="text-[#888] line-through">1.500.000đ</span> */}
                 </div>
 
-                <div className="relative overflow-hidden">
+                <div className="relative overflow-hidden h-[60px]">
                   <p className="text-[13px] text-[#888] description-product line-clamp-2">
                     {product.description}
                   </p>
 
                   <div className="list-icon flex gap-2">
                     <span
-                      className="size-7 border rounded-full flex items-center justify-center hover:bg-[#b8cd06] text-[#979797] hover:text-white"
+                      className="size-8 md:size-9 border rounded-full flex items-center justify-center hover:bg-[#b8cd06] text-[#979797] hover:text-white"
                       onClick={() => {
                         setSelectedIndex(product._id);
                         setIsOpenModal(!isOpenModal);
@@ -128,8 +138,25 @@ const ProductItem = ({
                     >
                       <IoEyeOutline className="cursor-pointer text-lg text-current" />
                     </span>
-                    <span className="size-7 border rounded-full flex items-center justify-center hover:bg-[#b8cd06] text-[#979797] hover:text-white">
-                      <SlHeart className="cursor-pointer text-lg text-current" />
+                    <span
+                      onClick={() =>
+                        addWishList({
+                          userId: _id,
+                          productId: product._id,
+                          variantId: product.variants[0]._id as string,
+                          quantity:
+                            product.variants[0].countOnStock > 0 ? 1 : 0,
+                        })
+                      }
+                      className={`size-8 md:size-9 border rounded-full flex items-center justify-center hover:bg-[#b8cd06] text-[#979797] hover:text-white ${
+                        destrucId?.includes(product._id)
+                          ? "bg-[#b8cd06] text-white"
+                          : ""
+                      }`}
+                    >
+                      <SlHeart
+                        className={`cursor-pointer text-lg text-current hover:bg-[#b8cd06] text-[#979797] hover:text-white `}
+                      />
                     </span>
                   </div>
                 </div>
@@ -137,7 +164,7 @@ const ProductItem = ({
             </div>
           ))}
       </div>
-
+      {/* wishList.products */}
       {listProduct?.data.length === 0 && (
         <div className="w-full text-center">
           <img src={noData} alt="No data" className="w-2/3 mx-auto mb-5" />

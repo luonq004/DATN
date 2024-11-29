@@ -26,7 +26,7 @@ const ShopCart = () => {
 
   const { _id }: any = useUserContext();
 
-  console.log(_id)
+  console.log(_id);
 
   const {
     cart,
@@ -40,7 +40,7 @@ const ShopCart = () => {
     removeVoucher,
     changeVariant,
   } = useCart(_id);
-  console.log(cart)
+  console.log(cart);
 
   function userAction(action: any, value: any) {
     const item = {

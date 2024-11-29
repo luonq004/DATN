@@ -40,11 +40,11 @@ const productSchema = new mongoose.Schema(
       type: Number,
     },
 
-    type: {
-      type: String,
-      enum: ["simple", "variable"],
-      default: "simple",
-    },
+    // type: {
+    //   type: String,
+    //   enum: ["simple", "variable"],
+    //   default: "simple",
+    // },
 
     description: {
       type: String,
@@ -79,6 +79,11 @@ const productSchema = new mongoose.Schema(
         // required: true,
       },
     ],
+
+    count: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
