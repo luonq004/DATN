@@ -38,7 +38,7 @@ const LayoutAdmin = () => {
     return null;
   }
 
-  console.log("user", user);
+  // console.log("user", user);
 
   // Nếu đã xác thực quyền truy cập, render giao diện
   return (
