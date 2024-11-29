@@ -40,11 +40,11 @@ export const saveUser = async (req, res) => {
 
     // Xác định vai trò cho người dùng
     const role = existingUser
-    ? existingUser.role
-    : clerkUser.publicMetadata?.role || 
-      (await Users.countDocuments()) === 0
-      ? "Admin"
-      : "User";
+      ? existingUser.role
+      : clerkUser.publicMetadata?.role ||
+        (await Users.countDocuments()) === 0
+        ? "Admin"
+        : "User";
 
     // Cập nhật metadata trên Clerk
     await clerkClient.users.updateUser(clerkId, {

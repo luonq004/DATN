@@ -18,6 +18,9 @@ import { createVariant, removeVariant } from "./controllers/variant";
 import routerCart from "./routers/cart";
 // import { createUser } from "./controllers/user";
 import routerVoucher from "./routers/voucher";
+import authRouter from "./routers/auth";
+import routerAddress from "./routers/Address";
+
 
 import sliderRouter from "./routers/slider";
 import logoRouter from "./routers/Logo";
