@@ -27,6 +27,7 @@ import userRouter from "./routers/Users";
 import PaymentRouter from "./routers/PaymentRouter";
 import commentRouter from "./routers/comment";
 import sendEmailRouter from "./routers/send-email";
+import dashboardRouter from "./routers/dashboard";
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use("/api/categories", categoriesRouter);
 app.use("/api/collections", collectionRouter);
 app.use("/api/users", userRouter);
 app.use("/api/comment", commentRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
