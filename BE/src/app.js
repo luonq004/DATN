@@ -26,6 +26,7 @@ import collectionRouter from "./routers/Collections";
 import userRouter from "./routers/Users";
 import paymentRouter from "./routers/PaymentRouter";
 import commentRouter from "./routers/comment";
+import BlogRouter from "./routers/blog";
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.delete("/api/variant/:id", removeVariant);
 
 app.use("/api/sliders", sliderRouter);
 app.use("/api/logo", logoRouter);
+app.use("/api/blogs", BlogRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/collections", collectionRouter);
 app.use("/api/users", userRouter);
