@@ -342,12 +342,21 @@ export const updateOrderStatus = async (req, res) => {
     // Cập nhật trạng thái nếu không gặp lỗi
     order.status = newStatus;
 
+    // if (newStatus === "đã hoàn thành") {
+    //   order.products.forEach((product) => {
+    //     product.products.forEach((item) => (item.statusComment = true));
+    //   });
+    //   order.markModified("products");
+    // }
     if (newStatus === "đã hoàn thành") {
-      order.products.forEach((product) => {
-        product.products.forEach((item) => (item.statusComment = true));
-      });
+      for (const product of order.products) {
+        product.statusComment = true;
+      }
       order.markModified("products");
     }
+
+
+
 
     await order.save();
 
