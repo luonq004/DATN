@@ -29,6 +29,8 @@ export function MainContent() {
 
   const { isLoading, listProduct } = useGetAllProduct();
 
+  console.log(listProduct);
+
   return (
     <div className="w-full lg:w-[75%] lg:order-1 lg:mb-10">
       <CarouselBanner />
@@ -66,8 +68,8 @@ export function MainContent() {
 
         {/* PAGINATION */}
         <Pagination
-          // totalCount={listProduct?.data?.length}
-          totalCount={100}
+          totalCount={listProduct?.pagination?.totalItems}
+          // totalCount={100}
           pageSize={+currentFilter}
         />
 

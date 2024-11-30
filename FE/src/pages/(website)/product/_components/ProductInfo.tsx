@@ -108,6 +108,12 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     addCart(data);
   };
 
+  const activeData = product.comments.filter((item) => !item.deleted); // Lọc ra các item chưa bị xóa
+  const totalRating = activeData.reduce((sum, item) => sum + item.rating, 0); // Tính tổng rating
+  const averageRating = totalRating / activeData.length; // Tính trung bình rating
+
+  console.log("Average Rating:", averageRating.toFixed(0));
+
   return (
     <div>
       <h2 className="text-3xl leading-8 uppercase font-black font-raleway text-[#343434] mb-[25px]">
@@ -127,13 +133,16 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
 
         {/* Star Rating */}
         <div className="flex gap-0.5 pl-1 mb-[25px] md:mb-0">
-          <TiStarFullOutline className="text-[#b8cd06]" />
-          <TiStarFullOutline className="text-[#b8cd06]" />
-          <TiStarFullOutline className="text-[#b8cd06]" />
-          <TiStarFullOutline className="text-[#b8cd06]" />
-          <TiStarFullOutline className="text-gray-300" />
+          {[...Array(5)].map((_, index) => (
+            <TiStarFullOutline
+              key={index}
+              className={`text-[#b8cd06] ${
+                index < averageRating || 5 ? "text-[#b8cd06]" : "text-[#ccc]"
+              }`}
+            />
+          ))}
           <span className="text-[13px] text-[#888] leading-5">
-            128 Đánh giá
+            {product.comments.length || 0} Đánh giá
           </span>
         </div>
       </div>

@@ -37,6 +37,7 @@ import { useState } from "react";
 import AddressDialog from "./AddressDialog ";
 import sendOrderConfirmationEmail from "./sendEmail";
 import { useUser } from "@clerk/clerk-react";
+import { formatCurrency } from "@/lib/utils";
 // import { useQueryClient } from "@tanstack/react-query";
 interface ErrorResponse {
   message: string;
@@ -75,7 +76,8 @@ const CheckOut = () => {
   // lấy dữ liệu giỏ hàng
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
   const onSubmit = async (data: FormOut) => {
-    const selectedProducts = carts?.products?.filter((product: Cart) => product.selected) || [];
+    const selectedProducts =
+      carts?.products?.filter((product: Cart) => product.selected) || [];
     const orderData = {
       addressId: data.addressId,
       products: selectedProducts,
@@ -116,7 +118,6 @@ const CheckOut = () => {
         navigate("/cart/order"); // Điều hướng đến trang đơn hàng
         // Gửi email xác nhận đơn hàng
         await sendOrderConfirmationEmail(Gmail, orderCode);
-
       }
     } catch (error: unknown) {
       console.error("Lỗi khi tạo đơn hàng: ", error);
@@ -219,12 +220,15 @@ const CheckOut = () => {
                               />
                             </div>
                           ))}
-                          <div className="ml-[2%] px-4  text-[#b8cd06]"
-                          style={{ border: "1px solid #b8cd06"}}>
-                            Mặc Định
-                          </div>
-                      <div className="ml-[2.5%] text-blue-600 cursor-pointer flex-shrink-0 flex-1"
-                      onClick={() => setDialogOpen(true)}
+                      <div
+                        className="ml-[2%] px-4  text-[#b8cd06]"
+                        style={{ border: "1px solid #b8cd06" }}
+                      >
+                        Mặc Định
+                      </div>
+                      <div
+                        className="ml-[2.5%] text-blue-600 cursor-pointer flex-shrink-0 flex-1"
+                        onClick={() => setDialogOpen(true)}
                       >
                         Thay đổi
                       </div>
@@ -275,82 +279,87 @@ const CheckOut = () => {
                 </div>
               ) : (
                 <>
-                  {carts?.products.filter((item) => item.selected).map((item: any, index: number) => (
-                    <div
-                      key={index}
-                      className="grid transition-all duration-500 grid-cols-[81px_auto] max-sm:grid-cols-[75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6"
-                    >
-                      {/* Image  */}
-                      <div className="Image_Product">
-                        <div className="border border-[#dddcdc] rounded-[6px] p-1">
-                          <img
-                            className="w-full h-full"
-                            src={item.productItem.image}
-                            alt="img"
-                          />
-                        </div>
-                      </div>
-                      {/* information */}
-                      <div className="flex flex-col gap-3">
-                        <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
-                          <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
-                            <div className="hover:text-black">
-                              <Link to={`#`}>{item.productItem.name}</Link>
-                            </div>
+                  {carts?.products
+                    .filter((item) => item.selected)
+                    .map((item: any, index: number) => (
+                      <div
+                        key={index}
+                        className="grid transition-all duration-500 grid-cols-[81px_auto] max-sm:grid-cols-[75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6"
+                      >
+                        {/* Image  */}
+                        <div className="Image_Product">
+                          <div className="border border-[#dddcdc] rounded-[6px] p-1">
+                            <img
+                              className="w-full h-full"
+                              src={item.productItem.image}
+                              alt="img"
+                            />
                           </div>
-                          <div className="flex items-center gap-3 max-sm:col-start-1">
-                            <div className="flex rounded-[6px] *:transition-all duration-500 max-w-[8rem]">
-                              <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black flex justify-center items-center">
-                                <input
-                                  className="p-0 w-8 bg-transparent border-0 text-gray-800 text-center focus:ring-0"
-                                  style={{ MozAppearance: "textfield" }}
-                                  type="text"
-                                  min={1}
-                                  value={item.quantity}
-                                  title="Quantity"
-                                  placeholder="Enter quantity"
-                                />
+                        </div>
+                        {/* information */}
+                        <div className="flex flex-col gap-3">
+                          <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
+                            <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
+                              <div className="hover:text-black">
+                                <Link to={`#`}>{item.productItem.name}</Link>
                               </div>
                             </div>
-                          </div>
+                            <div className="flex items-center gap-3 max-sm:col-start-1">
+                              <div className="flex rounded-[6px] *:transition-all duration-500 max-w-[8rem]">
+                                <div className="border border-[#F4F4F4] rounded-[4px] bg-[#F4F4F4] px-[12.8px] py-[5px] text-black flex justify-center items-center">
+                                  <input
+                                    className="p-0 w-8 bg-transparent border-0 text-gray-800 text-center focus:ring-0"
+                                    style={{ MozAppearance: "textfield" }}
+                                    type="text"
+                                    min={1}
+                                    value={item.quantity}
+                                    title="Quantity"
+                                    placeholder="Enter quantity"
+                                  />
+                                </div>
+                              </div>
+                            </div>
 
-                          <div className="">
-                            <p>
-                              $<span>{item.variantItem.price}.00</span>
+                            <div className="">
+                              <p>
+                                <span>
+                                  {formatCurrency(item.variantItem.price)} VNĐ
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                          {/* Attribute  */}
+                          <div className="flex items-center gap-4 justify-between">
+                            <p className="text-[#9D9EA2] w-[52%] max-[1408px]:w-[49%] max-xl:w-[47%] max-lg:w-[52%] transition-all duration-500 max-sm:text-[14px]">
+                              Phân loại
+                            </p>
+                            <div className="relative">
+                              {/* Attribute__Table  */}
+                              <div className="flex items-center gap-1 px-2 py-1 border rounded-md cursor-pointer max-sm:text-[14px] select-none">
+                                {item.variantItem.values.map(
+                                  (value: any, index: number) => (
+                                    <div key={value._id}>
+                                      {value.type}: {value.name}
+                                      {index <
+                                      item.variantItem.values.length - 1
+                                        ? ","
+                                        : ""}
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                              {/* End Attribute__Table  */}
+                            </div>
+                          </div>
+                          {/* End Attribute  */}
+                          <div>
+                            <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+                              Còn {item.variantItem.countOnStock} sản phẩm
                             </p>
                           </div>
                         </div>
-                        {/* Attribute  */}
-                        <div className="flex items-center gap-4 justify-between">
-                          <p className="text-[#9D9EA2] w-[52%] max-[1408px]:w-[49%] max-xl:w-[47%] max-lg:w-[52%] transition-all duration-500 max-sm:text-[14px]">
-                            Phân loại
-                          </p>
-                          <div className="relative">
-                            {/* Attribute__Table  */}
-                            <div className="flex items-center gap-1 px-2 py-1 border rounded-md cursor-pointer max-sm:text-[14px] select-none">
-                              {item.variantItem.values.map(
-                                (value: any, index: number) => (
-                                  <div key={value._id}>
-                                    {value.type}: {value.name}
-                                    {index < item.variantItem.values.length - 1
-                                      ? ","
-                                      : ""}
-                                  </div>
-                                )
-                              )}
-                            </div>
-                            {/* End Attribute__Table  */}
-                          </div>
-                        </div>
-                        {/* End Attribute  */}
-                        <div>
-                          <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-                            Còn {item.variantItem.countOnStock} sản phẩm
-                          </p>
-                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </>
               )}
               {/* End Cart__Product */}
@@ -430,7 +439,7 @@ const CheckOut = () => {
               >
                 <div>ĐẶT HÀNG</div>
                 <div className="">|</div>
-                <div>${carts?.total}.00</div>
+                <div>{formatCurrency(carts?.total)} VNĐ</div>
               </button>
               <div className="Payments flex flex-col gap-4">
                 <p className="text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]">
