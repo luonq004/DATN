@@ -30,9 +30,18 @@ import wishlistRouter from "./routers/wishlist";
 import BlogRouter from "./routers/blog";
 import sendEmailRouter from "./routers/send-email";
 import dashboardRouter from "./routers/dashboard";
+import http from "http"; // Sử dụng http để kết nối Express và Socket.IO
+import { Server } from "socket.io";
 
 const app = express();
-
+// connect socket
+const server = http.createServer(app); // Tạo server HTTP từ Express
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Điều chỉnh tùy theo môi trường của bạn
+    methods: ["GET", "POST"],
+  },
+});
 //Middleware
 app.use(express.json());
 
@@ -79,6 +88,25 @@ app.use("/api/comment", commentRouter);
 app.use("/api", wishlistRouter);
 app.use("/api/dashboard", dashboardRouter);
 
+
+
+// Sự kiện Socket.IO
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+
+  // Lắng nghe sự kiện chat từ client
+  socket.on("send_message", (message) => {
+    console.log("Message received:", message);
+    io.emit("receive_message", message); // Phát tin nhắn đến tất cả các client
+  });
+
+  // Xử lý ngắt kết nối
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
+
+// Khởi động server
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Internal Server Error" });
@@ -86,7 +114,7 @@ app.use((err, req, res, next) => {
 
 // const port = process.env.PORT || 8080;
 const port = process.env.PORT;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 

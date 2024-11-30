@@ -57,6 +57,7 @@ import EditBlog from "@/pages/(dashboard)/blog/_components/EditBlog";
 import PaymentResult from "@/pages/(dashboard)/PaymentComponent/PaymentResult ";
 import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
 import WishListPage from "@/pages/(website)/wishlist/page";
+import TestSocket from "@/pages/(website)/Testsocket";
 
 const Router = () => {
   return (
@@ -89,6 +90,7 @@ const Router = () => {
           <Route path="signup" element={<SignUp />} /> */}
 
           <Route path="services" element={<PageServices />} />
+          <Route path="socket" element={<TestSocket />} />
 
           <Route path="blog" element={<BlogPage />}>
             <Route index element={<BlogCard />} />
