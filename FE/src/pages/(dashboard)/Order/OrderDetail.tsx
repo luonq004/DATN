@@ -11,7 +11,6 @@ const OrderDetail = () => {
 </div>;
 
   const { addressId, note, products, payment, status, totalPrice, orderCode, createdAt } = data;
-
   return (
     <div className="p-6 bg-gray-100">
       <h2 className="text-2xl font-bold mb-6">Chi tiết đơn hàng</h2>
@@ -51,8 +50,7 @@ const OrderDetail = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((order: any) =>
-              order.products.map((item: any) => (
+            {products?.map((item: any) =>
                 <TableRow key={item._id} className="hover:bg-gray-50">
                   <TableCell className="py-3 px-4">
                     <img
@@ -73,7 +71,6 @@ const OrderDetail = () => {
                     {(item.variantItem.price * item.quantity).toLocaleString()} VND
                   </TableCell>
                 </TableRow>
-              ))
             )}
           </TableBody>
         </Table>
