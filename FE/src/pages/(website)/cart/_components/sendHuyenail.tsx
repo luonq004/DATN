@@ -44,13 +44,13 @@ const sendOrderHuyConfirmationEmail = async (to: string, orderCode: string) => {
             ?.map(
               (product) => `
             <tr>
-              <td>${product.name}</td>
-              <td><img src="${product.image}" alt="${
+              <td style="text-align: center; vertical-align: middle;">${product.name}</td>
+              <td style="text-align: center; vertical-align: middle;"><img src="${product.image}" alt="${
                 product.name
               }" style="width: 100px; height: auto;" /></td>
-              <td>${product.quantity}</td>
-              <td>${product.price.toLocaleString()}</td>
-              <td>${product.total.toLocaleString()}</td>
+              <td style="text-align: center; vertical-align: middle;">${product.quantity}</td>
+              <td style="text-align: center; vertical-align: middle;">${product.price.toLocaleString()}</td>
+              <td style="text-align: center; vertical-align: middle;">${product.total.toLocaleString()}</td>
             </tr>
           `
             )
