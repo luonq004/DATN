@@ -47,15 +47,13 @@ export const createComment = async (req, res) => {
     product.comments.push(comment._id);
 
     await product.save();
-
-    order.products.forEach((product) => {
-      product.products.forEach((item) => {
-        if (item._id.toString() === itemId) {
-          item.statusComment = false;
-          item.isComment = true;
-        }
-      });
+    order.products.forEach((item) => {
+      if (item._id.toString() === itemId) {
+        item.statusComment = false;
+        item.isCommented = true;
+      }
     });
+
     order.markModified("products");
 
     await order.save();
