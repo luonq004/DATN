@@ -50,9 +50,12 @@ const CommentUser: React.FC<CommentProps> = ({ comment }) => {
       </div>
 
       {/* Content Comment */}
-      <div className="text-[#888] text-[14px] leading-5 pb-[25px]">
-        {comment?.content}
-      </div>
+      <div
+        className="text-[#888] text-[14px] leading-5 pb-[25px] detail"
+        dangerouslySetInnerHTML={{ __html: comment?.content }}
+      />
+      {/* {comment?.content} */}
+      {/* </div> */}
     </div>
   );
 };
@@ -60,3 +63,4 @@ const CommentUser: React.FC<CommentProps> = ({ comment }) => {
 export default CommentUser;
 
 // format(date, "HH:mm MMM dd / yy")
+// dangerouslySetInnerHTML={{ __html: descriptionDetail }}

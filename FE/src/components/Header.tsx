@@ -70,11 +70,11 @@ const Header = () => {
 
   useEffect(() => {
     if (isSignedIn) {
-      const timer = setTimeout(() => {
-        setShowUserInfo(true); // Sau 1 giây sẽ hiển thị thông tin người dùng
-      }, 1000);
+      // const timer = setTimeout(() => {
+      setShowUserInfo(true); // Sau 1 giây sẽ hiển thị thông tin người dùng
+      // }, 1000);
 
-      return () => clearTimeout(timer);
+      // return () => clearTimeout(timer);
     }
   }, [isSignedIn]); // Chạy lại effect khi trạng thái người dùng thay đổi
 

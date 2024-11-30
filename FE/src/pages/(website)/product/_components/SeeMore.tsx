@@ -51,9 +51,7 @@ const SeeMore = ({
         </TabsContent>
         <TabsContent value="comment">
           <div className="h-[30px] md:h-[60px]"></div>
-          {/* {Array.from({ length: 5 }).map((_, index) => (
-            <CommentUser key={index} />
-          ))} */}
+
           {comments.map((comment) => (
             <CommentUser key={comment._id} comment={comment} />
           ))}

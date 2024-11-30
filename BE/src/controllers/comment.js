@@ -1,18 +1,23 @@
 import Comment from "../models/comment";
+import Order from "../models/order";
 import Product from "../models/product";
 import User from "../models/users";
 
 export const createComment = async (req, res) => {
   try {
-    const { userId, productId, content, rating } = req.body;
-    const comment = await Comment({
+    const {
       userId,
       productId,
+      infoProductBuy,
       content,
       rating,
-    }).save();
+      orderId,
+      itemId,
+    } = req.body;
 
-    const product = await Product.findById(productId);
+    console.log(req.body);
+
+    const product = await Product.findOne({ _id: productId, deleted: false });
 
     if (!product) {
       return res.status(400).json({ message: "Không tìm thấy sản phẩm" });
@@ -23,12 +28,40 @@ export const createComment = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Không tìm thấy user" });
     }
+
+    const order = await Order.findOne({ _id: orderId });
+    console.log(order);
+
+    if (!order) {
+      return res.status(400).json({ message: "Không tìm thấy order" });
+    }
+
+    const comment = await Comment({
+      userId,
+      productId,
+      infoProductBuy,
+      content,
+      rating,
+    }).save();
+
     product.comments.push(comment._id);
 
     await product.save();
 
+    order.products.forEach((product) => {
+      product.products.forEach((item) => {
+        if (item._id.toString() === itemId) {
+          item.statusComment = false;
+          item.isComment = true;
+        }
+      });
+    });
+    order.markModified("products");
+
+    await order.save();
+
     res.status(201).json({
-      message: "Tạo comment thành công",
+      message: "Comment thành công",
       comment,
     });
   } catch (error) {

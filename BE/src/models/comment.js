@@ -12,9 +12,11 @@ const commentSchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
+    infoProductBuy: {
+      type: String,
+    },
     content: {
       type: String,
-      required: true,
     },
 
     rating: {

@@ -24,7 +24,13 @@ const orderSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["chờ xác nhận", "chờ lấy hàng", "chờ giao hàng", "đã hoàn thành", "đã hủy"],
+    enum: [
+      "chờ xác nhận",
+      "chờ lấy hàng",
+      "chờ giao hàng",
+      "đã hoàn thành",
+      "đã hủy",
+    ],
     default: "chờ xác nhận",
   },
 
@@ -41,6 +47,11 @@ const orderSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+
+  deleted: {
+    type: Boolean,
+    default: false,
   },
 });
 
