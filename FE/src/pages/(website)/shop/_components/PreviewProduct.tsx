@@ -54,6 +54,8 @@ const PreviewProduct = ({
   useEffect(() => {
     if (!selectedIndex || productPopup?._id === selectedIndex) return;
 
+    setSelectedAttributes({});
+
     const fetchProduct = async () => {
       setIsLoading(true);
       setAttributesChoose({});
@@ -66,7 +68,7 @@ const PreviewProduct = ({
     };
 
     fetchProduct();
-  }, [selectedIndex]);
+  }, [selectedIndex, productPopup?._id]);
 
   useEffect(() => {
     if (!apiImage) {
@@ -180,6 +182,8 @@ const PreviewProduct = ({
     ? variantChoose.countOnStock
     : productPopup?.countOnStock;
 
+  console.log("selectedAttributes", selectedAttributes);
+
   return createPortal(
     <div
       className={`fixed inset-0 bg-[#000c] z-50 backdrop-blur-sm transition-opacity duration-500 ${
@@ -243,7 +247,7 @@ const PreviewProduct = ({
             <h2 className="text-3xl leading-8 uppercase font-black font-raleway text-[#343434] mb-[25px]">
               {productPopup?.name}
             </h2>
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center md:mb-[25px]">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center md:mb-[25px]">
               <span className="uppercase text-lg text-[#555]">
                 giá:{" "}
                 <span className="text-[#b8cd06]">
@@ -255,13 +259,13 @@ const PreviewProduct = ({
               </span>
 
               {/* Star Rating */}
-              <div className="flex gap-0.5 pl-1 mb-[25px] md:mb-0">
+              <div className="flex gap-0.5 mb-[25px] md:mb-0">
                 <TiStarFullOutline className="text-[#b8cd06]" />
                 <TiStarFullOutline className="text-[#b8cd06]" />
                 <TiStarFullOutline className="text-[#b8cd06]" />
                 <TiStarFullOutline className="text-[#b8cd06]" />
                 <TiStarFullOutline className="text-gray-300" />
-                <span className="text-[13px] text-[#888] leading-5">
+                <span className="text-[13px] pl-1 text-[#888] leading-5">
                   128 Đánh giá
                 </span>
               </div>
@@ -319,13 +323,6 @@ const PreviewProduct = ({
                             className="rounded-none border data-[state=on]:border-2 data-[state=on]:text-black transition-all uppercase px-3 h-8"
                             value={item.split(":")[0]}
                             key={item.split(":")[0]}
-                            // disabled={
-                            //   key in attributesChoose
-                            //     ? item
-                            //         .split(":")[0]
-                            //         .includes(attributesChoose[key][0])
-                            //     : false
-                            // }
                             disabled={
                               key in attributesChoose
                                 ? !attributesChoose[key][0].includes(
@@ -349,30 +346,38 @@ const PreviewProduct = ({
                 số lượng:
               </span>
 
-              <div className="flex items-center h-[42px] ">
-                <button
-                  className="cursor-pointer flex justify-center items-center text-5xl font-light w-[50px] h-full text-center border border-r-0 rounded-tl-full rounded-bl-full text-[#333]"
-                  onClick={() => {
-                    if (quantity > 1) setQuantity(quantity - 1);
-                  }}
-                >
-                  -
-                </button>
-                <input
-                  className="border py-2"
-                  onChange={(e) => setQuantity(e.target.value)}
-                  value={quantity}
-                />
-                <button
-                  className="cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333]"
-                  onClick={() => {
-                    setQuantity(+quantity + 1);
-                  }}
-                >
-                  +
-                </button>
+              <div className="flex flex-col xl:flex-row md:items-start xl:items-center h-[42px] ">
+                <div className="flex items-center h-[42px]">
+                  <button
+                    className="cursor-pointer flex justify-center items-center text-5xl font-light w-[50px] h-full text-center border border-r-0 rounded-tl-full rounded-bl-full text-[#333] outline-0"
+                    onClick={() => {
+                      if (quantity > 1) setQuantity(quantity - 1);
+                    }}
+                  >
+                    -
+                  </button>
+                  <input
+                    className="border py-2 text-center outline-0 max-w-24"
+                    onChange={(e) => {
+                      const input = e.target.value;
 
-                <span className="ml-4 text-xs font-q">
+                      if (/^\d+$/.test(input) && Number(input) > 0) {
+                        setQuantity(+e.target.value);
+                      }
+                    }}
+                    value={quantity}
+                  />
+                  <button
+                    className="cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333] outline-0"
+                    onClick={() => {
+                      setQuantity(+quantity + 1);
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
+
+                <span className="ml-0 xl:ml-4 text-xs font-questrial mt-3 xl:mt-0">
                   {countStock} sản phẩm có sẵn
                 </span>
               </div>

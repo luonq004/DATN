@@ -24,8 +24,8 @@ import { Attribute } from "@/common/types/Product";
 import StatusProduct from "../_components/StatusProduct";
 import { useCreateProduct } from "../actions/useCreateProduct";
 import { useUpdateProduct } from "../actions/useUpdateProduct";
-import { string } from "joi";
-import { uploadFile, UploadFiles } from "@/lib/upload";
+
+import { UploadFiles } from "@/lib/upload";
 
 const ProductAddPage = () => {
   const { id } = useParams();
@@ -53,9 +53,6 @@ const ProductAddPage = () => {
     },
     staleTime: 1000 * 60 * 5,
   });
-
-  // const schemaProduct =
-  //   typeProduct === "simple" ? productSimpleSchema : productSchema;
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof productSchema>>({
@@ -119,8 +116,6 @@ const ProductAddPage = () => {
 
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
 
-  // console.log(duplicate);
-
   const types = id ? getUniqueTypes(product) : [];
   // console.log("types: ", types);
 
@@ -132,7 +127,7 @@ const ProductAddPage = () => {
   const attributeValue = id ? getUniqueAttributeValue(product) : [];
   // console.log("attributeValue: ", attributeValue);
 
-  // console.log(form.watch("variants"));
+  // console.log(form.setError("variants.0.values.0.name", { message: "Error" }));
 
   return (
     <Container>
@@ -153,10 +148,10 @@ const ProductAddPage = () => {
             />
 
             {/* Info Categories and More... */}
-            <StatusProduct form={form} />
+            <StatusProduct form={form} loading={isDoing} />
           </div>
           <Button disabled={isDoing} type="submit">
-            Submit
+            Lưu sản phẩm
           </Button>
         </form>
       </Form>

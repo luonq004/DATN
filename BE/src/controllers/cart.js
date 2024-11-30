@@ -166,10 +166,10 @@ export const addToCart = async (req, res) => {
     if (existProductIndex !== -1) {
       // kiểm tra số lượng quantity khi thêm vào so với số lượng tồn kho
       if (
-        cart.products[existProductIndex].quantity + quantity <=
+        cart.products[existProductIndex].quantity + +quantity <=
         cart.products[existProductIndex].variantItem.countOnStock
       ) {
-        cart.products[existProductIndex].quantity += quantity;
+        cart.products[existProductIndex].quantity += +quantity;
       } else {
         return res
           .status(StatusCodes.CONFLICT)
@@ -183,7 +183,7 @@ export const addToCart = async (req, res) => {
         cart.products.push({
           productItem: productId,
           variantItem: variantId,
-          quantity: quantity,
+          quantity: +quantity,
         });
       } else {
         return res

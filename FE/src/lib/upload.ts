@@ -59,6 +59,11 @@ export const uploadFileMultiple = async (files: FileList) => {
 };
 
 export const UploadFiles = async (product: any) => {
+  if (product.image !== "" && typeof product.image !== "string") {
+    const imageUpload = await uploadFile(product.image as File);
+    product.image = imageUpload;
+  }
+
   for (let i = 0; i < product.variants.length; i++) {
     if (
       product.variants[i].image !== "" &&

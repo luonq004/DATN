@@ -253,3 +253,30 @@ export const filterAndFormatAttributes = (
 
   return result;
 };
+
+// Format name
+export function formatName(input: string) {
+  // Hàm loại bỏ dấu tiếng Việt
+  const removeDiacritics = (str: string) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu
+      .replace(/đ/g, "d") // Chuyển đổi 'đ' thành 'd'
+      .replace(/Đ/g, "D"); // Chuyển đổi 'Đ' thành 'D'
+  };
+
+  // Loại bỏ dấu và chuyển về dạng lowercase
+  const noDiacritics = removeDiacritics(input.toLowerCase());
+
+  // Tách chuỗi thành các từ
+  const words = noDiacritics.split(/\s+/).filter(Boolean); // Loại bỏ khoảng trắng thừa
+
+  // Chuyển thành camelCase
+  const camelCase = words
+    .map((word, index) =>
+      index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join("");
+
+  return camelCase;
+}

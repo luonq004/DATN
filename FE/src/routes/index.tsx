@@ -56,6 +56,7 @@ import AddBlog from "@/pages/(dashboard)/blog/_components/AddBlog";
 import EditBlog from "@/pages/(dashboard)/blog/_components/EditBlog";
 import PaymentResult from "@/pages/(dashboard)/PaymentComponent/PaymentResult ";
 import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
+import WishListPage from "@/pages/(website)/wishlist/page";
 
 const Router = () => {
   return (
@@ -96,6 +97,7 @@ const Router = () => {
 
           <Route path="about" element={<AboutUsPage />} />
           <Route path="shopping" element={<ProductShopPage />} />
+          <Route path="wishlist" element={<WishListPage />} />
 
           <Route path="cart" element={<CartPage />}>
             <Route index element={<ShoppingCart />} />

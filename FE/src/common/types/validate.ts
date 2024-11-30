@@ -54,12 +54,10 @@ export const productSchema = z.object({
   descriptionDetail: z.string().optional(),
   name: z.string().min(1),
   category: z.array(z.string()).optional(),
-  image: z
-    .union([
-      z.string().url().or(z.literal("")), // Chấp nhận URL hợp lệ hoặc chuỗi rỗng
-      z.instanceof(File), // Chấp nhận đối tượng File
-    ])
-    .optional(),
+  image: z.union([
+    z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
+    z.instanceof(File).optional(), // File là tùy chọn
+  ]),
   price: z.coerce.number().optional(),
   priceSale: z.coerce.number().optional(),
   // reviews: z.array(z.object({})).optional(), // Cấu trúc cho reviews nếu cần
@@ -68,23 +66,6 @@ export const productSchema = z.object({
     .transform((val) => new Date(val))
     .optional(),
   variants: z.array(variantSchema),
-  // .refine(
-  //   (variants) => {
-  //     // Tạo một mảng chứa tất cả `_id` trong `values` của mỗi variant
-  //     const allValueIds = variants.flatMap((variant) =>
-  //       variant.values.map((value) => value._id)
-  //     );
-  //     // console.log("allValueIds: ", allValueIds);
-  //     // Kiểm tra trùng lặp bằng cách so sánh độ dài mảng với Set
-  //     return new Set(allValueIds).size === allValueIds.length;
-  //   },
-  //   {
-  //     message: "Các values không được trùng _id giữa các variants",
-  //     path: ["variants"],
-  //   }
-  // ), // Mảng các variants tuân theo schema variant
-  // slug: z.string().min(1),
-  // __v: z.number(),
   _id: z.string().optional(),
 });
 

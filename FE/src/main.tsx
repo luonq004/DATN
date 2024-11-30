@@ -30,7 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <UserInfoProvider>
-          <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+          <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
             <AuthProvider>
               <App />
             </AuthProvider>

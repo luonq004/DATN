@@ -40,7 +40,7 @@ const ProductDetail = () => {
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="px-[15px] mx-auto mb-[30px] md:mb-0">
           {/* Carousel */}
-          <SliderImage variants={product.variants} />
+          <SliderImage imageMain={product.image} variants={product.variants} />
         </div>
 
         {/* Product info */}

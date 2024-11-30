@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -7,7 +8,18 @@ export const useCreateProduct = () => {
       axios.post("http://localhost:8080/api/products", data),
 
     onSuccess: () => {
-      console.log("Success");
+      toast({
+        variant: "success",
+        title: "Tạo sản phẩm thành công",
+      });
+    },
+
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Lỗi khi tạo sản phẩm",
+        description: error.message,
+      });
     },
   });
 
