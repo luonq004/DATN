@@ -50,14 +50,14 @@ interface ErrorResponse {
 const apiUrl = import.meta.env.VITE_API_URL;
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('vi-VN', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
+  return new Intl.DateTimeFormat("vi-VN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
   }).format(date);
 };
 
@@ -69,14 +69,19 @@ const AdminOrder = () => {
 
   const orders: Order[] = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
-    return data.map((order: OrderProduct) => ({
-      id: order._id,
-      orderCode: order.orderCode || "N/A",
-      amount: order.totalPrice || 0,
-      payment: order.payment || "N/A",
-      status: order.status || "unknown",
-      createdAt: order.createdAt || "",
-    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return data
+      .map((order: OrderProduct) => ({
+        id: order._id,
+        orderCode: order.orderCode || "N/A",
+        amount: order.totalPrice || 0,
+        payment: order.payment || "N/A",
+        status: order.status || "unknown",
+        createdAt: order.createdAt || "",
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
   }, [data]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -241,13 +246,17 @@ const AdminOrder = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {["chờ xác nhận", "chờ lấy hàng", "chờ giao hàng", "đã hoàn thành", "đã hủy"].map(
-                      (status) => (
-                        <SelectItem key={status} value={status}>
-                          {status}
-                        </SelectItem>
-                      )
-                    )}
+                    {[
+                      "chờ xác nhận",
+                      "chờ lấy hàng",
+                      "chờ giao hàng",
+                      "đã hoàn thành",
+                      "đã hủy",
+                    ].map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -260,14 +269,14 @@ const AdminOrder = () => {
   );
 
   const filteredOrders = React.useMemo(() => {
-    return orders.filter(order =>
+    return orders.filter((order) =>
       order.orderCode.toLowerCase().includes(search.toLowerCase())
     );
   }, [orders, search]);
 
   const [paginationState, setPaginationState] = React.useState({
-    pageIndex: 0,  // Trang đầu tiên
-    pageSize: 8,   // Số hàng mỗi trang
+    pageIndex: 0, // Trang đầu tiên
+    pageSize: 8, // Số hàng mỗi trang
   });
 
   const table = useReactTable({
@@ -317,9 +326,9 @@ const AdminOrder = () => {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                 </TableHead>
               ))}
             </TableRow>
@@ -340,8 +349,7 @@ const AdminOrder = () => {
       <div className="mt-4 flex justify-between items-center">
         <div>
           <span>
-            {table.getState().pagination.pageIndex + 1} /{" "}
-            {table.getPageCount()}
+            {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
           </span>
         </div>
         <div className="flex gap-2">

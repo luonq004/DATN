@@ -64,39 +64,57 @@ export interface ProductItem {
   type: string;
   description: string;
   deleted: boolean;
-  reviews: any[];  // Nếu bạn có kiểu dữ liệu cho reviews, bạn có thể thay đổi kiểu này
+  reviews: any[]; // Nếu bạn có kiểu dữ liệu cho reviews, bạn có thể thay đổi kiểu này
   variants: string[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface VariantItem {
+// export interface VariantItem {
+//   _id: string;
+//   price?: number;
+//   priceSale?: number;
+//   values: { _id: string; name: string; type: string; value: string; __v: number }[];  // values có cấu trúc này
+//   countOnStock?: number;
+//   image?: string;
+//   type?: string;
+//   name?: string;
+//   deleted?: boolean;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+interface VariantItem {
   _id: string;
+  name: string;
+  type: string;
+  value: string;
   price: number;
   priceSale: number;
-  values: { _id: string; name: string; type: string; value: string; __v: number }[];
   countOnStock: number;
-  image: string;
-  type?: string;
-  name?: string;
-  deleted: boolean;
-  createdAt: string;
-  updatedAt: string;
+  values: {
+    _id: string;
+    name: string;
+    type: string;
+    value: string;
+    __v: number;
+  }[]; // values có cấu trúc này
 }
 
 export interface OrderProduct {
   _id: string;
-  payment?:string;
+  payment?: string;
   userId: string;
   orderCode: string;
   status: string;
   products: {
     productItem: ProductItem;
     variantItem: VariantItem;
+    // statusComment?: boolean;
+    // isCommented?: boolean;
     quantity: number;
     _id: string;
   }[];
-  voucher: any[];  // Cập nhật kiểu nếu có dữ liệu voucher
+  voucher: any[]; // Cập nhật kiểu nếu có dữ liệu voucher
   total: number;
   totalPrice: number;
   createdAt: string;

@@ -1,6 +1,10 @@
 import { useUserContext } from "@/common/context/UserProvider";
 import useOrder from "@/common/hooks/order/UseOrder";
-import { OrderProduct, VariantItem } from "@/common/types/Product";
+import { useState } from "react";
+import StatusMenu from "./StatusMenu";
+import { toast } from "@/components/ui/use-toast";
+import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Pagination,
   PaginationContent,
@@ -9,11 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"; // Import pagination components
-import { toast } from "@/components/ui/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { useState } from "react";
-import StatusMenu from "./StatusMenu";
+import { OrderProduct, VariantItem } from "@/common/types/Product";
 import CommentProduct from "./CommentProduct";
 interface Order {
   _id: string;
@@ -165,7 +165,7 @@ const OrderHistory = () => {
             <div className="spinner"></div>
           </div>
         ) : currentOrders.length > 0 ? (
-          currentOrders.map((order: OrderProduct) => (
+          currentOrders?.map((order: OrderProduct) => (
             <div key={order._id} className="p-4 border rounded-lg shadow-md">
               <div className="flex justify-between items-center">
                 <div>
@@ -184,64 +184,60 @@ const OrderHistory = () => {
               {/* Hiển thị sản phẩm trong đơn hàng */}
               <div className="mt-2">
                 {order.products && order.products.length > 0 ? (
-                  order.products.map((itemProducts) =>
-                    itemProducts.products.map((item) => (
-                      <div key={item._id} className="mt-3">
-                        <div className="flex justify-between">
-                          {/* sản phẩm */}
-                          <div className="flex items-center space-x-4 space-y-4">
-                            <img
-                              src={
-                                item.productItem?.image || "/default-image.jpg"
-                              }
-                              alt={
-                                item.productItem?.name ||
-                                "Sản phẩm không có tên"
-                              }
-                              className="w-16 h-16 object-cover"
-                            />
-                            <div>
-                              <div className="font-medium">
-                                {item.productItem?.name ||
-                                  "Sản phẩm không có tên"}
-                              </div>
-                              <div className="text-sm">
-                                Số lượng: {item.quantity}
-                              </div>
-                              <div className="text-sm">
-                                {item.variantItem.values.map(
-                                  (value: VariantItem, index: number) => (
-                                    <div key={value._id}>
-                                      {value.type}: {value.name}
-                                      {index <
-                                      item.variantItem.values.length - 1
-                                        ? ","
-                                        : ""}
-                                    </div>
-                                  )
-                                )}
-                              </div>
+                  order?.products?.map((item) => (
+                    <div key={item._id}>
+                      <div className="flex justify-between items-center">
+                        {/* sản phẩm */}
+                        <div className="flex items-center space-x-4 space-y-4">
+                          <img
+                            src={
+                              item.productItem?.image || "/default-image.jpg"
+                            }
+                            alt={
+                              item.productItem?.name || "Sản phẩm không có tên"
+                            }
+                            className="w-16 h-16 object-cover"
+                          />
+                          <div>
+                            <div className="font-medium">
+                              {item.productItem?.name ||
+                                "Sản phẩm không có tên"}
+                            </div>
+                            <div className="text-sm">
+                              Số lượng: {item.quantity}
+                            </div>
+                            <div className="text-sm">
+                              {item?.variantItem?.values?.map(
+                                (value: VariantItem, index: number) => (
+                                  <div key={value._id}>
+                                    {value.type}: {value.name}
+                                    {index < item.variantItem.values.length - 1
+                                      ? ","
+                                      : ""}
+                                  </div>
+                                )
+                              )}
                             </div>
                           </div>
-                          <div className="flex flex-col justify-between">
-                            <span className="text-[#81cd06]">
-                              Giá:{" "}
-                              {formatCurrencyVND(item.variantItem?.price ?? 0)}
-                            </span>
+                        </div>
+                        <div>
+                          <span className="text-[#81cd06]">
+                            Giá:{" "}
+                            {formatCurrencyVND(item.variantItem?.price ?? 0)}
+                          </span>
 
-                            {item.statusComment && !item.isCommented && (
-                              <CommentProduct
-                                values={item.variantItem.values}
-                                productId={item.productItem._id}
-                                orderId={order._id}
-                                itemId={item._id}
-                              />
-                            )}
-                          </div>
+                          {item.statusComment && !item.isCommented && (
+                            <CommentProduct
+                              values={item.variantItem.values}
+                              productId={item.productItem._id}
+                              orderId={order._id}
+                              itemId={item._id}
+                            />
+                          )}
                         </div>
                       </div>
-                    ))
-                  )
+                    </div>
+                  ))
                 ) : (
                   <div className="text-center text-gray-500">
                     Không có sản phẩm trong đơn hàng này.
@@ -289,7 +285,7 @@ const OrderHistory = () => {
               onClick={() => handlePageChange(currentPage - 1)}
             />
           </PaginationItem>
-          {[...Array(totalPages).keys()].map((page) => (
+          {[...Array(totalPages).keys()]?.map((page) => (
             <PaginationItem key={page + 1}>
               <PaginationLink
                 className="cursor-pointer"

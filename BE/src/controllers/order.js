@@ -6,7 +6,8 @@ import cart from "../models/cart";
 
 //=========================tạo đơn hàng mới===============
 export const createOrder = async (req, res) => {
-  const { userId, addressId, products, payment, totalPrice, note } = req.body;
+  const { userId, addressId, products, payment, totalPrice, note } =
+    req.body;
   try {
     let finalAddress = {};
     // Kiểm tra xem addressId có được cung cấp không
@@ -16,24 +17,16 @@ export const createOrder = async (req, res) => {
         .json({ message: "addressId là bắt buộc" });
     }
     if (!payment) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Phương thức thanh toán là bắt buộc" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Phương thức thanh toán là bắt buộc" });
     }
-    if (
-      !products ||
-      !Array.isArray(products.products) ||
-      products.products.length === 0
-    ) {
+    if (!products || !Array.isArray(products) || products.length === 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Không có sản phẩm trong giỏ hàng" });
     }
 
     if (totalPrice < 0) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Giá trị đơn hàng không hợp lệ" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Giá trị đơn hàng không hợp lệ" });
     }
     if (!userId) {
       return res
@@ -51,13 +44,13 @@ export const createOrder = async (req, res) => {
     // Lấy thông tin chi tiết địa chỉ
     finalAddress = address.toObject();
     // Kiểm tra số lượng kho cho mỗi sản phẩm
-    for (let item of products.products) {
+    for (let item of products) {
       const { variantItem, quantity } = item;
       // Kiểm tra và xử lý variantItem
       const productVariant = await Variant.findById(variantItem._id);
       if (!productVariant || productVariant.countOnStock < quantity) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-          message: `Số lượng không đủ trong kho.`,
+          message: `Số lượng không đủ trong kho.`
         });
       }
 
@@ -77,7 +70,12 @@ export const createOrder = async (req, res) => {
     });
     // Lưu đơn hàng
     const savedOrder = await newOrder.save();
-    await cart.deleteOne({ userId });
+    // Xóa tất cả các sản phẩm được chọn từ giỏ hàng của người dùng cụ thể
+    await cart.updateOne(
+      { userId },
+      { $pull: { products: { selected: true } } }
+    );
+
     return res
       .status(StatusCodes.CREATED)
       .json({ message: "Đơn hàng đã được tạo thành công", order: savedOrder });
@@ -87,6 +85,78 @@ export const createOrder = async (req, res) => {
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Lỗi khi tạo đơn hàng", error: error.message });
   }
+  //   // if (!payment) {
+  //   //   return res
+  //   //     .status(StatusCodes.BAD_REQUEST)
+  //   //     .json({ message: "Phương thức thanh toán là bắt buộc" });
+  //   // }
+  //   // if (
+  //   //   !products ||
+  //   //   !Array.isArray(products.products) ||
+  //   //   products.products.length === 0
+  //   // ) {
+  //   //   return res
+  //   //     .status(StatusCodes.BAD_REQUEST)
+  //   //     .json({ message: "Không có sản phẩm trong giỏ hàng" });
+  //   // }
+
+  //   // if (totalPrice < 0) {
+  //   //   return res
+  //   //     .status(StatusCodes.BAD_REQUEST)
+  //   //     .json({ message: "Giá trị đơn hàng không hợp lệ" });
+  //   // }
+  //   // if (!userId) {
+  //   //   return res
+  //   //     .status(StatusCodes.BAD_REQUEST)
+  //   //     .json({ message: "userId là bắt buộc" });
+  //   // }
+
+  //   // // Truy vấn thông tin địa chỉ từ addressId
+  //   // const address = await Address.findById(addressId);
+  //   // if (!address) {
+  //   //   return res
+  //   //     .status(StatusCodes.NOT_FOUND)
+  //   //     .json({ message: "Địa chỉ không tồn tại" });
+  //   // }
+  //   // // Lấy thông tin chi tiết địa chỉ
+  //   // finalAddress = address.toObject();
+  //   // // Kiểm tra số lượng kho cho mỗi sản phẩm
+  //   // for (let item of products.products) {
+  //   //   const { variantItem, quantity } = item;
+  //   //   // Kiểm tra và xử lý variantItem
+  //   //   const productVariant = await Variant.findById(variantItem._id);
+  //   //   if (!productVariant || productVariant.countOnStock < quantity) {
+  //   //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //   //       message: `Số lượng không đủ trong kho.`,
+  //   //     });
+  //   //   }
+
+  //   //   // Trừ số lượng trong kho
+  //   //   productVariant.countOnStock -= quantity;
+  //   //   await productVariant.save();
+  //   // }
+
+  //   // // Tạo đơn hàng
+  //   // const newOrder = new Order({
+  //   //   userId,
+  //   //   addressId: finalAddress,
+  //   //   products,
+  //   //   payment,
+  //   //   note,
+  //   //   totalPrice,
+  //   // });
+  //   // // Lưu đơn hàng
+  //   // const savedOrder = await newOrder.save();
+  //   // await cart.deleteOne({ userId });
+  //   // return res
+  //   //   .status(StatusCodes.CREATED)
+  //   //   .json({ message: "Đơn hàng đã được tạo thành công", order: savedOrder });
+  // } catch (error) {
+  //   console.error(error);
+  //   return res
+  //     .status(StatusCodes.INTERNAL_SERVER_ERROR)
+  //     .json({ message: "Lỗi khi tạo đơn hàng", error: error.message });
+  // }
 };
 
 // ============================ Lấy tất cả đơn hàng ===========================

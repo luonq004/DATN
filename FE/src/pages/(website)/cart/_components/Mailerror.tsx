@@ -15,16 +15,13 @@ const sendOrderErrorConfirmationEmail = async (to: string, orderCode: string) =>
     }
 
     // Trích xuất danh sách sản phẩm
-    const products = order?.products?.flatMap((orderProduct) =>
-      orderProduct.products.map((item) => ({
-        name: item.productItem.name,
-        image: item.productItem.image, // Thêm URL ảnh
-        // variant: item.variantItem.name,
-        price: item.variantItem.price,
-        quantity: item.quantity,
-        total: item.quantity * item.variantItem.price,
-      }))
-    );
+    const products = order?.products?.map((item) => ({
+      name: item.productItem.name,      // Tên sản phẩm
+      image: item.productItem.image,    // URL ảnh sản phẩm
+      price: item.variantItem?.price,   // Giá sản phẩm từ variantItem
+      quantity: item.quantity,          // Số lượng sản phẩm
+      total: item.quantity * (item.variantItem?.price ?? 0), // Tổng giá trị cho sản phẩm
+    }));
 
     // Nội dung email với bảng
     const emailContent = `

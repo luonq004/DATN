@@ -51,7 +51,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
         // console.log(item)
         userAction({ type: 'removeVoucher' }, { voucherCode: item })
     }
-
+console.log("selectedOne", cart)
 
     return (
         <div className='Cart__Right'>
