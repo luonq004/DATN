@@ -48,10 +48,12 @@ export const getAllProducts = async (req, res) => {
   }
 
   if (_status === "hidden") {
-    query.deleted = true;
+    query.deleted = { $ne: false };
   } else {
-    query.deleted = false;
+    query.deleted = { $ne: true };
   }
+
+  console.log(query);
 
   try {
     const result = await Product.paginate(query, { ...options });
@@ -321,7 +323,7 @@ export const updateProduct = async (req, res) => {
       { new: true }
     );
 
-    return res.json({
+    return res.status(200).json({
       message: "Cập nhật sản phẩm thành công",
       dataRes,
     });
@@ -332,11 +334,33 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const data = await Product.findOneAndDelete({ _id: req.params.id });
+    const data = await Product.findOne({ _id: req.params.id, deleted: false });
     if (data.length < 0) {
-      return res.status(404).json({ message: "No products found" });
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
     }
-    res.json(data);
+
+    data.deleted = true;
+
+    await data.save();
+
+    return res.json({ message: "Ẩn sản phẩm thành công", data });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const displayProduct = async (req, res) => {
+  try {
+    const data = await Product.findOne({ _id: req.params.id });
+    if (data.length < 0) {
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+    }
+
+    data.deleted = false;
+
+    await data.save();
+
+    return res.json({ message: "Hiển thị sản phẩm thành công", data });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

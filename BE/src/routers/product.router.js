@@ -2,6 +2,7 @@ import express from "express";
 import {
   createProduct,
   deleteProduct,
+  displayProduct,
   getAllProducts,
   getProductById,
   getProductForEdit,
@@ -23,6 +24,8 @@ router.post("/products", createProduct);
 
 router.put("/products/:id", updateProduct);
 
-router.delete("/products/:id", deleteProduct);
+router.post("/products/:id", deleteProduct);
+
+router.post("/products/:id/display", displayProduct);
 
 export default router;

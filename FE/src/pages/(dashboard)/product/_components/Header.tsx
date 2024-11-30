@@ -6,10 +6,10 @@ import { Link, useSearchParams } from "react-router-dom";
 const Header = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const currentLayout = searchParams.get("display") || "display";
+  const currentLayout = searchParams.get("status") || "display";
 
   function handleChange(layout: string) {
-    searchParams.set("display", layout);
+    searchParams.set("status", layout);
 
     // if (searchParams.get("page")) searchParams.set("page", "1");
     setSearchParams(searchParams);
