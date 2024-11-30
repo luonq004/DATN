@@ -70,19 +70,32 @@ export interface ProductItem {
   updatedAt: string;
 }
 
-export interface VariantItem {
+// export interface VariantItem {
+//   _id: string;
+//   price?: number;
+//   priceSale?: number;
+//   values: { _id: string; name: string; type: string; value: string; __v: number }[];  // values có cấu trúc này
+//   countOnStock?: number;
+//   image?: string;
+//   type?: string;
+//   name?: string;
+//   deleted?: boolean;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+interface VariantItem {
   _id: string;
+  name: string;
+  type: string;
+  value: string;
   price: number;
   priceSale: number;
-  values: { _id: string; name: string; type: string; value: string; __v: number }[];
   countOnStock: number;
-  image: string;
-  type?: string;
-  name?: string;
-  deleted: boolean;
-  createdAt: string;
-  updatedAt: string;
+  values: { _id: string; name: string; type: string; value: string; __v: number }[];  // values có cấu trúc này
 }
+
+
+
 
 export interface OrderProduct {
   _id: string;

@@ -26,7 +26,7 @@ import axios from "axios";
 import useAddress from "@/common/hooks/address/useAddress";
 import { useUserContext } from "@/common/context/UserProvider";
 import useCart from "@/common/hooks/useCart";
-import { FormOut } from "@/common/types/formCheckOut";
+import { Cart, FormOut } from "@/common/types/formCheckOut";
 import { Address } from "../../address/ListAddress";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -75,9 +75,10 @@ const CheckOut = () => {
   // lấy dữ liệu giỏ hàng
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
   const onSubmit = async (data: FormOut) => {
+    const selectedProducts = carts?.products?.filter((product: Cart) => product.selected) || [];
     const orderData = {
       addressId: data.addressId,
-      products: carts,
+      products: selectedProducts,
       userId: _id,
       note: data.note,
       payment: data.paymentMethod,
@@ -274,7 +275,7 @@ const CheckOut = () => {
                 </div>
               ) : (
                 <>
-                  {carts?.products.map((item: any, index: number) => (
+                  {carts?.products.filter((item) => item.selected).map((item: any, index: number) => (
                     <div
                       key={index}
                       className="grid transition-all duration-500 grid-cols-[81px_auto] max-sm:grid-cols-[75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6"

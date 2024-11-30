@@ -95,9 +95,9 @@ const OurSeries = () => {
           CHỌN MỘT PHONG CÁCH
         </h2>
         <div className="flex items-center gap-1 justify-center my-6">
-          <span className="h-[1px] w-2 bg-lime-400 mb-2"></span>
-          <span className="h-[1px] w-12 bg-lime-400 mb-2"></span>
-          <span className="h-[1px] w-2 bg-lime-400 mb-2"></span>
+          <span className="h-[1px] w-2 bg-[#b8cd06] mb-2"></span>
+          <span className="h-[1px] w-12 bg-[#b8cd06] mb-2"></span>
+          <span className="h-[1px] w-2 bg-[#b8cd06] mb-2"></span>
         </div>
       </div>
 

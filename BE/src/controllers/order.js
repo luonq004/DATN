@@ -19,7 +19,7 @@ export const createOrder = async (req, res) => {
         if (!payment) {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: "Phương thức thanh toán là bắt buộc" });
         }
-        if (!products || !Array.isArray(products.products) || products.products.length === 0) {
+        if (!products || !Array.isArray(products) || products.length === 0) {
             return res
                 .status(StatusCodes.BAD_REQUEST)
                 .json({ message: "Không có sản phẩm trong giỏ hàng" });
@@ -44,7 +44,7 @@ export const createOrder = async (req, res) => {
         // Lấy thông tin chi tiết địa chỉ
         finalAddress = address.toObject();
         // Kiểm tra số lượng kho cho mỗi sản phẩm
-        for (let item of products.products) {
+        for (let item of products) {
             const { variantItem, quantity } = item;
             // Kiểm tra và xử lý variantItem
             const productVariant = await Variant.findById(variantItem._id);
@@ -70,7 +70,12 @@ export const createOrder = async (req, res) => {
         });
         // Lưu đơn hàng
         const savedOrder = await newOrder.save();
-        await cart.deleteOne({ userId });
+        // Xóa tất cả các sản phẩm được chọn từ giỏ hàng của người dùng cụ thể
+        await cart.updateOne(
+            { userId },
+            { $pull: { products: { selected: true } } }
+        );
+
         return res
             .status(StatusCodes.CREATED)
             .json({ message: "Đơn hàng đã được tạo thành công", order: savedOrder });
@@ -106,7 +111,7 @@ export const getAllOrdersByUserId = async (req, res) => {
 export const getAllOrders = async (req, res) => {
     try {
         // Tìm tất cả đơn hàng và populate thông tin userId và addressId
-        const orders = await Order.find();
+        const orders = await Order.find().populate("userId").sort({ createdAt: -1 });
         // Kiểm tra nếu không có đơn hàng
         if (orders.length === 0) {
             return res.status(404).json({ message: "Không có đơn hàng nào" });
