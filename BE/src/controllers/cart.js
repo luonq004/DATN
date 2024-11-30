@@ -127,6 +127,11 @@ export const addToCart = async (req, res) => {
         .json({ message: "Không tìm thấy Product hoặc Biến thể của Product" });
     }
 
+    // kiểm tra xem sản phẩm hoặc biến thể có bị xóa mềm hay không
+    if (product.deleted === true || variantValue.deleted === true) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Sản phẩm hoặc thuộc tính đã bị xóa" });
+    }
+
     //Check variantId có trong SP đó hay ko
     const exitVariantProduct = product.variants.findIndex(
       (item) => item.toString() === variantId

@@ -3,6 +3,7 @@ import idk from '@/assets/icons/idk.svg';
 import visa from '@/assets/icons/Visa.svg';
 import bitcoin from '@/assets/icons/Bitcoin.svg';
 import interac from '@/assets/icons/Interac.svg';
+import vnpay from '@/assets/icons/vnpay-logo.svg';
 
 //other
 import { ChevronRight, Ticket } from 'lucide-react';
@@ -22,6 +23,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Link } from 'react-router-dom';
 import Icart from '@/common/types/cart';
+import { formatCurrency } from '@/lib/utils';
 
 const formSchema = z.object({
     voucherCode: z.string().min(2, {
@@ -59,11 +61,11 @@ console.log("selectedOne", cart)
                 <div className='Subtotal flex flex-col gap-4'>
                     <div className='flex justify-between'>
                         <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Tổng phụ</p>
-                        <p className=''>$<span>{cart?.subTotal}.00</span></p>
+                        <p className=''><span>{formatCurrency(cart?.subTotal ?? 0)} VNĐ</span></p>
                     </div>
                     <div className='flex justify-between'>
                         <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Giảm giá</p>
-                        <p className=''>$<span>{cart?.discount}.00</span></p>
+                        <p className=''><span>{formatCurrency(cart?.discount ?? 0)} VNĐ</span></p>
                     </div>
                 </div>
 
@@ -128,17 +130,17 @@ console.log("selectedOne", cart)
                     <div className='bg-[#C8C9CB] hover:bg-[#b8cd06] transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
                         <div>Checkout</div>
                         <div className=''>|</div>
-                        <div>$<span>{cart?.total}.00</span></div>
+                        <div><span>{formatCurrency(cart?.total ?? 0)} VNĐ</span></div>
                     </div>
                 </Link>
                 <hr />
                 <div className='Payments flex flex-col gap-4'>
                     <p className='text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]'>THANH TOÁN AN TOÀN ĐƯỢC CUNG CẤP BỞI</p>
                     <div className='flex gap-3'>
-                        <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
-                            <img src={idk} alt="" />
+                        <div className='border border-[#e2e2e2] px-3 flex justify-center items-center rounded-[6px]'>
+                            <img className='w-10 h-10' src={vnpay} alt="" />
                         </div>
-                        <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
+                        {/* <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
                             <img src={visa} alt="" />
                         </div>
                         <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
@@ -146,7 +148,7 @@ console.log("selectedOne", cart)
                         </div>
                         <div className='border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]'>
                             <img src={interac} alt="" />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

@@ -197,11 +197,10 @@ const Header = () => {
                     {menuItems.map((item) => (
                       <li className="!list-none" key={item.to}>
                         <Link
-                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${
-                            pathname === item.to
-                              ? "bg-[#b8cd06] text-white"
-                              : ""
-                          }`}
+                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${pathname === item.to
+                            ? "bg-[#b8cd06] text-white"
+                            : ""
+                            }`}
                           to={item.to}
                         >
                           {item.label}
@@ -236,11 +235,10 @@ const Header = () => {
 
             <div className={`relative -z-10 mx-[15px]`}>
               <div
-                className={`py-10 pb-[15px] md:pb-10 absolute w-full top-0 left-0 shadow-custom_input transition-all duration-300 bg-white ${
-                  isOpen
-                    ? "translate-y-0 opacity-100"
-                    : "-translate-y-full opacity-0"
-                }`}
+                className={`py-10 pb-[15px] md:pb-10 absolute w-full top-0 left-0 shadow-custom_input transition-all duration-300 bg-white ${isOpen
+                  ? "translate-y-0 opacity-100"
+                  : "-translate-y-full opacity-0"
+                  }`}
               >
                 <div className="px-[15px] flex justify-center">
                   <IoIosClose
