@@ -89,29 +89,36 @@ const ProductAddPage = () => {
         },
   });
 
+  console.log(form.formState.errors.variants);
+
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof productSchema>) {
-    // console.log("values: ", values);
-    setIsDoing(true);
+    const duplicateValues = checkForDuplicateVariants(values);
+    setDuplicate(duplicateValues);
+    console.log("duplicateValues: ", duplicateValues);
 
-    if (id) {
-      const duplicateValues = checkForDuplicateVariants(values);
-      setDuplicate(duplicateValues);
-      if (!duplicateValues.length) {
-        const result = await UploadFiles(values);
-        updateProduct({ data: result, id });
-      }
-    } else {
-      const duplicateValues = checkForDuplicateVariants(values);
-      setDuplicate(duplicateValues);
+    if (duplicateValues.length === 0) console.log("values: ", values);
 
-      if (!duplicateValues.length) {
-        const result = await UploadFiles(values);
-        createProduct(result);
-      }
-    }
+    // setIsDoing(true);
 
-    if (!isCreatting || !isUpdating) setIsDoing(false);
+    // if (id) {
+    //   const duplicateValues = checkForDuplicateVariants(values);
+    //   setDuplicate(duplicateValues);
+    //   if (!duplicateValues.length) {
+    //     const result = await UploadFiles(values);
+    //     updateProduct({ data: result, id });
+    //   }
+    // } else {
+    //   const duplicateValues = checkForDuplicateVariants(values);
+    //   setDuplicate(duplicateValues);
+
+    //   if (!duplicateValues.length) {
+    //     const result = await UploadFiles(values);
+    //     createProduct(result);
+    //   }
+    // }
+
+    // if (!isCreatting || !isUpdating) setIsDoing(false);
   }
 
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
@@ -131,13 +138,13 @@ const ProductAddPage = () => {
 
   return (
     <Container>
-      <h1 className="text-2xl font-normal mb-3">
+      <h1 className="text-4xl font-normal font-raleway mb-5">
         {id ? "Edit " : "Create "}Product
       </h1>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="flex gap-4">
+          <div className="flex flex-wrap xl:flex-nowrap gap-4">
             {/* Info Product */}
             <InfoGeneralProduct
               id={id ? true : false}

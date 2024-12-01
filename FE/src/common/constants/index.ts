@@ -6,22 +6,6 @@ export const sidebarLinks = [
 ];
 
 export const tabProductData = [
-  // {
-  //   value: "general",
-  //   label: "General",
-  // },
-  // {
-  //   value: "inventory",
-  //   label: "Inventory",
-  // },
-  {
-    value: "shipping",
-    label: "Shipping",
-  },
-  // {
-  //   value: "linked-products",
-  //   label: "Linked Products",
-  // },
   {
     value: "attributes",
     label: "Attributes",
@@ -29,9 +13,5 @@ export const tabProductData = [
   {
     value: "variations",
     label: "Variations",
-  },
-  {
-    value: "advanced",
-    label: "Advanced",
   },
 ];

@@ -1,4 +1,4 @@
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 import {
   FormControl,
@@ -50,8 +50,20 @@ const InfoGeneralProduct: React.FC<{
   attributeValue: Data[][];
   duplicate: number[];
 }> = ({ id, form, filteredData, attributeValue, duplicate }) => {
-  const [valuetab, setValueTab] = useState("inventory");
+  const [valuetab, setValueTab] = useState("attributes");
   const { atributes } = useGetAtributes();
+  const [openAccordionItem, setOpenAccordionItem] = useState<
+    string | undefined
+  >("item-1");
+
+  useEffect(() => {
+    const hasErrorInVariations = Boolean(form.formState.errors.variants);
+
+    if (hasErrorInVariations) {
+      setOpenAccordionItem("item-1");
+      setValueTab("variations");
+    }
+  }, [form.formState.errors]);
 
   const value = form.watch("descriptionDetail");
 
@@ -95,7 +107,7 @@ const InfoGeneralProduct: React.FC<{
   const typeFields: string[] = getUniqueTypesFromFields(fields) as string[];
 
   return (
-    <div className="w-3/4">
+    <div className="w-full xl:w-3/4">
       <FormField
         control={form.control}
         name="name"
@@ -133,6 +145,8 @@ const InfoGeneralProduct: React.FC<{
           className="bg-white"
           type="single"
           collapsible
+          value={openAccordionItem}
+          onValueChange={(value) => setOpenAccordionItem(value)}
           orientation="vertical"
         >
           <AccordionItem className="border-none" value="item-1">
@@ -159,15 +173,6 @@ const InfoGeneralProduct: React.FC<{
 
                 {/* Tab Content */}
 
-                {/* <TabsContent className="px-3 pt-2" value="inventory">
-                  Manage your inventory here.
-                </TabsContent> */}
-                <TabsContent className="px-3 pt-2" value="shipping">
-                  Configure shipping options here.
-                </TabsContent>
-                {/* <TabsContent className="px-3 pt-2" value="linked-products">
-                  Manage linked products here.
-                </TabsContent> */}
                 <TabsContent
                   className="px-3 pt-2 flex-1 min-h-[400px]"
                   value="attributes"
@@ -181,7 +186,10 @@ const InfoGeneralProduct: React.FC<{
                     handleAttributeValueChange={handleAttributeValueChange}
                   />
                 </TabsContent>
-                <TabsContent className="px-3 pt-2 w-full" value="variations">
+                <TabsContent
+                  className="px-3 pt-2 w-full min-h-[300px]"
+                  value="variations"
+                >
                   <VariationTab
                     fields={fields}
                     stateAttribute={stateAttribute}

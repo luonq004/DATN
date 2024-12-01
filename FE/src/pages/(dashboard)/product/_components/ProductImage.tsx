@@ -26,10 +26,15 @@ const ProductImage = ({ form }: { form: FormTypeProductVariation }) => {
   }
 
   return (
-    <Accordion className="bg-white border px-4" type="multiple">
+    <Accordion
+      className="bg-white border px-4"
+      type="single"
+      collapsible
+      defaultValue="item-2"
+    >
       <AccordionItem className="border-none" value="item-2">
         <AccordionTrigger className="no-underline">
-          Ảnh sản phẩm
+          Ảnh đại diện
         </AccordionTrigger>
         <AccordionContent>
           <div className="mt-2 flex">
@@ -50,7 +55,7 @@ const ProductImage = ({ form }: { form: FormTypeProductVariation }) => {
                 (inputElement as HTMLInputElement).click();
               }
             }}
-            className="w-full min-h-48 max-h-48 border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center overflow-hidden"
+            className="w-full min-h-56 max-h-56 border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center overflow-hidden"
           >
             {previewImagesMain ? (
               <img
@@ -58,7 +63,7 @@ const ProductImage = ({ form }: { form: FormTypeProductVariation }) => {
                   typeof previewImagesMain === "string" ? previewImagesMain : ""
                 }
                 alt="Preview"
-                className="object-cover"
+                className="object-contain w-40 h-full"
               />
             ) : (
               <FaCloudUploadAlt className="text-4xl text-blue-400" />

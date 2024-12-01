@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import io from "socket.io-client";
 
 const socket = io("http://localhost:3000"); // Thay bằng URL của server Socket.IO
@@ -28,11 +28,20 @@ function TestSocket() {
   };
 
   return (
-    <div className="socket-test w-full p-4" style={{ backgroundColor: "#16161a" }}>
-      <h1 className="text-center font-bold text-xl mb-2" style={{ color: "#dfdfdf" }}>
+    <div
+      className="socket-test w-full p-4"
+      style={{ backgroundColor: "#16161a" }}
+    >
+      <h1
+        className="text-center font-bold text-xl mb-2"
+        style={{ color: "#dfdfdf" }}
+      >
         Test Socket.IO
       </h1>
-      <div className="chat-box mb-4 p-2 rounded" style={{ backgroundColor: "#242424", color: "#dfdfdf" }}>
+      <div
+        className="chat-box mb-4 p-2 rounded"
+        style={{ backgroundColor: "#242424", color: "#dfdfdf" }}
+      >
         <h2 className="text-lg font-bold">Chat</h2>
         <div className="chat-messages h-40 overflow-y-scroll">
           {chat.map((msg, index) => (

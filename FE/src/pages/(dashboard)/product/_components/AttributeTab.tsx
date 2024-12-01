@@ -73,7 +73,7 @@ const AttributeTab = ({
           placeholder="Custom product attribute"
           value={valueOptions}
           noOptionsMessage={() => "Không có giá trị nào"}
-          className="w-60"
+          className="w-2/3"
           isDisabled={stateAttribute.attributesChoose.length === 2}
           options={
             attributes
@@ -106,7 +106,7 @@ const AttributeTab = ({
             setValueOptions(null);
           }}
         >
-          Add
+          Ấn
         </Button>
         {selectError && (
           <span className="text-red-500">Bạn phải chọn một giá trị!</span>
@@ -158,7 +158,7 @@ const AttributeTab = ({
                   });
                 }}
               >
-                Delete
+                Xóa
               </Button>
             </div>
           </CollapsibleContent>
@@ -177,7 +177,7 @@ const AttributeTab = ({
             dispatch({ type: "MIX_VALUES" });
           }}
         >
-          Add
+          Tạo biến thể
         </Button>
       </div>
     </>

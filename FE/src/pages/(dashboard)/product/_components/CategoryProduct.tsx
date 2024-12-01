@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useState } from "react";
 
 type Category = {
   _id: string;
@@ -24,97 +25,89 @@ type Category = {
 const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
   const { category, isLoadingCategory } = useCategory();
 
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(
+    "item-3"
+  );
+
   if (isLoadingCategory) return <div>Loading...</div>;
 
   return (
-    <Accordion className="bg-white border px-4" type="multiple">
-      <AccordionItem className="border-none" value="item-3">
-        <AccordionTrigger className="no-underline">Danh mục</AccordionTrigger>
-        <AccordionContent>
-          {/* <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                {category?.data.map((item: Category) => (
-                  <FormItem
-                    key={item._id}
-                    className="flex flex-row items-start space-x-2 space-y-0 mb-2"
-                  >
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value?.includes(item._id)}
-                        onCheckedChange={(checked) => {
-                          let updatedTags = [...(field.value || [])];
-                          if (checked && !updatedTags.includes(item._id)) {
-                            updatedTags.push(item._id);
-                          } else if (
-                            !checked &&
-                            updatedTags.includes(item._id)
-                          ) {
-                            updatedTags = updatedTags.filter(
-                              (tag) => tag !== item._id
-                            );
-                          }
-                          field.onChange(updatedTags);
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="font-normal">{item.name}</FormLabel>
-                  </FormItem>
-                ))}
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-          <FormField
-            control={form.control}
-            name="category"
-            render={() => (
-              <FormItem>
-                {category?.data?.map((item: Category) => (
-                  <FormField
-                    key={item._id}
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => {
-                      return (
-                        <FormItem
-                          key={item._id}
-                          className="flex flex-row items-start space-x-2 space-y-0 mb-2"
-                        >
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value?.includes(item._id)}
-                              onCheckedChange={(checked) => {
-                                return checked
-                                  ? field.onChange([
-                                      ...(field.value || []),
-                                      item._id,
-                                    ])
-                                  : field.onChange(
-                                      field.value?.filter(
-                                        (value) => value !== item._id
-                                      )
-                                    );
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            {item.name}
-                          </FormLabel>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                ))}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <>
+      <Accordion
+        //   className="bg-white border px-4"
+        //   type="single"
+        //   collapsible
+        //   defaultValue="item-3"
+        // >
+        className="bg-white border px-4"
+        type="single"
+        collapsible
+        value={accordionValue} // Liên kết với state
+        onValueChange={(value) => setAccordionValue(value)} // Cập nhật state khi người dùng tương tác
+      >
+        <AccordionItem className="border-none" value="item-3">
+          <AccordionTrigger className="no-underline">Danh mục</AccordionTrigger>
+          <AccordionContent>
+            <FormField
+              control={form.control}
+              name="category"
+              render={() => (
+                <FormItem>
+                  {category?.data?.map((item: Category) => (
+                    <FormField
+                      key={item._id}
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={item._id}
+                            className="flex flex-row items-start space-x-2 space-y-0 mb-2"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(item._id)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([
+                                        ...(field.value || []),
+                                        item._id,
+                                      ])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== item._id
+                                        )
+                                      );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {item.name}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <button
+        onClick={() =>
+          setAccordionValue((prev) =>
+            prev === "item-3" ? undefined : "item-3"
+          )
+        }
+        className="px-4 py-2 bg-blue-500 text-white rounded mb-4"
+      >
+        Toggle Accordion
+      </button>
+    </>
   );
 };
 

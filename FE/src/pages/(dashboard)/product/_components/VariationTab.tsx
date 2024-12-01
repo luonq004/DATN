@@ -5,11 +5,14 @@ import { FieldArrayWithId } from "react-hook-form";
 import { FaCloudUploadAlt } from "react-icons/fa";
 
 // UI
+
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
@@ -21,7 +24,6 @@ import {
   updateFields,
 } from "@/lib/utils";
 import VariationValues from "./VariationValues";
-import { uploadFile } from "@/lib/upload";
 
 const VariationTab = ({
   fields,
@@ -42,13 +44,22 @@ const VariationTab = ({
   removeFields: (index: number) => void;
   duplicate: number[];
 }) => {
-  const [stateSelect, setStateSelect] = useState<string>(
-    fields.length ? "create" : ""
-  );
+  const [stateSelect, setStateSelect] = useState<string>("create");
 
   const [previewImages, setPreviewImages] = useState<{
     [key: string]: string | null;
   }>({});
+
+  const [openItems, setOpenItems] = useState<string[]>([]);
+
+  useEffect(() => {
+    const errorKeys = Object.keys(form.formState.errors.variants || {}).map(
+      (index) => `variant-${index}`
+    );
+
+    // Mở các mục có lỗi
+    setOpenItems((prev) => [...new Set([...prev, ...errorKeys])]);
+  }, [form.formState.errors]);
 
   useEffect(() => {
     const initialImages = fields.reduce((acc, field) => {
@@ -75,22 +86,6 @@ const VariationTab = ({
       }));
 
       form.setValue(`variants.${index}.image`, file);
-
-      // try {
-      //   const uploadedUrl = await uploadFile(file);
-      //   if (uploadedUrl) {
-      //     // Lưu URL của ảnh vào form
-      //     setPreviewImages((prev) => ({
-      //       ...prev,
-      //       [id]: uploadedUrl,
-      //     }));
-      //     form.setValue(`variants.${index}.image`, uploadedUrl);
-      //     console.log("Uploaded URL: ", uploadedUrl);
-      //   }
-      // } catch (error) {
-      //   console.error("Lỗi upload ảnh:", error);
-      //   alert("Có lỗi xảy ra khi upload ảnh. Vui lòng thử lại!");
-      // }
     }
   };
 
@@ -116,6 +111,19 @@ const VariationTab = ({
         });
       }
     }
+
+    if (stateSelect === "deleteAll") {
+      replaceFields([]);
+    }
+  };
+
+  const handleToggle = (value: string) => {
+    setOpenItems(
+      (prev) =>
+        prev.includes(value)
+          ? prev.filter((item) => item !== value) // Đóng mục
+          : [...prev, value] // Mở mục
+    );
   };
 
   const matchingAttributes = getAttributesUsedInArray(fields, attributes);
@@ -128,7 +136,6 @@ const VariationTab = ({
           value={stateSelect}
           onChange={(e) => setStateSelect(e.target.value)}
         >
-          <option value="add">Thêm biến thể</option>
           <option value="create">
             Tạo biến thể từ tất cả thuộc tính đã chọn
           </option>
@@ -139,111 +146,149 @@ const VariationTab = ({
           className="bg-gray-200 text-black"
           onClick={handleButtonClick}
         >
-          Go
+          Ấn
         </Button>
       </div>
       <div>
-        {fields[0].values[0].name != "" &&
+        {fields.length > 0 &&
+          fields?.[0]?.values[0]?.name != "" &&
           fields.map((field, index) => {
             return (
               <div
-                className={`py-4 border-b ${
+                className={`pb-4 ${
                   duplicate.includes(index) ? "border-red-500 border" : ""
                 }`}
                 key={field.id}
               >
-                <Collapsible key={field.id}>
-                  <div className="flex gap-3 relative">
-                    <CollapsibleTrigger className="text-left font-bold w-2/3">
-                      #{index + 1}
-                    </CollapsibleTrigger>
-                    {matchingAttributes?.map((attribute, indx) => {
-                      return (
-                        <div key={attribute._id}>
-                          <select
-                            className="w-24 py-1"
-                            value={form.watch(
-                              `variants.${index}.values.${indx}._id`
-                            )} // Theo dõi giá trị của trường
-                            onChange={(e) => {
-                              form.setValue(
-                                `variants.${index}.values.${indx}._id`,
-                                e.target.value
-                              );
-                            }}
-                          >
-                            {attribute.values.map((value) => {
-                              return (
-                                <option key={value._id} value={value._id}>
-                                  {value.name}
-                                </option>
-                              );
-                            })}
-                          </select>
+                <Accordion
+                  className="w-full"
+                  type="multiple"
+                  value={openItems} // Điều khiển các mục được mở
+                  onValueChange={(values) => setOpenItems(values)}
+                >
+                  <AccordionItem value={`variant-${index}`}>
+                    <div className="flex gap-3 relative w-full justify-between items-center">
+                      <AccordionTrigger
+                        className="text-left font-bold justify-between"
+                        onClick={() => handleToggle(`variant-${index}`)}
+                      >
+                        #{index + 1}
+                      </AccordionTrigger>
 
-                          {form.formState.errors.variants && (
-                            <p className="text-red-600">
-                              {form.formState.errors.variants.message}
-                            </p> // Lỗi chung cho variants
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <CollapsibleContent className="mt-4">
-                    <div className="pt-4 border-t">
-                      <div className="mt-2 flex border-b border-gray-300 pb-4">
-                        <input
-                          className={`input-file__${field.id}`}
-                          type="file"
-                          hidden
-                          {...form.register(`variants.${index}.image`)} // Đảm bảo rằng form register đã được sử dụng
-                          onChange={(e) =>
-                            handleImageChange(e, field.id, index)
-                          } // Gọi hàm xử lý khi file thay đổi
-                        />
+                      <div className="flex gap-2">
+                        {matchingAttributes?.map((attribute, indx) => {
+                          return (
+                            <div key={attribute._id}>
+                              <select
+                                className="w-24 py-1"
+                                value={form.watch(
+                                  `variants.${index}.values.${indx}._id`
+                                )} // Theo dõi giá trị của trường
+                                onChange={(e) => {
+                                  form.setValue(
+                                    `variants.${index}.values.${indx}._id`,
+                                    e.target.value
+                                  );
+                                }}
+                              >
+                                {attribute.values.map((value) => {
+                                  return (
+                                    <option key={value._id} value={value._id}>
+                                      {value.name}
+                                    </option>
+                                  );
+                                })}
+                              </select>
 
-                        {/* Preview Image */}
-                        <div
-                          onClick={() => {
-                            const inputElement = document.querySelector(
-                              `.input-file__${field.id}`
-                            );
-                            if (inputElement) {
-                              (inputElement as HTMLInputElement).click();
-                            }
-                          }}
-                          className="h-[100px] w-[100px] border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center"
-                        >
-                          {previewImages[field.id] ? (
-                            <img
-                              src={previewImages[field.id] || ""}
-                              alt="Preview"
-                              className="object-cover w-[90px] h-[90px]"
-                            />
-                          ) : (
-                            <FaCloudUploadAlt className="text-4xl  text-blue-400" />
-                          )}
-                        </div>
-                        <div className="self-end ml-auto">
-                          <label className="block">Số lượng tồn kho</label>
-                          <input
-                            type="text"
-                            {...form.register(
-                              `variants.${index}.countOnStock` as const
-                            )}
-                          />
-                        </div>
+                              {form.formState.errors.variants && (
+                                <p className="text-red-600">
+                                  {form.formState.errors.variants.message}
+                                </p> // Lỗi chung cho variants
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-
-                      <VariationValues
-                        form={form}
-                        indexValue={index}
-                        removeFields={removeFields}
-                      />
                     </div>
-                  </CollapsibleContent>
-                </Collapsible>
+
+                    <AccordionContent className="mt-4">
+                      <div className="pt-4 border-t">
+                        <div className="mt-2 flex border-b border-gray-300 pb-4">
+                          <input
+                            className={`input-file__${field.id}`}
+                            type="file"
+                            hidden
+                            {...form.register(`variants.${index}.image`)} // Đảm bảo rằng form register đã được sử dụng
+                            onChange={(e) =>
+                              handleImageChange(e, field.id, index)
+                            } // Gọi hàm xử lý khi file thay đổi
+                          />
+
+                          {/* Preview Image */}
+                          <div
+                            onClick={() => {
+                              const inputElement = document.querySelector(
+                                `.input-file__${field.id}`
+                              );
+                              if (inputElement) {
+                                (inputElement as HTMLInputElement).click();
+                              }
+                            }}
+                            className="h-[100px] w-[100px] border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center"
+                          >
+                            {previewImages[field.id] ? (
+                              <div className="relative">
+                                <img
+                                  src={previewImages[field.id] || ""}
+                                  alt="Preview"
+                                  className="object-cover w-[90px] h-[90px]"
+                                />
+                              </div>
+                            ) : (
+                              <FaCloudUploadAlt className="text-4xl text-blue-400" />
+                            )}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPreviewImages((prev) => ({
+                                ...prev,
+                                [field.id]: null, // Xóa ảnh từ preview
+                              }));
+                              form.setValue(`variants.${index}.image`, null); // Xóa ảnh từ form
+                            }}
+                            className="mt-10"
+                          >
+                            X
+                          </button>
+
+                          <div className="self-end ml-auto">
+                            <label className="block">Số lượng tồn kho</label>
+                            <input
+                              type="text"
+                              {...form.register(
+                                `variants.${index}.countOnStock` as const
+                              )}
+                            />
+                            <span className="text-xs block text-red-600 mt-2">
+                              {
+                                form.formState.errors.variants?.[index]
+                                  ?.countOnStock?.message
+                              }
+                            </span>
+                          </div>
+                        </div>
+
+                        <VariationValues
+                          form={form}
+                          indexValue={index}
+                          removeFields={removeFields}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             );
           })}
