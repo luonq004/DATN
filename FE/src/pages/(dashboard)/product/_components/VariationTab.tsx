@@ -154,12 +154,7 @@ const VariationTab = ({
           fields?.[0]?.values[0]?.name != "" &&
           fields.map((field, index) => {
             return (
-              <div
-                className={`pb-4 ${
-                  duplicate.includes(index) ? "border-red-500 border" : ""
-                }`}
-                key={field.id}
-              >
+              <div className={`pb-4 `} key={field.id}>
                 <Accordion
                   className="w-full"
                   type="multiple"
@@ -167,12 +162,20 @@ const VariationTab = ({
                   onValueChange={(values) => setOpenItems(values)}
                 >
                   <AccordionItem value={`variant-${index}`}>
-                    <div className="flex gap-3 relative w-full justify-between items-center">
+                    <div
+                      className={`flex gap-3 relative w-full justify-between items-center ${
+                        duplicate.includes(index) ? "border-red-500 border" : ""
+                      }`}
+                    >
                       <AccordionTrigger
                         className="text-left font-bold justify-between"
                         onClick={() => handleToggle(`variant-${index}`)}
                       >
-                        #{index + 1}
+                        {duplicate.includes(index) ? (
+                          <span className="text-red-500">Biến thể trùng</span>
+                        ) : (
+                          <span># {index + 1}</span>
+                        )}
                       </AccordionTrigger>
 
                       <div className="flex gap-2">

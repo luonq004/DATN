@@ -51,13 +51,14 @@ const InfoGeneralProduct: React.FC<{
   duplicate: number[];
 }> = ({ id, form, filteredData, attributeValue, duplicate }) => {
   const [valuetab, setValueTab] = useState("attributes");
-  const { atributes } = useGetAtributes();
+  const { attributes } = useGetAtributes();
   const [openAccordionItem, setOpenAccordionItem] = useState<
     string | undefined
   >("item-1");
 
   useEffect(() => {
-    const hasErrorInVariations = Boolean(form.formState.errors.variants);
+    const hasErrorInVariations =
+      Boolean(form.formState.errors.variants) || Boolean(duplicate.length);
 
     if (hasErrorInVariations) {
       setOpenAccordionItem("item-1");
@@ -80,7 +81,7 @@ const InfoGeneralProduct: React.FC<{
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedValues, setSelectedValues] = useState<Record<string, any>>(
-    getSelectedValues(attributeValue, atributes)
+    getSelectedValues(attributeValue, attributes)
   );
 
   const handleAttributeValueChange = (
@@ -178,7 +179,7 @@ const InfoGeneralProduct: React.FC<{
                   value="attributes"
                 >
                   <AttributeTab
-                    attributes={atributes}
+                    attributes={attributes}
                     stateAttribute={stateAttribute}
                     dispatch={dispatch}
                     selectedValues={selectedValues}
@@ -195,7 +196,7 @@ const InfoGeneralProduct: React.FC<{
                     stateAttribute={stateAttribute}
                     typeFields={typeFields}
                     form={form}
-                    attributes={atributes}
+                    attributes={attributes}
                     replaceFields={replace}
                     removeFields={remove}
                     duplicate={duplicate}

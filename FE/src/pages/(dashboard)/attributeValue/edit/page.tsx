@@ -28,9 +28,9 @@ const formSchema = z.object({
     message: "Hãy viết giá trị thuộc tính",
   }),
 
-  type: z.string().min(1, {
-    message: "Hãy chọn loại giá trị thuộc tính",
-  }),
+  // type: z.string().min(1, {
+  //   message: "Hãy chọn loại giá trị thuộc tính",
+  // }),
 });
 
 const UpdateAttributeValuePage = () => {
@@ -48,7 +48,7 @@ const UpdateAttributeValuePage = () => {
     defaultValues: {
       name: "",
       value: "",
-      type: "",
+      // type: "",
     },
   });
 
@@ -117,7 +117,7 @@ const UpdateAttributeValuePage = () => {
 
           {/* <Button className="self-end">asd</Button> */}
         </div>
-        <FormField
+        {/* <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
@@ -130,7 +130,7 @@ const UpdateAttributeValuePage = () => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <Button disabled={isUpdating} type="submit">
           {isUpdating ? "Đang cập nhật" : "Cập nhật"}
         </Button>

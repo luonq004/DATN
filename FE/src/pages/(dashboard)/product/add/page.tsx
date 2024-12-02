@@ -26,6 +26,7 @@ import { useCreateProduct } from "../actions/useCreateProduct";
 import { useUpdateProduct } from "../actions/useUpdateProduct";
 
 import { UploadFiles } from "@/lib/upload";
+import { toast } from "@/components/ui/use-toast";
 
 const ProductAddPage = () => {
   const { id } = useParams();
@@ -35,7 +36,7 @@ const ProductAddPage = () => {
 
   const [isDoing, setIsDoing] = useState(false);
 
-  const { isLoadingAtributes, atributes } = useGetAtributes();
+  const { isLoadingAtributes, attributes } = useGetAtributes();
 
   useEffect(() => {
     if (!id) document.title = "Page: Create Product";
@@ -89,36 +90,37 @@ const ProductAddPage = () => {
         },
   });
 
-  console.log(form.formState.errors.variants);
-
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof productSchema>) {
-    const duplicateValues = checkForDuplicateVariants(values);
-    setDuplicate(duplicateValues);
-    console.log("duplicateValues: ", duplicateValues);
+    setIsDoing(true);
 
-    if (duplicateValues.length === 0) console.log("values: ", values);
+    if (id) {
+      const duplicateValues = checkForDuplicateVariants(values);
+      setDuplicate(duplicateValues);
+      toast({
+        variant: "destructive",
+        title: "Trùng giá trị biến thể của sản phẩm",
+      });
 
-    // setIsDoing(true);
+      if (!duplicateValues.length) {
+        const result = await UploadFiles(values);
+        updateProduct({ data: result, id });
+      }
+    } else {
+      const duplicateValues = checkForDuplicateVariants(values);
+      setDuplicate(duplicateValues);
+      toast({
+        variant: "destructive",
+        title: "Trùng giá trị biến thể của sản phẩm",
+      });
 
-    // if (id) {
-    //   const duplicateValues = checkForDuplicateVariants(values);
-    //   setDuplicate(duplicateValues);
-    //   if (!duplicateValues.length) {
-    //     const result = await UploadFiles(values);
-    //     updateProduct({ data: result, id });
-    //   }
-    // } else {
-    //   const duplicateValues = checkForDuplicateVariants(values);
-    //   setDuplicate(duplicateValues);
+      if (!duplicateValues.length) {
+        const result = await UploadFiles(values);
+        createProduct(result);
+      }
+    }
 
-    //   if (!duplicateValues.length) {
-    //     const result = await UploadFiles(values);
-    //     createProduct(result);
-    //   }
-    // }
-
-    // if (!isCreatting || !isUpdating) setIsDoing(false);
+    if (!isCreatting || !isUpdating) setIsDoing(false);
   }
 
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
@@ -127,7 +129,7 @@ const ProductAddPage = () => {
   // console.log("types: ", types);
 
   const filteredData = types.length
-    ? atributes.filter((item: Attribute) => types.includes(item.name))
+    ? attributes.filter((item: Attribute) => types.includes(item.name))
     : [];
   // console.log("filteredData: ", filteredData);
 

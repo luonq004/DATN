@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useState } from "react";
 import Select from "react-select";
+import { AddNewValue } from "./AddNewValue";
 
 const AttributeTab = ({
   attributes,
@@ -144,22 +145,26 @@ const AttributeTab = ({
                 }}
               />
 
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => {
-                  dispatch({
-                    type: "DELETE_ONE_VALUE",
-                    payload: value._id as string,
-                  });
-                  setSelectedValues((current) => {
-                    const { [value._id]: _, ...rest } = current;
-                    return rest;
-                  });
-                }}
-              >
-                Xóa
-              </Button>
+              <div className="flex gap-2">
+                <AddNewValue attributeId={value._id} dispatch={dispatch} />
+
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => {
+                    dispatch({
+                      type: "DELETE_ONE_VALUE",
+                      payload: value._id as string,
+                    });
+                    setSelectedValues((current) => {
+                      const { [value._id]: _, ...rest } = current;
+                      return rest;
+                    });
+                  }}
+                >
+                  Xóa
+                </Button>
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>

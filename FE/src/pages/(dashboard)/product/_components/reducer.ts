@@ -75,6 +75,15 @@ export const reducer = (state: State, action: Action): State => {
       };
     }
 
+    case "UPDATE_ATTRIBUTES":
+      return {
+        ...state,
+
+        attributesChoose: state.attributesChoose.map((attr) =>
+          attr._id === action.payload._id ? action.payload : attr
+        ),
+      };
+
     case "DELETE_INDEX_MIX_VALUE":
       return {
         ...state,
