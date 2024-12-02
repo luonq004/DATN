@@ -12,6 +12,8 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.15.2",
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@fortawesome/fontawesome-svg-core": "^6.7.1",
+    "@fortawesome/free-brands-svg-icons": "^6.7.1",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@hookform/resolvers": "^3.7.0",
@@ -52,7 +54,7 @@
     "react-router-dom": "^6.24.0",
     "react-select": "^5.8.2",
     "react-swipeable": "^7.0.2",
-    "react-toastify": "^10.0.5",
+    "react-toastify": "^10.0.6",
     "swiper": "^11.1.14",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",

@@ -32,6 +32,7 @@ import AboutUsPage from "@/pages/(website)/aboutus/page";
 import AdminOrder from "@/pages/(dashboard)/Order/Order";
 import PageServices from "@/pages/(website)/services/PageServices";
 import { SignIn, SignUp } from "@clerk/clerk-react";
+import ContactPage from "@/pages/(website)/contact/page";
 
 const Router = () => {
   return (
@@ -63,6 +64,7 @@ const Router = () => {
           </Route>
 
           <Route path="about" element={<AboutUsPage />} />
+          <Route path="contact" element={<ContactPage />} />
 
           <Route path="shopping" element={<ProductShopPage />} />
         </Route>
