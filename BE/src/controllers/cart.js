@@ -97,6 +97,9 @@ export const getCartByUserId = async (req, res) => {
 
     await cart.save();
     cart = await updateTotal(cart);
+    console.log("cart", cart)
+    cart.total += 30000;
+    await cart.save();
     return res.status(StatusCodes.OK).json(cart);
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });

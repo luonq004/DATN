@@ -48,7 +48,19 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-
+  statusHistory: [
+    {
+      status: { type: String, required: true }, // Trạng thái mới
+      timestamp: { type: Date, default: Date.now }, // Thời gian thay đổi
+      updatedBy: { type: String, default: "Hệ thống" }, // Người thực hiện cập nhật
+    },
+  ],
+  cancellationReason: {
+    type: String, // Lý do hủy đơn hàng
+  },
+  cancelledBy: {
+    type: String, // Người thực hiện hủy đơn hàng
+  },
   deleted: {
     type: Boolean,
     default: false,

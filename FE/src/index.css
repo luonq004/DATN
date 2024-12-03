@@ -36,6 +36,10 @@
   height: 3px;
   width: 100%;
 }
+.history-status {
+  display: none !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

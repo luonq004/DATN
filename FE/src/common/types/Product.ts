@@ -8,8 +8,10 @@
 //   // status: "pending" | "processing" | "success" | "failed";
 // }
 
-import { Address } from "@/pages/(website)/address/ListAddress";
-
+export interface OrderResponse {
+  message: string;
+  order: { status: string }; // Cấu trúc order tùy theo backend của bạn
+}
 export interface IProduct {
   _id: string;
   name: string;
