@@ -190,7 +190,7 @@ const AddBlog = () => {
             {...register("image", { required: "Ảnh là bắt buộc" })}
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full border border-gray-300 rounded-md"
           />
           {errors.image && (
             <span className="text-red-500">{errors.image.message}</span>
