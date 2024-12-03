@@ -2,6 +2,8 @@ export interface FormOut {
   addressId: string;
   _id?:string;
   paymentMethod: string;
+  agreeToTerms: boolean; // Thêm trường agreeToTerms
+  emailUpdates: boolean;
   note: string;
 }
 

@@ -178,3 +178,25 @@ export const getDataCategory = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 }
+
+export const getDataOrderList = async (req, res) => {
+    try {
+        // Tìm tất cả đơn hàng và populate thông tin userId và addressId
+        const orders = await Order.find().populate("userId").sort({ createdAt: -1 });
+        // Kiểm tra nếu không có đơn hàng
+        if (orders.length === 0) {
+            return res.status(404).json({ message: "Không có đơn hàng nào" });
+        }
+        const newOrders = orders.filter((order) => order.status !== "đã hoàn thành" && order.status !== "đã hủy");
+        console.log(newOrders);
+        // Trả về danh sách đơn hàng
+        return res.status(StatusCodes.OK).json(newOrders);
+    } catch (error) {
+        return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({
+                message: "Lỗi khi lấy danh sách đơn hàng",
+                error: error.message,
+            });
+    }
+};

@@ -20,7 +20,7 @@
 // };
 
 // export default useOrder;
-import { getAllOrders, getAllOrdersByUsesId, getOrderById } from "@/pages/(website)/services/OrderHistory/Order";
+import {  getAllOrdersByUsesId, getOrderById } from "@/pages/(website)/services/OrderHistory/Order";
 import { useQuery } from "@tanstack/react-query";
 
 const useOrder = (userId?: string, orderId?: string) => {
@@ -33,7 +33,6 @@ const useOrder = (userId?: string, orderId?: string) => {
       if (orderId) {
         return await getOrderById(orderId); // Lấy theo orderId
       }
-      return await getAllOrders(); // Lấy tất cả nếu không có điều kiện
     },
     enabled: true, // Luôn kích hoạt query
   });

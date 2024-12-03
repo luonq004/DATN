@@ -157,6 +157,31 @@ const Header = () => {
                   </Link>
                 </div>
 
+                {/* Thông báo */}
+                <div className="border-l border-[#eee] py-[10px] lg:px-[10px] lg:py-[16px] xl:px-[25px] text-[10px] leading-5 text-[#555] uppercase hidden lg:inline">
+                  <div className="relative hover:text-[#b8cd06]  cursor-pointer">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="size-[23px] "
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"
+                      />
+                    </svg>
+
+                    {/* Chấm đỏ thông báo */}
+                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-[19px] h-[19px] rounded-full text-[11px] text-white bg-red-500 ">
+                      1
+                    </span>
+                  </div>
+                </div>
+
                 <div className="border-x border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase relative hidden lg:inline">
                   <Link
                     to="/cart"
@@ -197,10 +222,11 @@ const Header = () => {
                     {menuItems.map((item) => (
                       <li className="!list-none" key={item.to}>
                         <Link
-                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${pathname === item.to
-                            ? "bg-[#b8cd06] text-white"
-                            : ""
-                            }`}
+                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${
+                            pathname === item.to
+                              ? "bg-[#b8cd06] text-white"
+                              : ""
+                          }`}
                           to={item.to}
                         >
                           {item.label}
@@ -223,6 +249,31 @@ const Header = () => {
                     onClick={() => setIsOpen(!isOpen)}
                   />
                   <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                  {/* Thông báo */}
+                  <div className=" border-[#eee] hover:text-[#b8cd06]  uppercase lg:hidden">
+                    <div className="relative cursor-pointer">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-[33px]"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"
+                        />
+                      </svg>
+
+                      {/* Chấm đỏ thông báo */}
+                      <span className="absolute -top-3 -right-2 flex items-center justify-center w-[20px] h-[20px] rounded-full text-[11px] text-white bg-red-500 ">
+                        1
+                      </span>
+                    </div>
+                  </div>
+
                   <span className="relative mr-2">
                     <IoBagHandleSharp className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
                     <span className="absolute size-5 rounded-full text-white text-[11px] leading-5 text-center bg-[#b8cd06] top-[-39%] right-[-23%]">
@@ -235,10 +286,11 @@ const Header = () => {
 
             <div className={`relative -z-10 mx-[15px]`}>
               <div
-                className={`py-10 pb-[15px] md:pb-10 absolute w-full top-0 left-0 shadow-custom_input transition-all duration-300 bg-white ${isOpen
-                  ? "translate-y-0 opacity-100"
-                  : "-translate-y-full opacity-0"
-                  }`}
+                className={`py-10 pb-[15px] md:pb-10 absolute w-full top-0 left-0 shadow-custom_input transition-all duration-300 bg-white ${
+                  isOpen
+                    ? "translate-y-0 opacity-100"
+                    : "-translate-y-full opacity-0"
+                }`}
               >
                 <div className="px-[15px] flex justify-center">
                   <IoIosClose

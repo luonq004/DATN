@@ -17,10 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import cartEmpty from "@/assets/images/cart-empty.png";
-import idk from "@/assets/icons/idk.svg";
-import visa from "@/assets/icons/Visa.svg";
-import bitcoin from "@/assets/icons/Bitcoin.svg";
-import interac from "@/assets/icons/Interac.svg";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAddress from "@/common/hooks/address/useAddress";
@@ -33,12 +29,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import CheckOutVoucher from "./CheckOutVoucher";
 import CreateAddress from "../../address/CreatAddress";
 import { toast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddressDialog from "./AddressDialog ";
 import sendOrderConfirmationEmail from "./sendEmail";
 import { useUser } from "@clerk/clerk-react";
 import { formatCurrency } from "@/lib/utils";
 // import { useQueryClient } from "@tanstack/react-query";
+
+import io from "socket.io-client";
+
+const socket = io("http://localhost:3000");
+
 interface ErrorResponse {
   message: string;
 }
@@ -49,6 +50,42 @@ interface ErrorResponse {
 const CheckOut = () => {
   const navigate = useNavigate();
   // const queryClient = useQueryClient();
+
+  useEffect(() => {
+    socket.on("orderNotification", async (orderData) => {
+      try {
+        console.log("Nhận được thông báo từ server:", orderData);
+        const response = await axios.post(
+          "http://localhost:8080/api/notifications/create",
+          {
+            userId: _id,
+            orderCode: orderData.orderCode,
+            message: `Đơn hàng ${orderData.orderCode} đã được đặt thành công!`,
+            status: "success",
+            timestamp: new Date(),
+          }
+        );
+
+        console.log("Kết quả lưu thông báo:", response.data);
+        toast({
+          title: "Đặt hàng thành công!",
+          description: `Đơn hàng ${orderData.orderCode} đã được đặt thành công!`,
+          variant: "default",
+        });
+      } catch (error) {
+        console.error("Lỗi khi lưu thông báo:", error);
+        toast({
+          title: "Lỗi hệ thống!",
+          description: "Không thể lưu thông báo. Vui lòng thử lại.",
+          variant: "destructive",
+        });
+      }
+    });
+
+    return () => {
+      socket.off("orderNotification");
+    };
+  }, []);
 
   const form = useForm<FormOut>({
     defaultValues: {
@@ -75,6 +112,7 @@ const CheckOut = () => {
   const handleDialogClose = () => setDialogOpen(false);
   // lấy dữ liệu giỏ hàng
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
+
   const onSubmit = async (data: FormOut) => {
     const selectedProducts =
       carts?.products?.filter((product: Cart) => product.selected) || [];
@@ -94,6 +132,13 @@ const CheckOut = () => {
       );
       const createOrder = response.data;
       const orderCode = createOrder?.order?.orderCode;
+      // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
+      socket.emit("orderPlaced", {
+        orderCode,
+        userId: _id,
+        message: "Đặt hàng thành công!",
+      });
+
       if (data.paymentMethod === "Vnpay") {
         const response = await axios.post(
           "http://localhost:8080/api/create_payment_url",
@@ -386,20 +431,56 @@ const CheckOut = () => {
             <div className="flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6">
               <CheckOutVoucher />
               <hr />
-              <div className="flex gap-5 ">
-                <Checkbox className="w-[22px] h-[22px]" id="terms" />
-                <span className="text-[#717378] text-[14px]">
-                  Tôi xác nhận rằng địa chỉ của tôi là chính xác 100% và SẼ
-                  KHÔNG bắt Top Shelf BC phải chịu trách nhiệm nếu lô hàng này
-                  được gửi đến địa chỉ không chính xác. *
-                </span>
-              </div>
-              <div className="flex gap-5 ">
-                <Checkbox className="w-[22px] h-[22px]" id="emailUpdates" />
-                <span className="text-[#717378] text-[14px]">
-                  Đăng ký để nhận email cập nhật và tin tức (tùy chọn)
-                </span>
-              </div>
+              <FormField
+                control={control}
+                name="agreeToTerms"
+                rules={{ required: "Bạn phải đồng ý với điều khoản" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex gap-4">
+                      <Checkbox
+                        checked={field.value} // Liên kết với react-hook-form
+                        onCheckedChange={(checked) => field.onChange(checked)} // Sử dụng onCheckedChange thay vì onChange
+                        className="w-[22px] mt-[1%] h-[22px]"
+                      />
+                      <span className="text-[#717378] text-[14px]">
+                        Tôi xác nhận rằng địa chỉ của tôi là chính xác 100% và
+                        SẼ KHÔNG bắt Top Shelf BC phải chịu trách nhiệm nếu lô
+                        hàng này được gửi đến địa chỉ không chính xác. *
+                      </span>
+                    </div>
+                    {errors.agreeToTerms && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.agreeToTerms.message}
+                      </p>
+                    )}
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="emailUpdates"
+                rules={{ required: "Bạn cần đăng ký để nhận Email về đơn hàng! " }}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={field.value} // Liên kết với react-hook-form
+                        onCheckedChange={(checked) => field.onChange(checked)} // Sử dụng onCheckedChange thay vì onChange
+                        className="w-[22px] h-[22px]"
+                      />
+                      <span className="text-[#717378] text-[14px]">
+                        Đăng ký để nhận email cập nhật và tin tức (tùy chọn)
+                      </span>
+                    </div>
+                    {errors.emailUpdates && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.emailUpdates.message}
+                      </p>
+                    )}
+                  </FormItem>
+                )}
+              />
               {/* ============= PAYMENTMEDTHOD=============== */}
               <div className="w-full mx-auto">
                 <FormField
@@ -441,7 +522,7 @@ const CheckOut = () => {
                 <div className="">|</div>
                 <div>{formatCurrency(carts?.total)} VNĐ</div>
               </button>
-              <div className="Payments flex flex-col gap-4">
+              {/* <div className="Payments flex flex-col gap-4">
                 <p className="text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]">
                   THANH TOÁN ĐƯỢC CUNG CẤP BỞI
                 </p>
@@ -459,7 +540,7 @@ const CheckOut = () => {
                     <img src={interac} alt="" />
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
