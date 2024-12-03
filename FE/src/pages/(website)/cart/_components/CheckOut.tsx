@@ -33,12 +33,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import CheckOutVoucher from "./CheckOutVoucher";
 import CreateAddress from "../../address/CreatAddress";
 import { toast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddressDialog from "./AddressDialog ";
 import sendOrderConfirmationEmail from "./sendEmail";
 import { useUser } from "@clerk/clerk-react";
 import { formatCurrency } from "@/lib/utils";
 // import { useQueryClient } from "@tanstack/react-query";
+
+import io from "socket.io-client";
+
+const socket = io("http://localhost:3000");
+
 interface ErrorResponse {
   message: string;
 }
@@ -49,6 +54,42 @@ interface ErrorResponse {
 const CheckOut = () => {
   const navigate = useNavigate();
   // const queryClient = useQueryClient();
+
+  useEffect(() => {
+    socket.on("orderNotification", async (orderData) => {
+      try {
+        console.log("Nhận được thông báo từ server:", orderData);
+        const response = await axios.post(
+          "http://localhost:8080/api/notifications/create",
+          {
+            userId: _id,
+            orderCode: orderData.orderCode,
+            message: `Đơn hàng ${orderData.orderCode} đã được đặt thành công!`,
+            status: "success",
+            timestamp: new Date(),
+          }
+        );
+
+        console.log("Kết quả lưu thông báo:", response.data);
+        toast({
+          title: "Đặt hàng thành công!",
+          description: `Đơn hàng ${orderData.orderCode} đã được đặt thành công!`,
+          variant: "default",
+        });
+      } catch (error) {
+        console.error("Lỗi khi lưu thông báo:", error);
+        toast({
+          title: "Lỗi hệ thống!",
+          description: "Không thể lưu thông báo. Vui lòng thử lại.",
+          variant: "destructive",
+        });
+      }
+    });
+
+    return () => {
+      socket.off("orderNotification");
+    };
+  }, []);
 
   const form = useForm<FormOut>({
     defaultValues: {
@@ -75,6 +116,7 @@ const CheckOut = () => {
   const handleDialogClose = () => setDialogOpen(false);
   // lấy dữ liệu giỏ hàng
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
+
   const onSubmit = async (data: FormOut) => {
     const selectedProducts =
       carts?.products?.filter((product: Cart) => product.selected) || [];
@@ -94,6 +136,13 @@ const CheckOut = () => {
       );
       const createOrder = response.data;
       const orderCode = createOrder?.order?.orderCode;
+      // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
+      socket.emit("orderPlaced", {
+        orderCode,
+        userId: _id,
+        message: "Đặt hàng thành công!",
+      });
+
       if (data.paymentMethod === "Vnpay") {
         const response = await axios.post(
           "http://localhost:8080/api/create_payment_url",

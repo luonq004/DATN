@@ -32,6 +32,7 @@ import dashboardRouter from "./routers/dashboard";
 import sendEmailRouter from "./routers/send-email";
 import sliderRouter from "./routers/slider";
 import wishlistRouter from "./routers/wishlist";
+import NotificationRouter from "./routers/Notification";
 
 const app = express();
 
@@ -40,7 +41,7 @@ const app = express();
 const server = http.createServer(app);
 
 // Khởi tạo Socket.IO và cấu hình CORS thông qua module socket.js
-setupSocketIO(server);
+setupSocketIO(server, app);
 
 //Middleware
 app.use(express.json());
@@ -81,6 +82,7 @@ app.use("/api", sendEmailRouter);
 app.use("/api/sliders", sliderRouter);
 app.use("/api/logo", logoRouter);
 app.use("/api/blogs", BlogRouter);
+app.use("/api/notifications", NotificationRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/collections", collectionRouter);
 app.use("/api/users", userRouter);

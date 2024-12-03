@@ -1,11 +1,11 @@
 import { Server } from "socket.io";
 
 // Cấu hình và xử lý các sự kiện Socket.IO
-export const setupSocketIO = (server) => {
+export const setupSocketIO = (server, app) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173", // Cho phép kết nối từ địa chỉ này
-      methods: ["GET", "POST"], // Các phương thức HTTP được phép
+      origin: "*",
+      methods: ["GET", "POST"],
     },
   });
 
@@ -18,10 +18,17 @@ export const setupSocketIO = (server) => {
       io.emit("receive_message", message); // Phát tin nhắn đến tất cả các client
     });
 
-    // Lắng nghe sự kiện gửi thông báo
-    socket.on("send_notification", (notification) => {
-      console.log("Thông báo nhận được:", notification);
-      io.emit("receive_notification", notification); // Phát thông báo đến tất cả các client
+    // Lắng nghe sự kiện 'orderPlaced' từ client
+    socket.on("orderPlaced", (orderData) => {
+      console.log("Đơn hàng được đặt: ", orderData);
+
+      // Sau khi nhận được đơn hàng, phát sự kiện 'orderNotification' cho tất cả các client
+      io.emit("orderNotification", {
+        message: `Đơn hàng ${orderData.orderCode} đã được đặt thành công!`,
+        orderCode: orderData.orderCode,
+      });
+
+      console.log("Đã phát thông báo cho tất cả các client.");
     });
 
     // Xử lý sự kiện ngắt kết nối
@@ -29,4 +36,7 @@ export const setupSocketIO = (server) => {
       console.log("Client đã ngắt kết nối:", socket.id);
     });
   });
+  // Gán io vào app để có thể sử dụng trong controller
+  app.set("io", io);
 };
+

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 
-// Kết nối đến server Socket.IO tại cổng 8080
-const socket = io("http://localhost:8080");
+const socket = io("http://localhost:3000"); // Thay bằng URL của server Socket.IO
 
 function TestSocket() {
   const [message, setMessage] = useState("");
@@ -10,8 +9,8 @@ function TestSocket() {
   
   useEffect(() => {
     // Lắng nghe sự kiện khi kết nối thành công
-    socket.on('connect', () => {
-      console.log('Connected to Socket.IO server with id:', socket.id);
+    socket.on("connect", () => {
+      console.log("Connected to Socket.IO server with id:", socket.id);
     });
 
     // Lắng nghe sự kiện nhận tin nhắn từ server
