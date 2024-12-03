@@ -126,8 +126,9 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                             </div>
                         </div> */}
                 <hr />
+                {/* ${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'} */}
                 <Link to={`checkout`}>
-                    <div className='bg-[#C8C9CB] hover:bg-[#b8cd06] transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
+                    <div className={`bg-[#C8C9CB] ${cart?.products?.every((item: any) => item.selected === false) ? '' : 'hover:bg-[#b8cd06]'} transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium select-none`}>
                         <div>Checkout</div>
                         <div className=''>|</div>
                         <div><span>{formatCurrency(cart?.total ?? 0)} VNĐ</span></div>
@@ -152,7 +153,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

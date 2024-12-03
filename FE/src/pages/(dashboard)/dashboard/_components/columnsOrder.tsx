@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "react-router-dom";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -13,7 +14,7 @@ export type Payment = {
     imageUrl: string,
     amount: number,
     payment: string,
-    status: "chờ xác nhận" | "chờ lấy hàng" | "chờ giao hàng" | "đã hủy" | "đã hoàn thành",
+    status: "chờ xác nhận" | "chờ lấy hàng" | "chờ giao hàng",
 }
 
 export const columnsOrder: ColumnDef<{ id: string; amount: number; status: string; email: string; imageUrl: string; customer: string; phone: number; payment: string; }>[] = [
@@ -21,9 +22,11 @@ export const columnsOrder: ColumnDef<{ id: string; amount: number; status: strin
         accessorKey: "orderCode",
         header: "Order Code",
         cell: ({ row }) => (
-            <span className="text-sm font-semibold text-blue-600">
-                {row.getValue("orderCode")}
-            </span>
+            <Link to={`/admin/orders/orderdetails/${row?.original?.id}`}>
+                <span className="text-sm font-semibold text-blue-600">
+                    {row.getValue("orderCode")}
+                </span>
+            </Link>
         )
     },
     {
