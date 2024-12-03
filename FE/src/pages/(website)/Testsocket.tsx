@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:8080"); // Thay bằng URL của server Socket.IO
+const socket = io("http://localhost:3000"); // Thay bằng URL của server Socket.IO
 
 function TestSocket() {
   const [message, setMessage] = useState("");
@@ -9,15 +9,15 @@ function TestSocket() {
 
   useEffect(() => {
     // Lắng nghe sự kiện khi kết nối thành công
-    socket.on('connect', () => {
-      console.log('Connected to Socket.IO server with id:', socket.id);
+    socket.on("connect", () => {
+      console.log("Connected to Socket.IO server with id:", socket.id);
     });
-  
+
     // Lắng nghe sự kiện nhận tin nhắn từ server
     socket.on("receive_message", (data) => {
       setChat((prev) => [...prev, data]);
     });
-  
+
     // Dọn dẹp kết nối khi component bị unmount
     return () => {
       socket.disconnect();
