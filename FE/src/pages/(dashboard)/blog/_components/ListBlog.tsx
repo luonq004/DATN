@@ -8,6 +8,7 @@ import Confirm from "@/components/Confirm/Confirm";
 const ListBlog = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [filteredBlogs, setFilteredBlogs] = useState<Blog[]>([]);
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [Delete, setToDelete] = useState<{
     id: string;
@@ -16,6 +17,7 @@ const ListBlog = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
+  const [searchQuery, setSearchQuery] = useState("");
   const totalPages = Math.ceil(blogs.length / itemsPerPage);
   const { toast } = useToast();
 
@@ -24,6 +26,7 @@ const ListBlog = () => {
       .then((response) => response.json())
       .then((data) => {
         setBlogs(data);
+        setFilteredBlogs(data);
         setLoading(false);
       })
       .catch(() => {
@@ -31,6 +34,17 @@ const ListBlog = () => {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    // Lọc bài viết khi người dùng thay đổi từ khóa tìm kiếm
+    const result = blogs.filter(
+      (blog) =>
+        blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        blog.author.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredBlogs(result);
+    setCurrentPage(1); // Reset về trang 1 mỗi khi thay đổi query tìm kiếm
+  }, [searchQuery, blogs]);
 
   const openConfirmDeleteDialog = (id: string, title: string) => {
     setToDelete({ id, title });
@@ -64,6 +78,7 @@ const ListBlog = () => {
         description: "Bài viết đã được xóa thành công",
       });
       setBlogs(blogs.filter((blog) => blog._id !== blogId));
+      setFilteredBlogs(filteredBlogs.filter((blog) => blog._id !== blogId)); // Cập nhật lại filteredBlogs
     } catch (error) {
       // Xử lý lỗi, bao gồm lỗi của fetch hoặc bất kỳ lỗi nào khác
       toast({
@@ -87,7 +102,7 @@ const ListBlog = () => {
   // Chia các bài viết thành các trang
   const indexOfLastBlog = currentPage * itemsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - itemsPerPage;
-  const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
+  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
 
   if (loading)
     return (
@@ -102,75 +117,95 @@ const ListBlog = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="pb-6 flex justify-between items-center">
         <h1 className="text-3xl font-semibold">Danh sách bài viết</h1>
-        <Link
-          to="/admin/blogs/add"
-          className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-300"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="size-5"
+
+        <div className="flex items-center gap-8">
+          {/* Trường nhập liệu tìm kiếm */}
+          <div className="flex justify-between items-center">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm kiếm theo tên hoặc tác giả..."
+              className="p-2 w-[300px] border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <Link
+            to="/admin/blogs/add"
+            className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-300"
           >
-            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-          </svg>
-          Thêm bài viết
-        </Link>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="size-5"
+            >
+              <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+            </svg>
+            Thêm bài viết
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {currentBlogs.map((blog) => (
-          <div
-            key={blog._id}
-            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 group"
-          >
-            {/* Tiêu đề và Thông tin cơ bản */}
-            <h2 className="text-xl font-semibold mb-2">{blog.title}</h2>
-            <div className="flex justify-between text-sm text-gray-500 mb-4">
-              <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
-              <span>
-                {blog.author} - {getCategoryLabel(blog.category)}
-              </span>
-            </div>
-
-            {/* Hình ảnh bài viết */}
-            <img
-              src={blog.image}
-              alt={blog.title}
-              className="w-full h-56 object-contain rounded-lg mb-4"
-            />
-
-            {/* Tóm tắt bài viết */}
-            <p className="text-sm text-gray-700 mb-4">{blog.description}</p>
-
-            {/* Buttons */}
-            <div className="flex justify-between items-center">
-              <Link
-                to={`/admin/blogs/edit/${blog._id}`}
-                className="text-blue-500 hover:text-blue-600 transition duration-300"
-              >
-                Chỉnh sửa
-              </Link>
-              <button
-                onClick={() => openConfirmDeleteDialog(blog._id, blog.title)}
-                className="text-red-500 hover:text-red-600 transition duration-300"
-              >
-                Xóa
-              </button>
-            </div>
-
-            {/* Toggle Collapse for Content */}
-            <details className="mt-4 group-hover:block">
-              <summary className="cursor-pointer text-blue-600 hover:text-blue-700">
-                Xem chi tiết
-              </summary>
-              <div
-                className="detail text-gray-800 mt-2"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
-              />
-            </details>
+        {currentBlogs.length === 0 ? (
+          <div className="col-span-full text-center text-lg mt-10 text-gray-500">
+            Không tìm thấy bài viết nào phù hợp
           </div>
-        ))}
+        ) : (
+          currentBlogs.map((blog) => (
+            <div
+              key={blog._id}
+              className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 group"
+            >
+              {/* Tiêu đề và Thông tin cơ bản */}
+              <h2 className="text-xl font-semibold mb-2">{blog.title}</h2>
+              <div className="flex justify-between text-sm text-gray-500 mb-4">
+                <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+                <span>
+                  {blog.author} - {getCategoryLabel(blog.category)}
+                </span>
+              </div>
+
+              {/* Hình ảnh bài viết */}
+              <img
+                src={blog.image}
+                alt={blog.title}
+                className="w-full h-56 object-contain rounded-lg mb-4"
+              />
+
+              {/* Tóm tắt bài viết */}
+              <p className="text-sm text-gray-700 mb-4">{blog.description}</p>
+
+              {/* Buttons */}
+              <div className="flex justify-between items-center">
+                <Link
+                  to={`/admin/blogs/edit/${blog._id}`}
+                  className="text-blue-500 hover:text-blue-600 transition duration-300"
+                >
+                  Chỉnh sửa
+                </Link>
+                <button
+                  onClick={() => openConfirmDeleteDialog(blog._id, blog.title)}
+                  className="text-red-500 hover:text-red-600 transition duration-300"
+                >
+                  Xóa
+                </button>
+              </div>
+
+              {/* Toggle Collapse for Content */}
+              <details className="mt-4 group-hover:block">
+                <summary className="cursor-pointer text-blue-600 hover:text-blue-700">
+                  Xem chi tiết
+                </summary>
+                <div
+                  className="detail text-gray-800 mt-2"
+                  dangerouslySetInnerHTML={{ __html: blog.content }}
+                />
+              </details>
+            </div>
+          ))
+        )}
       </div>
 
       <Confirm
