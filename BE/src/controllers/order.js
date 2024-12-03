@@ -3,6 +3,7 @@ import Address from "../models/Address";
 import Order from "../models/order";
 import Variant from "../models/variant";
 import cart from "../models/cart";
+import product from "../models/product";
 
 //=========================tạo đơn hàng mới===============
 export const createOrder = async (req, res) => {
@@ -19,6 +20,16 @@ export const createOrder = async (req, res) => {
     if (!payment) {
       return res.status(StatusCodes.BAD_REQUEST).json({ message: "Phương thức thanh toán là bắt buộc" });
     }
+    // Log tất cả sản phẩm và lọc các sản phẩm bị ngừng bán
+    // const deletedProduct = products.find(product => {
+    //   return product.productItem.deleted !== null && product.variantItem.deleted !== null;
+    // });
+
+    // if (deletedProduct) {
+    //   return res.status(StatusCodes.NOT_FOUND).json({ message: "Sản phẩm hoặc biến thể đã bị xóa" });
+    // }
+    // Nếu không có sản phẩm nào bị ngừng bán, tiếp tục xử lý
+
     if (!products || !Array.isArray(products) || products.length === 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -45,7 +56,7 @@ export const createOrder = async (req, res) => {
     finalAddress = address.toObject();
     // Kiểm tra số lượng kho cho mỗi sản phẩm
     for (let item of products) {
-      const { variantItem, quantity } = item;
+      const { variantItem, quantity, productItem } = item;
       // Kiểm tra và xử lý variantItem
       const productVariant = await Variant.findById(variantItem._id);
       if (!productVariant || productVariant.countOnStock < quantity) {
@@ -57,6 +68,11 @@ export const createOrder = async (req, res) => {
       // Trừ số lượng trong kho
       productVariant.countOnStock -= quantity;
       await productVariant.save();
+      const products = await product.findById(productItem._id);
+      if (products) {
+        products.countOnStock -= quantity;
+        await products.save();
+      }
     }
 
     // Tạo đơn hàng
@@ -241,7 +257,7 @@ export const getOrderCode = async (req, res) => {
 // ============================ Cập nhật trạng thái đơn hàng ===========================
 export const updateOrderStatus = async (req, res) => {
   const { id } = req.params;
-  const { newStatus } = req.body;
+  const { newStatus, user, reason } = req.body;
 
   try {
     // Kiểm tra trạng thái mới
@@ -279,6 +295,11 @@ export const updateOrderStatus = async (req, res) => {
             message: "Trạng thái chờ xác nhận không thể quay lại.",
           });
         }
+        if (newStatus !== "chờ lấy hàng" && newStatus !== "đã hủy") {
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "Trạng thái hợp lệ tiếp theo là 'chờ lấy hàng'.",
+          });
+        }
         break;
 
       case "chờ lấy hàng":
@@ -288,12 +309,22 @@ export const updateOrderStatus = async (req, res) => {
               "Không thể quay lại trạng thái chờ xác nhận từ chờ lấy hàng.",
           });
         }
+        if (newStatus !== "chờ giao hàng" && newStatus !== "đã hủy") {
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "Trạng thái hợp lệ tiếp theo là 'chờ giao hàng'.",
+          });
+        }
         break;
 
       case "chờ giao hàng":
         if (newStatus === "chờ xác nhận" || newStatus === "chờ lấy hàng") {
           return res.status(StatusCodes.BAD_REQUEST).json({
             message: "Không thể quay lại trạng thái trước từ chờ giao hàng.",
+          });
+        }
+        if (newStatus !== "đã hoàn thành" && newStatus !== "đã hủy") {
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "Trạng thái hợp lệ tiếp theo là 'đã hoàn thành'.",
           });
         }
         break;
@@ -312,31 +343,55 @@ export const updateOrderStatus = async (req, res) => {
         break;
     }
 
+
+
+    // Xử lý thêm thông tin khi chuyển trạng thái sang 'đã hủy'
+    if (newStatus === "đã hủy") {
+      if (!reason) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          message: "Vui lòng cung cấp lý do hủy đơn hàng.",
+        });
+      }
+      order.cancellationReason = reason; // Lưu lý do hủy
+      order.cancelledBy = user || "Hệ thống"; // Ghi nhận ai hủy (user hoặc mặc định là hệ thống)
+    }
+
+    // Lưu thông tin thời gian chuyển trạng thái
+    order.statusHistory = order.statusHistory || [];
+    order.statusHistory.push({
+      status: newStatus,
+      timestamp: new Date(),
+      updatedBy: user || "Hệ thống",
+    });
     // Hoàn lại số lượng sản phẩm nếu trạng thái chuyển thành "đã hủy"
     if (
       newStatus === "đã hủy" &&
       ["chờ xác nhận", "chờ lấy hàng"].includes(currentStatus)
     ) {
-      for (let outerItem of order.products) {
-        if (!Array.isArray(outerItem.products)) {
-          console.error("outerItem.products không phải là mảng:", outerItem);
+      // for (let outerItem of order.products) {
+      // if (!Array.isArray(outerItem.products)) {
+      //   console.error("outerItem.products không phải là mảng:", outerItem);
+      //   continue;
+      // }
+
+      for (let item of order.products) {
+        const { variantItem, quantity, productItem } = item;
+        if (!variantItem || !variantItem._id) {
+          console.error("variantItem hoặc _id không tồn tại:", item);
           continue;
         }
-
-        for (let item of outerItem.products) {
-          const { variantItem, quantity } = item;
-          if (!variantItem || !variantItem._id) {
-            console.error("variantItem hoặc _id không tồn tại:", item);
-            continue;
-          }
-
-          const productVariant = await Variant.findById(variantItem._id);
-          if (productVariant) {
-            productVariant.countOnStock += quantity; // Hoàn lại số lượng
-            await productVariant.save();
-          }
+        const products = await product.findById(productItem._id);
+        if (products) {
+          products.countOnStock += quantity
+          await products.save();
+        }
+        const productVariant = await Variant.findById(variantItem._id);
+        if (productVariant) {
+          productVariant.countOnStock += quantity; // Hoàn lại số lượng
+          await productVariant.save();
         }
       }
+      // }
     }
 
     // Cập nhật trạng thái nếu không gặp lỗi
@@ -354,9 +409,6 @@ export const updateOrderStatus = async (req, res) => {
       }
       order.markModified("products");
     }
-
-
-
 
     await order.save();
 
