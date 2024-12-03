@@ -48,7 +48,7 @@ const CartLeft = ({
       {/* Selected All */}
       <div className="w-full grid grid-cols-[auto_37%] justify-between items-center gap-x-4 bg-gray-100 py-1.5">
         <div className="flex gap-x-5 items-center">
-          {(cart?.products?.filter((item: any) => item.selected === true).length === cart?.products.length)
+          {(cart?.products?.filter((item: any) => item.selected === true).length === cart?.products.length && cart?.products.length !== 0)
             ?
             <div className="flex items-center">
               <div
@@ -100,9 +100,9 @@ const CartLeft = ({
         {cart?.products.map((item: any, index: number) => (
           <div
             key={index}
-            className="grid transition-all duration-500 grid-cols-[18px_81px_auto] max-sm:grid-cols-[18_px_75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6"
+            className={`grid transition-all duration-500 grid-cols-[18px_81px_auto] max-sm:grid-cols-[18_px_75px_auto] gap-x-4 border-[#F4F4F4] border-b pb-6 ${item.productItem.deleted === true || item.variantItem.deleted === true ? 'relative' : ''}`}
           >
-            <div className="inline-flex justify-center items-start select-none">
+            <div className={`justify-center items-start select-none ${item.productItem.deleted === true || item.variantItem.deleted === true ? '' : 'inline-flex'}`}>
               {item.selected && item.selected === true
                 ?
                 (
@@ -267,6 +267,28 @@ const CartLeft = ({
                 <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
                   Còn {item.variantItem.countOnStock} sản phẩm
                 </p>
+              </div>
+            </div>
+            <div
+              className={`${item.productItem.deleted === true || item.variantItem.deleted === true
+                ? "absolute w-full h-full bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold"
+                : "hidden"
+                }`}
+            >
+              <span>Sản phẩm ngừng bán</span>
+              <div
+                className="group transition-all pb-0 cursor-pointer max-sm:col-start-2 max-sm:row-start-1 max-sm:flex max-sm:justify-end"
+                onClick={() =>
+                  userAction(
+                    { type: "removeItem" },
+                    {
+                      productId: item.productItem._id,
+                      variantId: item.variantItem._id,
+                    }
+                  )
+                }
+              >
+                Chạm vào để xóa sản phẩm
               </div>
             </div>
           </div>

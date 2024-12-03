@@ -74,12 +74,12 @@ export const getCartByUserId = async (req, res) => {
           { path: "attribute", options: { strictPopulate: false } }, // Bỏ qua kiểm tra schema
           { path: "category", options: { strictPopulate: false } },
         ],
-        match: { deleted: false },
+        // match: { deleted: false },
       })
       .populate({
         path: "products.variantItem",
         populate: { path: "values" },
-        match: { deleted: false },
+        // match: { deleted: false },
       })
       .populate("voucher");
     if (!cart) {
@@ -92,8 +92,9 @@ export const getCartByUserId = async (req, res) => {
       return res.status(StatusCodes.OK).json(cart);
     }
 
-    const products = cart.products.filter((product) => product.productItem !== null && product.variantItem !== null);
-    cart.products = products;
+    // const products = cart.products.filter((product) => product.productItem !== null && product.variantItem !== null);
+    // cart.products = products;
+
     await cart.save();
     cart = await updateTotal(cart);
     return res.status(StatusCodes.OK).json(cart);
@@ -663,11 +664,15 @@ export const selectedAllItem = async (req, res) => {
     //nếu tất cả sản phẩm đã được chọn thì bỏ chọn tất cả
     if (selected) {
       cart.products.forEach((item) => {
-        item.selected = false;
+        if (item.productItem.deleted === false && item.variantItem.deleted === false) {
+          item.selected = false;
+        }
       });
     } else {
       cart.products.forEach((item) => {
-        item.selected = true;
+        if (item.productItem.deleted === false && item.variantItem.deleted === false) {
+          item.selected = true;
+        }
       });
     }
 

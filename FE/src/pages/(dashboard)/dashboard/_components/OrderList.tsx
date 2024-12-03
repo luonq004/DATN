@@ -8,9 +8,19 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export function OrderList() {
-    const { data, isLoading, isError } = useOrder();
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ['OrderList'],
+        queryFn: async () => {
+            const { data } = await axios.get('http://localhost:8080/api/dashboard/get-data-order-list');
+            return data;
+        }
+    })
+
+    console.log(data);
 
     const newData = React.useMemo(() => {
         if (!data || !Array.isArray(data)) return [];
