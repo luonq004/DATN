@@ -7,6 +7,7 @@ import { Blog } from "@/common/types/Blog";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { categories } from "./Categories";
+import { uploadFile } from "@/lib/upload";
 
 const EditBlog = () => {
   const { id } = useParams<{ id: string }>(); // Lấy ID từ URL
@@ -88,9 +89,12 @@ const EditBlog = () => {
       formData.append("description", data.description);
       formData.append("content", data.content);
 
-      // Nếu có ảnh mới, thêm vào formData
+      // Nếu có ảnh mới, upload lên Cloudinary và thêm URL vào formData
       if (imageFile) {
-        formData.append("image", imageFile);
+        const uploadedImageUrl = await uploadFile(imageFile);
+        formData.append("image", uploadedImageUrl);
+      } else if (previewImage) {
+        formData.append("image", previewImage); // Sử dụng ảnh đã có sẵn từ backend
       }
 
       // Gửi yêu cầu PUT lên BE
@@ -110,7 +114,7 @@ const EditBlog = () => {
       toast({
         variant: "destructive",
         title: "Thất bại",
-        description: "Có lỗi sảy ra khi cập nhật bài viết!",
+        description: "Có lỗi xảy ra khi cập nhật bài viết!",
       });
     } finally {
       setLoading(false);

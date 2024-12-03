@@ -8,6 +8,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import { categories } from "./Categories";
+import { uploadFile } from "@/lib/upload";
 
 const AddBlog = () => {
   const { user } = useUser();
@@ -68,10 +69,21 @@ const AddBlog = () => {
       alert("Vui lòng chọn một ảnh!");
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
+      // Upload ảnh lên Cloudinary
+      const imageUrl = await uploadFile(imageFile); // Lấy URL ảnh từ Cloudinary
+      if (!imageUrl) {
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: "Không thể tải ảnh lên Cloudinary",
+        });
+        return;
+      }
+  
       // Tạo FormData để gửi yêu cầu POST
       const formData = new FormData();
       formData.append("title", data.title);
@@ -79,8 +91,8 @@ const AddBlog = () => {
       formData.append("author", data.author);
       formData.append("description", data.description);
       formData.append("content", data.content);
-      formData.append("image", imageFile);
-
+      formData.append("image", imageUrl); // Gửi URL ảnh đã upload từ frontend
+  
       // Gửi yêu cầu POST lên BE
       const response = await axios.post(
         "http://localhost:8080/api/blogs",
