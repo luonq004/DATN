@@ -76,8 +76,8 @@ const ImageUser = forwardRef(({ form }: any, ref) => {
   return (
     <Accordion className="bg-white border px-4" type="multiple">
       <AccordionItem className="border-none" value="item-2">
-        <AccordionTrigger>Ảnh người dùng</AccordionTrigger>
-        <AccordionContent>
+        <div className="p-3 text-[18px] text-center">Ảnh người dùng</div>
+        <div>
           <div className="mt-2 flex">
             <input
               className="input-file__image"
@@ -150,7 +150,7 @@ const ImageUser = forwardRef(({ form }: any, ref) => {
             Xóa ảnh
           </p>
 
-        </AccordionContent>
+        </div>
       </AccordionItem>
     </Accordion>
   );

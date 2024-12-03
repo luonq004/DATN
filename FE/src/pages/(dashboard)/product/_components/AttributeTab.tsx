@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useState } from "react";
 import Select from "react-select";
+import { AddNewValue } from "./AddNewValue";
 
 const AttributeTab = ({
   attributes,
@@ -73,7 +74,7 @@ const AttributeTab = ({
           placeholder="Custom product attribute"
           value={valueOptions}
           noOptionsMessage={() => "Không có giá trị nào"}
-          className="w-60"
+          className="w-2/3"
           isDisabled={stateAttribute.attributesChoose.length === 2}
           options={
             attributes
@@ -106,7 +107,7 @@ const AttributeTab = ({
             setValueOptions(null);
           }}
         >
-          Add
+          Ấn
         </Button>
         {selectError && (
           <span className="text-red-500">Bạn phải chọn một giá trị!</span>
@@ -144,22 +145,26 @@ const AttributeTab = ({
                 }}
               />
 
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => {
-                  dispatch({
-                    type: "DELETE_ONE_VALUE",
-                    payload: value._id as string,
-                  });
-                  setSelectedValues((current) => {
-                    const { [value._id]: _, ...rest } = current;
-                    return rest;
-                  });
-                }}
-              >
-                Delete
-              </Button>
+              <div className="flex gap-2">
+                <AddNewValue attributeId={value._id} dispatch={dispatch} />
+
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => {
+                    dispatch({
+                      type: "DELETE_ONE_VALUE",
+                      payload: value._id as string,
+                    });
+                    setSelectedValues((current) => {
+                      const { [value._id]: _, ...rest } = current;
+                      return rest;
+                    });
+                  }}
+                >
+                  Xóa
+                </Button>
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -177,7 +182,7 @@ const AttributeTab = ({
             dispatch({ type: "MIX_VALUES" });
           }}
         >
-          Add
+          Tạo biến thể
         </Button>
       </div>
     </>

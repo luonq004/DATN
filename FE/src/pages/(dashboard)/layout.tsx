@@ -3,9 +3,20 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "./_components/SideBar";
 import { useUserContext } from "@/common/context/UserProvider";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { AppSidebar } from "./_components/app-sidebar";
 
 const LayoutAdmin = () => {
@@ -74,10 +85,10 @@ const LayoutAdmin = () => {
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="w-full">
+        <div className="flex flex-1 flex-col gap-4 pt-0">
+          <div className="w-full bg-[#f1f5f9] h-full">
             {/* <div className="h-20 bg-red-400"></div> */}
-            <div className="bg-slate-300 rounded-lg m-7 min-h-80">
+            <div className="rounded-lg m-7 min-h-80">
               <Outlet />
             </div>
           </div>

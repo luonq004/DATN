@@ -17,10 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import cartEmpty from "@/assets/images/cart-empty.png";
-import idk from "@/assets/icons/idk.svg";
-import visa from "@/assets/icons/Visa.svg";
-import bitcoin from "@/assets/icons/Bitcoin.svg";
-import interac from "@/assets/icons/Interac.svg";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAddress from "@/common/hooks/address/useAddress";
@@ -477,7 +473,7 @@ const CheckOut = () => {
                 <div className="">|</div>
                 <div>{formatCurrency(carts?.total)} VNĐ</div>
               </button>
-              <div className="Payments flex flex-col gap-4">
+              {/* <div className="Payments flex flex-col gap-4">
                 <p className="text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]">
                   THANH TOÁN ĐƯỢC CUNG CẤP BỞI
                 </p>
@@ -495,7 +491,7 @@ const CheckOut = () => {
                     <img src={interac} alt="" />
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

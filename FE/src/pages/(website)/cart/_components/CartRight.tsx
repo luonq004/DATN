@@ -63,6 +63,14 @@ console.log("selectedOne", cart)
                         <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Tổng phụ</p>
                         <p className=''><span>{formatCurrency(cart?.subTotal ?? 0)} VNĐ</span></p>
                     </div>
+                    <div className="flex justify-between">
+            <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+              Phí giao hàng
+            </p>
+            <div>
+              <span>{formatCurrency(30000)}VNĐ</span>
+            </div>
+          </div>
                     <div className='flex justify-between'>
                         <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Giảm giá</p>
                         <p className=''><span>{formatCurrency(cart?.discount ?? 0)} VNĐ</span></p>
@@ -126,8 +134,9 @@ console.log("selectedOne", cart)
                             </div>
                         </div> */}
                 <hr />
+                {/* ${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'} */}
                 <Link to={`checkout`}>
-                    <div className='bg-[#C8C9CB] hover:bg-[#b8cd06] transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none'>
+                    <div className={`bg-[#C8C9CB] ${cart?.products?.every((item: any) => item.selected === false) ? '' : 'hover:bg-[#b8cd06]'} transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium select-none`}>
                         <div>Checkout</div>
                         <div className=''>|</div>
                         <div><span>{formatCurrency(cart?.total ?? 0)} VNĐ</span></div>
@@ -152,7 +161,7 @@ console.log("selectedOne", cart)
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

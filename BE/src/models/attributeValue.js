@@ -7,7 +7,12 @@ const attributeValueSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Type phải giống với tên cuả attribute
+    slugName: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     type: {
       type: String,
       // required: true,

@@ -11,7 +11,7 @@ const StatusProduct = ({
 }) => {
   return (
     <div
-      className={`w-1/4 flex flex-col gap-3 ${
+      className={`w-full xl:w-1/4 flex flex-col gap-3 ${
         loading ? "pointer-events-none" : ""
       }`}
     >

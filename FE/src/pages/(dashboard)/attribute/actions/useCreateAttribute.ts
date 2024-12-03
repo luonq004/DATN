@@ -11,6 +11,7 @@ export const useCreateAttribute = () => {
 
     onSuccess: () => {
       toast({
+        variant: "success",
         title: "Tạo thuộc tính thành công",
       });
       queryClient.invalidateQueries({
@@ -20,7 +21,8 @@ export const useCreateAttribute = () => {
 
     onError: (error: Error) => {
       toast({
-        title: "Tạo thuộc tính thất bại",
+        variant: "destructive",
+        title: error.response.data.message,
       });
     },
   });

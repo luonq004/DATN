@@ -68,7 +68,15 @@ const CheckOutSubmitVoucher = ({
               Tổng tiền
             </p>
             <div>
-              <span>{formatCurrency(cart?.total ?? 0)} VNĐ</span>
+              <span>{formatCurrency(cart?.subTotal ?? 0)} VNĐ</span>
+            </div>
+          </div>
+          <div className="flex justify-between">
+            <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+              Phí giao hàng
+            </p>
+            <div>
+              <span>{formatCurrency(30000)}VNĐ</span>
             </div>
           </div>
           <div className="flex justify-between">

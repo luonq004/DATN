@@ -7,8 +7,7 @@ import product from "../models/product";
 
 //=========================tạo đơn hàng mới===============
 export const createOrder = async (req, res) => {
-  const { userId, addressId, products, payment, totalPrice, note } =
-    req.body;
+  const { userId, addressId, products, payment, totalPrice, note } = req.body;
   try {
     let finalAddress = {};
     // Kiểm tra xem addressId có được cung cấp không
@@ -18,17 +17,17 @@ export const createOrder = async (req, res) => {
         .json({ message: "addressId là bắt buộc" });
     }
     if (!payment) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Phương thức thanh toán là bắt buộc" });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Phương thức thanh toán là bắt buộc" });
     }
     // Log tất cả sản phẩm và lọc các sản phẩm bị ngừng bán
-    // const deletedProduct = products.find(product => {
-    //   return product.productItem.deleted !== null && product.variantItem.deleted !== null;
-    // });
-
     // if (deletedProduct) {
-    //   return res.status(StatusCodes.NOT_FOUND).json({ message: "Sản phẩm hoặc biến thể đã bị xóa" });
+    //   return res.status(StatusCodes.NOT_FOUND).json({
+    //     message: `Sản phẩm hoặc biến thể đã bị xóa`,
+    //   });
     // }
-    // Nếu không có sản phẩm nào bị ngừng bán, tiếp tục xử lý
+
 
     if (!products || !Array.isArray(products) || products.length === 0) {
       return res
@@ -37,7 +36,9 @@ export const createOrder = async (req, res) => {
     }
 
     if (totalPrice < 0) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Giá trị đơn hàng không hợp lệ" });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Giá trị đơn hàng không hợp lệ" });
     }
     if (!userId) {
       return res
@@ -57,14 +58,29 @@ export const createOrder = async (req, res) => {
     // Kiểm tra số lượng kho cho mỗi sản phẩm
     for (let item of products) {
       const { variantItem, quantity, productItem } = item;
+
+      // Kiểm tra sản phẩm có bị xóa hay không
+      const Product = await product.findOne({ _id: productItem._id });
+      if (Product && Product.deleted) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          message: `Sản phẩm đã ngừng bán.`,
+        });
+      }
+
+      // Kiểm tra biến thể có bị xóa hay không
+      const variant = await Variant.findOne({ _id: variantItem._id });
+      if (variant && variant.deleted) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          message: ` sản phẩm đã ngừng bán.`,
+        });
+      }
       // Kiểm tra và xử lý variantItem
       const productVariant = await Variant.findById(variantItem._id);
       if (!productVariant || productVariant.countOnStock < quantity) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-          message: `Số lượng không đủ trong kho.`
+          message: `Số lượng không đủ trong kho.`,
         });
       }
-
       // Trừ số lượng trong kho
       productVariant.countOnStock -= quantity;
       await productVariant.save();
@@ -405,7 +421,14 @@ export const updateOrderStatus = async (req, res) => {
     // }
     if (newStatus === "đã hoàn thành") {
       for (const product of order.products) {
+        // console.log(product);
         product.statusComment = true;
+        const productData = await product.findById(product.productItem._id);
+        console.log("PDATA: ", productData);
+        if (productData) {
+          productData.count += Number(product.quantity);
+          await productData.save();
+        }
       }
       order.markModified("products");
     }

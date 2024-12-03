@@ -28,7 +28,9 @@ export const variantSchema = z
         // value: z.string(),
       })
     ),
-    countOnStock: z.coerce.number().gte(1),
+    countOnStock: z.coerce.number().gte(1, {
+      message: "Số lượng phải lớn hơn hoặc bằng 1",
+    }),
     // image: z.string().optional(),
     image: z.union([
       z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
