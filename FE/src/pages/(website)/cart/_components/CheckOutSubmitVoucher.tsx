@@ -65,7 +65,7 @@ const CheckOutSubmitVoucher = ({
         <div className="Subtotal flex flex-col gap-4">
           <div className="flex justify-between">
             <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-              Subtotal
+              Tổng tiền
             </p>
             <div>
               <span>{formatCurrency(cart?.total ?? 0)} VNĐ</span>
@@ -73,7 +73,7 @@ const CheckOutSubmitVoucher = ({
           </div>
           <div className="flex justify-between">
             <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-              Discount
+              Giảm giá
             </p>
             <p className="">
               <span>{formatCurrency(cart?.discount)} VNĐ</span>

@@ -386,20 +386,56 @@ const CheckOut = () => {
             <div className="flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6">
               <CheckOutVoucher />
               <hr />
-              <div className="flex gap-5 ">
-                <Checkbox className="w-[22px] h-[22px]" id="terms" />
-                <span className="text-[#717378] text-[14px]">
-                  Tôi xác nhận rằng địa chỉ của tôi là chính xác 100% và SẼ
-                  KHÔNG bắt Top Shelf BC phải chịu trách nhiệm nếu lô hàng này
-                  được gửi đến địa chỉ không chính xác. *
-                </span>
-              </div>
-              <div className="flex gap-5 ">
-                <Checkbox className="w-[22px] h-[22px]" id="emailUpdates" />
-                <span className="text-[#717378] text-[14px]">
-                  Đăng ký để nhận email cập nhật và tin tức (tùy chọn)
-                </span>
-              </div>
+              <FormField
+                control={control}
+                name="agreeToTerms"
+                rules={{ required: "Bạn phải đồng ý với điều khoản" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex gap-4">
+                      <Checkbox
+                        checked={field.value} // Liên kết với react-hook-form
+                        onCheckedChange={(checked) => field.onChange(checked)} // Sử dụng onCheckedChange thay vì onChange
+                        className="w-[22px] mt-[1%] h-[22px]"
+                      />
+                      <span className="text-[#717378] text-[14px]">
+                        Tôi xác nhận rằng địa chỉ của tôi là chính xác 100% và
+                        SẼ KHÔNG bắt Top Shelf BC phải chịu trách nhiệm nếu lô
+                        hàng này được gửi đến địa chỉ không chính xác. *
+                      </span>
+                    </div>
+                    {errors.agreeToTerms && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.agreeToTerms.message}
+                      </p>
+                    )}
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="emailUpdates"
+                rules={{ required: "Bạn cần đăng ký để nhận Email về đơn hàng! " }}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={field.value} // Liên kết với react-hook-form
+                        onCheckedChange={(checked) => field.onChange(checked)} // Sử dụng onCheckedChange thay vì onChange
+                        className="w-[22px] h-[22px]"
+                      />
+                      <span className="text-[#717378] text-[14px]">
+                        Đăng ký để nhận email cập nhật và tin tức (tùy chọn)
+                      </span>
+                    </div>
+                    {errors.emailUpdates && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.emailUpdates.message}
+                      </p>
+                    )}
+                  </FormItem>
+                )}
+              />
               {/* ============= PAYMENTMEDTHOD=============== */}
               <div className="w-full mx-auto">
                 <FormField

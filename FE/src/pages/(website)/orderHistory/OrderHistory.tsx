@@ -13,8 +13,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"; // Import pagination components
-import { OrderProduct, VariantItem } from "@/common/types/Product";
+import { OrderProduct } from "@/common/types/Product";
 import CommentProduct from "./CommentProduct";
+import { useUser } from "@clerk/clerk-react";
 interface Order {
   _id: string;
   orderCode: string;
@@ -47,13 +48,41 @@ const OrderHistory = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>("chờ xác nhận");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 2; // Số đơn hàng hiển thị mỗi trang
+  const { user: dataUser } = useUser();
+  const Gmail = dataUser?.primaryEmailAddress?.emailAddress;
+  const [isOpen, setIsOpen] = useState(false); // Điều khiển hiển thị của modal
+  const [reason, setReason] = useState(""); // Lý do hủy đơn hàng
+  const [orderIdToCancel, setOrderIdToCancel] = useState<string | null>(null);
+  const user = Gmail;
 
-  const cancelOrder = async (orderId: string) => {
-    const newStatus = "đã hủy";
+  const openModal = (id: string) => {
+  setOrderIdToCancel(id); // Lưu id của đơn hàng khi mở modal
+  setIsOpen(true); // Mở modal
+};
+  const closeModal = () => setIsOpen(false);
+  const ordersPerPage = 2; // Số đơn hàng hiển thị mỗi trang
+  const handleCancelOrder = async() => {
+  
+    const newStatus = "đã hủy"
+    if(!orderIdToCancel){
+      alert("Không lấy được OrderId");
+      return;
+    }
+    if (!reason.trim()) {
+      alert("Vui lòng nhập lý do hủy.");
+      return;
+    }
+    // Gửi lý do hủy đơn hàng ở đây
+    // await updateOrderStatus(
+    //   orderIdToCancel,
+    //   newStatus,reason
+    // );
     try {
-      const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
+      const response = await axios.put(`${apiUrl}/update-order/${orderIdToCancel}`, {
         newStatus,
+        user,
+        reason,
+
       }); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
@@ -73,15 +102,43 @@ const OrderHistory = () => {
             err.response.data.message || "Cập nhật trạng thái thất bại!",
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Lỗi kết nối",
-          description: "Lỗi kết nối server!",
-          variant: "destructive",
-        });
-      }
-    }
+      }}
+    setReason("");
+    setIsOpen(false); // Đóng modal sau khi hủy
   };
+  // const cancelOrder = async (orderId: string) => {
+  //   const newStatus = "đã hủy";
+  //   try {
+  //     const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
+  //       newStatus,
+  //     }); // Đường dẫn API hủy đơn hàng
+  //     if (response.status === 200) {
+  //       queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
+  //       toast({
+  //         title: "Thành công",
+  //         description: "Đơn hàng đã được hủy thành công.",
+  //         variant: "default",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     const err = error as ErrorResponse;
+  //     if (err.response && err.response.data) {
+  //       toast({
+  //         title: "Lỗi",
+  //         description:
+  //           err.response.data.message || "Cập nhật trạng thái thất bại!",
+  //         variant: "destructive",
+  //       });
+  //     } else {
+  //       toast({
+  //         title: "Lỗi kết nối",
+  //         description: "Lỗi kết nối server!",
+  //         variant: "destructive",
+  //       });
+  //     }
+  //   }
+  // };
   const paymentMethod = async (orderId: OrderProduct) => {
     try {
       const response = await axios.post(
@@ -208,7 +265,7 @@ const OrderHistory = () => {
                             </div>
                             <div className="text-sm">
                               {item?.variantItem?.values?.map(
-                                (value: VariantItem, index: number) => (
+                                (value, index: number) => (
                                   <div key={value._id}>
                                     {value.type}: {value.name}
                                     {index < item.variantItem.values.length - 1
@@ -251,10 +308,41 @@ const OrderHistory = () => {
                   order.status === "chờ lấy hàng") && (
                   <button
                     className="px-4 ml-[2%] py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                    onClick={() => cancelOrder(order._id)}
+                    onClick={() => openModal(order._id)}
                   >
                     Hủy đơn hàng
                   </button>
+                )}
+                {isOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                  <div className="bg-white p-6 rounded-lg w-96">
+                    <h2 className="text-xl font-semibold text-center mb-4">
+                      Xác Nhận Hủy Đơn Hàng
+                    </h2>
+                    {/* Ô nhập lý do hủy */}
+                    <textarea
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      placeholder="Nhập lý do hủy..."
+                      className="w-full p-2 border border-gray-300 rounded-md mb-4"
+                    />
+
+                    <div className="flex justify-between">
+                      <button
+                        onClick={handleCancelOrder}
+                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                      >
+                        Xác Nhận Hủy
+                      </button>
+                      <button
+                        onClick={closeModal}
+                        className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+                      >
+                        Hủy
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 )}
                 {order.status === "chờ xác nhận" &&
                   order.payment === "Vnpay" && (
