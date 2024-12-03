@@ -4,14 +4,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { categories } from "./Categories";
 import Confirm from "@/components/Confirm/Confirm";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
 const ListBlog = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -23,8 +15,8 @@ const ListBlog = () => {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6); 
-  const totalPages = Math.ceil(blogs.length / itemsPerPage); 
+  const [itemsPerPage] = useState(6);
+  const totalPages = Math.ceil(blogs.length / itemsPerPage);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -92,10 +84,10 @@ const ListBlog = () => {
     return category ? category.label : categoryValue;
   };
 
-   // Chia các bài viết thành các trang
-   const indexOfLastBlog = currentPage * itemsPerPage;
-   const indexOfFirstBlog = indexOfLastBlog - itemsPerPage;
-   const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
+  // Chia các bài viết thành các trang
+  const indexOfLastBlog = currentPage * itemsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - itemsPerPage;
+  const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
 
   if (loading)
     return (
@@ -112,8 +104,16 @@ const ListBlog = () => {
         <h1 className="text-3xl font-semibold">Danh sách bài viết</h1>
         <Link
           to="/admin/blogs/add"
-          className="px-5 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-300"
+          className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-300"
         >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="size-5"
+          >
+            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+          </svg>
           Thêm bài viết
         </Link>
       </div>
@@ -183,31 +183,43 @@ const ListBlog = () => {
         message={`Bạn có chắc chắn muốn xóa"<strong>${Delete?.title}</strong>"? Hành động này không thể hoàn tác.`}
       />
 
-      {/* Pagination */}
-      <div className="my-4 flex justify-center">
-        <Pagination className="gap-3">
-          <PaginationPrevious
-            className="cursor-pointer"
+      {/*phân trang  */}
+      <div className="mt-4 flex justify-between items-center">
+        <div className="text-sm">
+          Trang {currentPage} / {totalPages}
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setCurrentPage(1)}
+            className="px-3 py-2 bg-stone-100 rounded-md"
+            disabled={currentPage === 1}
+          >
+            {"<<"}
+          </button>
+          <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          />
-          <PaginationContent>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <PaginationItem
-                key={index}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`${index + 1 === currentPage ? "border border-black rounded" : ""}`}
-              >
-                <PaginationLink>{index + 1}</PaginationLink>
-              </PaginationItem>
-            ))}
-          </PaginationContent>
-          <PaginationNext
-            className="cursor-pointer"
+            className="px-3 py-2 bg-stone-100  rounded-md"
+            disabled={currentPage === 1}
+          >
+            {"<"}
+          </button>
+          <button
             onClick={() =>
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
-          />
-        </Pagination>
+            className="px-3 py-2 bg-stone-100  rounded-md"
+            disabled={currentPage === totalPages}
+          >
+            {">"}
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            className="px-3 py-2 bg-stone-100  rounded-md"
+            disabled={currentPage === totalPages}
+          >
+            {">>"}
+          </button>
+        </div>
       </div>
     </div>
   );

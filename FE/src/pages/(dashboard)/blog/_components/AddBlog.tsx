@@ -1,14 +1,16 @@
+import { Blog } from "@/common/types/Blog";
+import { useToast } from "@/components/ui/use-toast";
+import { useUser } from "@clerk/clerk-react";
+import axios from "axios";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Blog } from "@/common/types/Blog";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
 import { categories } from "./Categories";
 
 const AddBlog = () => {
+  const { user } = useUser();
   const {
     handleSubmit,
     register,
@@ -17,6 +19,7 @@ const AddBlog = () => {
   } = useForm<Blog>({
     defaultValues: {
       category: "",
+      author: user?.fullName || "",
     },
   });
   const [value, setValueEditor] = useState(""); // Lưu giá trị editor của React Quill
@@ -170,6 +173,7 @@ const AddBlog = () => {
             {...register("author", { required: "Tác giả là bắt buộc" })}
             id="author"
             className="w-full p-2 border border-gray-300 rounded-md"
+            defaultValue={user?.fullName || ""}
           />
           {errors.author && (
             <span className="text-red-500">{errors.author.message}</span>

@@ -1,13 +1,21 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import useAddress from "@/common/hooks/address/useAddress";
+import useOrder from "@/common/hooks/order/UseOrder";
 import { User } from "@/common/types/User";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const UserDetailPage = () => {
   const { clerkId } = useParams();
   const [user, setUser] = useState<User | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
+  const [itemsPerPage] = useState(5); // Số mục mỗi trang
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (clerkId) {
@@ -18,8 +26,9 @@ const UserDetailPage = () => {
   const fetchUserDetail = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:8080/api/users/${clerkId}`);
+      const res = await axios.get(`${apiUrl}/users/${clerkId}`);
       setUser(res.data);
+      setUserId(res.data._id);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin người dùng:", error);
       setError("Không thể lấy thông tin người dùng.");
@@ -28,12 +37,39 @@ const UserDetailPage = () => {
     }
   };
 
+  const { data: addresses, isLoading: addressLoading } = useAddress(
+    userId || undefined
+  );
+  const { data: orders } = useOrder(userId || undefined);
+
+  // Sắp xếp các đơn hàng theo ngày đặt hàng (newest first)
+  const sortedOrders = orders?.sort(
+    (a: any, b: any) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  // Lọc đơn hàng theo tên người dùng (hoặc thông tin khác như mã đơn hàng)
+  const filteredOrders = sortedOrders?.filter((order: any) => {
+    const cleanSearchQuery = searchQuery.trim().toLowerCase();
+    return order.orderCode.toLowerCase().includes(cleanSearchQuery); // tìm theo mã đơn hàng
+  });
+
+  const indexOfLastOrder = currentPage * itemsPerPage; // Chỉ số của đơn hàng cuối cùng trong trang
+  const indexOfFirstOrder = indexOfLastOrder - itemsPerPage; // Chỉ số của đơn hàng đầu tiên trong trang
+  const currentOrders = filteredOrders?.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  ); // Dữ liệu của đơn hàng trên trang hiện tại
+
+  // Tính toán số trang
+  const totalPages = Math.ceil((filteredOrders?.length || 0) / itemsPerPage);
+
   if (loading)
     return <div className="text-center text-gray-600">Đang tải...</div>;
   if (error) return <div className="text-center text-red-600">{error}</div>;
   if (!user)
     return (
-      <div className="text-center text-gray-600">
+      <div className="text-center text-gray-600 ">
         Không tìm thấy người dùng.
       </div>
     );
@@ -41,8 +77,10 @@ const UserDetailPage = () => {
   return (
     <div className=" mx-auto p-8 min-h-screen">
       {/* Phần thông tin người dùng */}
-      <div className=" shadow rounded-xl p-8 flex flex-col items-center">
-        <h1 className="sm:text-4xl text-xl mb-20 font-semibold">Hồ Sơ Người Dùng</h1>
+      <div className=" shadow rounded-xl p-5 flex flex-col items-center">
+        <h1 className="sm:text-4xl text-xl mb-8 font-semibold">
+          Hồ Sơ Người Dùng
+        </h1>
         {/* Ảnh người dùng */}
         <div className="w-32 h-32 mb-6">
           <img
@@ -56,39 +94,74 @@ const UserDetailPage = () => {
         <h2 className="text-3xl font-semibold text-gray-800 mb-2">
           {user.firstName} {user.lastName}
         </h2>
-        <p className="text-gray-600 mb-4">{user.email}</p>
-        <p className="text-gray-600 font-medium mb-8">Vai trò: {user.role}</p>
+        <p className="text-gray-600 mb-2">{user.email}</p>
+        <p className="text-gray-600 font-medium mb-2">Vai trò: {user.role}</p>
+        <div className="mb-20 font-semibold">
+          <p className={`text-${user.isBanned ? "red" : "green"}-600`}>
+            {user.isBanned ? "Đã bị khóa" : "Đang hoạt động"}
+          </p>
+        </div>
 
         {/* Chi tiết người dùng */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="w-full grid grid-cols-1  gap-8">
           {/* Địa chỉ giao hàng */}
           <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-            <h3 className="text-lg font-semibold text-teal-600 mb-3">
-              Địa chỉ giao hàng
+            <h3 className="text-xl text-center font-semibold text-teal-600 mb-3">
+              Địa chỉ người dùng
             </h3>
-            <p className="text-gray-700">
-              {user.Address || "Chưa cung cấp địa chỉ"}
-            </p>
-          </div>
-
-          {/* Trạng thái tài khoản */}
-          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-            <h3 className="text-lg font-semibold text-teal-600 mb-3">
-              Trạng thái tài khoản
-            </h3>
-            <p className="text-gray-700">
-              <span className={`text-${user.isBanned ? "red" : "green"}-600`}>
-                {user.isBanned ? "Đã bị khóa" : "Đang hoạt động"}
-              </span>
-            </p>
+            {addressLoading ? (
+              <p className="text-center text-slate-600">Đang tải địa chỉ...</p>
+            ) : (
+              <ul>
+                {addresses && addresses.length > 0 ? (
+                  addresses.map((address: any) => (
+                    <li key={address._id} className="mb-10">
+                      <p className="text-gray-600">
+                        <strong>Điện thoại:</strong> {address.phone}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Địa chỉ:</strong> {address.wardId},{" "}
+                        {address.districtId}, {address.cityId}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Địa chỉ cụ thể:</strong> {address.addressDetail}
+                      </p>
+                      {address.isDefault && (
+                        <p className="text-green-500 mt-2 pb-2 font-semibold">
+                          Địa chỉ mặc định
+                        </p>
+                      )}
+                      <hr />
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-center mt-5 text-slate-600">
+                    Không có dữ liệu.!
+                  </p>
+                )}
+              </ul>
+            )}
           </div>
         </div>
 
         {/* Lịch sử đơn hàng */}
         <div className="w-full mt-10 bg-white rounded-lg  p-8 border border-gray-300">
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">
-            Lịch sử đơn hàng
-          </h3>
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">
+              Lịch sử đơn hàng
+            </h3>
+            {/* Phần tìm kiếm */}
+            <div className="mb-6">
+              <input
+                type="text"
+                placeholder="Tìm kiếm đơn hàng..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+          </div>
+
           <div className=" overflow-x-auto">
             <table className="min-w-full leading-normal">
               <thead>
@@ -108,29 +181,111 @@ const UserDetailPage = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    #123
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    9 Tháng 9, 2023
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    250.000 VNĐ
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <span className="relative inline-block px-3 py-1 font-semibold text-green-600 leading-tight">
-                      <span
-                        aria-hidden
-                        className="absolute inset-0 bg-green-300 opacity-50 rounded-full"
-                      ></span>
-                      <span className="relative text-nowrap">Hoàn thành</span>
-                    </span>
-                  </td>
-                </tr>
+                {currentOrders && currentOrders.length > 0 ? (
+                  currentOrders.map((order: any) => (
+                    <tr
+                      onClick={() =>
+                        navigate(`/admin/orders/orderdetails/${order._id}`)
+                      }
+                      className="cursor-pointer"
+                    >
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        {order.orderCode}
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        {new Date(order.createdAt).toLocaleString("vi-VN", {
+                          weekday: "long", // Thứ
+                          year: "numeric", // Năm
+                          month: "numeric", // Tháng
+                          day: "numeric", // Ngày
+                          hour: "2-digit", // Giờ
+                          minute: "2-digit", // Phút
+                          second: "2-digit", // Giây
+                        })}
+                      </td>
+
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        {order.totalPrice?.toLocaleString("vi-VN")} VNĐ
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <span
+                          className={`relative inline-block px-3 py-1 text-sm rounded-xl leading-tight ${
+                            order.status === "chờ xác nhận"
+                              ? "text-yellow-700 bg-yellow-100" // Xanh dương nhạt
+                              : order.status === "chờ giao hàng"
+                              ? "text-green-700 bg-green-100" // Vàng nhạt
+                              : order.status === "đã hoàn thành"
+                              ? "text-green-800 bg-green-200 font-bold" // Xanh lá nhạt
+                              : order.status === "đã hủy"
+                              ? "text-red-700 bg-red-100" // Đỏ nhạt
+                              : order.status === "chờ lấy hàng"
+                              ? "text-blue-700 bg-blue-100" // Xanh biển nhạt
+                              : "text-gray-700 bg-gray-100" // Xám nhạt
+                          }`}
+                        >
+                          <span className="relative text-nowrap">
+                            {order.status}
+                          </span>
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="text-center py-6 text-slate-600">
+                      Không có dữ liệu !
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
+          {/* Phân trang */}
+            <div className="mt-4 flex justify-between items-center">
+              <div className="text-sm">
+                Trang {currentPage} / {totalPages}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  className="px-3 py-2 bg-stone-100 rounded-md"
+                  disabled={currentPage === 1}
+                >
+                  {"<<"}
+                </button>
+
+                {/* Nút < (Trang trước) */}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  className="px-3 py-2 bg-stone-100  rounded-md"
+                  disabled={currentPage === 1}
+                >
+                  {"<"}
+                </button>
+
+                {/* Nút > (Trang sau) */}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  className="px-3 py-2 bg-stone-100  rounded-md"
+                  disabled={currentPage === totalPages}
+                >
+                  {">"}
+                </button>
+
+                {/* Nút >> (Trang cuối) */}
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  className="px-3 py-2 bg-stone-100  rounded-md"
+                  disabled={currentPage === totalPages}
+                >
+                  {">>"}
+                </button>
+              </div>
+            </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import Logo from "@/assets/logo_no_text.png";
+import * as React from "react";
 
 import {
   Sidebar,
@@ -14,18 +14,21 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
+import { useUser } from "@clerk/clerk-react";
 import {
+  Book,
   File,
   Grip,
+  Image,
   LayoutDashboard,
   LayoutPanelLeft,
   Settings,
   ShoppingCart,
-  User,
+  Sliders,
+  User
 } from "lucide-react";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { useUser } from "@clerk/clerk-react";
 
 // This is sample data.
 // const { user } = useUser();
@@ -76,6 +79,21 @@ const data = {
       title: "Users",
       url: "/admin/users",
       icon: User,
+    },
+    {
+      title: "Bài viết",
+      url: "/admin/blogs",
+      icon: Book,
+    },
+    {
+      title: "Sliders",
+      url: "/admin/sliders",
+      icon: Sliders,
+    },
+    {
+      title: "Logos",
+      url: "/admin/Logos",
+      icon: Image,
     },
     {
       title: "Settings",

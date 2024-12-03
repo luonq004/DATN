@@ -6,42 +6,42 @@ import morgan from "morgan";
 
 config();
 
-import routerAddress from "./routers/Address";
-import routerOrder from "./routers/Order";
 import { connectDB } from "./config/db";
-import productRouter from "./routers/product.router";
-import attributeRouter from "./routers/attribute.router";
-import attributeValueRouter from "./routers/attributevalue";
-import routerCategory from "./routers/category";
 import { createProduct } from "./controllers/products";
 import { createVariant, removeVariant } from "./controllers/variant";
+import routerAddress from "./routers/Address";
+import routerOrder from "./routers/Order";
+import attributeRouter from "./routers/attribute.router";
+import attributeValueRouter from "./routers/attributevalue";
 import routerCart from "./routers/cart";
+import routerCategory from "./routers/category";
+import productRouter from "./routers/product.router";
 // import { createUser } from "./controllers/user";
 import routerVoucher from "./routers/voucher";
 
-import sliderRouter from "./routers/slider";
-import logoRouter from "./routers/Logo";
+import http from "http"; // Sử dụng http để kết nối Express và Socket.IO
+import { setupSocketIO } from "./controllers/socket";
 import categoriesRouter from "./routers/Categories";
 import collectionRouter from "./routers/Collections";
-import userRouter from "./routers/Users";
+import logoRouter from "./routers/Logo";
 import PaymentRouter from "./routers/PaymentRouter";
-import commentRouter from "./routers/comment";
-import wishlistRouter from "./routers/wishlist";
+import userRouter from "./routers/Users";
 import BlogRouter from "./routers/blog";
-import sendEmailRouter from "./routers/send-email";
+import commentRouter from "./routers/comment";
 import dashboardRouter from "./routers/dashboard";
-import http from "http"; // Sử dụng http để kết nối Express và Socket.IO
-import { Server } from "socket.io";
+import sendEmailRouter from "./routers/send-email";
+import sliderRouter from "./routers/slider";
+import wishlistRouter from "./routers/wishlist";
 
 const app = express();
-// connect socket
-const server = http.createServer(app); // Tạo server HTTP từ Express
-const io = new Server(server, {
-  cors: {
-    origin: "*", // Điều chỉnh tùy theo môi trường của bạn
-    methods: ["GET", "POST"],
-  },
-});
+
+
+// Tạo HTTP server từ app Express
+const server = http.createServer(app);
+
+// Khởi tạo Socket.IO và cấu hình CORS thông qua module socket.js
+setupSocketIO(server);
+
 //Middleware
 app.use(express.json());
 
@@ -89,22 +89,6 @@ app.use("/api", wishlistRouter);
 app.use("/api/dashboard", dashboardRouter);
 
 
-
-// Sự kiện Socket.IO
-io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
-
-  // Lắng nghe sự kiện chat từ client
-  socket.on("send_message", (message) => {
-    console.log("Message received:", message);
-    io.emit("receive_message", message); // Phát tin nhắn đến tất cả các client
-  });
-
-  // Xử lý ngắt kết nối
-  socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-  });
-});
 
 // Khởi động server
 app.use((err, req, res, next) => {

@@ -21,13 +21,16 @@ const ProfilePageModern: React.FC = () => {
   const { register, setValue, getValues } = useForm();
   const imageUserRef = useRef<any>();
   const { toast } = useToast();
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const fetchUserData = async () => {
     if (user) {
+      console.log(user);
+      
       try {
         const clerkId = user.id;
         const response = await axios.get(
-          `http://localhost:8080/api/users/${clerkId}`
+          `${apiUrl}/users/${clerkId}`
         );
         const userData = response.data;
 
@@ -120,7 +123,7 @@ const ProfilePageModern: React.FC = () => {
       );
       const clerkId = user?.id;
       const response = await axios.put(
-        `http://localhost:8080/api/users/${clerkId}`,
+        `${apiUrl}/users/${clerkId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -197,7 +200,7 @@ const ProfilePageModern: React.FC = () => {
                 value={email}
                 readOnly={editField !== "email"}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`border border-gray-300 rounded-lg px-3 py-2 w-full ${
+                className={`border border-gray-300 rounded-lg px-3 py-2 w-full cursor-not-allowed ${
                   editField === "email" ? "bg-white" : "bg-gray-100"
                 }`}
               />
@@ -224,7 +227,7 @@ const ProfilePageModern: React.FC = () => {
                 value={phone}
                 readOnly={editField !== "phone"}
                 onChange={(e) => setPhone(e.target.value)}
-                className={`border border-gray-300 rounded-lg px-3 py-2 w-full ${
+                className={`border border-gray-300 rounded-lg px-3 py-2 w-full cursor-not-allowed ${
                   editField === "phone" ? "bg-white" : "bg-gray-100"
                 }`}
               />
@@ -253,7 +256,7 @@ const ProfilePageModern: React.FC = () => {
                     value={genderOption}
                     checked={gender === genderOption}
                     onChange={(e) => setGender(e.target.value)}
-                    className="mr-2"
+                    className="mr-2 cursor-pointer"
                   />
                   {genderOption}
                 </label>

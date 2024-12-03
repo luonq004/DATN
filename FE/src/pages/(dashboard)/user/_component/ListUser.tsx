@@ -11,7 +11,6 @@ import { SignedIn, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PaginationComponent from "./Pagination";
 import RegisterForm from "./RegisterForm";
 
 function ListUser() {
@@ -27,12 +26,22 @@ function ListUser() {
   const [isOpen, setIsOpen] = useState(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
 
   const totalUsers = allUsers.length;
+  const totalPages = Math.ceil(totalUsers / itemsPerPage);
+
+  // Lọc danh sách người dùng theo tên hoặc email
+  const filteredUsers = allUsers.filter(
+    (user) =>
+      user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Lấy danh sách user hiển thị trên trang hiện tại
-  const currentUsers = allUsers.slice(
+  const currentUsers = filteredUsers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -60,7 +69,6 @@ function ListUser() {
       setIsLoading(false);
     }
   };
-  
 
   const getCookie = (name: string) => {
     const value = `; ${document.cookie}`;
@@ -221,6 +229,13 @@ function ListUser() {
             Danh Sách User
           </h1>
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border px-4 py-2 rounded-md"
+            />
             <select
               value={includeDeleted ? "deleted" : "active"}
               onChange={(e) => setIncludeDeleted(e.target.value === "deleted")}
@@ -230,37 +245,40 @@ function ListUser() {
               <option value="deleted">Tài khoản đã bị xóa</option>
             </select>
 
-            <Dialog open={isOpen} onOpenChange={setIsOpen} >
-              <DialogTrigger asChild>
-                <DialogTitle
-                   onClick={(e) => {
-                    // Kiểm tra quyền khi nhấn vào nút
-                    if (user?.publicMetadata?.role !== "Admin") {
-                      e.preventDefault(); 
-                      // Nếu không phải Admin, hiển thị toast thông báo và ngừng mở form
-                      toast({
-                        variant: "destructive", // Toast hiển thị màu đỏ (thông báo lỗi)
-                        title: "Quyền truy cập bị từ chối",
-                        description: "Chỉ Admin mới có thể tạo người dùng mới.", // Mô tả lỗi
-                      });
-                      return; // Ngừng thực hiện hành động mở form
-                    }
-                    // Nếu là Admin, mở Dialog
-                    setIsOpen(true); 
-                  }}
-                  className="px-6 font-normal text-[15px] cursor-pointer flex items-center gap-2 py-2 rounded-md bg-black text-white"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="w-5 h-5"
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              {user?.publicMetadata?.role === "Admin" ? (
+                <DialogTrigger asChild>
+                  <DialogTitle
+                    onClick={(e) => {
+                      // Kiểm tra quyền khi nhấn vào nút
+                      if (user?.publicMetadata?.role !== "Admin") {
+                        e.preventDefault();
+                        // Nếu không phải Admin, hiển thị toast thông báo và ngừng mở form
+                        toast({
+                          variant: "destructive", // Toast hiển thị màu đỏ (thông báo lỗi)
+                          title: "Quyền truy cập bị từ chối",
+                          description:
+                            "Chỉ Admin mới có thể tạo người dùng mới.", // Mô tả lỗi
+                        });
+                        return; // Ngừng thực hiện hành động mở form
+                      }
+                      // Nếu là Admin, mở Dialog
+                      setIsOpen(true);
+                    }}
+                    className="px-6 font-normal text-[15px] cursor-pointer flex items-center gap-2 py-2 rounded-md bg-black text-white"
                   >
-                    <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-                  </svg>
-                  Thêm user
-                </DialogTitle>
-              </DialogTrigger>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                    </svg>
+                    Thêm user
+                  </DialogTitle>
+                </DialogTrigger>
+              ) : null}
 
               {/* Nội dung modal */}
               <DialogContent className="p-0">
@@ -302,9 +320,21 @@ function ListUser() {
               </tr>
             </thead>
             <tbody>
-              {currentUsers.length > 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="text-center text-gray-800">
+                    Đang tải dữ liệu...
+                  </td>
+                </tr>
+              ) : currentUsers.length > 0 ? (
                 currentUsers.map((user) => (
-                  <tr key={user.clerkId}>
+                  <tr
+                    key={user.clerkId}
+                    onClick={() =>
+                      navigate(`/admin/users/detail/${user.clerkId}`)
+                    }
+                    className=" cursor-pointer"
+                  >
                     <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
                       <img
                         src={user.imageUrl}
@@ -313,14 +343,7 @@ function ListUser() {
                       />
                     </td>
                     <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
-                      <button
-                        onClick={() =>
-                          navigate(`/admin/users/detail/${user.clerkId}`)
-                        }
-                        className="text-blue-600 hover:underline"
-                      >
-                        {user.firstName} {user.lastName}
-                      </button>
+                      {user.firstName} {user.lastName}
                     </td>
                     <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm  max-w-xs break-words">
                       {user.email}
@@ -344,7 +367,7 @@ function ListUser() {
                       )}
                     </td>
 
-                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm items-center flex mt-3">
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm items-center flex mt-[15px]">
                       {user.isDeleted ? (
                         <button
                           onClick={() => handleRestoreClick(user)}
@@ -396,13 +419,44 @@ function ListUser() {
         </div>
       </SignedIn>
 
-      {/* Phân trang */}
-      <PaginationComponent
-        currentPage={currentPage}
-        totalItems={totalUsers}
-        itemsPerPage={itemsPerPage}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
+      {/*phân trang  */}
+      <div className="mt-4 flex justify-between items-center">
+        <div className="text-sm">
+          Trang {currentPage} / {totalPages}
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setCurrentPage(1)}
+            className="px-3 py-2 bg-stone-100 rounded-md"
+            disabled={currentPage === 1}
+          >
+            {"<<"}
+          </button>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className="px-3 py-2 bg-stone-100  rounded-md"
+            disabled={currentPage === 1}
+          >
+            {"<"}
+          </button>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            className="px-3 py-2 bg-stone-100  rounded-md"
+            disabled={currentPage === totalPages}
+          >
+            {">"}
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            className="px-3 py-2 bg-stone-100  rounded-md"
+            disabled={currentPage === totalPages}
+          >
+            {">>"}
+          </button>
+        </div>
+      </div>
 
       <Confirm
         isOpen={isModalOpen}
