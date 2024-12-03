@@ -10,6 +10,7 @@ export const useUpdateAttributeValue = (id: string) => {
 
     onSuccess: () => {
       toast({
+        variant: "success",
         title: "Cập nhật giá trị thuộc tính thành công",
       });
       queryClient.invalidateQueries({
@@ -19,7 +20,8 @@ export const useUpdateAttributeValue = (id: string) => {
 
     onError: (error: Error) => {
       toast({
-        title: "Cập nhật giá trị thuộc tính thất bại",
+        variant: "destructive",
+        title: error.message,
       });
     },
   });

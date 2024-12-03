@@ -7,6 +7,11 @@ const attributeSchema = new mongoose.Schema(
       required: true,
     },
 
+    slug: {
+      type: String,
+      lowercase: true,
+    },
+
     type: {
       type: String,
       lowcase: true,

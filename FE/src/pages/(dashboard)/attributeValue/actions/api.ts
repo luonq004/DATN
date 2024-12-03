@@ -32,8 +32,8 @@ export async function createAttributeValues(
   try {
     const response = await axios.post(`${apiUrl}/attributevalue/${id}`, data);
     return response?.data;
-  } catch (error) {
-    console.log(error);
+  } catch (error: unknown) {
+    throw new Error(error.response.data.message);
   }
 }
 
@@ -49,6 +49,6 @@ export async function updateAttributeValueByID(
     const response = await axios.put(`${apiUrl}/attributevalue/${id}`, data);
     return response?.data;
   } catch (error) {
-    console.log(error);
+    throw new Error(error.response.data.message);
   }
 }

@@ -26,6 +26,7 @@ import { useCreateProduct } from "../actions/useCreateProduct";
 import { useUpdateProduct } from "../actions/useUpdateProduct";
 
 import { UploadFiles } from "@/lib/upload";
+import { toast } from "@/components/ui/use-toast";
 
 const ProductAddPage = () => {
   const { id } = useParams();
@@ -35,7 +36,7 @@ const ProductAddPage = () => {
 
   const [isDoing, setIsDoing] = useState(false);
 
-  const { isLoadingAtributes, atributes } = useGetAtributes();
+  const { isLoadingAtributes, attributes } = useGetAtributes();
 
   useEffect(() => {
     if (!id) document.title = "Page: Create Product";
@@ -91,12 +92,16 @@ const ProductAddPage = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof productSchema>) {
-    // console.log("values: ", values);
     setIsDoing(true);
 
     if (id) {
       const duplicateValues = checkForDuplicateVariants(values);
       setDuplicate(duplicateValues);
+      toast({
+        variant: "destructive",
+        title: "Trùng giá trị biến thể của sản phẩm",
+      });
+
       if (!duplicateValues.length) {
         const result = await UploadFiles(values);
         updateProduct({ data: result, id });
@@ -104,6 +109,10 @@ const ProductAddPage = () => {
     } else {
       const duplicateValues = checkForDuplicateVariants(values);
       setDuplicate(duplicateValues);
+      toast({
+        variant: "destructive",
+        title: "Trùng giá trị biến thể của sản phẩm",
+      });
 
       if (!duplicateValues.length) {
         const result = await UploadFiles(values);
@@ -120,7 +129,7 @@ const ProductAddPage = () => {
   // console.log("types: ", types);
 
   const filteredData = types.length
-    ? atributes.filter((item: Attribute) => types.includes(item.name))
+    ? attributes.filter((item: Attribute) => types.includes(item.name))
     : [];
   // console.log("filteredData: ", filteredData);
 
@@ -131,13 +140,13 @@ const ProductAddPage = () => {
 
   return (
     <Container>
-      <h1 className="text-2xl font-normal mb-3">
+      <h1 className="text-4xl font-normal font-raleway mb-5">
         {id ? "Edit " : "Create "}Product
       </h1>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="flex gap-4">
+          <div className="flex flex-wrap xl:flex-nowrap gap-4">
             {/* Info Product */}
             <InfoGeneralProduct
               id={id ? true : false}

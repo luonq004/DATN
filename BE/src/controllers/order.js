@@ -3,11 +3,11 @@ import Address from "../models/Address";
 import Order from "../models/order";
 import Variant from "../models/variant";
 import cart from "../models/cart";
+import Product from "../models/product";
 
 //=========================tạo đơn hàng mới===============
 export const createOrder = async (req, res) => {
-  const { userId, addressId, products, payment, totalPrice, note } =
-    req.body;
+  const { userId, addressId, products, payment, totalPrice, note } = req.body;
   try {
     let finalAddress = {};
     // Kiểm tra xem addressId có được cung cấp không
@@ -17,7 +17,9 @@ export const createOrder = async (req, res) => {
         .json({ message: "addressId là bắt buộc" });
     }
     if (!payment) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Phương thức thanh toán là bắt buộc" });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Phương thức thanh toán là bắt buộc" });
     }
     if (!products || !Array.isArray(products) || products.length === 0) {
       return res
@@ -26,7 +28,9 @@ export const createOrder = async (req, res) => {
     }
 
     if (totalPrice < 0) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Giá trị đơn hàng không hợp lệ" });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Giá trị đơn hàng không hợp lệ" });
     }
     if (!userId) {
       return res
@@ -50,7 +54,7 @@ export const createOrder = async (req, res) => {
       const productVariant = await Variant.findById(variantItem._id);
       if (!productVariant || productVariant.countOnStock < quantity) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-          message: `Số lượng không đủ trong kho.`
+          message: `Số lượng không đủ trong kho.`,
         });
       }
 
@@ -350,13 +354,17 @@ export const updateOrderStatus = async (req, res) => {
     // }
     if (newStatus === "đã hoàn thành") {
       for (const product of order.products) {
+        // console.log(product);
         product.statusComment = true;
+        const productData = await Product.findById(product.productItem._id);
+        console.log("PDATA: ", productData);
+        if (productData) {
+          productData.count += Number(product.quantity);
+          await productData.save();
+        }
       }
       order.markModified("products");
     }
-
-
-
 
     await order.save();
 

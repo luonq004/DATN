@@ -188,6 +188,7 @@ export type Action =
   | { type: "ADD_VALUE"; payload: Data[] } // payload là mảng Data[]
   | { type: "DELETE_ONE_VALUE"; payload: string }
   | { type: "MIX_VALUES" }
+  | { type: "UPDATE_ATTRIBUTES"; payload: Attribute }
   | { type: "CLEAR_VALUES" }
   | { type: "DELETE_INDEX_MIX_VALUE"; payload: number }
   | { type: "CLEAR" };
