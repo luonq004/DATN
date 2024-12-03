@@ -25,7 +25,7 @@ import {
   Settings,
   ShoppingCart,
   Sliders,
-  User
+  User,
 } from "lucide-react";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -40,43 +40,43 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
+      title: "Thống kê",
       url: "/admin/dashboard",
       icon: LayoutDashboard,
       isActive: false,
     },
     {
-      title: "Products",
+      title: "Sản phẩm",
       url: "#",
       icon: File,
       items: [
         {
-          title: "List",
+          title: "Danh sách",
           url: "/admin/products",
         },
         {
-          title: "Add",
+          title: "Thêm sản phẩm",
           url: "/admin/products/add",
         },
       ],
     },
     {
-      title: "Categories",
+      title: "Danh mục",
       url: "/admin/categories",
       icon: LayoutPanelLeft,
     },
     {
-      title: "Attributes",
+      title: "Thuộc tính",
       url: "/admin/attributes",
       icon: Grip,
     },
     {
-      title: "Orders",
+      title: "Đơn hàng",
       url: "/admin/orders",
       icon: ShoppingCart,
     },
     {
-      title: "Users",
+      title: "Người dùng",
       url: "/admin/users",
       icon: User,
     },
@@ -95,11 +95,11 @@ const data = {
       url: "/admin/Logos",
       icon: Image,
     },
-    {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: Settings,
-    },
+    // {
+    //   title: "Settings",
+    //   url: "/dashboard/settings",
+    //   icon: Settings,
+    // },
   ],
 };
 

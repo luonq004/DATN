@@ -1,6 +1,7 @@
 import Product from "../models/product";
 import slugify from "slugify";
 import Variant from "../models/variant";
+import Category from "../models/category";
 
 export const getAllProducts = async (req, res) => {
   const {
@@ -21,7 +22,7 @@ export const getAllProducts = async (req, res) => {
   };
   const populateOptions = _expand
     ? [
-        { path: "category", match: { deleted: false }, select: "name" },
+        { path: "category", select: "name", match: { deleted: false } },
         { path: "attribites", match: { deleted: false } },
         { path: "comments", match: { deleted: false } },
         {
@@ -53,7 +54,7 @@ export const getAllProducts = async (req, res) => {
     query.deleted = { $ne: true };
   }
 
-  console.log(query);
+  // console.log(query);
 
   try {
     const result = await Product.paginate(query, { ...options });
@@ -166,7 +167,7 @@ export const getProductForEdit = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const {
+    let {
       name,
       image,
       price,
@@ -178,6 +179,20 @@ export const createProduct = async (req, res) => {
     } = req.body;
 
     const slug = slugify(req.body.name, "-");
+
+    if (!category.length) {
+      category = ["674f3deca63479f361d8f499"];
+    } else {
+      if (category.length > 1) {
+        for (let i = 0; i < category.length; i++) {
+          const existCategory = await Category.findOne({ _id: category[i] });
+
+          if (!existCategory) {
+            return res.status(400).json({ message: "Danh mục không tồn tại" });
+          }
+        }
+      }
+    }
 
     const variantsId = [];
     let priceFinal = Infinity;
@@ -202,8 +217,6 @@ export const createProduct = async (req, res) => {
         priceSale: variants[i].priceSale,
         values,
         countOnStock: variants[i].countOnStock,
-        // image:
-        //   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
         image: variants[i].image,
       }).save();
       variantsId.push(variant._id);
@@ -214,8 +227,6 @@ export const createProduct = async (req, res) => {
       price: priceFinal,
       priceSale: priceSaleFinal,
       countOnStock: count,
-      // image:
-      //   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
       image,
       category,
       description,
@@ -235,7 +246,7 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const {
+    let {
       name,
       image,
       priceSale,
@@ -247,7 +258,19 @@ export const updateProduct = async (req, res) => {
 
     const slug = slugify(req.body.name, "-");
 
-    // console.log("Variant:", variants);
+    if (!category.length) {
+      category = ["674f3deca63479f361d8f499"];
+    } else {
+      if (category.length > 1) {
+        for (let i = 0; i < category.length; i++) {
+          const existCategory = await Category.findOne({ _id: category[i] });
+
+          if (!existCategory) {
+            return res.status(400).json({ message: "Danh mục không tồn tại" });
+          }
+        }
+      }
+    }
 
     const variantsId = [];
     let priceFinal = Infinity;

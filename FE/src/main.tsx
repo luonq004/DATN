@@ -35,7 +35,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <AuthProvider>
               <App />
             </AuthProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
           </ClerkProvider>
         </UserInfoProvider>
       </BrowserRouter>

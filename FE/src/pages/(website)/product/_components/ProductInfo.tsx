@@ -112,7 +112,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
   const totalRating = activeData.reduce((sum, item) => sum + item.rating, 0); // Tính tổng rating
   const averageRating = totalRating / activeData.length; // Tính trung bình rating
 
-  console.log("Average Rating:", averageRating.toFixed(0));
+  // console.log("Average Rating:", averageRating.toFixed(0));
 
   return (
     <div>

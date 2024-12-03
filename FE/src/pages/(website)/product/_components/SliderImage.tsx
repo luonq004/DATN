@@ -67,7 +67,7 @@ const SliderImage: React.FC<ProductCarouselProps> = ({
             <img
               className="size-14"
               src={variant}
-              alt="Thumbnail"
+              alt="Ảnh sản phẩm"
               onClick={() => apiImage?.scrollTo(index)}
             />
           </div>

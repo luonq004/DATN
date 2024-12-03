@@ -97,26 +97,28 @@ const ProductAddPage = () => {
     if (id) {
       const duplicateValues = checkForDuplicateVariants(values);
       setDuplicate(duplicateValues);
-      toast({
-        variant: "destructive",
-        title: "Trùng giá trị biến thể của sản phẩm",
-      });
 
       if (!duplicateValues.length) {
         const result = await UploadFiles(values);
         updateProduct({ data: result, id });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Trùng giá trị biến thể của sản phẩm",
+        });
       }
     } else {
       const duplicateValues = checkForDuplicateVariants(values);
       setDuplicate(duplicateValues);
-      toast({
-        variant: "destructive",
-        title: "Trùng giá trị biến thể của sản phẩm",
-      });
 
       if (!duplicateValues.length) {
         const result = await UploadFiles(values);
         createProduct(result);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Trùng giá trị biến thể của sản phẩm",
+        });
       }
     }
 
@@ -139,7 +141,8 @@ const ProductAddPage = () => {
   // console.log(form.setError("variants.0.values.0.name", { message: "Error" }));
 
   return (
-    <Container>
+    // <Container>
+    <>
       <h1 className="text-4xl font-normal font-raleway mb-5">
         {id ? "Edit " : "Create "}Product
       </h1>
@@ -164,7 +167,8 @@ const ProductAddPage = () => {
           </Button>
         </form>
       </Form>
-    </Container>
+    </>
+    // </Container>
   );
 };
 

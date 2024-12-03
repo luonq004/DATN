@@ -58,6 +58,9 @@ import PaymentResult from "@/pages/(dashboard)/PaymentComponent/PaymentResult ";
 import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
 import WishListPage from "@/pages/(website)/wishlist/page";
 import TestSocket from "@/pages/(website)/Testsocket";
+import CategoriesPage from "@/pages/(dashboard)/category/page";
+import CategoryEditPage from "@/pages/(dashboard)/category/edit/page";
+import CategoryAddPage from "@/pages/(dashboard)/category/add/page";
 
 const Router = () => {
   return (
@@ -131,7 +134,7 @@ const Router = () => {
             />
           </Route>
 
-          <Route path="blogs" element={<BlogPages/>}>
+          <Route path="blogs" element={<BlogPages />}>
             <Route index element={<ListBlog />} />
             <Route path="add" element={<AddBlog />} />
             <Route path="edit/:id" element={<EditBlog />} />
@@ -170,6 +173,10 @@ const Router = () => {
           <Route path="voucher" element={<DemoPage />} />
           <Route path="orders" element={<AdminOrder />} />
           <Route path="orders/orderdetails/:id" element={<OrderDetail />} />
+
+          <Route path="categories" element={<CategoriesPage />} />
+          <Route path="categories/edit/:id" element={<CategoryEditPage />} />
+          <Route path="categories/add" element={<CategoryAddPage />} />
         </Route>
       </Routes>
     </>

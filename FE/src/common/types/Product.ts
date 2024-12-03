@@ -47,10 +47,11 @@ interface Address {
   updatedAt: string;
 }
 
-interface Category {
+export interface Category {
   _id: string;
   name: string;
   slug: string;
+  deleted: boolean;
   __v: number;
 }
 

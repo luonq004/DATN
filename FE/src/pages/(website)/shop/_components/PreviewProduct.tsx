@@ -182,7 +182,16 @@ const PreviewProduct = ({
     ? variantChoose.countOnStock
     : productPopup?.countOnStock;
 
-  console.log("selectedAttributes", selectedAttributes);
+  // console.log("selectedAttributes", selectedAttributes);
+
+  const images = [
+    productPopup?.image,
+    ...(productPopup?.variants
+      ? productPopup.variants.map((v) => v.image)
+      : []),
+  ];
+
+  console.log("productPopup?.variants", images);
 
   return createPortal(
     <div
@@ -203,23 +212,21 @@ const PreviewProduct = ({
           <div className="px-[15px] mx-auto mb-[30px] md:mb-0">
             <Carousel className="w-full max-w-xs" setApi={setApiImage}>
               <CarouselContent>
-                {productPopup?.variants.map(
-                  (variant: Variant, index: number) => (
-                    <CarouselItem key={index}>
-                      <img
-                        className="w-full"
-                        src={variant.image}
-                        alt="Anh san pham"
-                        loading="lazy"
-                      />
-                    </CarouselItem>
-                  )
-                )}
+                {images?.map((img, index: number) => (
+                  <CarouselItem key={index}>
+                    <img
+                      className="w-full"
+                      src={img}
+                      alt="Anh san pham"
+                      loading="lazy"
+                    />
+                  </CarouselItem>
+                ))}
               </CarouselContent>
             </Carousel>
 
             <div className="flex items-center mt-4 gap-2">
-              {productPopup?.variants.map((variant: Variant, index: number) => (
+              {images.map((img, index: number) => (
                 <div
                   key={index}
                   className={`${
@@ -229,8 +236,8 @@ const PreviewProduct = ({
                   <img
                     key={index}
                     className={`size-14 `}
-                    src={variant.image}
-                    alt=""
+                    src={img}
+                    alt="Ảnh sản phẩm"
                     onClick={() => apiImage?.scrollTo(index)}
                   />
                 </div>

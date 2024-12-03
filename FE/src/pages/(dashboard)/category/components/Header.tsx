@@ -11,13 +11,12 @@ const Header = () => {
   function handleChange(layout: string) {
     searchParams.set("status", layout);
 
-    // if (searchParams.get("page")) searchParams.set("page", "1");
     setSearchParams(searchParams);
   }
 
   return (
     <div className="sm:flex justify-between items-center">
-      <h4 className="text-xl font-semibold">Danh sách sản phẩm</h4>
+      <h4 className="text-xl font-semibold">Danh sách danh mục</h4>
 
       <div className="flex gap-10">
         <Tabs
@@ -34,7 +33,7 @@ const Header = () => {
 
         <Link to="add">
           <Button className="text-lg font-light flex gap-3 px-4 bg-orange-500">
-            <BadgePlus /> <span className="hidden lg:block">Thêm sản phẩm</span>
+            <BadgePlus /> <span className="hidden lg:block">Thêm danh mục</span>
           </Button>
         </Link>
       </div>

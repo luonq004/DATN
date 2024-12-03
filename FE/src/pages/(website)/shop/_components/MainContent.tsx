@@ -27,9 +27,7 @@ export function MainContent() {
     setSearchParams(searchParams);
   }
 
-  const { isLoading, listProduct } = useGetAllProduct();
-
-  console.log(listProduct);
+  const { isLoading, listProduct, error } = useGetAllProduct();
 
   return (
     <div className="w-full lg:w-[75%] lg:order-1 lg:mb-10">
@@ -64,7 +62,7 @@ export function MainContent() {
         </div>
 
         {/* PRODUCT */}
-        <ProductItem listProduct={listProduct} isLoading={isLoading} />
+        <ProductItem listProduct={listProduct || []} isLoading={isLoading} />
 
         {/* PAGINATION */}
         <Pagination

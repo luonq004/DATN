@@ -1,15 +1,12 @@
 import { IProduct } from "@/common/types/Product";
+import { formatCurrency } from "@/lib/utils";
 import ActionCell from "@/pages/(dashboard)/product/_components/ActionCell";
 import { ColumnDef } from "@tanstack/react-table";
 
 export const columnProducts: ColumnDef<IProduct>[] = [
-  // {
-  //   accessorKey: "_id",
-  //   header: "ID",
-  // },
   {
     accessorKey: "image",
-    header: "Image",
+    header: "Ảnh",
 
     cell: ({ row }) => {
       const attribute = row.original;
@@ -25,20 +22,76 @@ export const columnProducts: ColumnDef<IProduct>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Tên",
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "category",
+    header: "Danh mục",
+    cell: ({ row }) => {
+      const attribute = row.original;
+      const targetId = "674f3deca63479f361d8f499";
+
+      const exists = attribute.category.find(
+        (category) => category._id == targetId
+      )
+        ? true
+        : false;
+
+      const category =
+        attribute.category.length >= 2 && exists
+          ? attribute.category.filter((category) => category._id !== targetId)
+          : attribute.category;
+
+      return (
+        <span className="text-sm text-gray-500">
+          {category.map((category) => category.name).join(", ") ||
+            "Không có danh mục"}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: "Giá",
+    cell: ({ row }) => {
+      const attribute = row.original;
+
+      return (
+        <span className="text-sm text-gray-500">
+          {formatCurrency(attribute.price)} VNĐ
+        </span>
+      );
+    },
   },
-  // {
-  //   accessorKey: "category",
-  //   header: "Category",
-  // },
+  {
+    accessorKey: "priceSale",
+    header: "Giá khuyến mãi",
+    cell: ({ row }) => {
+      const attribute = row.original;
+
+      return (
+        <span className="text-sm text-gray-500">
+          {attribute.priceSale
+            ? formatCurrency(attribute.priceSale) + " VNĐ"
+            : "Không có"}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "countOnStock",
+    header: "Số lượng",
+    cell: ({ row }) => {
+      const attribute = row.original;
+
+      return (
+        <span className="text-sm text-gray-500">
+          {formatCurrency(attribute.countOnStock)}
+        </span>
+      );
+    },
+  },
+
   {
     id: "actions",
     enableHiding: false,
