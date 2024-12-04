@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import html2pdf from "html2pdf.js";  // Import html2pdf.js
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import html2pdf from "html2pdf.js"; // Import html2pdf.js
 import useOrder from "@/common/hooks/order/UseOrder";
 
 const OrderDetail = () => {
@@ -24,9 +31,25 @@ const OrderDetail = () => {
     }).format(date);
   };
 
-  if (!data) return <div className="min-h-[50vh] flex justify-center items-center text-gray-500"><div className="spinner"></div></div>;
+  if (!data)
+    return (
+      <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
+        <div className="spinner"></div>
+      </div>
+    );
 
-  const { addressId, note, products, payment, status, statusHistory, totalPrice, orderCode, createdAt,cancellationReason } = data;
+  const {
+    addressId,
+    note,
+    products,
+    payment,
+    status,
+    statusHistory,
+    totalPrice,
+    orderCode,
+    createdAt,
+    cancellationReason,
+  } = data;
 
   // Hàm xử lý xuất PDF
   const handleExportPDF = () => {
@@ -56,40 +79,67 @@ const OrderDetail = () => {
 
   return (
     <div className="p-6 bg-gray-100">
-      <button 
-        onClick={handleExportPDF} 
+      <button
+        onClick={handleExportPDF}
         className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         Xuất PDF
       </button>
 
-      <div id="order-detail"> {/* Phần tử bao bọc nội dung cần xuất */}
+      <div id="order-detail">
+        {" "}
+        {/* Phần tử bao bọc nội dung cần xuất */}
         <h2 className="text-2xl font-bold mb-6">Chi tiết đơn hàng</h2>
-
         {/* Thông tin tổng quan */}
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
           <div className="grid grid-cols-2 gap-4">
-            <p><strong>Mã đơn hàng:</strong> {orderCode}</p>
-            <p><strong>Ngày đặt hàng:</strong> {new Date(createdAt).toLocaleDateString()}</p>
-            <p><strong>Trạng thái:</strong> <span className={`px-2 py-1 rounded ${statusColor(status)}`}>{status}</span></p>
+            <p>
+              <strong>Mã đơn hàng:</strong> {orderCode}
+            </p>
+            <p>
+              <strong>Ngày đặt hàng:</strong>{" "}
+              {new Date(createdAt).toLocaleDateString()}
+            </p>
+            <p>
+              <strong>Trạng thái:</strong>{" "}
+              <span className={`px-2 py-1 rounded ${statusColor(status)}`}>
+                {status}
+              </span>
+            </p>
             {cancellationReason ? (
-  <p><strong>Lý do hủy hàng:</strong> {cancellationReason}</p>
-) : null}
+              <p>
+                <strong>Lý do hủy hàng:</strong> {cancellationReason}
+              </p>
+            ) : null}
 
-            <p><strong>Hình thức thanh toán:</strong> {payment}</p>
-            <p><strong>Tổng giá trị:</strong> <span className="px-2 py-1 rounded  font-semibold">{totalPrice.toLocaleString()} VND</span></p>
-            <p><strong>Ghi chú:</strong> {note || "Không có ghi chú"}</p>
+            <p>
+              <strong>Hình thức thanh toán:</strong> {payment}
+            </p>
+            <p>
+              <strong>Tổng giá trị:</strong>{" "}
+              <span className="px-2 py-1 rounded  font-semibold">
+                {totalPrice.toLocaleString()} VND
+              </span>
+            </p>
+            <p>
+              <strong>Ghi chú:</strong> {note || "Không có ghi chú"}
+            </p>
           </div>
         </div>
-
         {/* Thông tin giao hàng */}
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
           <h3 className="text-xl font-semibold mb-4">Thông tin giao hàng</h3>
-          <p><strong>Người nhận:</strong> {addressId.name}</p>
-          <p><strong>Số điện thoại:</strong> {addressId.phone}</p>
-          <p><strong>Địa chỉ:</strong> {`${addressId.addressDetail}, ${addressId.wardId}, ${addressId.districtId}, ${addressId.cityId}, ${addressId.country}`}</p>
+          <p>
+            <strong>Người nhận:</strong> {addressId.name}
+          </p>
+          <p>
+            <strong>Số điện thoại:</strong> {addressId.phone}
+          </p>
+          <p>
+            <strong>Địa chỉ:</strong>{" "}
+            {`${addressId.addressDetail}, ${addressId.wardId}, ${addressId.districtId}, ${addressId.cityId}, ${addressId.country}`}
+          </p>
         </div>
-
         {/* Lịch sử trạng thái */}
         {isExported == false && (
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
@@ -105,16 +155,21 @@ const OrderDetail = () => {
               <TableBody>
                 {statusHistory?.map((history: any, index: number) => (
                   <TableRow key={index} className="hover:bg-gray-50">
-                    <TableCell className="py-3 px-4">{history.status}</TableCell>
-                    <TableCell className="py-3 px-4">{formatDate(history.timestamp)}</TableCell>
-                    <TableCell className="py-3 px-4">{history.updatedBy}</TableCell>
+                    <TableCell className="py-3 px-4">
+                      {history.status}
+                    </TableCell>
+                    <TableCell className="py-3 px-4">
+                      {formatDate(history.timestamp)}
+                    </TableCell>
+                    <TableCell className="py-3 px-4">
+                      {history.updatedBy}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
         )}
-
         {/* Danh sách sản phẩm */}
         <div className="bg-white rounded-lg shadow-md p-4">
           <h3 className="text-xl font-semibold mb-4">Danh sách sản phẩm</h3>
@@ -124,34 +179,43 @@ const OrderDetail = () => {
                 <TableHead className="py-3 px-4">Hình ảnh</TableHead>
                 <TableHead className="py-3 px-4">Sản phẩm</TableHead>
                 <TableHead className="py-3 px-4">Biến thể</TableHead>
-                <TableHead className="py-3 px-4 text-center">Số lượng</TableHead>
+                <TableHead className="py-3 px-4 text-center">
+                  Số lượng
+                </TableHead>
                 <TableHead className="py-3 px-4 text-right">Đơn giá</TableHead>
-                <TableHead className="py-3 px-4 text-right">Thành tiền</TableHead>
+                <TableHead className="py-3 px-4 text-right">
+                  Thành tiền
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products?.map((item: any) =>
-                  <TableRow key={item._id} className="hover:bg-gray-50">
-                    <TableCell className="py-3 px-4">
-                      <img
-                        src={item.productItem.image}
-                        alt={item.productItem.name}
-                        className="w-16 h-16 object-cover rounded border"
-                      />
-                    </TableCell>
-                    <TableCell className="py-3 px-4 font-medium">{item.productItem.name}</TableCell>
-                    <TableCell className="py-3 px-4 text-gray-600">
-                      {item.variantItem.values.map((v: any) => v.name).join(", ")}
-                    </TableCell>
-                    <TableCell className="py-3 px-4 text-center">{item.quantity}</TableCell>
-                    <TableCell className="py-3 px-4 text-right text-green-500 font-semibold">
-                      {item.variantItem.price.toLocaleString()} VND
-                    </TableCell>
-                    <TableCell className="py-3  px-4 text-right font-semibold">
-                      {(item.variantItem.price * item.quantity).toLocaleString()} VND
-                    </TableCell>
-                  </TableRow>
-              )}
+              {products?.map((item: any) => (
+                <TableRow key={item._id} className="hover:bg-gray-50">
+                  <TableCell className="py-3 px-4">
+                    <img
+                      src={item.productItem.image}
+                      alt={item.productItem.name}
+                      className="w-16 h-16 object-cover rounded border"
+                    />
+                  </TableCell>
+                  <TableCell className="py-3 px-4 font-medium">
+                    {item.productItem.name}
+                  </TableCell>
+                  <TableCell className="py-3 px-4 text-gray-600">
+                    {item.variantItem.values.map((v: any) => v.name).join(", ")}
+                  </TableCell>
+                  <TableCell className="py-3 px-4 text-center">
+                    {item.quantity}
+                  </TableCell>
+                  <TableCell className="py-3 px-4 text-right text-green-500 font-semibold">
+                    {item.variantItem.price.toLocaleString()} VND
+                  </TableCell>
+                  <TableCell className="py-3  px-4 text-right font-semibold">
+                    {(item.variantItem.price * item.quantity).toLocaleString()}{" "}
+                    VND
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
@@ -164,7 +228,7 @@ const OrderDetail = () => {
 const statusColor = (status: string) => {
   switch (status) {
     case "chờ xác nhận":
-      return "bg-yellow-100 text-yellow-800";
+      return "font-bold text-yellow-800";
     case "chờ lấy hàng":
       return "font-bold text-blue-800";
     case "chờ giao hàng":
