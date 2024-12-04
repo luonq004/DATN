@@ -152,7 +152,7 @@ const InfoGeneralProduct: React.FC<{
         >
           <AccordionItem className="border-none" value="item-1">
             <AccordionTrigger className="border-b p-5 hover:no-underline">
-              Product data
+              Thông tin sản phẩm
             </AccordionTrigger>
             <AccordionContent className="p-0">
               <Tabs
@@ -211,27 +211,30 @@ const InfoGeneralProduct: React.FC<{
         </Accordion>
       </div>
 
-      <ReactQuill
-        className="bg-white mt-9"
-        theme="snow"
-        value={value}
-        onChange={handleChange} // Sử dụng handleChange
-        modules={{
-          toolbar: [
-            [{ header: "1" }, { header: "2" }],
-            ["bold", "italic", "underline", "strike", "blockquote"],
-            [
-              // { list: "ordered" },
-              { list: "bullet" },
-              { indent: "-1" },
-              { indent: "+1" },
+      <div>
+        <ReactQuill
+          placeholder="Viết mô tả chi tiết sản phẩm"
+          className="bg-white mt-9"
+          theme="snow"
+          value={value}
+          onChange={handleChange} // Sử dụng handleChange
+          modules={{
+            toolbar: [
+              [{ header: "1" }, { header: "2" }],
+              ["bold", "italic", "underline", "strike", "blockquote"],
+              [
+                // { list: "ordered" },
+                { list: "bullet" },
+                { indent: "-1" },
+                { indent: "+1" },
+              ],
+              ["link", "image"],
+              ["clean"],
             ],
-            ["link", "image"],
-            ["clean"],
-          ],
-        }}
-        formats={formats}
-      />
+          }}
+          formats={formats}
+        />
+      </div>
     </div>
   );
 };

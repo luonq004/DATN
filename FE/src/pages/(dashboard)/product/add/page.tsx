@@ -144,7 +144,7 @@ const ProductAddPage = () => {
     // <Container>
     <>
       <h1 className="text-4xl font-normal font-raleway mb-5">
-        {id ? "Edit " : "Create "}Product
+        {id ? "Cập nhật " : "Tạo "}sản phẩm
       </h1>
 
       <Form {...form}>
