@@ -228,7 +228,7 @@ const OrderDetail = () => {
 const statusColor = (status: string) => {
   switch (status) {
     case "chờ xác nhận":
-      return "bg-yellow-100 text-yellow-800";
+      return "font-bold text-yellow-800";
     case "chờ lấy hàng":
       return "font-bold text-blue-800";
     case "chờ giao hàng":

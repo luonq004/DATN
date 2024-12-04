@@ -262,7 +262,7 @@ const AdminOrder = () => {
         cell: ({ row }) => (
           <div className="flex gap-2">
             <Link to={`/admin/orders/orderdetails/${row.original.id}`}>
-              <Button variant="secondary" size="sm">
+              <Button variant="default"  size="sm">
                 Xem chi tiết
               </Button>
             </Link>
