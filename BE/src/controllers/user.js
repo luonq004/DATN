@@ -4,6 +4,7 @@ import Users from "../models/users";
 import clerkClient from "../config/clerk";
 import cloudinary from "../config/cloudinary";
 import fs from "fs";
+import bcrypt from "bcryptjs";
 import Product from "../models/product";
 
 dotenv.config();
@@ -102,6 +103,8 @@ export const createUser = async (req, res) => {
       });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10); 
+
     try {
       // Tạo người dùng trên Clerk
       const clerkUser = await clerkClient.users.createUser({
@@ -120,6 +123,7 @@ export const createUser = async (req, res) => {
         email: emailAddress,
         firstName,
         lastName,
+        password: hashedPassword, 
         role: role || "User",
         imageUrl: imageUrl || clerkUser.imageUrl,
       });
@@ -347,27 +351,12 @@ export const updateUser = async (req, res) => {
 
     let imageUrl = updateData.imageUrl;
 
-    // Kiểm tra nếu có file hình ảnh mới được tải lên
-    if (req.file) {
-      console.log("File upload: ", req.file);
-
-      const uploadResponse = await cloudinary.uploader.upload(req.file.path, {
-        folder: "profile_images",
-      });
-
-      console.log("Upload response: ", uploadResponse);
-
-      // Kiểm tra nếu quá trình upload lên Cloudinary thành công
-      if (uploadResponse && uploadResponse.secure_url) {
-        imageUrl = uploadResponse.secure_url;
-      } else {
-        return res
-          .status(500)
-          .json({ message: "Không thể lấy URL ảnh từ Cloudinary." });
-      }
-
-      console.log("URL ảnh mới từ Cloudinary:", imageUrl);
+    let hashedPassword = updateData.password; // Mật khẩu chưa mã hóa
+    if (updateData.password) {
+      // Nếu có mật khẩu mới thì mã hóa nó
+      hashedPassword = await bcrypt.hash(updateData.password, 10);
     }
+
 
     // Cập nhật thông tin người dùng trên Clerk
     try {
@@ -376,6 +365,7 @@ export const updateUser = async (req, res) => {
         firstName: updateData.firstName,
         lastName: updateData.lastName,
         emailAddress: updateData.email,
+        password: updateData.password,
         publicMetadata: {
           phone: updateData.phone,
           gender: updateData.gender,
@@ -383,16 +373,7 @@ export const updateUser = async (req, res) => {
         },
       });
 
-      // Kiểm tra phản hồi từ Clerk
-      if (clerkResponse.imageUrl !== imageUrl) {
-        console.error(
-          "Ảnh không được cập nhật trên Clerk. Vui lòng kiểm tra lại."
-        );
-      } else {
-        console.log("Ảnh đã được cập nhật thành công trên Clerk.");
-      }
-
-      console.log("Clerk update response: ", clerkResponse);
+      // console.log("Clerk update response: ", clerkResponse);
     } catch (clerkError) {
       console.error(
         "Lỗi khi cập nhật thông tin người dùng trên Clerk:",
@@ -406,7 +387,7 @@ export const updateUser = async (req, res) => {
     // Cập nhật thông tin người dùng trong MongoDB
     const updatedUser = await Users.updateOne(
       { clerkId },
-      { ...updateData, imageUrl },
+      { ...updateData, password: hashedPassword, imageUrl },
       { new: true }
     );
 

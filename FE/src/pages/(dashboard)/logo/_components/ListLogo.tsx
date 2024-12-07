@@ -124,7 +124,7 @@ const ListLogoPage = () => {
                 key={logo._id}
                 className="hover:bg-gray-50 transition duration-200"
               >
-                <td className=" md:px-6 py-4  text-sm font-medium text-gray-900">
+                <td className="px-4 md:px-6 py-4  text-sm font-medium text-gray-900">
                   {logo.title}
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">

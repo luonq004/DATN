@@ -1,12 +1,14 @@
-import * as React from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import useAllOrders from "@/common/hooks/order/useAllOrders";
+import { OrderProduct } from "@/common/types/Product";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -15,23 +17,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link } from "react-router-dom";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-  SelectGroup,
-} from "@/components/ui/select";
-import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
-import { OrderProduct } from "@/common/types/Product";
-import useAllOrders from "@/common/hooks/order/useAllOrders";
-import { useUser } from "@clerk/clerk-react";
 import { formatCurrency } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
+import { useUser } from "@clerk/clerk-react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import axios from "axios";
+import * as React from "react";
+import { Link } from "react-router-dom";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3000");
 
 export type Order = {
   id: string;
@@ -73,28 +74,27 @@ const AdminOrder = () => {
   const Gmail = dataUser?.primaryEmailAddress?.emailAddress;
   const [isOpen, setIsOpen] = React.useState(false); // Điều khiển hiển thị của modal
   const [reason, setReason] = React.useState(""); // Lý do hủy đơn hàng
-  const [orderIdToCancel, setOrderIdToCancel] = React.useState<string | null>(null);
+  const [orderIdToCancel, setOrderIdToCancel] = React.useState<string | null>(
+    null
+  );
   // Mở modal
   const openModal = () => setIsOpen(true);
 
   // Đóng modal
   const closeModal = () => setIsOpen(false);
   // Xử lý hủy đơn hàng
-  const handleCancelOrder = async() => {
-    if(!orderIdToCancel){
+  const handleCancelOrder = async () => {
+    if (!orderIdToCancel) {
       alert("Không lấy được OrderId");
       return;
     }
-    const newStatus = "đã hủy"
+    const newStatus = "đã hủy";
     if (!reason.trim()) {
       alert("Vui lòng nhập lý do hủy.");
       return;
     }
     // Gửi lý do hủy đơn hàng ở đây
-    await updateOrderStatus(
-      orderIdToCancel,
-      newStatus,reason
-    );
+    await updateOrderStatus(orderIdToCancel, newStatus, reason);
     setReason("");
     setIsOpen(false); // Đóng modal sau khi hủy
   };
@@ -115,12 +115,16 @@ const AdminOrder = () => {
       );
   }, [data]);
   const user = Gmail;
-  const updateOrderStatus = async (orderId: string, newStatus: string, reason:string) => {
+  const updateOrderStatus = async (
+    orderId: string,
+    newStatus: string,
+    reason: string
+  ) => {
     try {
       const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
         newStatus,
         user,
-        reason
+        reason,
       });
 
       if (response.status === 200) {
@@ -130,6 +134,10 @@ const AdminOrder = () => {
           description: "Cập nhật trạng thái thành công!",
           variant: "default",
         });
+        
+        // Gửi thông báo thay đổi trạng thái đơn hàng tới server
+        socket.emit("orderStatusChanged", { orderId, newStatus, userId });
+
         return true;
       }
       return false;
@@ -271,7 +279,7 @@ const AdminOrder = () => {
               <Select
                 value={row.original.status}
                 onValueChange={async (newStatus) => {
-                  if(newStatus === 'đã hủy'){
+                  if (newStatus === "đã hủy") {
                     setOrderIdToCancel(row.original.id);
                     openModal();
                     return;
@@ -440,9 +448,13 @@ const AdminOrder = () => {
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-semibold text-center mb-4">Xác Nhận Hủy Đơn Hàng</h2>
-            <p className="text-gray-700 mb-4">Bạn có chắc chắn muốn hủy đơn hàng không?</p>
-            
+            <h2 className="text-xl font-semibold text-center mb-4">
+              Xác Nhận Hủy Đơn Hàng
+            </h2>
+            <p className="text-gray-700 mb-4">
+              Bạn có chắc chắn muốn hủy đơn hàng không?
+            </p>
+
             {/* Ô nhập lý do hủy */}
             <textarea
               value={reason}

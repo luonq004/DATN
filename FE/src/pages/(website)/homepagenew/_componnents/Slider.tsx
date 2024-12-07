@@ -68,7 +68,7 @@ const Slider = () => {
               />
               {/* Overlay Gradient */}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${defaultGradientColor} opacity-60`}
+                className={`absolute inset-0 bg-gradient-to-br ${defaultGradientColor} opacity-50`}
               ></div>
 
               {index === 0 && (

@@ -115,10 +115,10 @@ const ListBlog = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="pb-6 flex justify-between items-center">
-        <h1 className="text-3xl font-semibold">Danh sách bài viết</h1>
+      <div className="pb-6 flex flex-col lg:flex-row justify-between items-center">
+        <h1 className="text-3xl font-semibold mb-10 lg:mb-0">Danh sách bài viết</h1>
 
-        <div className="flex items-center gap-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between w-[100%] lg:w-auto  gap-8">
           {/* Trường nhập liệu tìm kiếm */}
           <div className="flex justify-between items-center">
             <input
@@ -132,7 +132,7 @@ const ListBlog = () => {
 
           <Link
             to="/admin/blogs/add"
-            className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-300"
+            className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -1,4 +1,9 @@
-import { Controller, useForm } from "react-hook-form";
+import cartEmpty from "@/assets/images/cart-empty.png";
+import { useUserContext } from "@/common/context/UserProvider";
+import useAddress from "@/common/hooks/address/useAddress";
+import useCart from "@/common/hooks/useCart";
+import { Cart, FormOut } from "@/common/types/formCheckOut";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -8,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -16,24 +20,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import cartEmpty from "@/assets/images/cart-empty.png";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import useAddress from "@/common/hooks/address/useAddress";
-import { useUserContext } from "@/common/context/UserProvider";
-import useCart from "@/common/hooks/useCart";
-import { Cart, FormOut } from "@/common/types/formCheckOut";
-import { Address } from "../../address/ListAddress";
-import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import CheckOutVoucher from "./CheckOutVoucher";
-import CreateAddress from "../../address/CreatAddress";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { useEffect, useState } from "react";
-import AddressDialog from "./AddressDialog ";
-import sendOrderConfirmationEmail from "./sendEmail";
-import { useUser } from "@clerk/clerk-react";
 import { formatCurrency } from "@/lib/utils";
+import { useUser } from "@clerk/clerk-react";
+import axios from "axios";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import CreateAddress from "../../address/CreatAddress";
+import { Address } from "../../address/ListAddress";
+import AddressDialog from "./AddressDialog ";
+import CheckOutVoucher from "./CheckOutVoucher";
+import sendOrderConfirmationEmail from "./sendEmail";
 // import { useQueryClient } from "@tanstack/react-query";
 
 import io from "socket.io-client";
@@ -50,42 +50,6 @@ interface ErrorResponse {
 const CheckOut = () => {
   const navigate = useNavigate();
   // const queryClient = useQueryClient();
-
-  useEffect(() => {
-    socket.on("orderNotification", async (orderData) => {
-      try {
-        console.log("Nhận được thông báo từ server:", orderData);
-        const response = await axios.post(
-          "http://localhost:8080/api/notifications/create",
-          {
-            userId: _id,
-            orderCode: orderData.orderCode,
-            message: `Đơn hàng ${orderData.orderCode} đã được đặt thành công!`,
-            status: "success",
-            timestamp: new Date(),
-          }
-        );
-
-        console.log("Kết quả lưu thông báo:", response.data);
-        toast({
-          title: "Đặt hàng thành công!",
-          description: `Đơn hàng ${orderData.orderCode} đã được đặt thành công!`,
-          variant: "default",
-        });
-      } catch (error) {
-        console.error("Lỗi khi lưu thông báo:", error);
-        toast({
-          title: "Lỗi hệ thống!",
-          description: "Không thể lưu thông báo. Vui lòng thử lại.",
-          variant: "destructive",
-        });
-      }
-    });
-
-    return () => {
-      socket.off("orderNotification");
-    };
-  }, []);
 
   const form = useForm<FormOut>({
     defaultValues: {
@@ -132,11 +96,18 @@ const CheckOut = () => {
       );
       const createOrder = response.data;
       const orderCode = createOrder?.order?.orderCode;
+
+      // Lấy ảnh của sản phẩm đầu tiên trong danh sách sản phẩm đã chọn
+      const firstProductImage = selectedProducts[0]?.productItem?.image;
+      const status = response.status === 201 ? "success" : "failed"; 
+
       // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
       socket.emit("orderPlaced", {
         orderCode,
         userId: _id,
+        status,
         message: "Đặt hàng thành công!",
+        productImage: firstProductImage,
       });
 
       if (data.paymentMethod === "Vnpay") {
@@ -152,6 +123,7 @@ const CheckOut = () => {
         console.log("paymentUrl", paymentUrl);
         window.location.href = paymentUrl;
       }
+
       if (data.paymentMethod === "COD" && response.status === 201) {
         // Đơn hàng đã được tạo thành công
         toast({
@@ -159,6 +131,7 @@ const CheckOut = () => {
           description: "Đặt hàng thành công.",
           variant: "default",
         });
+
         // queryClient.invalidateQueries(["CART", _id]);
         navigate("/cart/order"); // Điều hướng đến trang đơn hàng
         // Gửi email xác nhận đơn hàng
@@ -460,7 +433,9 @@ const CheckOut = () => {
               <FormField
                 control={control}
                 name="emailUpdates"
-                rules={{ required: "Bạn cần đăng ký để nhận Email về đơn hàng! " }}
+                rules={{
+                  required: "Bạn cần đăng ký để nhận Email về đơn hàng! ",
+                }}
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center gap-2">
