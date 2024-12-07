@@ -23,7 +23,7 @@ export function useGetAllProduct() {
 
   // Pagination
   const page = searchParams.get("page") ? +searchParams.get("page")! : 1;
-  const limit = valueLimit ? +valueLimit : 12;
+  const limit = valueLimit ? +valueLimit : 9;
 
   // Sort
 

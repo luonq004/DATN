@@ -21,12 +21,6 @@ export const createNotification = async (req, res) => {
     });
     await newNotification.save();
 
-    // Gửi thông báo qua Socket.IO (tới client cụ thể hoặc tất cả client)
-    req.app
-      .get("io")
-      .to(userId.toString())
-      .emit("receive_notification", newNotification); // Phát thông báo đến client của người dùng
-
     res.status(201).json(newNotification);
   } catch (error) {
     console.error(error);
@@ -34,7 +28,7 @@ export const createNotification = async (req, res) => {
   }
 };
 
-// Lấy tất cả thông báo cho admin (Có thể lọc theo trạng thái hoặc userId nếu cần)
+// Lấy tất cả thông báo cho 
 export const getAllNotifications = async (req, res) => {
   try {
     const { status } = req.query; // Phân trang và lọc theo trạng thái nếu cần
@@ -56,7 +50,7 @@ export const getAllNotifications = async (req, res) => {
   }
 };
 
-// Lấy tất cả thông báo của người dùng (Có phân trang)
+// Lấy tất cả thông báo theo user
 export const getNotifications = async (req, res) => {
   try {
     const notifications = await Notification.find({ userId: req.params.userId })

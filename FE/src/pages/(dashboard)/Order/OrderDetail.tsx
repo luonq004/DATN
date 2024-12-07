@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import html2pdf from "html2pdf.js"; // Import html2pdf.js
 import useOrder from "@/common/hooks/order/UseOrder";
+import { formatCurrencyVND } from "@/pages/(website)/orderHistory/OrderHistory";
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -47,6 +48,9 @@ const OrderDetail = () => {
     statusHistory,
     totalPrice,
     orderCode,
+    discount,
+    fullName,
+    email,
     createdAt,
     cancellationReason,
   } = data;
@@ -83,7 +87,7 @@ const OrderDetail = () => {
         onClick={handleExportPDF}
         className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
-        Xuất PDF
+        Xuất đơn hàng
       </button>
 
       <div id="order-detail">
@@ -113,13 +117,7 @@ const OrderDetail = () => {
             ) : null}
 
             <p>
-              <strong>Hình thức thanh toán:</strong> {payment}
-            </p>
-            <p>
-              <strong>Tổng giá trị:</strong>{" "}
-              <span className="px-2 py-1 rounded  font-semibold">
-                {totalPrice.toLocaleString()} VND
-              </span>
+              <strong>Hình thức thanh toán:</strong> <span className={getPaymentClassName(payment)}>{payment}</span>
             </p>
             <p>
               <strong>Ghi chú:</strong> {note || "Không có ghi chú"}
@@ -129,13 +127,15 @@ const OrderDetail = () => {
         {/* Thông tin giao hàng */}
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
           <h3 className="text-xl font-semibold mb-4">Thông tin giao hàng</h3>
-          <p>
+          <p className="leading-8"><strong>Người đặt hàng: </strong> {fullName}</p>
+          <p className="leading-8"><strong>Gmail: </strong> {email} </p>
+          <p className="leading-8">
             <strong>Người nhận:</strong> {addressId.name}
           </p>
-          <p>
+          <p className="leading-8">
             <strong>Số điện thoại:</strong> {addressId.phone}
           </p>
-          <p>
+          <p className="leading-8">
             <strong>Địa chỉ:</strong>{" "}
             {`${addressId.addressDetail}, ${addressId.wardId}, ${addressId.districtId}, ${addressId.cityId}, ${addressId.country}`}
           </p>
@@ -212,12 +212,31 @@ const OrderDetail = () => {
                   </TableCell>
                   <TableCell className="py-3  px-4 text-right font-semibold">
                     {(item.variantItem.price * item.quantity).toLocaleString()}{" "}
-                    VND
+                    ₫
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+
+          <div className="text-right space-y-2 bg-white p-4 rounded shadow-sm">
+            <p className="flex items-center justify-between">
+              <span className="text-gray-500">Giảm giá:</span>
+              <span className="font-semibold text-gray-800">
+                {formatCurrencyVND(discount)}
+              </span>
+            </p>
+            <p className="flex items-center justify-between">
+              <span className="text-gray-500">Phí ship:</span>
+              <span className="font-semibold text-gray-800">30.000 ₫</span>
+            </p>
+            <div className="flex items-center justify-between border-t pt-2 mt-2">
+              <h3 className="text-gray-700 font-medium">Tổng giá trị:</h3>
+              <span className="text-red-500 font-bold text-lg">
+                {formatCurrencyVND(totalPrice)}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -229,9 +248,9 @@ const statusColor = (status: string) => {
   switch (status) {
     case "chờ xác nhận":
       return "font-bold text-yellow-800";
-    case "chờ lấy hàng":
+    case "đã xác nhận":
       return "font-bold text-blue-800";
-    case "chờ giao hàng":
+    case "đang giao hàng":
       return "font-bold text-green-800";
     case "đã hoàn thành":
       return "text-[#26aa99] font-bold";
@@ -241,5 +260,14 @@ const statusColor = (status: string) => {
       return "bg-gray-100 text-gray-800";
   }
 };
-
+const getPaymentClassName = (payment: string) => {
+  switch (payment.toLowerCase()) {
+    case "vnpay":
+      return "text-blue-700 font-bold"; // Màu xanh đậm, chữ đậm
+    case "cod":
+      return "text-orange-600 font-bold"; // Màu xanh lá đậm, chữ đậm
+    default:
+      return "text-gray-600 font-semibold"; // Màu xám trung bình, chữ vừa
+  }
+};
 export default OrderDetail;

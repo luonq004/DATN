@@ -14,7 +14,7 @@ export type Payment = {
     imageUrl: string,
     amount: number,
     payment: string,
-    status: "chờ xác nhận" | "chờ lấy hàng" | "chờ giao hàng",
+    status: "chờ xác nhận" | "đã xác nhận" | "đang giao hàng",
 }
 
 export const columnsOrder: ColumnDef<{ id: string; amount: number; status: string; email: string; imageUrl: string; customer: string; phone: number; payment: string; }>[] = [
@@ -71,9 +71,9 @@ export const columnsOrder: ColumnDef<{ id: string; amount: number; status: strin
                 <span
                     className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${row.getValue("status") === "chờ xác nhận"
                         ? "bg-yellow-100 text-yellow-800"
-                        : row.getValue("status") === "chờ lấy hàng"
+                        : row.getValue("status") === "đã xác nhận"
                             ? "bg-blue-100 text-blue-800"
-                            : row.getValue("status") === "chờ giao hàng"
+                            : row.getValue("status") === "đang giao hàng"
                                 ? "bg-green-100 text-green-800"
                                 : row.getValue("status") === "đã hoàn thành"
                                     ? "bg-gray-100 text-gray-800"

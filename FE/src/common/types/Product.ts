@@ -106,6 +106,18 @@ interface VariantItem {
 
 export interface OrderProduct {
   _id: string;
+  email?:string;
+  isPaid: boolean;
+  addressId:{
+    name?:string;
+    addressDetail?:string;
+    wardId?:string;
+    districtId?:string;
+    country?:string;
+    cityId?:string;
+    phone?:string;
+    wardId?:string;
+  }
   payment?: string;
   userId: string;
   orderCode: string;
