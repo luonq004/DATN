@@ -1,4 +1,4 @@
-import { FormTypeProductCommon } from "@/common/types/validate";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import { Button } from "@/components/ui/button";
 import { FieldErrors } from "react-hook-form";
 
@@ -7,7 +7,7 @@ const VariationValues = ({
   indexValue,
   removeFields,
 }: {
-  form: FormTypeProductCommon;
+  form: FormTypeProductVariation;
   indexValue: number;
   removeFields: (index: number) => void;
 }) => {
@@ -16,7 +16,7 @@ const VariationValues = ({
     | undefined;
 
   const renderInput = (
-    field: "price" | "countOnStock" | "priceSale",
+    field: "price" | "countOnStock" | "priceSale" | "originalPrice",
     label: string
   ) => (
     <div>
@@ -34,9 +34,9 @@ const VariationValues = ({
 
   return (
     <div>
+      {renderInput("originalPrice", "Giá gốc")}
       {renderInput("price", "Giá")}
       {renderInput("priceSale", "Giá giảm giá")}
-      {/* {renderInput("countOnStock", "Số lượng tồn kho")} */}
 
       <Button
         type="button"

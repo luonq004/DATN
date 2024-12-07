@@ -1,14 +1,4 @@
-import {
-  Action,
-  Attribute,
-  Data,
-  State,
-  Variant,
-} from "@/common/types/Product";
-import {
-  FormTypeProductCommon,
-  // FormTypeProductVariation,
-} from "@/common/types/validate";
+import { Action, Attribute, Data, State } from "@/common/types/Product";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -17,11 +7,9 @@ import {
 } from "@/components/ui/collapsible";
 import { useState } from "react";
 import Select from "react-select";
+import { AddNewValue } from "./AddNewValue";
 
 const AttributeTab = ({
-  id,
-  form,
-  fields,
   attributes,
   stateAttribute,
   dispatch,
@@ -29,9 +17,6 @@ const AttributeTab = ({
   setSelectedValues,
   handleAttributeValueChange,
 }: {
-  id: boolean;
-  form: FormTypeProductCommon;
-  fields: Variant[];
   attributes: Attribute[];
   stateAttribute: State;
   dispatch: React.Dispatch<Action>;
@@ -79,14 +64,18 @@ const AttributeTab = ({
     dispatch({ type: "ADD_ATTRIBUTE", payload: chooseAttribute });
   }
 
+  // console.log("valueOptions: ", stateAttribute.attributesChoose);
+  // console.log("selectedValues: ", selectedValues);
+
   return (
     <>
       <div className="flex gap-10 py-5">
         <Select
-          placeholder="Custom product attribute"
+          placeholder="Chọn thuộc tính"
           value={valueOptions}
           noOptionsMessage={() => "Không có giá trị nào"}
-          className="w-60"
+          className="w-2/3"
+          isDisabled={stateAttribute.attributesChoose.length === 2}
           options={
             attributes
               .map((item) => ({
@@ -118,7 +107,7 @@ const AttributeTab = ({
             setValueOptions(null);
           }}
         >
-          Add
+          Ấn
         </Button>
         {selectError && (
           <span className="text-red-500">Bạn phải chọn một giá trị!</span>
@@ -156,22 +145,26 @@ const AttributeTab = ({
                 }}
               />
 
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => {
-                  dispatch({
-                    type: "DELETE_ONE_VALUE",
-                    payload: value._id as string,
-                  });
-                  setSelectedValues((current) => {
-                    const { [value._id]: _, ...rest } = current;
-                    return rest;
-                  });
-                }}
-              >
-                Delete
-              </Button>
+              <div className="flex gap-2">
+                <AddNewValue attributeId={value._id} dispatch={dispatch} />
+
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => {
+                    dispatch({
+                      type: "DELETE_ONE_VALUE",
+                      payload: value._id as string,
+                    });
+                    setSelectedValues((current) => {
+                      const { [value._id]: _, ...rest } = current;
+                      return rest;
+                    });
+                  }}
+                >
+                  Xóa
+                </Button>
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -189,7 +182,7 @@ const AttributeTab = ({
             dispatch({ type: "MIX_VALUES" });
           }}
         >
-          Add
+          Tạo biến thể
         </Button>
       </div>
     </>

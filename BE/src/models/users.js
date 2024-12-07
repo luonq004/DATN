@@ -26,10 +26,14 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["Admin", "User"],
+      enum: ["Admin", "User", "Employee"],
       default: "User",
     },
     isBanned: {
+      type: Boolean,
+      default: false,
+    },
+    isDeleted: {
       type: Boolean,
       default: false,
     },
@@ -77,6 +81,11 @@ const userSchema = new Schema(
         },
       },
     ],
+
+    // chatted: {
+    //   type: Boolean,
+    //   default: false,
+    // },
   },
   {
     collection: "users",
@@ -84,7 +93,6 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-
 
 const Users = mongoose.model("Users", userSchema);
 export default Users;

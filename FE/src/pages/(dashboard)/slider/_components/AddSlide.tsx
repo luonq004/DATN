@@ -1,177 +1,447 @@
+import { FormValuesSlide } from "@/common/types/Slide";
+import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 
 const AddSlider = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [bgImagePreview, setBgImagePreview] = useState<string | null>(null);
+  const { toast } = useToast();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValuesSlide>();
 
-  // Khai báo trạng thái để lưu thông tin lỗi của form
-  const [formErrors, setFormErrors] = useState({
-    title: "",
-    description: "",
-    image: "",
-  });
+  const type = watch("type"); // Theo dõi loại slide
+  const features = watch("features") || [];
 
-  // Hàm xử lý khi người dùng gửi form
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định
-
-    // Xác thực các trường đầu vào
-    const errors = {
-      title: title ? "" : "Title is required",
-      description: description ? "" : "Description is required",
-      image: image ? "" : "Image is required",
-    };
-    setFormErrors(errors);
-
-    // Nếu có lỗi, dừng lại và không gửi form
-    if (errors.title || errors.description || errors.image) {
-      return;
-    }
-
-    setLoading(true);
+  const onSubmit = async (data: FormValuesSlide) => {
+    console.log(data);
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    if (image) {
-      formData.append("image", image);
+    formData.append("type", data.type);
+    formData.append("title", data.title);
+
+    // Nếu loại slide là homepage, thêm các trường liên quan
+    if (data.type === "homepage") {
+      if (data.subtitle) formData.append("subtitle", data.subtitle);
+      if (data.description) formData.append("description", data.description);
+      if (data.features)
+        formData.append("features", JSON.stringify(data.features));
+      if (data.price) formData.append("price", data.price.toString());
     }
+
+     // Nếu loại slide là product, thêm các trường liên quan
+    if (data.type === "product") {
+      if (data.promotionText)
+        formData.append("promotionText", data.promotionText);
+      if (data.textsale) formData.append("textsale", data.textsale);
+    }
+    
+    if (data.image instanceof FileList && data.image.length > 0) {
+      formData.append("image", data.image[0]);
+    }
+    if (data.backgroundImage && data.backgroundImage[0])
+      formData.append("backgroundImage", data.backgroundImage[0]);
 
     try {
-      // Gửi yêu cầu POST đến API để tạo slide mới
-      const response = await axios.post(
-        "http://localhost:8080/api/sliders",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      toast.success("Thành công!");
-      navigate("/dashboard/sliders");
-      console.log("Slide added:", response.data);
+      await axios.post("http://localhost:8080/api/sliders", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast({
+        title: "Thành công",
+        description: "Slide đã được tạo thành công!",
+      });
+      navigate("/admin/sliders");
     } catch (err) {
-      setError("Failed to add slide. Please try again.");
-      console.error(err);
-    } finally {
-      setLoading(false);
+      toast({
+        variant: "destructive",
+        title: "Thất bại",
+        description: "Có lỗi sảy ra khi tạo slide!",
+      });
     }
   };
 
-  // Hàm xử lý thay đổi tệp khi người dùng chọn ảnh
-  const handleFileChange = (e: any) => {
-    const file = e.target.files ? e.target.files[0] : null; // Lấy tệp đã chọn
-    setImage(file); // Cập nhật trạng thái ảnh
+  const addFeature = () => setValue("features", [...features, ""]);
+  const removeFeature = (index: number) =>
+    setValue(
+      "features",
+      features.filter((_, i) => i !== index)
+    );
 
-    // Nếu có tệp, đọc tệp để xem trước
+  const handleImagePreview = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "image" | "backgroundImage"
+  ) => {
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader(); // Tạo đối tượng FileReader
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string); // Cập nhật trạng thái xem trước ảnh
+        if (type === "image") {
+          setImagePreview(reader.result as string);
+        } else if (type === "backgroundImage") {
+          setBgImagePreview(reader.result as string);
+        }
       };
-      reader.readAsDataURL(file); // Đọc tệp như URL dữ liệu
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = (type: "image" | "backgroundImage") => {
+    if (type === "image") {
+      setImagePreview(null);
+      setValue("image", null as any); // Xóa giá trị ảnh chính
+    } else if (type === "backgroundImage") {
+      setBgImagePreview(null);
+      setValue("backgroundImage", null as any); // Xóa giá trị ảnh nền
     }
   };
 
   return (
-    <div className="px-20 mx-auto p-4 sm:p-6 md:p-8 ">
+    <div className="px-10 md:px-20 mx-auto p-4 sm:p-6 ">
       <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800 text-center">
         Tạo Mới Slide
       </h2>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        {error && (
-          <div className="mb-4 p-3 text-red-700 bg-red-200 rounded">
-            {error}
-          </div>
-        )}
+      <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+        {/* Loại Slide */}
         <div className="mb-4 sm:mb-6">
           <label
-            htmlFor="title"
+            htmlFor="type"
             className="block text-gray-700 text-base sm:text-lg"
           >
-            Tiêu Đề
+            Loại Slide
           </label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+          <select
+            id="type"
+            {...register("type", { required: "Vui lòng chọn loại slide." })}
             className={`mt-2 p-2 sm:p-3 w-full border ${
-              formErrors.title ? "border-red-500" : "border-gray-300"
-            } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
-            required
-          />
-          {formErrors.title && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.title}</p>
-          )}
-        </div>
-        <div className="mb-4 sm:mb-6">
-          <label
-            htmlFor="description"
-            className="block text-gray-700 text-base sm:text-lg"
+              errors.type ? "border-red-500" : "border-gray-300"
+            } rounded-lg`}
           >
-            Mô Tả
-          </label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className={`mt-2 p-2 sm:p-3 w-full border ${
-              formErrors.description ? "border-red-500" : "border-gray-300"
-            } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
-            rows={4}
-            required
-          />
-          {formErrors.description && (
-            <p className="text-red-500 text-sm mt-1">
-              {formErrors.description}
-            </p>
+            <option value="">Chọn Loại Slide</option>
+            <option value="homepage">Slide Homepage</option>
+            <option value="product">Slide Product</option>
+          </select>
+          {errors.type && (
+            <p className="text-red-500 text-sm mt-1">{errors.type.message}</p>
           )}
         </div>
-        <div className="mb-4 sm:mb-6">
-          <label
-            htmlFor="image"
-            className="block text-gray-700 text-base sm:text-lg"
-          >
-            Ảnh Slide
-          </label>
-          <input
-            type="file"
-            id="image"
-            onChange={handleFileChange}
-            className={`mt-2 border ${
-              formErrors.image ? "border-red-500" : "border-gray-300"
-            } rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400`}
-            required
-          />
-          {formErrors.image && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.image}</p>
-          )}
-        </div>
-        {imagePreview && (
-          <div className="my-4 sm:mb-6">
-            <p className="text-gray-700">Xem Trước Ảnh Được Thêm:</p>
-            <img
-              src={imagePreview}
-              alt="Selected"
-              className="mt-2 w-48 h-48 sm:w-64 sm:h-64 object-contain mx-auto rounded-lg shadow-md"
-            />
-          </div>
+
+        {/* Tiêu Đề */}
+
+        {/* Các trường của Homepage */}
+        {type === "homepage" && (
+          <>
+            <div className="mb-4 sm:mb-6">
+              <label
+                htmlFor="title"
+                className="block text-gray-700 text-base sm:text-lg"
+              >
+                Tiêu Đề
+              </label>
+              <input
+                id="title"
+                {...register("title", { required: "Tiêu đề là bắt buộc." })}
+                className={`mt-2 p-2 sm:p-3 w-full border ${
+                  errors.title ? "border-red-500" : "border-gray-300"
+                } rounded-lg`}
+              />
+              {errors.title && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.title.message}
+                </p>
+              )}
+            </div>
+            <div className="mb-4 sm:mb-6">
+              <label
+                htmlFor="subtitle"
+                className="block text-gray-700 text-base sm:text-lg"
+              >
+                Phụ Đề
+              </label>
+              <input
+                id="subtitle"
+                {...register("subtitle")}
+                className="mt-2 p-2 sm:p-3 w-full border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div className="mb-4 sm:mb-6">
+              <label
+                htmlFor="description"
+                className="block text-gray-700 text-base sm:text-lg"
+              >
+                Mô Tả
+              </label>
+              <textarea
+                id="description"
+                {...register("description")}
+                className="mt-2 p-2 sm:p-3 w-full border border-gray-300 rounded-lg"
+                rows={4}
+              />
+            </div>
+            <div className="mb-4 sm:mb-6">
+              <label className="block text-gray-700 text-base sm:text-lg">
+                Tính Năng
+              </label>
+              {features.map((feature, index) => (
+                <div key={index} className="flex items-center mb-2">
+                  <input
+                    type="text"
+                    value={feature}
+                    onChange={(e) => {
+                      const updatedFeatures = [...features];
+                      updatedFeatures[index] = e.target.value;
+                      setValue("features", updatedFeatures);
+                    }}
+                    className="p-2 sm:p-3 border border-gray-300 rounded-lg w-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeFeature(index)}
+                    className="ml-2 text-red-600"
+                  >
+                    Xóa
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addFeature}
+                className="mt-2 text-blue-600"
+              >
+                + Thêm Tính Năng
+              </button>
+            </div>
+            <div className="mb-4 sm:mb-6">
+              <label
+                htmlFor="price"
+                className="block text-gray-700 text-base sm:text-lg"
+              >
+                Giá
+              </label>
+              <input
+                type="number"
+                id="price"
+                {...register("price")}
+                className="mt-2 p-2 sm:p-3 w-full border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            <div className="flex flex-col xl:flex-row gap-10 lg:gap-20">
+              {/* Ảnh Chính */}
+              <div className="mb-4 sm:mb-6">
+                <div className="md:flex items-center gap-5 ">
+                  <label
+                    htmlFor="image"
+                    className="block text-gray-700 text-base sm:text-lg"
+                  >
+                    Ảnh Chính:
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    {...register("image")}
+                    onChange={(e) => handleImagePreview(e, "image")}
+                    className="max-w-full md:max-w-xs overflow-hidden text-ellipsis"
+                  />
+                </div>
+                {imagePreview && (
+                  <div className="mt-2 relative">
+                    <p className="text-gray-700">Ảnh đã chọn:</p>
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="md:w-[500px] w-[250px] h-[200px] md:h-[250px] max-w-md mx-auto object-contain rounded-lg shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage("image")}
+                      className="absolute top-6 flex items-center justify-center right-0 size-5 bg-red-500 text-white p-3 rounded"
+                    >
+                      X
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Ảnh Nền */}
+              <div className="mb-4 sm:mb-6">
+                <div className="md:flex items-center gap-5">
+                  <label
+                    htmlFor="backgroundImage"
+                    className="block text-gray-700 text-base sm:text-lg"
+                  >
+                    Ảnh Nền:
+                  </label>
+                  <input
+                    type="file"
+                    id="backgroundImage"
+                    {...register("backgroundImage")}
+                    onChange={(e) => handleImagePreview(e, "backgroundImage")}
+                    className="max-w-full md:max-w-xs overflow-hidden text-ellipsis"
+                  />
+                </div>
+
+                {bgImagePreview && (
+                  <div className="mt-2 relative">
+                    <p className="text-gray-700">Ảnh Nền đã chọn:</p>
+                    <img
+                      src={bgImagePreview}
+                      alt="Background Preview"
+                      className="md:w-[500px] w-[250px] h-[200px] md:h-[250px] max-w-md mx-auto object-contain rounded-lg shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage("backgroundImage")}
+                      className="absolute top-6 flex items-center justify-center right-0 size-5 bg-red-500 text-white p-3 rounded"
+                    >
+                      X
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
         )}
+
+        {/* Các trường của Product */}
+        {type === "product" && (
+          <>
+            <div className="mb-4 sm:mb-6">
+              <label
+                htmlFor="title"
+                className="block text-gray-700 text-base sm:text-lg"
+              >
+                Tiêu Đề
+              </label>
+              <input
+                id="title"
+                {...register("title", { required: "Tiêu đề là bắt buộc." })}
+                className={`mt-2 p-2 sm:p-3 w-full border ${
+                  errors.title ? "border-red-500" : "border-gray-300"
+                } rounded-lg`}
+              />
+              {errors.title && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.title.message}
+                </p>
+              )}
+            </div>
+            <div className="mb-4 sm:mb-6">
+              <label
+                htmlFor="promotionText"
+                className="block text-gray-700 text-base sm:text-lg"
+              >
+                Text nổi bật Khuyến Mãi
+              </label>
+              <input
+                id="promotionText"
+                {...register("promotionText")}
+                className="mt-2 p-2 sm:p-3 w-full border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div className="mb-4 sm:mb-6">
+              <label
+                htmlFor="textsale"
+                className="block text-gray-700 text-base sm:text-lg"
+              >
+                Text khuyến mãi bao nhiêu %
+              </label>
+              <input
+                id="textsale"
+                {...register("textsale")}
+                className="mt-2 p-2 sm:p-3 w-full border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            <div className="flex flex-col xl:flex-row gap-10 md:gap-32">
+              {/* Ảnh Chính */}
+              <div className="mb-4 sm:mb-6">
+                <div className="md:flex items-center gap-5 ">
+                  <label
+                    htmlFor="image"
+                    className="block text-gray-700 text-base sm:text-lg"
+                  >
+                    Ảnh Chính:
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    {...register("image")}
+                    onChange={(e) => handleImagePreview(e, "image")}
+                    className="max-w-full md:max-w-xs overflow-hidden text-ellipsis"
+                  />
+                </div>
+                {imagePreview && (
+                  <div className="mt-2 relative">
+                    <p className="text-gray-700">Ảnh đã chọn:</p>
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="md:w-[500px] w-[250px] h-[200px] md:h-[250px] max-w-md mx-auto object-contain rounded-lg shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage("image")}
+                      className="absolute top-6 flex items-center justify-center right-0 size-5 bg-red-500 text-white p-3 rounded"
+                    >
+                      X
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Ảnh Nền */}
+              <div className="mb-4 sm:mb-6">
+                <div className="md:flex items-center gap-5">
+                  <label
+                    htmlFor="backgroundImage"
+                    className="block text-gray-700 text-base sm:text-lg"
+                  >
+                    Ảnh Nền:
+                  </label>
+                  <input
+                    type="file"
+                    id="backgroundImage"
+                    {...register("backgroundImage")}
+                    onChange={(e) => handleImagePreview(e, "backgroundImage")}
+                    className="max-w-full md:max-w-xs overflow-hidden text-ellipsis"
+                  />
+                </div>
+
+                {bgImagePreview && (
+                  <div className="mt-2 relative">
+                    <p className="text-gray-700">Ảnh Nền đã chọn:</p>
+                    <img
+                      src={bgImagePreview}
+                      alt="Background Preview"
+                      className="md:w-[500px] w-[250px] h-[200px] md:h-[250px] max-w-md mx-auto object-contain rounded-lg shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage("backgroundImage")}
+                      className="absolute top-6 flex items-center justify-center right-0 size-5 bg-red-500 text-white p-3 rounded"
+                    >
+                      X
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
         <button
           type="submit"
-          disabled={loading}
+          disabled={isSubmitting}
           className=" bg-blue-500 mt-6 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300 ease-in-out "
         >
-          {loading ? "Đang Tạo..." : "Tạo Slide"}
+          {isSubmitting ? "Đang Tạo..." : "Tạo Slide"}
         </button>
       </form>
     </div>

@@ -8,7 +8,6 @@ export const createAddress = async (req, res) => {
     try {
         // Kiểm tra số lượng địa chỉ hiện tại của người dùng
         const existingAddresses = await Address.countDocuments({ userId });
-
         // Nếu không có địa chỉ nào, địa chỉ mới sẽ là mặc định
         const isDefault = existingAddresses === 0;
         // Tạo địa chỉ mới
@@ -71,7 +70,7 @@ export const getAddressById = async (req, res) => {
 
 // ================================== update địa chỉ==========================================
 export const updateAddressByUserId = async (req, res) => {
-    const { addressId, userId, isDefault, country, cityId, districtId, addressDetail, wardId, phone, email, name } = req.body;
+    const { addressId, userId, isDefault, country, cityId, districtId, addressDetail, wardId, phone, name } = req.body;
     try {
         if (isDefault) {
             // Nếu chọn địa chỉ này làm mặc định, đặt tất cả các địa chỉ của người dùng thành không mặc định
@@ -79,7 +78,7 @@ export const updateAddressByUserId = async (req, res) => {
             // Cập nhật địa chỉ cụ thể và đặt thành mặc định
             const updatedAddress = await Address.findOneAndUpdate(
                 { _id: addressId, userId },
-                { isDefault: true, country, cityId, addressDetail, districtId, wardId, phone, email, name },
+                { isDefault: true, country, cityId, addressDetail, districtId, wardId, phone, name },
                 { new: true, runValidators: true }
             );
             if (!updatedAddress) {
@@ -90,7 +89,7 @@ export const updateAddressByUserId = async (req, res) => {
         // Nếu không chọn địa chỉ này làm mặc định, chỉ cập nhật địa chỉ cụ thể mà không thay đổi trạng thái isDefault
         const updatedAddress = await Address.findOneAndUpdate(
             { _id: addressId, userId },
-            { country, cityId, districtId, wardId, addressDetail, phone, email, name },
+            { country, cityId, districtId, wardId, addressDetail, phone, name },
             { new: true, runValidators: true }
         );
 
