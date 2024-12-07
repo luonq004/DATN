@@ -29,8 +29,8 @@ export const setupSocketIO = (server, app) => {
       try {
         const isSuccess = orderData.status === "success"; // Kiểm tra trạng thái thành công
         const message = isSuccess
-          ? `Đơn hàng có mã: ${orderData.orderCode} đã được đặt thành công!`
-          : `Đơn hàng có mã: ${orderData.orderCode} đã thất bại. Vui lòng thử lại!`;
+          ? `Đơn hàng có mã <strong>${orderData.orderCode}</strong>  đã được đặt thành công!`
+          : `Đơn hàng có mã <strong>${orderData.orderCode}</strong>  đã thất bại. Vui lòng thử lại!`;
         // Sau khi nhận được đơn hàng, lưu thông báo vào database
         const newNotification = new Notification({
           userId: orderData.userId,
@@ -72,13 +72,13 @@ export const setupSocketIO = (server, app) => {
     socket.on("orderStatusChanged", async (data) => {
       console.log("Trạng thái đơn hàng đã thay đổi:", data);
       try {
-        const { orderId, newStatus, userId  } = data;
-        const message = `Trạng thái đơn hàng ${orderId} đã thay đổi thành: ${newStatus}`;
+        const { orderCode, newStatus, userId  } = data;
+        const message = `Trạng thái đơn hàng <strong>${orderCode}</strong> đã thay đổi thành <strong>${newStatus}</strong> `;
 
         // Lưu thông báo vào database
         const newNotification = new Notification({
           userId,
-          orderCode: orderId,
+          orderCode,
           message,
           type: "info", // Loại thông báo
           status:

@@ -108,6 +108,7 @@ const AdminOrder = () => {
         payment: order.payment || "N/A",
         status: order.status || "unknown",
         createdAt: order.createdAt || "",
+        userId: order.userId,
       }))
       .sort(
         (a, b) =>
@@ -118,12 +119,15 @@ const AdminOrder = () => {
   const updateOrderStatus = async (
     orderId: string,
     newStatus: string,
-    reason: string
+    reason: string,
+    userId: string,
+    orderCode: string
   ) => {
     try {
       const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
         newStatus,
         user,
+        userId,
         reason,
       });
 
@@ -134,9 +138,9 @@ const AdminOrder = () => {
           description: "Cập nhật trạng thái thành công!",
           variant: "default",
         });
-        
+
         // Gửi thông báo thay đổi trạng thái đơn hàng tới server
-        socket.emit("orderStatusChanged", { orderId, newStatus, userId });
+        socket.emit("orderStatusChanged", { orderCode, newStatus, userId });
 
         return true;
       }
@@ -159,6 +163,7 @@ const AdminOrder = () => {
       }
     }
   };
+
   // hủy
   const cancelOrder = async (orderId: string) => {
     const newStatus = "đã hủy";
@@ -289,7 +294,10 @@ const AdminOrder = () => {
                     if (newStatus !== row.original.status) {
                       const isUpdated = await updateOrderStatus(
                         row.original.id,
-                        newStatus
+                        newStatus,
+                        reason, // Lý do nếu có
+                        row.original.userId,
+                        row.original.orderCode 
                       );
                       if (isUpdated) {
                         row.original.status = newStatus; // Cập nhật trạng thái mới cho dòng

@@ -6,9 +6,10 @@ import Variant from "../models/variant";
 import VoucherUsage from "../models/voucherUsage";
 
 const updateTotal = async (cart) => {
-  let total = cart.products.reduce((acc, item) => {
-    return item.selected ? acc + item.variantItem.price * item.quantity : acc;
-  }, 0);
+  let total = cart.products.reduce(
+    (acc, item) => { return item.selected ? acc + (item.variantItem.priceSale > 0 ? item.variantItem.priceSale : item.variantItem.price) * item.quantity : acc },
+    0
+  );
   cart.subTotal = total;
   // console.log(cart.voucher)
   let totalDiscount = 0;
@@ -96,7 +97,7 @@ export const getCartByUserId = async (req, res) => {
 
     await cart.save();
     cart = await updateTotal(cart);
-    console.log("cart", cart);
+    // console.log("cart", cart)
     cart.total += 30000;
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
@@ -108,7 +109,7 @@ export const getCartByUserId = async (req, res) => {
 export const addToCart = async (req, res) => {
   const { userId, productId, variantId, quantity } = req.body;
 
-  console.log(req.body);
+  // console.log(req.body);
 
   try {
     let cart = await Cart.findOne({ userId: userId })
@@ -666,23 +667,17 @@ export const selectedAllItem = async (req, res) => {
     const selected = cart.products.every((item) => item.selected === true);
 
     //nếu tất cả sản phẩm đã được chọn thì bỏ chọn tất cả
-    if (selected) {
+    if (selected && selected === true) {
       cart.products.forEach((item) => {
-        if (
-          item.productItem.deleted === false &&
-          item.variantItem.deleted === false
-        ) {
-          item.selected = false;
-        }
+        // if (item.productItem.deleted === false && item.variantItem.deleted === false) {
+        item.selected = false;
+        // }
       });
     } else {
       cart.products.forEach((item) => {
-        if (
-          item.productItem.deleted === false &&
-          item.variantItem.deleted === false
-        ) {
-          item.selected = true;
-        }
+        // if (item.productItem.deleted === false && item.variantItem.deleted === false) {
+        item.selected = true;
+        // }
       });
     }
 
@@ -692,6 +687,28 @@ export const selectedAllItem = async (req, res) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
+
+export const removeAllItemSelected = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const cart = await Cart.findOne({ userId: userId });
+
+    if (!cart) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Không tìm thấy giỏ hàng" });
+    }
+
+    const newProducts = cart.products.filter((item) => item.selected === false);
+
+    cart.products = newProducts;
+    await cart.save();
+    return res.status(StatusCodes.OK).json(cart);
+
+  } catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+}
 
 // test
 export const updateCart = async (req, res) => {

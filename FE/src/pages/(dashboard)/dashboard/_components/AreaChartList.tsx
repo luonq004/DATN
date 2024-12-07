@@ -152,7 +152,7 @@ export function AreaChartList() {
     if (isLoading) return <div>Loading...</div>
     if (isError) return <div>Error</div>
     return (
-        <Card className='col-span-1 lg:col-span-4'>
+        <Card className='col-span-1 lg:col-span-7'>
             <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
                 <div className="grid flex-1 gap-1 text-center sm:text-left">
                     <CardTitle>Biểu đồ doanh thu</CardTitle>

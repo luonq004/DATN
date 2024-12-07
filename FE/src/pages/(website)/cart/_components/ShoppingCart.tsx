@@ -12,7 +12,7 @@ const ShopCart = () => {
 
   const { _id }: any = useUserContext();
 
-  console.log(_id);
+  // console.log('id: ', _id);
 
   const {
     cart,
@@ -26,9 +26,10 @@ const ShopCart = () => {
     removeVoucher,
     changeVariant,
     selectedOneItem,
-    selectedAllItem
+    selectedAllItem,
+    removeAllItemSelected
   } = useCart(_id);
-  console.log(cart);
+  // console.log('cart', cart);
 
   function userAction(action: any, value: any) {
     const item = {
@@ -106,13 +107,17 @@ const ShopCart = () => {
       case "selectedAll":
         selectedAllItem.mutate(item);
         break;
+
+      case "removeAllSelected":
+        removeAllItemSelected.mutate(item);
+        break;
     }
   }
 
   if (isLoading) return <SkeletonCart />;
   if (isError) return <div>Is Error</div>;
 
-  console.log(cart);
+  // console.log('cart', cart);
 
   return (
     <>

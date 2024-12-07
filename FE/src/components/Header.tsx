@@ -100,7 +100,6 @@ const Header = () => {
   }, [_id]);
 
   // Lấy thông báo từ API
-  // Fetch thông báo từ API
   const fetchNotifications = async () => {
     try {
       const response = await axios.get(
@@ -124,7 +123,6 @@ const Header = () => {
       ]);
 
       // Đếm thông báo chưa đọc
-      // Tính lại số lượng thông báo chưa đọc từ dữ liệu mới
       const unreadCount = newNotifications.filter((n) => !n.isRead).length;
       setUnreadCount(unreadCount);
     } catch (error) {
@@ -165,10 +163,6 @@ const Header = () => {
         prevNotifications.map((notif) => ({ ...notif, isRead: true }))
       );
       setUnreadCount(0); // Reset số lượng chưa đọc về 0
-      toast({
-        title: "Thành công",
-        description: "Tất cả thông báo đã được đánh dấu là đã đọc!",
-      });
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
       toast({
@@ -210,27 +204,30 @@ const Header = () => {
   // Lắng nghe thông báo mới từ Socket.IO
   useEffect(() => {
     socket.on("orderNotification", (newNotification) => {
+      // Cập nhật trực tiếp thông báo
       setNotifications((prevNotifications) => [
         newNotification,
         ...prevNotifications,
       ]);
       setUnreadCount((prevCount) => prevCount + 1);
     });
-
+  
     socket.on("orderStatusNotification", (newNotification) => {
       console.log("Nhận thông báo trạng thái đơn hàng:", newNotification);
+      // Cập nhật thông báo ngay khi nhận từ socket
       setNotifications((prevNotifications) => [
         newNotification,
         ...prevNotifications,
       ]);
       setUnreadCount((prevCount) => prevCount + 1);
     });
-
+  
     return () => {
       socket.off("orderNotification");
       socket.off("orderStatusNotification");
     };
   }, [_id]);
+  
 
   return (
     <>
@@ -363,7 +360,7 @@ const Header = () => {
                             onClick={() =>
                               setIsMarkAllDropdownOpen((prev) => !prev)
                             }
-                            className="p-2 text-[23px]  transition"
+                            className="pb-3 text-[23px]  transition"
                           >
                             ...
                           </button>
@@ -409,7 +406,7 @@ const Header = () => {
                                     to={"/users/order-history"}
                                     className="truncate text-wrap"
                                   >
-                                    {notification.message}
+                                   <span dangerouslySetInnerHTML={{ __html: notification.message }} />
                                   </Link>
                                 </div>
 

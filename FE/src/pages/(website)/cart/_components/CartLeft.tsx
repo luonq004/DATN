@@ -75,16 +75,13 @@ const CartLeft = ({
             <span>Sản phẩm</span>
           </div>
         </div>
-        <div className="w-full flex justify-between">
-          <div>
-            <span>Số lượng</span>
-          </div>
-          <div>
-            <span>Giá</span>
-          </div>
-          <div>
-            <span>Xóa</span>
-          </div>
+        <div className="flex justify-end">
+          <span
+            onClick={() => userAction(
+              { type: "removeAllSelected" }, {}
+            )}
+            className="cursor-pointer"
+          >Xóa</span>
         </div>
       </div>
 
@@ -149,7 +146,7 @@ const CartLeft = ({
             <div className="flex flex-col gap-3">
               <div className="flex max-sm:grid max-sm:grid-cols-[50%_auto] justify-between items-center gap-4">
                 <div className="text-[#9D9EA2] flex w-[45%] max-sm:w-full transition-all duration-500 max-sm:text-[14px]">
-                  <div className="hover:text-black">
+                  <div className="hover:text-blue-500">
                     <Link to={`/product/${item.productItem._id}`}>{item.productItem.name}</Link>
                   </div>
                 </div>
@@ -210,7 +207,7 @@ const CartLeft = ({
 
                 <div className="">
                   <p>
-                    <span>{formatCurrency(item.variantItem.price)} VNĐ</span>
+                    <span>{formatCurrency(item.variantItem.priceSale > 0 ? item.variantItem.priceSale : item.variantItem.price)} VNĐ</span>
                   </p>
                 </div>
                 <div

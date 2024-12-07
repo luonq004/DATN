@@ -74,6 +74,7 @@ const useCart = (userId: string) => {
     changeVariant: cartActiton("change-variant"),
     selectedOneItem: cartActiton("selected-one"),
     selectedAllItem: cartActiton("selected-all"),
+    removeAllItemSelected: cartActiton("remove-all-selected"),
   };
 };
 

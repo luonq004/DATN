@@ -62,24 +62,51 @@ const SizeColorSelector = ({
       );
 
       if (selectedVariant) {
-        const variantProduct = attri?.reduce((acc: any, attr: any) => {
-          // console.log('attr', attr)
-          const uniqueValue = selectedVariant.values.find((value: any) =>
-            attr.values.some((item: any) => item._id == value._id)
-          );
+        let hasFoundProduct = false; // Biến cờ để kiểm tra
 
-          if (uniqueValue) {
-            acc[attr._id] = uniqueValue._id;
+        const findVariantProduct = () => {
+          const variantProduct = attri?.reduce((acc: any, attr: any) => {
+            const uniqueValue = selectedVariant.values.find((value: any) =>
+              attr.values.some((item: any) => item._id == value._id)
+            );
+
+            if (uniqueValue) {
+              acc[attr._id] = uniqueValue._id;
+            }
+
+            return acc;
+          }, {});
+
+          // console.log("Variant Product:", variantProduct);
+          return variantProduct;
+        };
+
+        // Hàm thử lại nếu variantProduct không tìm thấy
+
+        const retryFind = (retryCount: number) => {
+          if (retryCount <= 0 || hasFoundProduct) {
+            // console.warn("Dừng retry: đã tìm thấy hoặc hết số lần thử");
+            return;
           }
 
-          return acc;
-        }, {});
+          const variantProduct = findVariantProduct();
 
-        setSelectedValue(variantProduct);
+          if (variantProduct && Object.keys(variantProduct).length > 0) {
+            hasFoundProduct = true;
+            // console.log("Tìm thấy variant product sau", 3 - retryCount, "lần thử");
+            setSelectedValue(variantProduct);
+          } else {
+            // console.log("Thử lại lần thứ", retryCount - 1);
+            setTimeout(() => retryFind(retryCount - 1), 100);
+          }
+        };
+
+        retryFind(3); // Thử lại tối đa 3 lần
       }
-      // console.log(selectedVariant)
     }
-  }, [data, idVariant]);
+  }, [data, idVariant, attri]);
+
+  // console.log('selectedValue', selectedValue)
 
   const handleAttributeChange = (attributeId: any, valueId: any) => {
     setSelectedValue((prev: any) => {
@@ -149,6 +176,7 @@ const SizeColorSelector = ({
     return filterValues;
   };
 
+  // Lọc các variant dựa trên các thuộc tính đã chọn
   const compatibleAttributeValues = getCompatibleAttributeValues();
 
   const saveVariant = (selectedValue: any) => {

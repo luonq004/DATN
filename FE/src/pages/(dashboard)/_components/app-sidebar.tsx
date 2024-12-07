@@ -25,6 +25,7 @@ import {
   Settings,
   ShoppingCart,
   Sliders,
+  Ticket,
   User,
 } from "lucide-react";
 import { NavMain } from "./nav-main";

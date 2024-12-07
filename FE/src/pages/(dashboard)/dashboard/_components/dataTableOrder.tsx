@@ -73,7 +73,7 @@ export function DataTableOrder<TData, TValue>({
             <div className="">
                 <div className="flex items-center gap-x-2 py-2">
                     <Input
-                        placeholder="Filter Order ID..."
+                        placeholder="Lọc theo Order Code..."
                         value={(table.getColumn("orderCode")?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
                             table.getColumn("orderCode")?.setFilterValue(event.target.value)
