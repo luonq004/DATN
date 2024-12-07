@@ -88,12 +88,12 @@ const Demopage = () => {
                     <DialogTrigger>
                         <div className="flex px-3 py-2 rounded-md bg-orange-500 hover:bg-orange-400 cursor-pointer text-white items-center justify-between gap-2">
                             <CirclePlus size={16} />
-                            <span>Add new Voucher</span>
+                            <span>Thêm mới Voucher</span>
                         </div>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Create Voucher</DialogTitle>
+                            <DialogTitle>Tạo Voucher</DialogTitle>
                             <DialogDescription>
                                 Vui lòng điền vào mẫu dưới đây để tạo voucher mới
                             </DialogDescription>

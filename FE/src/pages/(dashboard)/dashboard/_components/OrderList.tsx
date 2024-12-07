@@ -8,9 +8,17 @@ import {
 } from "@/components/ui/card"
 import React from "react";
 import useAllOrders from "@/common/hooks/order/useAllOrders";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 export function OrderList() {
-    const { data, isLoading, isError } = useAllOrders();
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ['OrderList'],
+        queryFn: async () => {
+            const { data } = await axios.get('http://localhost:8080/api/dashboard/get-data-order-list')
+            return data
+        }
+    })
 
     const newData = React.useMemo(() => {
         if (!data || !Array.isArray(data)) return [];

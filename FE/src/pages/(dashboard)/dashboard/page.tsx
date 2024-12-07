@@ -10,17 +10,17 @@ export default function DashBoardPage() {
     <div className="bg-white grid gap-y-4">
       <CardTabsList />
       {/* <AreaChartList /> */}
+      <div className='grid grid-cols-1 gap-4'>
+        <OrderList />
+      </div>
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
         <AreaChartList />
-        <UserList />
       </div>
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
         {/* <CircleTotal /> */}
-        <CircleCategory />
+        {/* <CircleCategory /> */}
+        <UserList />
         <TopProducts />
-      </div>
-      <div className='grid grid-cols-1 gap-4'>
-        <OrderList />
       </div>
     </div>
   )

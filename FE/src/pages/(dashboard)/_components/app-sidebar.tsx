@@ -25,6 +25,7 @@ import {
   Settings,
   ShoppingCart,
   Sliders,
+  Ticket,
   User,
 } from "lucide-react";
 import { NavMain } from "./nav-main";
@@ -95,11 +96,11 @@ const data = {
       url: "/admin/Logos",
       icon: Image,
     },
-    // {
-    //   title: "Settings",
-    //   url: "/dashboard/settings",
-    //   icon: Settings,
-    // },
+    {
+      title: "Voucher",
+      url: "/admin/voucher",
+      icon: Ticket,
+    },
   ],
 };
 

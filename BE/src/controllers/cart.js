@@ -7,7 +7,7 @@ import VoucherUsage from "../models/voucherUsage";
 
 const updateTotal = async (cart) => {
   let total = cart.products.reduce(
-    (acc, item) => { return item.selected ? acc + item.variantItem.price * item.quantity : acc },
+    (acc, item) => { return item.selected ? acc + (item.variantItem.priceSale > 0 ? item.variantItem.priceSale : item.variantItem.price) * item.quantity : acc },
     0
   );
   cart.subTotal = total;
@@ -97,7 +97,7 @@ export const getCartByUserId = async (req, res) => {
 
     await cart.save();
     cart = await updateTotal(cart);
-    console.log("cart", cart)
+    // console.log("cart", cart)
     cart.total += 30000;
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
@@ -109,7 +109,7 @@ export const getCartByUserId = async (req, res) => {
 export const addToCart = async (req, res) => {
   const { userId, productId, variantId, quantity } = req.body;
 
-  console.log(req.body);
+  // console.log(req.body);
 
   try {
     let cart = await Cart.findOne({ userId: userId })
@@ -117,7 +117,7 @@ export const addToCart = async (req, res) => {
       .populate("products.variantItem")
       .populate("voucher");
 
-    console.log("CART: ", cart);
+    // console.log("CART: ", cart);
 
     const product = await Product.findOne({ _id: productId });
     const variantValue = await Variant.findOne({ _id: variantId });
@@ -146,7 +146,7 @@ export const addToCart = async (req, res) => {
         .json({ message: "Không tìm thấy Biến thể" });
     }
 
-    console.log("ADD TO CART");
+    // console.log("ADD TO CART");
 
     if (!cart) {
       cart = await Cart.create({
@@ -156,10 +156,10 @@ export const addToCart = async (req, res) => {
         total: 0,
       });
 
-      console.log("CREATE CART");
+      // console.log("CREATE CART");
     }
 
-    console.log("CONTINUE");
+    // console.log("CONTINUE");
 
     //ktra sp trùng lặp trong giỏ hàng
     const existProductIndex = cart.products.findIndex(
@@ -169,7 +169,7 @@ export const addToCart = async (req, res) => {
         item.variantItem._id.toString() == variantId
     );
 
-    console.log("EXIST: ", existProductIndex);
+    // console.log("EXIST: ", existProductIndex);
 
     //nếu có sp trùng lặp thì tăng số lượng
     if (existProductIndex !== -1) {
@@ -665,20 +665,42 @@ export const selectedAllItem = async (req, res) => {
     const selected = cart.products.every((item) => item.selected === true);
 
     //nếu tất cả sản phẩm đã được chọn thì bỏ chọn tất cả
-    if (selected) {
+    if (selected && selected === true) {
       cart.products.forEach((item) => {
-        if (item.productItem.deleted === false && item.variantItem.deleted === false) {
-          item.selected = false;
-        }
+        // if (item.productItem.deleted === false && item.variantItem.deleted === false) {
+        item.selected = false;
+        // }
       });
     } else {
       cart.products.forEach((item) => {
-        if (item.productItem.deleted === false && item.variantItem.deleted === false) {
-          item.selected = true;
-        }
+        // if (item.productItem.deleted === false && item.variantItem.deleted === false) {
+        item.selected = true;
+        // }
       });
     }
 
+    await cart.save();
+    return res.status(StatusCodes.OK).json(cart);
+
+  } catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+}
+
+export const removeAllItemSelected = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const cart = await Cart.findOne({ userId: userId });
+
+    if (!cart) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Không tìm thấy giỏ hàng" });
+    }
+
+    const newProducts = cart.products.filter((item) => item.selected === false);
+
+    cart.products = newProducts;
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
 

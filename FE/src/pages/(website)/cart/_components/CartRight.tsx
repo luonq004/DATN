@@ -53,24 +53,24 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
         // console.log(item)
         userAction({ type: 'removeVoucher' }, { voucherCode: item })
     }
-console.log("selectedOne", cart)
+    // console.log("selectedOne", cart)
 
     return (
         <div className='Cart__Right'>
             <div className='flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6'>
                 <div className='Subtotal flex flex-col gap-4'>
                     <div className='flex justify-between'>
-                        <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Tổng phụ</p>
+                        <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Tạm tính</p>
                         <p className=''><span>{formatCurrency(cart?.subTotal ?? 0)} VNĐ</span></p>
                     </div>
                     <div className="flex justify-between">
-            <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-              Phí giao hàng
-            </p>
-            <div>
-              <span>{formatCurrency(30000)}VNĐ</span>
-            </div>
-          </div>
+                        <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+                            Phí giao hàng
+                        </p>
+                        <div>
+                            <span>{formatCurrency(30000)}VNĐ</span>
+                        </div>
+                    </div>
                     <div className='flex justify-between'>
                         <p className='text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]'>Giảm giá</p>
                         <p className=''><span>{formatCurrency(cart?.discount ?? 0)} VNĐ</span></p>
@@ -82,7 +82,7 @@ console.log("selectedOne", cart)
                         <div>
                             <Button variant="outline" className='w-full p-2 rounded-md bg-slate-200 grid grid-cols-[30px_auto_20px] justify-normal'>
                                 <div className='items-start'><Ticket /></div>
-                                <div className='text-start truncate'>Chọn hoặc nhập Voucher</div>
+                                <div className='text-start truncate'>{cart?.voucher?.length > 0 ? (cart?.voucher?.map((item: any) => item.code))?.join(", ") : 'Chọn hoặc nhập Voucher'}</div>
                                 <div className='items-end'><ChevronRight /></div>
                             </Button>
                         </div>
@@ -135,8 +135,8 @@ console.log("selectedOne", cart)
                         </div> */}
                 <hr />
                 {/* ${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'} */}
-                <Link to={`checkout`}>
-                    <div className={`bg-[#C8C9CB] ${cart?.products?.every((item: any) => item.selected === false) ? '' : 'hover:bg-[#b8cd06]'} transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium select-none`}>
+                <Link to={`${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'}`}>
+                    <div className={`bg-[#C8C9CB] ${cart?.products?.every((item: any) => item.selected === false) ? 'cursor-not-allowed' : 'hover:bg-[#b8cd06]'} transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium select-none`}>
                         <div>Checkout</div>
                         <div className=''>|</div>
                         <div><span>{formatCurrency(cart?.total ?? 0)} VNĐ</span></div>
