@@ -20,6 +20,8 @@ type Category = {
   _id: string;
   name: string;
   slug: string;
+  defaultCategory: boolean;
+  deleted: boolean;
 };
 
 const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
@@ -30,6 +32,8 @@ const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
   );
 
   if (isLoadingCategory) return <div>Loading...</div>;
+
+  // console.log(form.getValues("category"));
 
   return (
     <Accordion
@@ -53,6 +57,7 @@ const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
                     control={form.control}
                     name="category"
                     render={({ field }) => {
+                      // console.log(item);
                       return (
                         <FormItem
                           key={item._id}

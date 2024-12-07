@@ -71,7 +71,7 @@ const AttributeTab = ({
     <>
       <div className="flex gap-10 py-5">
         <Select
-          placeholder="Custom product attribute"
+          placeholder="Chọn thuộc tính"
           value={valueOptions}
           noOptionsMessage={() => "Không có giá trị nào"}
           className="w-2/3"

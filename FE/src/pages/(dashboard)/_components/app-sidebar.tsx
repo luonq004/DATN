@@ -25,6 +25,7 @@ import {
   Settings,
   ShoppingCart,
   Sliders,
+  Ticket,
   User,
 } from "lucide-react";
 import { NavMain } from "./nav-main";
@@ -93,6 +94,11 @@ const data = {
     {
       title: "Logos",
       url: "/admin/Logos",
+      icon: Image,
+    },
+    {
+      title: "Tin nhắn",
+      url: "/admin/message",
       icon: Image,
     },
     // {

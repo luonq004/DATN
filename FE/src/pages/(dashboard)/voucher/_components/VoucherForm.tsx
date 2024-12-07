@@ -36,18 +36,18 @@ const voucherSchema = Joi.object({
             .min(subMonths(new Date(), 1))
             .max(addMonths(new Date(), 1))
             .required().messages({
-                'any.required': 'Start date is required',
-                'date.base': 'Start date must be a valid date',
+                'any.required': 'Ngày bắt đầu là bắt buộc',
+                'date.base': 'Ngày bắt đầu phải là ngày hợp lệ',
             }),
         to: Joi.date()
             .min(subMonths(new Date(), 1))
             .max(addMonths(new Date(), 1))
             .required().messages({
-                'any.required': 'End date is required',
-                'date.base': 'End date must be a valid date',
+                'any.required': 'Ngày kết thúc là bắt buộc',
+                'date.base': 'Ngày kết thúc phải là ngày hợp lệ',
             }),
     }).required().messages({
-        'any.required': 'Date is required'
+        'any.required': 'Ngày hết hạn là bắt buộc',
     }),
     type: Joi.string().valid("percent", "fixed").required(),
 })
@@ -152,7 +152,7 @@ const VoucherForm = ({ id }: any) => {
         <div className='mt-8'>
             <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
                 <div className='flex flex-col gap-2'>
-                    {errors?.code?.message ? <Label htmlFor="code" className='text-red-500'>Code</Label> : <Label htmlFor="code" >Code</Label>}
+                    {errors?.code?.message ? <Label htmlFor="code" className='text-red-500'>Mã code</Label> : <Label htmlFor="code" >Mã code</Label>}
                     <Input
                         disabled={openEdit === id ? false : true}
                         placeholder='Code...'
@@ -163,7 +163,7 @@ const VoucherForm = ({ id }: any) => {
                 </div>
 
                 <div className='flex flex-col gap-2 *:w-full'>
-                    {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Category</Label> : <Label htmlFor="category" >Category</Label>}
+                    {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Danh mục</Label> : <Label htmlFor="category" >Danh mục</Label>}
                     <Controller
                         control={control}
                         name="category"
@@ -187,7 +187,7 @@ const VoucherForm = ({ id }: any) => {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Discount</Label> : <Label htmlFor="discount" >Discount</Label>}
+                    {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Giảm</Label> : <Label htmlFor="discount" >Giảm</Label>}
                     <Input
                         disabled={openEdit === id ? false : true}
                         placeholder='discount...'
@@ -198,7 +198,7 @@ const VoucherForm = ({ id }: any) => {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    {errors?.countOnStock?.message ? <Label htmlFor="countOnStock" className='text-red-500'>CountOnStock</Label> : <Label htmlFor="countOnStock" >CountOnStock</Label>}
+                    {errors?.countOnStock?.message ? <Label htmlFor="countOnStock" className='text-red-500'>Số lượng</Label> : <Label htmlFor="countOnStock" >Số lượng</Label>}
                     <Input
                         disabled={openEdit === id ? false : true}
                         placeholder='countOnStock...'
@@ -209,7 +209,7 @@ const VoucherForm = ({ id }: any) => {
                 </div>
 
                 <div className='flex flex-col gap-2 *:w-full'>
-                    {errors?.type?.message ? <Label htmlFor="type" className='text-red-500'>Type</Label> : <Label htmlFor="type" >Type</Label>}
+                    {errors?.type?.message ? <Label htmlFor="type" className='text-red-500'>Kiểu</Label> : <Label htmlFor="type" >Kiểu</Label>}
                     <Controller
                         control={control}
                         name="type"
@@ -221,8 +221,8 @@ const VoucherForm = ({ id }: any) => {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectItem value="percent">Percent</SelectItem>
-                                        <SelectItem value="fixed">Fixed</SelectItem>
+                                        <SelectItem value="percent">Phần trăm (%)</SelectItem>
+                                        <SelectItem value="fixed">Trực tiếp (VNĐ)</SelectItem>
                                         {/* <SelectItem value="test">Test</SelectItem> */}
                                     </SelectGroup>
                                 </SelectContent>
@@ -233,7 +233,7 @@ const VoucherForm = ({ id }: any) => {
                 </div>
 
                 <div className='relative select-none z-50'>
-                    {errors?.dob ? <Label htmlFor="dob" className='text-red-500'>Date</Label> : <Label htmlFor="dob" >Date</Label>}
+                    {errors?.dob ? <Label htmlFor="dob" className='text-red-500'>Hạn sử dụng</Label> : <Label htmlFor="dob" >Hạn sử dụng</Label>}
                     <div onClick={() => openEdit === id && handleOpenDate(id)} className={`flex items-center border rounded-md px-4 py-2 ${openEdit === id ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
                         <CalendarIcon size={20} className="mr-2 h-4 w-4" />
                         {date?.from ? (
@@ -246,7 +246,7 @@ const VoucherForm = ({ id }: any) => {
                                 format(date.from, "LLL dd, y")
                             )
                         ) : (
-                            <span>Pick a date</span>
+                            <span>Chọn ngày</span>
                         )}
                     </div >
                     <div className={`flex absolute bg-white top-[70px] transition-all duration-200 ${openDate === id ? '' : 'opacity-0 z-[-1] scale-75 hidden'}`}>
@@ -267,25 +267,25 @@ const VoucherForm = ({ id }: any) => {
                 </div>
 
                 <div className='flex flex-col gap-2 *:w-full'>
-                    <Label htmlFor="status" >Status</Label>
+                    <Label htmlFor="status" >Trạng thái</Label>
                     <div className={`select-none rounded-md bg-[#F4F4F5] p-1 ${openEdit === id ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
                         <div className='grid grid-cols-[50%_50%] relative w-full rounded-sm *:text-sm *:py-1.5 *:font-medium *:text-center *:rounded-sm'>
                             <div className={`bg-white w-1/2 absolute h-full z-10 transition-all duration-200 ${status === 'active' ? 'left-0' : 'left-1/2'}`}></div>
-                            <div onClick={() => openEdit === id && setStatus('active')} className={`z-20 ${status === 'active' ? ' text-black shadow-sm' : 'text-[#71717A]'}`}>Active</div>
-                            <div onClick={() => openEdit === id && setStatus('inactive')} className={`z-20 ${status === 'inactive' ? ' text-black shadow-sm' : 'text-[#71717A]'}`}>Inactive</div>
+                            <div onClick={() => openEdit === id && setStatus('active')} className={`z-20 ${status === 'active' ? ' text-black shadow-sm' : 'text-[#71717A]'}`}>Kích hoạt</div>
+                            <div onClick={() => openEdit === id && setStatus('inactive')} className={`z-20 ${status === 'inactive' ? ' text-black shadow-sm' : 'text-[#71717A]'}`}>Đóng</div>
                         </div>
                     </div>
                 </div>
                 <div className='flex items-center justify-between select-none'>
                     {openEdit === id ?
                         <>
-                            <Button type='submit'>Save</Button>
+                            <Button type='submit'>Lưu</Button>
                             <div
                                 onClick={() => handleOpenEdit(id)}
                                 className='flex text-red-500 transition-all duration-200 hover:bg-red-50 rounded-md px-2 py-1 items-center gap-1 cursor-pointer select-none'
                             >
                                 <CircleX size={16} />
-                                <span>Cancel</span>
+                                <span>Hủy</span>
                             </div>
                         </>
                         :
@@ -301,7 +301,7 @@ const VoucherForm = ({ id }: any) => {
                                             className='flex text-red-500 transition-all duration-200 hover:bg-red-50 rounded-md px-2 py-1 items-center gap-1 cursor-pointer select-none'
                                         >
                                             <Trash size={16} className='mb-1' />
-                                            <span>Delete</span>
+                                            <span>Xóa</span>
                                         </div>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
@@ -312,9 +312,9 @@ const VoucherForm = ({ id }: any) => {
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogCancel>Hủy</AlertDialogCancel>
                                             <SheetClose asChild>
-                                                <AlertDialogAction onClick={() => handleDelete()}>Continue</AlertDialogAction>
+                                                <AlertDialogAction onClick={() => handleDelete()}>Tiếp tục</AlertDialogAction>
                                             </SheetClose>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
@@ -325,7 +325,7 @@ const VoucherForm = ({ id }: any) => {
                                 className='flex items-center gap-2 px-2 py-1 border transition-all duration-200 rounded-md shadow-sm hover:border-black cursor-pointer'
                             >
                                 <PencilLine size={16} />
-                                <span>Edit</span>
+                                <span>Sửa</span>
                             </div>
                         </>
                     }

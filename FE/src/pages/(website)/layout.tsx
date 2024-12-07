@@ -1,12 +1,12 @@
+import { useUserContext } from "@/common/context/UserProvider";
 import { saveUserToDatabase } from "@/common/hooks/useCheckUser";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import AccountLockedNotification from "@/components/UserbanError";
 import { useClerk, useUser } from "@clerk/clerk-react";
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
-import axios from "axios";
-import AccountLockedNotification from "@/components/UserbanError";
-import { useUserContext } from "@/common/context/UserProvider";
 
 const LayoutWebsite = () => {
   const { user } = useUser();
@@ -76,7 +76,6 @@ const LayoutWebsite = () => {
       saveUserIfNeeded();
     }
   }, [user, login]);
-  
 
   const clearAccountLockedStatus = () => {
     // Xóa trạng thái từ localStorage và ẩn thông báo

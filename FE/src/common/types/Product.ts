@@ -19,6 +19,7 @@ export interface IProduct {
   category: string[];
   countOnStock: number;
   price: number;
+  priceSale: number;
   description: string;
   image: string;
   reviews: string[];

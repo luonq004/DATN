@@ -80,21 +80,18 @@ const AdminOrder = () => {
   // Đóng modal
   const closeModal = () => setIsOpen(false);
   // Xử lý hủy đơn hàng
-  const handleCancelOrder = async() => {
-    if(!orderIdToCancel){
+  const handleCancelOrder = async () => {
+    if (!orderIdToCancel) {
       alert("Không lấy được OrderId");
       return;
     }
-    const newStatus = "đã hủy"
+    const newStatus = "đã hủy";
     if (!reason.trim()) {
       alert("Vui lòng nhập lý do hủy.");
       return;
     }
     // Gửi lý do hủy đơn hàng ở đây
-    await updateOrderStatus(
-      orderIdToCancel,
-      newStatus,reason
-    );
+    await updateOrderStatus(orderIdToCancel, newStatus, reason);
     setReason("");
     setIsOpen(false); // Đóng modal sau khi hủy
   };
@@ -117,12 +114,16 @@ const AdminOrder = () => {
       );
   }, [data]);
   const user = Gmail;
-  const updateOrderStatus = async (orderId: string, newStatus: string, reason:string) => {
+  const updateOrderStatus = async (
+    orderId: string,
+    newStatus: string,
+    reason: string
+  ) => {
     try {
       const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
         newStatus,
         user,
-        reason
+        reason,
       });
 
       if (response.status === 200) {
@@ -292,61 +293,65 @@ const AdminOrder = () => {
       {
         header: "Thao tác",
         accessorKey: "id",
-        cell: ({ row }) => (
-          <div className="flex gap-2">
-            <Link to={`/admin/orders/orderdetails/${row.original.id}`}>
-              <Button variant="default"  size="sm">
-                Xem chi tiết
-              </Button>
-            </Link>
-
-            <div className="*:m-0">
-              <Select
-                value={row.original.status}
-                onValueChange={async (newStatus) => {
-                  if(newStatus === 'đã hủy'){
-                    setOrderIdToCancel(row.original.id);
-                    openModal();
-                    return;
-                  }
-                  if (newStatus !== row.original.status) {
-                    const isUpdated = await updateOrderStatus(
-                      row.original.id,
-                      newStatus
-                    );
-                    if (isUpdated) {
-                      row.original.status = newStatus; // Cập nhật trạng thái mới cho dòng
+        cell: ({ row }) => {
+          console.log(row.original);
+          return (
+            <div className="flex gap-2">
+              <Link to={`/admin/orders/orderdetails/${row.original.id}`}>
+                <Button variant="default" size="sm">
+                  Xem chi tiết
+                </Button>
+              </Link>
+      
+              <div className="*:m-0">
+                <Select
+                  value={row.original.status}
+                  onValueChange={async (newStatus) => {
+                    if (newStatus === "đã hủy") {
+                      setOrderIdToCancel(row.original.id);
+                      openModal();
+                      return;
                     }
+                    if (newStatus !== row.original.status) {
+                      const isUpdated = await updateOrderStatus(
+                        row.original.id,
+                        newStatus
+                      );
+                      if (isUpdated) {
+                        row.original.status = newStatus; // Cập nhật trạng thái mới cho dòng
+                      }
+                    }
+                  }}
+                  disabled={
+                    row.original.status === "đã hoàn thành" ||
+                    row.original.status === "đã hủy"
                   }
-                }}
-                disabled={
-                  row.original.status === "đã hoàn thành" ||
-                  row.original.status === "đã hủy"
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn trạng thái" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {[
-                      "chờ xác nhận",
-                      "đã xác nhận",
-                      "đang giao hàng",
-                      "đã hoàn thành",
-                      "đã hủy",
-                    ].map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {[
+                        "chờ xác nhận",
+                        "đã xác nhận",
+                        "đang giao hàng",
+                        "đã hoàn thành",
+                        "đã hủy",
+                      ].map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-        ),
-      },
+          );
+        },
+      }
+      
     ],
     []
   );
@@ -498,9 +503,13 @@ const AdminOrder = () => {
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-semibold text-center mb-4">Xác Nhận Hủy Đơn Hàng</h2>
-            <p className="text-gray-700 mb-4">Bạn có chắc chắn muốn hủy đơn hàng không?</p>
-            
+            <h2 className="text-xl font-semibold text-center mb-4">
+              Xác Nhận Hủy Đơn Hàng
+            </h2>
+            <p className="text-gray-700 mb-4">
+              Bạn có chắc chắn muốn hủy đơn hàng không?
+            </p>
+
             {/* Ô nhập lý do hủy */}
             <textarea
               value={reason}

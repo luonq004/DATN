@@ -8,7 +8,7 @@ export const getAllProducts = async (req, res) => {
     _page = 1,
     _limit = 9,
     _sort = "createAt",
-    _order = "asc",
+    _order = "desc",
     _expand = true,
     _price,
     _category,
@@ -95,6 +95,9 @@ export const getProductById = async (req, res) => {
         select: "-__v", // Loại bỏ __v cho các trường variants
       })
       .populate({
+        path: "category",
+      })
+      .populate({
         path: "comments",
         match: { deleted: false },
         populate: {
@@ -109,9 +112,39 @@ export const getProductById = async (req, res) => {
       return res.status(404).json({ message: "No products found" });
     }
 
-    // setTimeout(() => {
-    //   res.json(data);
-    // }, 5000);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getProductByIdForEdit = async (req, res) => {
+  try {
+    const data = await Product.findOne({ _id: req.params.id })
+      .populate({
+        path: "variants",
+        populate: {
+          path: "values",
+          model: "AttributeValue",
+          match: { deleted: false },
+          select: "-__v", // Loại bỏ __v cho các trường values
+        },
+        select: "-__v", // Loại bỏ __v cho các trường variants
+      })
+      .populate({
+        path: "comments",
+        match: { deleted: false },
+        populate: {
+          path: "userId",
+          model: "Users",
+          select: { firstName: 1, lastName: 1, imageUrl: 1 },
+        },
+      })
+      .select("-__v"); // Loại bỏ __v cho sản phẩm chính
+
+    if (!data) {
+      return res.status(404).json({ message: "No products found" });
+    }
 
     res.json(data);
   } catch (error) {
@@ -198,11 +231,14 @@ export const createProduct = async (req, res) => {
     let priceFinal = Infinity;
     let priceSaleFinal = -Infinity;
     let count = 0;
+    let totalOriginalPrice = 0;
 
     for (let i = 0; i < variants.length; i++) {
       const values = variants[i].values.map((obj) => Object.values(obj)[0]);
 
       count += variants[i].countOnStock;
+      totalOriginalPrice +=
+        variants[i].originalPrice * variants[i].countOnStock;
 
       if (priceFinal > variants[i].price) {
         priceFinal = variants[i].price;
@@ -216,6 +252,7 @@ export const createProduct = async (req, res) => {
         price: variants[i].price,
         priceSale: variants[i].priceSale,
         values,
+        originalPrice: variants[i].originalPrice,
         countOnStock: variants[i].countOnStock,
         image: variants[i].image,
       }).save();
@@ -226,6 +263,7 @@ export const createProduct = async (req, res) => {
       name,
       price: priceFinal,
       priceSale: priceSaleFinal,
+      totalOriginalPrice,
       countOnStock: count,
       image,
       category,
@@ -276,6 +314,7 @@ export const updateProduct = async (req, res) => {
     let priceFinal = Infinity;
     let priceSaleFinal = -Infinity;
     let count = 0;
+    let totalOriginalPrice = 0;
 
     const data = await Product.findOne({ _id: req.params.id });
 
@@ -284,6 +323,8 @@ export const updateProduct = async (req, res) => {
     for (let i = 0; i < variants.length; i++) {
       // const values = variants[i].values.map((obj) => Object.values(obj)[0]);
       count += variants[i].countOnStock;
+      totalOriginalPrice +=
+        variants[i].originalPrice * variants[i].countOnStock;
 
       if (priceFinal > variants[i].price) {
         priceFinal = variants[i].price;
@@ -300,6 +341,7 @@ export const updateProduct = async (req, res) => {
             price: variants[i].price,
             priceSale: variants[i].priceSale,
             // values,
+            originalPrice: variants[i].originalPrice,
             countOnStock: variants[i].countOnStock,
             image: variants[i].image,
           },
@@ -313,6 +355,7 @@ export const updateProduct = async (req, res) => {
         const variant = await Variant({
           price: variants[i].price,
           priceSale: variants[i].priceSale,
+          originalPrice: variants[i].originalPrice,
           values,
           countOnStock: variants[i].countOnStock,
           image: variants[i].image,
@@ -335,6 +378,7 @@ export const updateProduct = async (req, res) => {
         name,
         price: priceFinal,
         priceSale: priceSaleFinal,
+        totalOriginalPrice,
         countOnStock: count,
         image,
         category,
