@@ -16,7 +16,7 @@ const VariationValues = ({
     | undefined;
 
   const renderInput = (
-    field: "price" | "countOnStock" | "priceSale",
+    field: "price" | "countOnStock" | "priceSale" | "originalPrice",
     label: string
   ) => (
     <div>
@@ -34,9 +34,9 @@ const VariationValues = ({
 
   return (
     <div>
+      {renderInput("originalPrice", "Giá gốc")}
       {renderInput("price", "Giá")}
       {renderInput("priceSale", "Giá giảm giá")}
-      {/* {renderInput("countOnStock", "Số lượng tồn kho")} */}
 
       <Button
         type="button"

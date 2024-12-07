@@ -67,6 +67,7 @@ const ProductAddPage = () => {
             {
               price: 0,
               priceSale: 0,
+              originalPrice: 0,
               image: "",
               values: [
                 {
@@ -93,11 +94,9 @@ const ProductAddPage = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof productSchema>) {
     setIsDoing(true);
-
     if (id) {
       const duplicateValues = checkForDuplicateVariants(values);
       setDuplicate(duplicateValues);
-
       if (!duplicateValues.length) {
         const result = await UploadFiles(values);
         updateProduct({ data: result, id });
@@ -110,7 +109,6 @@ const ProductAddPage = () => {
     } else {
       const duplicateValues = checkForDuplicateVariants(values);
       setDuplicate(duplicateValues);
-
       if (!duplicateValues.length) {
         const result = await UploadFiles(values);
         createProduct(result);
@@ -121,30 +119,24 @@ const ProductAddPage = () => {
         });
       }
     }
-
     if (!isCreatting || !isUpdating) setIsDoing(false);
   }
 
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
 
   const types = id ? getUniqueTypes(product) : [];
-  // console.log("types: ", types);
 
   const filteredData = types.length
     ? attributes.filter((item: Attribute) => types.includes(item.name))
     : [];
-  // console.log("filteredData: ", filteredData);
 
   const attributeValue = id ? getUniqueAttributeValue(product) : [];
-  // console.log("attributeValue: ", attributeValue);
-
-  // console.log(form.setError("variants.0.values.0.name", { message: "Error" }));
 
   return (
     // <Container>
     <>
       <h1 className="text-4xl font-normal font-raleway mb-5">
-        {id ? "Edit " : "Create "}Product
+        {id ? "Cập nhật " : "Tạo "}sản phẩm
       </h1>
 
       <Form {...form}>

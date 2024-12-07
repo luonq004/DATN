@@ -21,9 +21,9 @@ export const getAllCategory = async (req, res) => {
       return res.status(400).json({ message: "Không tìm thấy danh mục nào" });
     }
 
-    const results = category.filter((item) => !item.defaultCategory);
+    // const results = category.filter((item) => !item.defaultCategory);
 
-    return res.status(200).json(results);
+    return res.status(200).json(category);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -72,11 +72,29 @@ export const getAllProductWithCategory = async (req, res) => {
 };
 
 export const createCategory = async (req, res) => {
-  const { name } = req.body;
+  const { name, title, image, description } = req.body;
 
   try {
     if (!name) {
       return res.status(400).json({ message: "Tên danh mục bắt buộc phải có" });
+    }
+
+    if (!title) {
+      return res
+        .status(400)
+        .json({ message: "Tên tiêu đề danh mục bắt buộc phải có" });
+    }
+
+    if (!image) {
+      return res
+        .status(400)
+        .json({ message: "Ảnh danh mục danh mục bắt buộc phải có" });
+    }
+
+    if (!description) {
+      return res
+        .status(400)
+        .json({ message: "Mô tả danh mục danh mục bắt buộc phải có" });
     }
 
     const slug = slugify(name, "-");
@@ -91,6 +109,9 @@ export const createCategory = async (req, res) => {
 
     const category = await Category.create({
       name,
+      title,
+      image,
+      description,
       slug: slugify(req.body.name, "-"),
     });
     return res.status(201).json(category);
@@ -100,11 +121,29 @@ export const createCategory = async (req, res) => {
 };
 
 export const updateCategory = async (req, res) => {
-  const { name } = req.body;
+  const { name, title, image, description } = req.body;
 
   try {
     if (!name) {
       return res.status(400).json({ message: "Tên danh mục bắt buộc phải có" });
+    }
+
+    if (!title) {
+      return res
+        .status(400)
+        .json({ message: "Tên tiêu đề danh mục bắt buộc phải có" });
+    }
+
+    if (!image) {
+      return res
+        .status(400)
+        .json({ message: "Ảnh danh mục danh mục bắt buộc phải có" });
+    }
+
+    if (!description) {
+      return res
+        .status(400)
+        .json({ message: "Mô tả danh mục danh mục bắt buộc phải có" });
     }
 
     const newSlug = slugify(name, "-");
@@ -121,6 +160,9 @@ export const updateCategory = async (req, res) => {
       { _id: req.params.id },
       {
         name,
+        title,
+        image,
+        description,
         slug: newSlug,
       },
       { new: true }

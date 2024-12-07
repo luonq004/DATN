@@ -115,15 +115,29 @@ const ProductItem = ({
               {/* PRICE AND DESCRIPTION */}
               <div>
                 <div className="flex justify-between h-9">
-                  <span className="text-[#b8cd06]">
-                    {formatCurrency(product.price)} VNĐ
+                  <span>
+                    {product.priceSale ? (
+                      <>
+                        <span className="text-red-700 text-xl font-bold">
+                          {formatCurrency(product.priceSale)} VNĐ
+                        </span>
+                        &nbsp;&nbsp;&nbsp;
+                        <span className="text-[#888] line-through">
+                          {formatCurrency(product.price)} VNĐ
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-red-700 text-xl font-bold">
+                        {formatCurrency(product.price)} VNĐ
+                      </span>
+                    )}
                     {/* {product.priceRange} */}
                   </span>
                   {/* &nbsp;&nbsp;&nbsp; */}
                   {/* <span className="text-[#888] line-through">1.500.000đ</span> */}
                 </div>
 
-                <div className="relative overflow-hidden h-[60px]">
+                <div className="relative overflow-hidden h-[60px] mt-[15px]">
                   <p className="text-[13px] text-[#888] description-product line-clamp-2">
                     {product.description}
                   </p>

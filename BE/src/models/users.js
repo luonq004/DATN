@@ -82,15 +82,10 @@ const userSchema = new Schema(
       },
     ],
 
-    // wishList: [
-    //   products: [
-    //     {
-    //       type: mongoose.Schema.Types.ObjectId,
-    //       ref: "Product",
-    //     },
-
-    //   ]
-    // ],
+    // chatted: {
+    //   type: Boolean,
+    //   default: false,
+    // },
   },
   {
     collection: "users",

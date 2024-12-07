@@ -5,9 +5,11 @@ import { useSearchParams } from "react-router-dom";
 
 import Container from "./_components/Container";
 import { useGetAllProduct } from "./actions/useGetAllProduct";
+import { useUserContext } from "@/common/context/UserProvider";
 
 const ProductPage = () => {
   const [searchParams] = useSearchParams();
+  const { _id } = useUserContext();
   // const currentLayout = searchParams.get("layout") ?? "table";
 
   const { isLoading, listProduct, error } = useGetAllProduct();
@@ -17,6 +19,8 @@ const ProductPage = () => {
   }
 
   // console.log(listProduct);
+
+  console.log(_id);
 
   return (
     // <Container>

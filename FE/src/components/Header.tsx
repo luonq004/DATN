@@ -234,21 +234,23 @@ const Header = () => {
                       </li>
                     ))}
 
-                    <li className="!list-none">
+                    {/* <li className="!list-none">
                       <IoSearch
                         className="text-2xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                         onClick={() => setIsOpen(!isOpen)}
                       />
-                    </li>
+                    </li> */}
                   </ul>
                 </nav>
 
                 <div className="lg:hidden flex gap-3">
-                  <IoSearch
+                  {/* <IoSearch
                     className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                     onClick={() => setIsOpen(!isOpen)}
-                  />
-                  <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                  /> */}
+                  <Link to="/wishlist">
+                    <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                  </Link>
                   {/* Thông báo */}
                   <div className=" border-[#eee] hover:text-[#b8cd06]  uppercase lg:hidden">
                     <div className="relative cursor-pointer">
@@ -275,10 +277,12 @@ const Header = () => {
                   </div>
 
                   <span className="relative mr-2">
-                    <IoBagHandleSharp className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
-                    <span className="absolute size-5 rounded-full text-white text-[11px] leading-5 text-center bg-[#b8cd06] top-[-39%] right-[-23%]">
-                      {cart?.products?.length || 0}
-                    </span>
+                    <Link to="/cart">
+                      <IoBagHandleSharp className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                      <span className="absolute size-5 rounded-full text-white text-[11px] leading-5 text-center bg-[#b8cd06] top-[-39%] right-[-23%]">
+                        {cart?.products?.length || 0}
+                      </span>
+                    </Link>
                   </span>
                 </div>
               </div>

@@ -1,12 +1,13 @@
-const Button = ({
+const ButtonQuantity = ({
   quantity,
   setQuantity,
   countOnStock,
-  handleAddToCart,
+  deleted,
 }: {
   quantity: number;
   setQuantity: React.Dispatch<React.SetStateAction<number>>;
   countOnStock: number;
+  deleted: boolean;
 }) => {
   return (
     /* Quantity */
@@ -18,7 +19,9 @@ const Button = ({
 
       <div className="flex items-center h-[42px] ">
         <button
-          className="cursor-pointer flex justify-center items-center text-5xl font-light w-[50px] h-full text-center border border-r-0 rounded-tl-full rounded-bl-full text-[#333]"
+          className={`cursor-pointer flex justify-center items-center text-5xl font-light w-[50px] h-full text-center border border-r-0 rounded-tl-full rounded-bl-full text-[#333] ${
+            deleted ? "bg-gray-100 opacity-35 pointer-events-none" : ""
+          }`}
           onClick={() => {
             if (quantity > 1) setQuantity(quantity - 1);
           }}
@@ -26,7 +29,9 @@ const Button = ({
           -
         </button>
         <input
-          className="border py-2 text-center outline-0 max-w-24"
+          className={`border py-2 text-center outline-0 max-w-24 ${
+            deleted ? "bg-gray-100 opacity-35 pointer-events-none" : ""
+          }`}
           onChange={(e) => {
             const input = e.target.value;
 
@@ -34,20 +39,26 @@ const Button = ({
               setQuantity(+e.target.value);
             }
           }}
-          value={quantity}
+          value={deleted ? 0 : quantity}
         />
         <button
-          className="cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333]"
+          className={`cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333] ${
+            deleted ? "bg-gray-100 opacity-35 pointer-events-none" : ""
+          }`}
           onClick={() => {
             if (quantity < 10) setQuantity(quantity + 1);
           }}
         >
           +
         </button>
-        <span className="ml-4 text-xs">{countOnStock} sản phẩm có sẵn</span>
+        {deleted ? (
+          <span className="ml-4 text-xl text-red-700">Sản phẩm ngừng bán</span>
+        ) : (
+          <span className="ml-4 text-xs">{countOnStock} sản phẩm có sẵn</span>
+        )}
       </div>
     </div>
   );
 };
 
-export default Button;
+export default ButtonQuantity;

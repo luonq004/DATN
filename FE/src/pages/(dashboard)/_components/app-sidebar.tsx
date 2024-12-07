@@ -97,10 +97,15 @@ const data = {
       icon: Image,
     },
     {
-      title: "Voucher",
-      url: "/admin/voucher",
-      icon: Ticket,
+      title: "Tin nhắn",
+      url: "/admin/message",
+      icon: Image,
     },
+    // {
+    //   title: "Settings",
+    //   url: "/dashboard/settings",
+    //   icon: Settings,
+    // },
   ],
 };
 

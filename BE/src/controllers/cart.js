@@ -133,7 +133,9 @@ export const addToCart = async (req, res) => {
 
     // kiểm tra xem sản phẩm hoặc biến thể có bị xóa mềm hay không
     if (product.deleted === true || variantValue.deleted === true) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Sản phẩm hoặc thuộc tính đã bị xóa" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Sản phẩm hoặc thuộc tính đã bị xóa" });
     }
 
     //Check variantId có trong SP đó hay ko
@@ -635,8 +637,8 @@ export const selectedOneItem = async (req, res) => {
     );
 
     if (existProductIndex !== -1) {
-      cart.products[existProductIndex].selected = !cart.products[existProductIndex]
-        .selected;
+      cart.products[existProductIndex].selected =
+        !cart.products[existProductIndex].selected;
     } else {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -648,7 +650,7 @@ export const selectedOneItem = async (req, res) => {
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
-}
+};
 
 export const selectedAllItem = async (req, res) => {
   try {
@@ -681,11 +683,10 @@ export const selectedAllItem = async (req, res) => {
 
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
-
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
-}
+};
 
 export const removeAllItemSelected = async (req, res) => {
   try {

@@ -105,7 +105,7 @@ const WishListPage = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container h-screen">
       <div className="h-[30px] md:h-[60px]"></div>
 
       <h1 className="uppercase font-raleway text-4xl text-center text-[#333]">

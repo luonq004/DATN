@@ -33,9 +33,9 @@ import sendEmailRouter from "./routers/send-email";
 import sliderRouter from "./routers/slider";
 import wishlistRouter from "./routers/wishlist";
 import NotificationRouter from "./routers/Notification";
+import conversationRouter from "./routers/conversation";
 
 const app = express();
-
 
 // Tạo HTTP server từ app Express
 const server = http.createServer(app);
@@ -90,7 +90,7 @@ app.use("/api/comment", commentRouter);
 app.use("/api", wishlistRouter);
 app.use("/api/dashboard", dashboardRouter);
 
-
+app.use("/api/conversation", conversationRouter);
 
 // Khởi động server
 app.use((err, req, res, next) => {
