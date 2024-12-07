@@ -15,6 +15,14 @@ export const variantSchema = z
       .gte(1, {
         message: "Giá phải lớn hơn hoặc bằng 1",
       }),
+
+    originalPrice: z.coerce
+      .number({
+        message: "Giá gốc phải là số",
+      })
+      .gte(1, {
+        message: "Giá gốc phải lớn hơn hoặc bằng 1",
+      }),
     priceSale: z.coerce
       .number({
         message: "Giá giảm giá phải là số",

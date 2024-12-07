@@ -23,6 +23,8 @@ import {
 import { useUserContext } from "@/common/context/UserProvider";
 
 import { useAddToCart } from "../actions/useAddToCart";
+import { toast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
 
 const PreviewProduct = ({
   isOpen,
@@ -167,7 +169,21 @@ const PreviewProduct = ({
       : null;
 
   const handleAddToCart = async () => {
-    if (!variantChoose) return;
+    if (!variantChoose) {
+      toast({
+        variant: "destructive",
+        title: "Vui lòng chọn thuộc tính sản phẩm",
+      });
+      return;
+    }
+
+    if (quantity < 0) {
+      toast({
+        variant: "destructive",
+        title: "Số lượng không hợp lệ",
+      });
+      return;
+    }
     const data = {
       productId: productPopup?._id,
       variantId: variantChoose._id,
@@ -182,7 +198,34 @@ const PreviewProduct = ({
     ? variantChoose.countOnStock
     : productPopup?.countOnStock;
 
-  console.log("selectedAttributes", selectedAttributes);
+  // console.log("selectedAttributes", selectedAttributes);
+
+  const images = [
+    productPopup?.image,
+    ...(productPopup?.variants
+      ? productPopup.variants.map((v) => v.image)
+      : []),
+  ];
+
+  // console.log("productPopup", productPopup);
+  const activeData =
+    productPopup && productPopup.comments.filter((item) => !item.deleted); // Lọc ra các item chưa bị xóa
+  const totalRating =
+    productPopup && activeData.reduce((sum, item) => sum + item.rating, 0); // Tính tổng rating
+  const averageRating = productPopup && totalRating / activeData.length; // Tính trung bình rating
+
+  const targetId = "674f3deca63479f361d8f499";
+
+  const exists = productPopup?.category.find(
+    (category) => category._id == targetId
+  )
+    ? true
+    : false;
+
+  const categories =
+    productPopup?.category.length >= 2 && exists
+      ? productPopup?.category.filter((category) => category._id !== targetId)
+      : productPopup?.category;
 
   return createPortal(
     <div
@@ -203,23 +246,21 @@ const PreviewProduct = ({
           <div className="px-[15px] mx-auto mb-[30px] md:mb-0">
             <Carousel className="w-full max-w-xs" setApi={setApiImage}>
               <CarouselContent>
-                {productPopup?.variants.map(
-                  (variant: Variant, index: number) => (
-                    <CarouselItem key={index}>
-                      <img
-                        className="w-full"
-                        src={variant.image}
-                        alt="Anh san pham"
-                        loading="lazy"
-                      />
-                    </CarouselItem>
-                  )
-                )}
+                {images?.map((img, index: number) => (
+                  <CarouselItem key={index}>
+                    <img
+                      className="w-full"
+                      src={img}
+                      alt="Anh san pham"
+                      loading="lazy"
+                    />
+                  </CarouselItem>
+                ))}
               </CarouselContent>
             </Carousel>
 
             <div className="flex items-center mt-4 gap-2">
-              {productPopup?.variants.map((variant: Variant, index: number) => (
+              {images.map((img, index: number) => (
                 <div
                   key={index}
                   className={`${
@@ -229,8 +270,8 @@ const PreviewProduct = ({
                   <img
                     key={index}
                     className={`size-14 `}
-                    src={variant.image}
-                    alt=""
+                    src={img}
+                    alt="Ảnh sản phẩm"
                     onClick={() => apiImage?.scrollTo(index)}
                   />
                 </div>
@@ -241,32 +282,72 @@ const PreviewProduct = ({
           {/* Section 2 */}
           <div className="px-[15px]">
             {/* Category */}
-            {/* <h5 className="uppercase text-[#555] text-sm leading-5">
-              thời trang mới
-            </h5> */}
+            <div className="uppercase text-[#555] text-sm leading-5 flex gap-4 mb-2">
+              {(productPopup &&
+                categories.map((category) => (
+                  <Link
+                    onClick={onClose}
+                    to={`/shopping?category=${category._id}`}
+                    className=" hover:text-blue-900 hover:underline"
+                  >
+                    {category.name}
+                  </Link>
+                ))) ||
+                "Không có danh mục"}
+            </div>
             <h2 className="text-3xl leading-8 uppercase font-black font-raleway text-[#343434] mb-[25px]">
               {productPopup?.name}
             </h2>
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center md:mb-[25px]">
               <span className="uppercase text-lg text-[#555]">
                 giá:{" "}
-                <span className="text-[#b8cd06]">
-                  {variantChoose
-                    ? formatCurrency(variantChoose?.price)
-                    : formatCurrency(productPopup?.price ?? 0)}{" "}
-                  VNĐ
+                <span className="text-red-700 font-semibold text-sm">
+                  {variantChoose ? (
+                    variantChoose.priceSale > 0 ? (
+                      <>
+                        <span className=" text-xl">
+                          {formatCurrency(variantChoose.priceSale ?? 0)} VNĐ
+                        </span>
+                        <span className="line-through ml-3 text-[#bcbcbc]">
+                          {formatCurrency(variantChoose.price)} VNĐ
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-xl">
+                        {formatCurrency(variantChoose.price)} VNĐ
+                      </span>
+                    )
+                  ) : productPopup?.priceSale > 0 ? (
+                    <>
+                      <span className="text-xl">
+                        {formatCurrency(productPopup?.priceSale)} VNĐ
+                      </span>
+                      <span className="line-through ml-3 text-[#bcbcbc]">
+                        {formatCurrency(productPopup?.price)} VNĐ
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xl">
+                      {formatCurrency(productPopup?.price)} VNĐ
+                    </span>
+                  )}
                 </span>
               </span>
 
               {/* Star Rating */}
               <div className="flex gap-0.5 mb-[25px] md:mb-0">
-                <TiStarFullOutline className="text-[#b8cd06]" />
-                <TiStarFullOutline className="text-[#b8cd06]" />
-                <TiStarFullOutline className="text-[#b8cd06]" />
-                <TiStarFullOutline className="text-[#b8cd06]" />
-                <TiStarFullOutline className="text-gray-300" />
-                <span className="text-[13px] pl-1 text-[#888] leading-5">
-                  128 Đánh giá
+                {[...Array(5)].map((_, index) => (
+                  <TiStarFullOutline
+                    key={index}
+                    className={`text-[#b8cd06] ${
+                      index < averageRating || 5
+                        ? "text-[#b8cd06]"
+                        : "text-[#ccc]"
+                    }`}
+                  />
+                ))}
+                <span className="text-[13px] text-[#888] leading-5">
+                  {(productPopup && productPopup.comments.length) || 0} Đánh giá
                 </span>
               </div>
             </div>
@@ -290,7 +371,7 @@ const PreviewProduct = ({
                   <ToggleGroup
                     className="justify-start gap-2 w-full md:w-8/12 flex-wrap px-[15px]"
                     type="single"
-                    // defaultValue={value[0].value}
+                    disabled={productPopup?.deleted}
                   >
                     {(value as string[]).map((item: string, idx: number) => {
                       if (item.split(":")[1].startsWith("#")) {
@@ -346,10 +427,14 @@ const PreviewProduct = ({
                 số lượng:
               </span>
 
-              <div className="flex flex-col xl:flex-row md:items-start xl:items-center h-[42px] ">
+              <div className="flex flex-col xl:flex-row md:items-start xl:items-center xl:h-[42px] ">
                 <div className="flex items-center h-[42px]">
                   <button
-                    className="cursor-pointer flex justify-center items-center text-5xl font-light w-[50px] h-full text-center border border-r-0 rounded-tl-full rounded-bl-full text-[#333] outline-0"
+                    className={`cursor-pointer flex justify-center items-center text-5xl font-light w-[50px] h-full text-center border border-r-0 rounded-tl-full rounded-bl-full text-[#333] outline-0 ${
+                      productPopup?.deleted
+                        ? "bg-gray-100 opacity-35 pointer-events-none"
+                        : ""
+                    }`}
                     onClick={() => {
                       if (quantity > 1) setQuantity(quantity - 1);
                     }}
@@ -357,7 +442,11 @@ const PreviewProduct = ({
                     -
                   </button>
                   <input
-                    className="border py-2 text-center outline-0 max-w-24"
+                    className={`border py-2 text-center outline-0 max-w-24 ${
+                      productPopup?.deleted
+                        ? "bg-gray-100 opacity-35 pointer-events-none"
+                        : ""
+                    }`}
                     onChange={(e) => {
                       const input = e.target.value;
 
@@ -365,10 +454,14 @@ const PreviewProduct = ({
                         setQuantity(+e.target.value);
                       }
                     }}
-                    value={quantity}
+                    value={productPopup?.deleted ? 0 : quantity}
                   />
                   <button
-                    className="cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333] outline-0"
+                    className={`cursor-pointer flex justify-center items-center text-3xl font-light w-[50px] h-full text-center border border-l-0 rounded-tr-full rounded-br-full text-[#333] ${
+                      productPopup?.deleted
+                        ? "bg-gray-100 opacity-35 pointer-events-none"
+                        : ""
+                    }`}
                     onClick={() => {
                       setQuantity(+quantity + 1);
                     }}
@@ -377,9 +470,15 @@ const PreviewProduct = ({
                   </button>
                 </div>
 
-                <span className="ml-0 xl:ml-4 text-xs font-questrial mt-3 xl:mt-0">
-                  {countStock} sản phẩm có sẵn
-                </span>
+                {productPopup?.deleted ? (
+                  <span className="ml-4 text-xl text-red-700 mt-3 xl:mt-0 md:mb-4 xl:mb-0">
+                    Sản phẩm ngừng bán
+                  </span>
+                ) : (
+                  <span className="ml-4 text-xs">
+                    {countStock} sản phẩm có sẵn
+                  </span>
+                )}
               </div>
             </div>
 
@@ -388,6 +487,8 @@ const PreviewProduct = ({
               <button
                 className={`btn-add text-white uppercase flex-1 ${
                   isAdding ? "cursor-not-allowed" : ""
+                } ${
+                  productPopup?.deleted ? "opacity-30 pointer-events-none" : ""
                 }`}
                 onClick={handleAddToCart}
                 disabled={isAdding}
@@ -396,15 +497,19 @@ const PreviewProduct = ({
                   <span className="icon">
                     <IoBagHandleSharp />
                   </span>
-                  <span className="text">thêm vào giỏ hàng</span>
+                  <span className="text">thêm giỏ hàng</span>
                 </span>
               </button>
-              <button className="btn-add text-white uppercase flex-1">
+              <button
+                className={`btn-add text-white uppercase flex-1 ${
+                  productPopup?.deleted ? "opacity-30 pointer-events-none" : ""
+                }`}
+              >
                 <span className="btn-add__wrapper text-[11px] px-[30px] border rounded-full text-[#343434] pt-[17px] pb-[15px] font-raleway">
                   <span className="icon">
                     <SlHeart />
                   </span>
-                  <span className="text">thêm vào yêu thích</span>
+                  <span className="text">thêm yêu thích</span>
                 </span>
               </button>
             </div>

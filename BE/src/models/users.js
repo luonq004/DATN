@@ -26,7 +26,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["Admin", "User", "Employee"],
+      enum: ["Admin", "User"],
       default: "User",
     },
     isBanned: {
@@ -82,15 +82,10 @@ const userSchema = new Schema(
       },
     ],
 
-    // wishList: [
-    //   products: [
-    //     {
-    //       type: mongoose.Schema.Types.ObjectId,
-    //       ref: "Product",
-    //     },
-
-    //   ]
-    // ],
+    // chatted: {
+    //   type: Boolean,
+    //   default: false,
+    // },
   },
   {
     collection: "users",

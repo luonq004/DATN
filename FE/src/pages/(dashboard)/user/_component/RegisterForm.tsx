@@ -194,7 +194,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
                 className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
               >
                 <option value="Admin">Quản trị</option>
-                <option value="Employee">Nhân viên</option>
                 <option value="User">Người dùng</option>
               </select>
             </div>

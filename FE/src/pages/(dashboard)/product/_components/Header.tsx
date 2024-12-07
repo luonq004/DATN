@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BadgePlus, LayoutGrid, TableProperties } from "lucide-react";
+import { BadgePlus } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 
 const Header = () => {
@@ -17,7 +17,7 @@ const Header = () => {
 
   return (
     <div className="sm:flex justify-between items-center">
-      <h4 className="text-xl font-medium">Products</h4>
+      <h4 className="text-xl font-semibold">Danh sách sản phẩm</h4>
 
       <div className="flex gap-10">
         <Tabs
@@ -25,7 +25,7 @@ const Header = () => {
           onValueChange={(layout) => handleChange(layout)}
         >
           <div className="flex items-center">
-            <TabsList>
+            <TabsList className="border">
               <TabsTrigger value="display">Danh sách hiển thị</TabsTrigger>
               <TabsTrigger value="hidden">Danh sách ẩn</TabsTrigger>
             </TabsList>
@@ -34,8 +34,7 @@ const Header = () => {
 
         <Link to="add">
           <Button className="text-lg font-light flex gap-3 px-4 bg-orange-500">
-            <BadgePlus />{" "}
-            <span className="hidden md:block">Add new product</span>
+            <BadgePlus /> <span className="hidden lg:block">Thêm sản phẩm</span>
           </Button>
         </Link>
       </div>

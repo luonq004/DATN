@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import { SlHeart } from "react-icons/sl";
-import { IoBagHandleSharp } from "react-icons/io5";
-import { IoSearch } from "react-icons/io5";
 import { IoIosClose } from "react-icons/io";
+import { IoBagHandleSharp, IoSearch } from "react-icons/io5";
+import { SlHeart } from "react-icons/sl";
 
 import MobileNav from "@/components/MobileNav";
 
-import { Link, useLocation } from "react-router-dom";
-import { useClerk, useUser } from "@clerk/clerk-react";
 import { useUserContext } from "@/common/context/UserProvider";
 import useCart from "@/common/hooks/useCart";
-import io from "socket.io-client";
-import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
+import { useClerk, useUser } from "@clerk/clerk-react";
+import axios from "axios";
+import { Link, useLocation } from "react-router-dom";
+import io from "socket.io-client";
 
 const socket = io("http://localhost:3000");
 
@@ -39,8 +38,6 @@ const Header = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] =
     useState<boolean>(false);
   const [isMarkAllDropdownOpen, setIsMarkAllDropdownOpen] = useState(false);
-  const [page, setPage] = useState(1); // Trang hiện tại
-  const [hasMore, setHasMore] = useState(true);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -105,15 +102,12 @@ const Header = () => {
   // Lấy thông báo từ API
   // Fetch thông báo từ API
   const fetchNotifications = async () => {
-    if (!hasMore || !_id) return;
-
     try {
       const response = await axios.get(
         `http://localhost:8080/api/notifications/${_id}`
       );
 
-      const { notifications: newNotifications = [], hasNextPage } =
-        response.data || {};
+      const { notifications: newNotifications = [] } = response.data || {};
 
       if (!Array.isArray(newNotifications)) {
         console.error(
@@ -128,12 +122,11 @@ const Header = () => {
         ...prevNotifications,
         ...newNotifications,
       ]);
-      setHasMore(hasNextPage);
-      setPage((prevPage) => prevPage + 1);
 
       // Đếm thông báo chưa đọc
+      // Tính lại số lượng thông báo chưa đọc từ dữ liệu mới
       const unreadCount = newNotifications.filter((n) => !n.isRead).length;
-      setUnreadCount((prevCount) => prevCount + unreadCount);
+      setUnreadCount(unreadCount);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -150,7 +143,11 @@ const Header = () => {
           notif._id === notificationId ? { ...notif, isRead: true } : notif
         )
       );
-      setUnreadCount((prevCount) => prevCount - 1); // Giảm số lượng thông báo chưa đọc
+      // Lấy lại số lượng thông báo chưa đọc từ server sau khi thay đổi
+      const response = await axios.get(
+        `http://localhost:8080/api/notifications/unread-count/${_id}`
+      );
+      setUnreadCount(response.data.unreadCount);
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -209,21 +206,6 @@ const Header = () => {
   useEffect(() => {
     if (_id) fetchNotifications();
   }, [_id]);
-
-  // Effect: Xử lý cuộn xuống cuối để tải thêm thông báo
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - 100
-      ) {
-        fetchNotifications();
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [page, hasMore]);
 
   // Lắng nghe thông báo mới từ Socket.IO
   useEffect(() => {
@@ -423,9 +405,12 @@ const Header = () => {
                               <div>
                                 {/* Nội dung thông báo */}
                                 <div className="flex-1 text-xs text-gray-800">
-                                  <p className="truncate text-wrap">
+                                  <Link
+                                    to={"/users/order-history"}
+                                    className="truncate text-wrap"
+                                  >
                                     {notification.message}
-                                  </p>
+                                  </Link>
                                 </div>
 
                                 {/* Thời gian thông báo */}
@@ -529,22 +514,26 @@ const Header = () => {
                       </li>
                     ))}
 
-                    <li className="!list-none">
+                    {/* <li className="!list-none">
                       <IoSearch
                         className="text-2xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                         onClick={() => setIsOpen(!isOpen)}
                       />
-                    </li>
+                    </li> */}
                   </ul>
                 </nav>
 
                 <div className="lg:hidden flex gap-3">
-                  <IoSearch
+                  {/* <IoSearch
                     className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                     onClick={() => setIsOpen(!isOpen)}
                   />
                   <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
 
+                  /> */}
+                  <Link to="/wishlist">
+                    <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                  </Link>
                   {/* Thông báo */}
                   <div
                     className="relative lg:hidden border-[#eee]  text-[10px] leading-5  uppercase"
@@ -575,27 +564,64 @@ const Header = () => {
 
                     {/* Dropdown Thông báo */}
                     {isNotificationsOpen && (
-                      <div className="absolute right-0 mt-2 w-[300px] bg-white shadow-2xl rounded-lg max-h-80 overflow-y-auto border border-gray-200">
+                      <div
+                        className="absolute right-0 mt-2 w-[300px] bg-white shadow-2xl rounded-lg max-h-96 overflow-y-auto border border-gray-200 scrollbar-hide"
+                        style={{
+                          scrollbarWidth: "none", // Firefox
+                          msOverflowStyle: "none", // IE & Edge
+                        }}
+                        onMouseLeave={() => {
+                          setIsMarkAllDropdownOpen(false);
+                          setOpenDropdown(null);
+                        }}
+                      >
+                        <div className="p-2 flex justify-between items-center">
+                          <h1 className="text-[13px] font-bold">
+                            Thông báo mới nhận
+                          </h1>
+
+                          {/* Nút ba chấm */}
+                          <div className="relative">
+                            <button
+                              onClick={() =>
+                                setIsMarkAllDropdownOpen((prev) => !prev)
+                              }
+                              className="p-2 text-[23px]  transition"
+                            >
+                              ...
+                            </button>
+                            {isMarkAllDropdownOpen && (
+                              <div className="absolute right-2 mt-0 bg-white shadow-lg shadow-gray-500 rounded-md z-10">
+                                <button
+                                  onClick={markAllAsRead}
+                                  className="block w-[200px] py-2 text-sm rounded-md  text-gray-800 hover:bg-gray-100"
+                                >
+                                  Đánh dấu tất cả là đã đọc
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
                         {notifications.length > 0 ? (
                           <ul className="space-y-2 p-2">
                             {notifications.map((notification) => (
                               <li
                                 key={notification._id}
-                                className={`flex items-center p-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-all duration-200 ${
+                                className={`flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-all duration-200 ${
                                   !notification.isRead
-                                    ? "bg-[#fbffd2] font-semibold"
+                                    ? "bg-[#f5ffcc] font-semibold"
                                     : "bg-gray-50"
                                 }`}
                                 onClick={() =>
                                   handleNotificationClick(notification._id)
                                 }
                               >
-                                {/* Icon Thông báo */}
                                 {notification.productImage && (
                                   <img
                                     src={notification.productImage}
                                     alt="Product"
-                                    className="w-12 h-12 object-cover rounded-md"
+                                    className="w-14 h-14 object-cover rounded-md"
                                   />
                                 )}
 
@@ -613,12 +639,42 @@ const Header = () => {
                                       notification.createdAt
                                     ).toLocaleString()}
                                   </div>
+
+                                  {/* Nút ba chấm */}
+                                  <div className="relative">
+                                    <button
+                                      className="p-2 text-[20px] text-gray-500 hover:text-gray-700"
+                                      onClick={() =>
+                                        setOpenDropdown((prev) =>
+                                          prev === notification._id
+                                            ? null
+                                            : notification._id
+                                        )
+                                      }
+                                    >
+                                      ...
+                                    </button>
+                                    {openDropdown === notification._id && (
+                                      <div className="absolute right-1 top-7 bg-white shadow-lg rounded-md z-10">
+                                        <button
+                                          className="block px-4 py-2 text-sm text-red-600 "
+                                          onClick={() =>
+                                            handleDeleteNotification(
+                                              notification._id
+                                            )
+                                          }
+                                        >
+                                          Xóa thông báo
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </li>
                             ))}
                           </ul>
                         ) : (
-                          <div className="p-4 text-center text-xs text-gray-500">
+                          <div className="p-6 text-center text-xs text-gray-500">
                             Không có dữ liệu!
                           </div>
                         )}
@@ -627,10 +683,12 @@ const Header = () => {
                   </div>
 
                   <span className="relative mr-2">
-                    <IoBagHandleSharp className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
-                    <span className="absolute size-5 rounded-full text-white text-[11px] leading-5 text-center bg-[#b8cd06] top-[-39%] right-[-23%]">
-                      {cart?.products?.length || 0}
-                    </span>
+                    <Link to="/cart">
+                      <IoBagHandleSharp className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                      <span className="absolute size-5 rounded-full text-white text-[11px] leading-5 text-center bg-[#b8cd06] top-[-39%] right-[-23%]">
+                        {cart?.products?.length || 0}
+                      </span>
+                    </Link>
                   </span>
                 </div>
               </div>

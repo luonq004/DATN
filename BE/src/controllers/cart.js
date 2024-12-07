@@ -6,10 +6,9 @@ import Variant from "../models/variant";
 import VoucherUsage from "../models/voucherUsage";
 
 const updateTotal = async (cart) => {
-  let total = cart.products.reduce(
-    (acc, item) => { return item.selected ? acc + item.variantItem.price * item.quantity : acc },
-    0
-  );
+  let total = cart.products.reduce((acc, item) => {
+    return item.selected ? acc + item.variantItem.price * item.quantity : acc;
+  }, 0);
   cart.subTotal = total;
   // console.log(cart.voucher)
   let totalDiscount = 0;
@@ -97,7 +96,7 @@ export const getCartByUserId = async (req, res) => {
 
     await cart.save();
     cart = await updateTotal(cart);
-    console.log("cart", cart)
+    console.log("cart", cart);
     cart.total += 30000;
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
@@ -117,7 +116,7 @@ export const addToCart = async (req, res) => {
       .populate("products.variantItem")
       .populate("voucher");
 
-    console.log("CART: ", cart);
+    // console.log("CART: ", cart);
 
     const product = await Product.findOne({ _id: productId });
     const variantValue = await Variant.findOne({ _id: variantId });
@@ -133,7 +132,9 @@ export const addToCart = async (req, res) => {
 
     // kiểm tra xem sản phẩm hoặc biến thể có bị xóa mềm hay không
     if (product.deleted === true || variantValue.deleted === true) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Sản phẩm hoặc thuộc tính đã bị xóa" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Sản phẩm hoặc thuộc tính đã bị xóa" });
     }
 
     //Check variantId có trong SP đó hay ko
@@ -146,7 +147,7 @@ export const addToCart = async (req, res) => {
         .json({ message: "Không tìm thấy Biến thể" });
     }
 
-    console.log("ADD TO CART");
+    // console.log("ADD TO CART");
 
     if (!cart) {
       cart = await Cart.create({
@@ -156,10 +157,10 @@ export const addToCart = async (req, res) => {
         total: 0,
       });
 
-      console.log("CREATE CART");
+      // console.log("CREATE CART");
     }
 
-    console.log("CONTINUE");
+    // console.log("CONTINUE");
 
     //ktra sp trùng lặp trong giỏ hàng
     const existProductIndex = cart.products.findIndex(
@@ -169,7 +170,7 @@ export const addToCart = async (req, res) => {
         item.variantItem._id.toString() == variantId
     );
 
-    console.log("EXIST: ", existProductIndex);
+    // console.log("EXIST: ", existProductIndex);
 
     //nếu có sp trùng lặp thì tăng số lượng
     if (existProductIndex !== -1) {
@@ -635,8 +636,8 @@ export const selectedOneItem = async (req, res) => {
     );
 
     if (existProductIndex !== -1) {
-      cart.products[existProductIndex].selected = !cart.products[existProductIndex]
-        .selected;
+      cart.products[existProductIndex].selected =
+        !cart.products[existProductIndex].selected;
     } else {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -648,7 +649,7 @@ export const selectedOneItem = async (req, res) => {
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
-}
+};
 
 export const selectedAllItem = async (req, res) => {
   try {
@@ -667,13 +668,19 @@ export const selectedAllItem = async (req, res) => {
     //nếu tất cả sản phẩm đã được chọn thì bỏ chọn tất cả
     if (selected) {
       cart.products.forEach((item) => {
-        if (item.productItem.deleted === false && item.variantItem.deleted === false) {
+        if (
+          item.productItem.deleted === false &&
+          item.variantItem.deleted === false
+        ) {
           item.selected = false;
         }
       });
     } else {
       cart.products.forEach((item) => {
-        if (item.productItem.deleted === false && item.variantItem.deleted === false) {
+        if (
+          item.productItem.deleted === false &&
+          item.variantItem.deleted === false
+        ) {
           item.selected = true;
         }
       });
@@ -681,11 +688,10 @@ export const selectedAllItem = async (req, res) => {
 
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
-
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
-}
+};
 
 // test
 export const updateCart = async (req, res) => {

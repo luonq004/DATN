@@ -40,11 +40,9 @@ const productSchema = new mongoose.Schema(
       type: Number,
     },
 
-    // type: {
-    //   type: String,
-    //   enum: ["simple", "variable"],
-    //   default: "simple",
-    // },
+    totalOriginalPrice: {
+      type: Number,
+    },
 
     description: {
       type: String,

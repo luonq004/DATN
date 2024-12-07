@@ -4,7 +4,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 export async function getProductEdit(id: string) {
   try {
     const response = await axios.get(
-      `http://localhost:8080/api/products/${id}`
+      `http://localhost:8080/api/products/${id}/forEdit`
     );
     document.title = `Page: ${response?.data.name}`;
     return response?.data;

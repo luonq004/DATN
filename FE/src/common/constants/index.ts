@@ -8,10 +8,10 @@ export const sidebarLinks = [
 export const tabProductData = [
   {
     value: "attributes",
-    label: "Attributes",
+    label: "Thuốc tính",
   },
   {
     value: "variations",
-    label: "Variations",
+    label: "Biến thể",
   },
 ];

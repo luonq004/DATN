@@ -5,6 +5,7 @@ import {
   getAllNotifications,
   getNotifications,
   markAsRead,
+  unreadCount,
 } from "../controllers/Notification";
 
 const NotificationRouter = express.Router();
@@ -19,5 +20,6 @@ NotificationRouter.delete("/:id", deleteNotification);
 
 // Route đánh dấu thông báo là đã đọc
 NotificationRouter.patch("/mark-as-read/:id", markAsRead);
+NotificationRouter.get("/unread-count/:userId", unreadCount);
 
 export default NotificationRouter;

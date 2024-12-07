@@ -223,7 +223,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
                 className="w-full border rounded px-4 py-2 "
               >
                 <option value="Admin">Quản trị</option>
-                <option value="Employee">Nhân viên</option>
                 <option value="User">Người dùng</option>
               </select>
             </div>

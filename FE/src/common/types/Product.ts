@@ -19,6 +19,7 @@ export interface IProduct {
   category: string[];
   countOnStock: number;
   price: number;
+  priceSale: number;
   description: string;
   image: string;
   reviews: string[];
@@ -49,10 +50,11 @@ interface Address {
   updatedAt: string;
 }
 
-interface Category {
+export interface Category {
   _id: string;
   name: string;
   slug: string;
+  deleted: boolean;
   __v: number;
 }
 

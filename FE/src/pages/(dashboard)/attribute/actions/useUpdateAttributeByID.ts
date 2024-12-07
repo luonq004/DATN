@@ -11,7 +11,7 @@ export const useUpdateAttributeByID = (id: string) => {
 
     onSuccess: () => {
       toast({
-        title: "Cập nhât thuộc tính thành công",
+        title: "Cập nhật thuộc tính thành công",
       });
       queryClient.invalidateQueries({
         queryKey: ["Attributes"],
@@ -20,7 +20,7 @@ export const useUpdateAttributeByID = (id: string) => {
 
     onError: (error: Error) => {
       toast({
-        title: "Cập nhât thuộc tính thất bại",
+        title: "Cập nhật thuộc tính thất bại",
       });
     },
   });

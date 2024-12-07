@@ -1,13 +1,14 @@
 import Product from "../models/product";
 import slugify from "slugify";
 import Variant from "../models/variant";
+import Category from "../models/category";
 
 export const getAllProducts = async (req, res) => {
   const {
     _page = 1,
     _limit = 9,
     _sort = "createAt",
-    _order = "asc",
+    _order = "desc",
     _expand = true,
     _price,
     _category,
@@ -21,7 +22,7 @@ export const getAllProducts = async (req, res) => {
   };
   const populateOptions = _expand
     ? [
-        { path: "category", match: { deleted: false }, select: "name" },
+        { path: "category", select: "name", match: { deleted: false } },
         { path: "attribites", match: { deleted: false } },
         { path: "comments", match: { deleted: false } },
         {
@@ -53,7 +54,7 @@ export const getAllProducts = async (req, res) => {
     query.deleted = { $ne: true };
   }
 
-  console.log(query);
+  // console.log(query);
 
   try {
     const result = await Product.paginate(query, { ...options });
@@ -94,6 +95,9 @@ export const getProductById = async (req, res) => {
         select: "-__v", // Loại bỏ __v cho các trường variants
       })
       .populate({
+        path: "category",
+      })
+      .populate({
         path: "comments",
         match: { deleted: false },
         populate: {
@@ -108,9 +112,39 @@ export const getProductById = async (req, res) => {
       return res.status(404).json({ message: "No products found" });
     }
 
-    // setTimeout(() => {
-    //   res.json(data);
-    // }, 5000);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getProductByIdForEdit = async (req, res) => {
+  try {
+    const data = await Product.findOne({ _id: req.params.id })
+      .populate({
+        path: "variants",
+        populate: {
+          path: "values",
+          model: "AttributeValue",
+          match: { deleted: false },
+          select: "-__v", // Loại bỏ __v cho các trường values
+        },
+        select: "-__v", // Loại bỏ __v cho các trường variants
+      })
+      .populate({
+        path: "comments",
+        match: { deleted: false },
+        populate: {
+          path: "userId",
+          model: "Users",
+          select: { firstName: 1, lastName: 1, imageUrl: 1 },
+        },
+      })
+      .select("-__v"); // Loại bỏ __v cho sản phẩm chính
+
+    if (!data) {
+      return res.status(404).json({ message: "No products found" });
+    }
 
     res.json(data);
   } catch (error) {
@@ -166,7 +200,7 @@ export const getProductForEdit = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const {
+    let {
       name,
       image,
       price,
@@ -179,15 +213,32 @@ export const createProduct = async (req, res) => {
 
     const slug = slugify(req.body.name, "-");
 
+    if (!category.length) {
+      category = ["674f3deca63479f361d8f499"];
+    } else {
+      if (category.length > 1) {
+        for (let i = 0; i < category.length; i++) {
+          const existCategory = await Category.findOne({ _id: category[i] });
+
+          if (!existCategory) {
+            return res.status(400).json({ message: "Danh mục không tồn tại" });
+          }
+        }
+      }
+    }
+
     const variantsId = [];
     let priceFinal = Infinity;
     let priceSaleFinal = -Infinity;
     let count = 0;
+    let totalOriginalPrice = 0;
 
     for (let i = 0; i < variants.length; i++) {
       const values = variants[i].values.map((obj) => Object.values(obj)[0]);
 
       count += variants[i].countOnStock;
+      totalOriginalPrice +=
+        variants[i].originalPrice * variants[i].countOnStock;
 
       if (priceFinal > variants[i].price) {
         priceFinal = variants[i].price;
@@ -201,9 +252,8 @@ export const createProduct = async (req, res) => {
         price: variants[i].price,
         priceSale: variants[i].priceSale,
         values,
+        originalPrice: variants[i].originalPrice,
         countOnStock: variants[i].countOnStock,
-        // image:
-        //   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
         image: variants[i].image,
       }).save();
       variantsId.push(variant._id);
@@ -213,9 +263,8 @@ export const createProduct = async (req, res) => {
       name,
       price: priceFinal,
       priceSale: priceSaleFinal,
+      totalOriginalPrice,
       countOnStock: count,
-      // image:
-      //   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
       image,
       category,
       description,
@@ -235,7 +284,7 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const {
+    let {
       name,
       image,
       priceSale,
@@ -247,12 +296,25 @@ export const updateProduct = async (req, res) => {
 
     const slug = slugify(req.body.name, "-");
 
-    // console.log("Variant:", variants);
+    if (!category.length) {
+      category = ["674f3deca63479f361d8f499"];
+    } else {
+      if (category.length > 1) {
+        for (let i = 0; i < category.length; i++) {
+          const existCategory = await Category.findOne({ _id: category[i] });
+
+          if (!existCategory) {
+            return res.status(400).json({ message: "Danh mục không tồn tại" });
+          }
+        }
+      }
+    }
 
     const variantsId = [];
     let priceFinal = Infinity;
     let priceSaleFinal = -Infinity;
     let count = 0;
+    let totalOriginalPrice = 0;
 
     const data = await Product.findOne({ _id: req.params.id });
 
@@ -261,6 +323,8 @@ export const updateProduct = async (req, res) => {
     for (let i = 0; i < variants.length; i++) {
       // const values = variants[i].values.map((obj) => Object.values(obj)[0]);
       count += variants[i].countOnStock;
+      totalOriginalPrice +=
+        variants[i].originalPrice * variants[i].countOnStock;
 
       if (priceFinal > variants[i].price) {
         priceFinal = variants[i].price;
@@ -277,6 +341,7 @@ export const updateProduct = async (req, res) => {
             price: variants[i].price,
             priceSale: variants[i].priceSale,
             // values,
+            originalPrice: variants[i].originalPrice,
             countOnStock: variants[i].countOnStock,
             image: variants[i].image,
           },
@@ -290,6 +355,7 @@ export const updateProduct = async (req, res) => {
         const variant = await Variant({
           price: variants[i].price,
           priceSale: variants[i].priceSale,
+          originalPrice: variants[i].originalPrice,
           values,
           countOnStock: variants[i].countOnStock,
           image: variants[i].image,
@@ -312,6 +378,7 @@ export const updateProduct = async (req, res) => {
         name,
         price: priceFinal,
         priceSale: priceSaleFinal,
+        totalOriginalPrice,
         countOnStock: count,
         image,
         category,

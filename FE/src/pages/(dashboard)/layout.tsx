@@ -1,28 +1,20 @@
-import { useUser } from "@clerk/clerk-react";
-import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import Sidebar from "./_components/SideBar";
-import { useUserContext } from "@/common/context/UserProvider";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { useUser } from "@clerk/clerk-react";
+import { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { AppSidebar } from "./_components/app-sidebar";
+import { useUserContext } from "@/common/context/UserProvider";
 
 const LayoutAdmin = () => {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState(true);
+  const { _id } = useUserContext();
 
   // const { role } = useUserContext();
 
@@ -35,8 +27,7 @@ const LayoutAdmin = () => {
     // Kiểm tra quyền truy cập
     if (
       user &&
-      (user.publicMetadata.role === "Admin" ||
-        user.publicMetadata.role === "Employee")
+      (user.publicMetadata.role === "Admin")
     ) {
       // Xác nhận quyền truy cập
       setIsAuthorized(true);
@@ -70,7 +61,7 @@ const LayoutAdmin = () => {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
+            {/* <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">
@@ -82,7 +73,7 @@ const LayoutAdmin = () => {
                   <BreadcrumbPage>Data Fetching</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
-            </Breadcrumb>
+            </Breadcrumb> */}
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 pt-0">

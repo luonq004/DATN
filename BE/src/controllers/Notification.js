@@ -37,7 +37,7 @@ export const createNotification = async (req, res) => {
 // Lấy tất cả thông báo cho admin (Có thể lọc theo trạng thái hoặc userId nếu cần)
 export const getAllNotifications = async (req, res) => {
   try {
-    const { page = 1, limit = 10, status } = req.query; // Phân trang và lọc theo trạng thái nếu cần
+    const { status } = req.query; // Phân trang và lọc theo trạng thái nếu cần
 
     const query = {};
     if (status) {
@@ -46,14 +46,9 @@ export const getAllNotifications = async (req, res) => {
 
     const notifications = await Notification.find(query)
       .sort({ createdAt: -1 }) // Sắp xếp mới nhất
-      .skip((page - 1) * parseInt(limit))
-      .limit(parseInt(limit));
-
-    const totalNotifications = await Notification.countDocuments(query);
 
     res.status(200).json({
       notifications,
-      hasNextPage: page * limit < totalNotifications, // Kiểm tra nếu còn thông báo
     });
   } catch (error) {
     console.error(error);
@@ -61,15 +56,11 @@ export const getAllNotifications = async (req, res) => {
   }
 };
 
-
 // Lấy tất cả thông báo của người dùng (Có phân trang)
 export const getNotifications = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query; // Phân trang mặc định (1 page, 10 thông báo mỗi page)
     const notifications = await Notification.find({ userId: req.params.userId })
       .sort({ createdAt: -1 }) // Sắp xếp mới nhất
-      .skip((page - 1) * parseInt(limit))
-      .limit(parseInt(limit));
 
     const totalNotifications = await Notification.countDocuments({
       userId: req.params.userId,
@@ -77,14 +68,12 @@ export const getNotifications = async (req, res) => {
 
     res.status(200).json({
       notifications,
-      hasNextPage: page * limit < totalNotifications, // Kiểm tra nếu còn thông báo
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Không thể lấy thông báo", error });
   }
 };
-
 
 // Xóa thông báo
 export const deleteNotification = async (req, res) => {
@@ -103,11 +92,9 @@ export const deleteNotification = async (req, res) => {
   }
 };
 
-
 // Đánh dấu thông báo là đã đọc
 export const markAsRead = async (req, res) => {
   try {
-
     const { id } = req.params;
 
     if (id === "all") {
@@ -118,7 +105,9 @@ export const markAsRead = async (req, res) => {
       }
 
       await Notification.updateMany({ userId }, { isRead: true });
-      return res.status(200).json({ message: "Tất cả thông báo đã được đánh dấu là đã đọc!" });
+      return res
+        .status(200)
+        .json({ message: "Tất cả thông báo đã được đánh dấu là đã đọc!" });
     }
 
     const notification = await Notification.findByIdAndUpdate(
@@ -141,5 +130,20 @@ export const markAsRead = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Không thể cập nhật thông báo", error });
+  }
+};
+
+// API trả về số lượng thông báo chưa đọc
+export const unreadCount = async (req, res) => {
+  try {
+    const unreadCount = await Notification.countDocuments({
+      userId: req.params.userId,
+      isRead: false,
+    });
+    res.json({ unreadCount });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Có lỗi xảy ra khi lấy số lượng thông báo chưa đọc" });
   }
 };
