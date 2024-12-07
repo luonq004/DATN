@@ -61,6 +61,7 @@ import TestSocket from "@/pages/(website)/Testsocket";
 import CategoriesPage from "@/pages/(dashboard)/category/page";
 import CategoryEditPage from "@/pages/(dashboard)/category/edit/page";
 import CategoryAddPage from "@/pages/(dashboard)/category/add/page";
+import MessagePage from "@/pages/(dashboard)/message/page";
 
 const Router = () => {
   return (
@@ -177,6 +178,8 @@ const Router = () => {
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="categories/edit/:id" element={<CategoryEditPage />} />
           <Route path="categories/add" element={<CategoryAddPage />} />
+
+          <Route path="message" element={<MessagePage />} />
         </Route>
       </Routes>
     </>

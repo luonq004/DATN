@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllCategory, getAllProductWithCategory } from "./api";
-import { useSearchParams } from "react-router-dom";
+import { getAllProductWithCategory } from "./api";
 
 export function useGettAllProductWithCategory(id: string) {
   const {
@@ -8,7 +7,7 @@ export function useGettAllProductWithCategory(id: string) {
     data: countProduct,
     error: errorGetting,
   } = useQuery({
-    queryKey: ["Categories", id],
+    queryKey: ["CategoriesProduct", id],
     queryFn: () => getAllProductWithCategory(id),
   });
 

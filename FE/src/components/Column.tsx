@@ -37,14 +37,14 @@ export const columnProducts: ColumnDef<IProduct>[] = [
         ? true
         : false;
 
-      const category =
+      const categories =
         attribute.category.length >= 2 && exists
           ? attribute.category.filter((category) => category._id !== targetId)
           : attribute.category;
 
       return (
         <span className="text-sm text-gray-500">
-          {category.map((category) => category.name).join(", ") ||
+          {categories.map((category) => category.name).join(", ") ||
             "Không có danh mục"}
         </span>
       );

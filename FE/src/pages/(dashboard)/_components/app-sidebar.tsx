@@ -95,6 +95,11 @@ const data = {
       url: "/admin/Logos",
       icon: Image,
     },
+    {
+      title: "Tin nhắn",
+      url: "/admin/message",
+      icon: Image,
+    },
     // {
     //   title: "Settings",
     //   url: "/dashboard/settings",

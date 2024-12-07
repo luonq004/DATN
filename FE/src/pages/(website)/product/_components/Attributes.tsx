@@ -4,12 +4,14 @@ interface ProductAttributesProps {
   attributes: [string, string[]][];
   attributesChoose: Record<string, string[]>;
   onAttributeSelect: (type: string, value: string) => void;
+  deleted: boolean;
 }
 
 const Attributes: React.FC<ProductAttributesProps> = ({
   attributes,
   attributesChoose,
   onAttributeSelect,
+  deleted,
 }) => {
   return (
     <>
@@ -25,6 +27,7 @@ const Attributes: React.FC<ProductAttributesProps> = ({
           <ToggleGroup
             className="justify-start gap-2 w-full md:w-8/12 flex-wrap px-[15px]"
             type="single"
+            disabled={deleted}
           >
             {(value as string[]).map((item: string, idx: number) => {
               const [itemValue, colorOrText] = item.split(":");
