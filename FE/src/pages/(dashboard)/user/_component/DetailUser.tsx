@@ -212,13 +212,13 @@ const UserDetailPage = () => {
                           className={`relative inline-block px-3 py-1 text-sm rounded-xl leading-tight ${
                             order.status === "chờ xác nhận"
                               ? "text-yellow-700 bg-yellow-100" // Xanh dương nhạt
-                              : order.status === "chờ giao hàng"
+                              : order.status === "đang giao hàng"
                               ? "text-green-700 bg-green-100" // Vàng nhạt
                               : order.status === "đã hoàn thành"
                               ? "text-green-800 bg-green-200 font-bold" // Xanh lá nhạt
                               : order.status === "đã hủy"
                               ? "text-red-700 bg-red-100" // Đỏ nhạt
-                              : order.status === "chờ lấy hàng"
+                              : order.status === "đã xác nhận"
                               ? "text-blue-700 bg-blue-100" // Xanh biển nhạt
                               : "text-gray-700 bg-gray-100" // Xám nhạt
                           }`}

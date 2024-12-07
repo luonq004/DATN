@@ -29,6 +29,8 @@ export function MainContent() {
 
   const { isLoading, listProduct, error } = useGetAllProduct();
 
+  console.log(listProduct?.pagination?.totalItems)
+
   return (
     <div className="w-full lg:w-[75%] lg:order-1 lg:mb-10">
       <CarouselBanner />

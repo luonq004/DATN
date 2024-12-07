@@ -16,6 +16,7 @@ import {
 import { OrderProduct } from "@/common/types/Product";
 import CommentProduct from "./CommentProduct";
 import { useUser } from "@clerk/clerk-react";
+import { Link } from "react-router-dom";
 interface Order {
   _id: string;
   orderCode: string;
@@ -32,7 +33,7 @@ interface ErrorResponse {
   };
 }
 
-const formatCurrencyVND = (amount: number): string => {
+export const formatCurrencyVND = (amount: number): string => {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
@@ -56,15 +57,14 @@ const OrderHistory = () => {
   const user = Gmail;
 
   const openModal = (id: string) => {
-  setOrderIdToCancel(id); // Lưu id của đơn hàng khi mở modal
-  setIsOpen(true); // Mở modal
-};
+    setOrderIdToCancel(id); // Lưu id của đơn hàng khi mở modal
+    setIsOpen(true); // Mở modal
+  };
   const closeModal = () => setIsOpen(false);
   const ordersPerPage = 2; // Số đơn hàng hiển thị mỗi trang
-  const handleCancelOrder = async() => {
-  
-    const newStatus = "đã hủy"
-    if(!orderIdToCancel){
+  const handleCancelOrder = async () => {
+    const newStatus = "đã hủy";
+    if (!orderIdToCancel) {
       alert("Không lấy được OrderId");
       return;
     }
@@ -78,12 +78,14 @@ const OrderHistory = () => {
     //   newStatus,reason
     // );
     try {
-      const response = await axios.put(`${apiUrl}/update-order/${orderIdToCancel}`, {
-        newStatus,
-        user,
-        reason,
-
-      }); // Đường dẫn API hủy đơn hàng
+      const response = await axios.put(
+        `${apiUrl}/update-order/${orderIdToCancel}`,
+        {
+          newStatus,
+          user,
+          reason,
+        }
+      ); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
         toast({
@@ -102,7 +104,8 @@ const OrderHistory = () => {
             err.response.data.message || "Cập nhật trạng thái thất bại!",
           variant: "destructive",
         });
-      }}
+      }
+    }
     setReason("");
     setIsOpen(false); // Đóng modal sau khi hủy
   };
@@ -226,8 +229,9 @@ const OrderHistory = () => {
             <div key={order._id} className="p-4 border rounded-lg shadow-md">
               <div className="flex justify-between items-center">
                 <div>
-                  <div className="font-semibold text-lg">
-                    Mã đơn hàng: {order.orderCode}
+                  <div className="text-lg">
+                    Mã đơn hàng:{" "}
+                    <span className="font-semibold">{order.orderCode}</span>
                   </div>
                   <div className="text-sm">
                     Ngày tạo: {new Date(order.createdAt).toLocaleDateString()}
@@ -243,56 +247,60 @@ const OrderHistory = () => {
                 {order.products && order.products.length > 0 ? (
                   order?.products?.map((item) => (
                     <div key={item._id}>
-                      <div className="flex justify-between items-center">
-                        {/* sản phẩm */}
-                        <div className="flex items-center space-x-4 space-y-4">
-                          <img
-                            src={
-                              item.productItem?.image || "/default-image.jpg"
-                            }
-                            alt={
-                              item.productItem?.name || "Sản phẩm không có tên"
-                            }
-                            className="w-16 h-16 object-cover"
-                          />
-                          <div>
-                            <div className="font-medium">
-                              {item.productItem?.name ||
-                                "Sản phẩm không có tên"}
-                            </div>
-                            <div className="text-sm">
-                              Số lượng: {item.quantity}
-                            </div>
-                            <div className="text-sm">
-                              {item?.variantItem?.values?.map(
-                                (value, index: number) => (
-                                  <div key={value._id}>
-                                    {value.type}: {value.name}
-                                    {index < item.variantItem.values.length - 1
-                                      ? ","
-                                      : ""}
-                                  </div>
-                                )
-                              )}
+                      <Link to={`/product/${item.productItem._id}`}>
+                        <div className="flex justify-between items-center">
+                          {/* sản phẩm */}
+                          <div className="flex items-center space-x-4 space-y-4">
+                            <img
+                              src={
+                                item.productItem?.image || "/default-image.jpg"
+                              }
+                              alt={
+                                item.productItem?.name ||
+                                "Sản phẩm không có tên"
+                              }
+                              className="w-16 h-16 object-cover"
+                            />
+                            <div>
+                              <div className="font-medium">
+                                {item.productItem?.name ||
+                                  "Sản phẩm không có tên"}
+                              </div>
+                              <div className="text-sm">
+                                Số lượng: {item.quantity}
+                              </div>
+                              <div className="text-sm">
+                                {item?.variantItem?.values?.map(
+                                  (value, index: number) => (
+                                    <div key={value._id}>
+                                      {value.type}: {value.name}
+                                      {index <
+                                      item.variantItem.values.length - 1
+                                        ? ","
+                                        : ""}
+                                    </div>
+                                  )
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <span className="text-[#81cd06]">
-                            Giá:{" "}
-                            {formatCurrencyVND(item.variantItem?.price ?? 0)}
-                          </span>
+                          <div>
+                            <span className="text-[#81cd06]">
+                              Giá:{" "}
+                              {formatCurrencyVND(item.variantItem?.price ?? 0)}
+                            </span>
 
-                          {item.statusComment && !item.isCommented && (
-                            <CommentProduct
-                              values={item.variantItem.values}
-                              productId={item.productItem._id}
-                              orderId={order._id}
-                              itemId={item._id}
-                            />
-                          )}
+                            {item.statusComment && !item.isCommented && (
+                              <CommentProduct
+                                values={item.variantItem.values}
+                                productId={item.productItem._id}
+                                orderId={order._id}
+                                itemId={item._id}
+                              />
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
                   ))
                 ) : (
@@ -301,11 +309,38 @@ const OrderHistory = () => {
                   </div>
                 )}
               </div>
-
-              <div className="mt-4 font-semibold text-lg text-right">
-                Tổng tiền: {formatCurrencyVND(order.totalPrice)}
+              <div className="mt-4  text-lg">
+                {/* <h3 className="font-semibold">Địa chỉ nhận hàng</h3> */}
+                {order.addressId && Object.keys(order.addressId).length > 0 ? (
+                  <div>
+                    <p><span className="font-semibold">Người nhận:</span> {order.addressId.name}</p>
+                    <p><span className="font-semibold">Số điện thoại:</span> {order.addressId.phone}</p>
+                    <p><span className="font-semibold">Địa chỉ:</span> {order.addressId.addressDetail}, {order.addressId.wardId}, {order.addressId.districtId}, {order.addressId.cityId}</p>
+                  </div>
+                ) : (
+                  <div>Không có địa chỉ được cung cấp.</div>
+                )}
+              </div>
+              <div className="mt-4  text-lg text-right">
+                <p>
+                  Giảm giá:{" "}
+                  <span className="font-semibold">
+                    {formatCurrencyVND(order.discount || 0)}
+                  </span>
+                </p>
+              </div>
+              <div className="mt-4  text-lg text-right">
+                <p>
+                  Phí ship: <span className="font-semibold">30.000 ₫</span>
+                </p>
+              </div>
+              <div className="mt-4 text-lg text-right">
+                Tổng tiền:{" "}
+                <span className="font-semibold text-[red]">
+                  {formatCurrencyVND(order.totalPrice)}
+                </span>
                 {(order.status === "chờ xác nhận" ||
-                  order.status === "chờ lấy hàng") && (
+                  order.status === "đã xác nhận") && (
                   <button
                     className="px-4 ml-[2%] py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                     onClick={() => openModal(order._id)}
@@ -314,37 +349,37 @@ const OrderHistory = () => {
                   </button>
                 )}
                 {isOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                  <div className="bg-white p-6 rounded-lg w-96">
-                    <h2 className="text-xl font-semibold text-center mb-4">
-                      Xác Nhận Hủy Đơn Hàng
-                    </h2>
-                    {/* Ô nhập lý do hủy */}
-                    <textarea
-                      value={reason}
-                      onChange={(e) => setReason(e.target.value)}
-                      placeholder="Nhập lý do hủy..."
-                      className="w-full p-2 border border-gray-300 rounded-md mb-4"
-                    />
+                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg w-96">
+                      <h2 className="text-xl font-semibold text-center mb-4">
+                        Xác Nhận Hủy Đơn Hàng
+                      </h2>
+                      {/* Ô nhập lý do hủy */}
+                      <textarea
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        placeholder="Nhập lý do hủy..."
+                        className="w-full p-2 border border-gray-300 rounded-md mb-4"
+                      />
 
-                    <div className="flex justify-between">
-                      <button
-                        onClick={handleCancelOrder}
-                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                      >
-                        Xác Nhận Hủy
-                      </button>
-                      <button
-                        onClick={closeModal}
-                        className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
-                      >
-                        Hủy
-                      </button>
+                      <div className="flex justify-between">
+                        <button
+                          onClick={handleCancelOrder}
+                          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                        >
+                          Xác Nhận Hủy
+                        </button>
+                        <button
+                          onClick={closeModal}
+                          className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+                        >
+                          Hủy
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
                 )}
-                {order.status === "chờ xác nhận" &&
+                {order.isPaid === false &&
                   order.payment === "Vnpay" && (
                     <button
                       className="px-4 ml-[2%] py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"

@@ -31,13 +31,14 @@ import { OrderProduct } from "@/common/types/Product";
 import useAllOrders from "@/common/hooks/order/useAllOrders";
 import { useUser } from "@clerk/clerk-react";
 import { formatCurrency } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
 
 export type Order = {
   id: string;
   orderCode: string;
   amount: number;
+  isPaid: boolean;  
   payment: string;
+  email?:string
   status: string;
   createdAt: string;
 };
@@ -54,15 +55,12 @@ const apiUrl = import.meta.env.VITE_API_URL;
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("vi-VN", {
-    weekday: "long",
     year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(date);
 };
+
 
 const AdminOrder = () => {
   const queryClient = useQueryClient();
@@ -74,7 +72,9 @@ const AdminOrder = () => {
   const [isOpen, setIsOpen] = React.useState(false); // Điều khiển hiển thị của modal
   const [reason, setReason] = React.useState(""); // Lý do hủy đơn hàng
   const [orderIdToCancel, setOrderIdToCancel] = React.useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = React.useState<string>(""); 
   // Mở modal
+  
   const openModal = () => setIsOpen(true);
 
   // Đóng modal
@@ -108,6 +108,8 @@ const AdminOrder = () => {
         payment: order.payment || "N/A",
         status: order.status || "unknown",
         createdAt: order.createdAt || "",
+        email: order.email || "",
+        isPaid: order.isPaid,
       }))
       .sort(
         (a, b) =>
@@ -155,8 +157,10 @@ const AdminOrder = () => {
   const cancelOrder = async (orderId: string) => {
     const newStatus = "đã hủy";
     try {
+      const reason = "quá thời gian thanh toán!";
       const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
         newStatus,
+        reason
       }); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", orderId]);
@@ -194,7 +198,7 @@ const AdminOrder = () => {
     // Lặp qua các đơn hàng để kiểm tra
     orders.forEach((order) => {
       // Chỉ xử lý các đơn hàng có trạng thái "chờ xác nhận" và payment là "Vnpay"
-      if (order.status === "chờ xác nhận" && order.payment === "Vnpay") {
+      if (order.isPaid === false && order.payment === "Vnpay") {
         // sendOrderErrorConfirmationEmail("hai31569@gmail.com",order.orderCode)
         const createdAt = new Date(order.createdAt);
         const currentTime = new Date();
@@ -211,7 +215,7 @@ const AdminOrder = () => {
           // Cài đặt một timeout để hủy đơn hàng sau khoảng thời gian còn lại
           const timerId = setTimeout(() => {
             // Kiểm tra lại trạng thái của đơn hàng trước khi hủy
-            if (order.status === "chờ xác nhận") {
+            if (order.isPaid === false) {
               cancelOrder(order.id);
             }
           }, remainingTime);
@@ -246,10 +250,39 @@ const AdminOrder = () => {
       {
         header: "Phương thức thanh toán",
         accessorKey: "payment",
+        cell: ({ row }) => (
+          <span className={getPaymentClassName(row.original.payment)}>
+            {row.original.payment}
+          </span>
+        ),
+      
       },
       {
         header: "Trạng thái",
         accessorKey: "status",
+        cell: ({ row }) => (
+          <span className={getStatusClassName(row.original.status)}>
+            {row.original.status}
+          </span>
+        ),
+      },
+      {
+        header: "Khách hàng",
+        accessorKey: "email",
+        cell: ({ row }) => (
+          <span className={row.original.email}>
+            {row.original.email}
+          </span>
+        ),
+      },
+      {
+        header: "Trạng thái thanh toán",
+        accessorKey: "isPaid", 
+        cell: ({ row }) => (
+          <span className={row.original.isPaid ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>
+            {row.original.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+          </span>
+        ),
       },
       {
         header: "Ngày tạo",
@@ -298,8 +331,8 @@ const AdminOrder = () => {
                   <SelectGroup>
                     {[
                       "chờ xác nhận",
-                      "chờ lấy hàng",
-                      "chờ giao hàng",
+                      "đã xác nhận",
+                      "đang giao hàng",
                       "đã hoàn thành",
                       "đã hủy",
                     ].map((status) => (
@@ -318,11 +351,19 @@ const AdminOrder = () => {
     []
   );
 
-  const filteredOrders = React.useMemo(() => {
-    return orders.filter((order) =>
-      order.orderCode.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [orders, search]);
+   // Lọc kết quả dựa trên Search và Status
+   const filteredOrders = React.useMemo(() => {
+    return orders.filter((order) => {
+      const matchesSearch =
+        order.orderCode.toLowerCase().includes(search.toLowerCase()) ||
+        (order?.email && order.email.toLowerCase().includes(search.toLowerCase()));
+      const matchesStatus =
+        selectedStatus === "" || order.status === selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [orders, search, selectedStatus]);
+  
 
   const [paginationState, setPaginationState] = React.useState({
     pageIndex: 0, // Trang đầu tiên
@@ -357,15 +398,32 @@ const AdminOrder = () => {
   }
 
   return (
-    <div className="w-full p-4">
-      <div className="mb-4 w-[15%]">
+    <div className="w-full p-4 bg-white rounded-sm">
+      <div className="mb-4 w-[18%]">
         <input
           type="text"
           className="border w-full border-gray-300 p-2 rounded"
-          placeholder="Tìm kiếm theo mã đơn hàng"
+          placeholder="Tìm kiếm theo khách hàng,mã đơn hàng"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        {/* Lọc trạng thái */}
+        <Select value={selectedStatus} onValueChange={(value) => {
+  // Nếu giá trị là 'all', chuyển thành ''
+  setSelectedStatus(value === "all" ? "" : value);
+}}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Lọc theo trạng thái" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả</SelectItem>
+            <SelectItem value="chờ xác nhận">Chờ xác nhận</SelectItem>
+            <SelectItem value="đã xác nhận">đã xác nhận</SelectItem>
+            <SelectItem value="đang giao hàng">đang giao hàng</SelectItem>
+            <SelectItem value="đã hoàn thành">Đã hoàn thành</SelectItem>
+            <SelectItem value="đã hủy">Đã hủy</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <Table>
         <TableHeader>
@@ -471,5 +529,33 @@ const AdminOrder = () => {
     </div>
   );
 };
+const getStatusClassName = (status: string) => {
+  switch (status) {
+    case "chờ xác nhận":
+      return "px-2 py-1 text-xs font-semibold rounded-full capitalize bg-yellow-100 text-yellow-800";
+    case "đã xác nhận":
+      return "px-2 py-1 text-xs font-semibold rounded-full capitalize bg-blue-100 text-blue-800";
+    case "đang giao hàng":
+      return "px-2 py-1 text-xs font-semibold rounded-full capitalize bg-green-100 text-green-800";
+    case "đã hoàn thành":
+      return "px-2 py-1 text-xs font-semibold rounded-full capitalize bg-gray-100 text-gray-800";
+    case "đã hủy":
+      return "px-2 py-1 text-xs font-semibold rounded-full capitalize bg-red-100 text-red-800";
+    default:
+      return "";
+  }
+};
+const getPaymentClassName = (payment: string) => {
+  switch (payment.toLowerCase()) {
+    case "vnpay":
+      return "text-blue-700 font-bold"; // Màu xanh đậm, chữ đậm
+    case "cod":
+      return "text-orange-600 font-bold"; // Màu xanh lá đậm, chữ đậm
+    default:
+      return "text-gray-600 font-semibold"; // Màu xám trung bình, chữ vừa
+  }
+};
+
+
 
 export default AdminOrder;

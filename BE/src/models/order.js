@@ -26,17 +26,24 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: [
       "chờ xác nhận",
-      "chờ lấy hàng",
-      "chờ giao hàng",
+      "đã xác nhận",
+      "đang giao hàng",
       "đã hoàn thành",
       "đã hủy",
     ],
     default: "chờ xác nhận",
   },
-
+  // Trạng thái thanh toán (Boolean)
+  isPaid: {
+    type: Boolean,
+    default: false, // Mặc định là chưa thanh toán (false)
+  },
   totalPrice: {
     type: Number,
     required: true,
+  },
+  discount: {
+    type: Number,
   },
   orderCode: {
     type: String,
@@ -64,6 +71,12 @@ const orderSchema = new mongoose.Schema({
   deleted: {
     type: Boolean,
     default: false,
+  },
+  fullName: {
+    type: String,
+  },
+  email: {
+    type: String,
   },
 });
 

@@ -9,7 +9,9 @@ import { toast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/common/context/UserProvider";
 import { useUser } from "@clerk/clerk-react";
 import sendOrderConfirmationEmail from "@/pages/(website)/cart/_components/sendEmail";
-import sendOrderHuyConfirmationEmail from "@/pages/(website)/cart/_components/sendHuyenail";
+import useCart from "@/common/hooks/useCart";
+import { Cart } from "@/common/types/formCheckOut";
+// import sendOrderHuyConfirmationEmail from "@/pages/(website)/cart/_components/sendHuyenail";
 type PaymentResult = {
   code: string;
 };
@@ -21,11 +23,13 @@ const PaymentResult = () => {
   const [result, setResult] = useState<PaymentResult | null>(null);
   const navigate = useNavigate();
   const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [orderCart, setOrderCart] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
   const Gmail = user?.primaryEmailAddress?.emailAddress;
   const { _id } = useUserContext() ?? {}; // Lấy _id từ UserContext
+  const { cart: carts } = useCart(_id ?? "");
  // Lấy mã đơn hàng từ URL
 
  const orderId = searchParams.get("vnp_TxnRef");
@@ -78,31 +82,55 @@ useEffect(() => {
 
     fetchOrderDetails();
   }, [orderId]);
+  
+  useEffect(() => {
+    const selectedProducts =
+      carts?.products?.filter((product: Cart) => product.selected) || [];
+    setOrderCart(selectedProducts);
+  }, [carts]);
+  
+  console.log("orderCart", orderCart)
   useEffect(() => {
     const cancelOrder = async () => {
+      const clearCart = async () => {
+        try {
+          // Gọi API để xóa giỏ hàng
+          if (result?.code === '00') {
+          await axios.post(`${apiUrl}/delete-cart`, {
+            products: orderCart,  // Các sản phẩm trong giỏ hàng
+            userId: _id,          // ID người dùng
+          });
+      
+          console.log("Cart đã được xóa hoàn toàn.");
+
+        }
+        } catch (error) {
+          console.error("Lỗi khi xóa giỏ hàng:", error);
+        }
+      };
+        if (orderCart.length > 0) {
+          // Khi orderCart có dữ liệu, thực hiện xử lý hoặc API
+          clearCart();
+        }
+       // Chạy lại khi orderCart thay đổi
+      
       try {
-        if (result?.code === "00") {
-          const newStatus = "chờ lấy hàng"; // Trạng thái mới của đơn hàng khi giao dịch thành công
-          const response = await axios.put(`${apiUrl}/update-order/${orderDetails._id}`, {
-            newStatus,
+        if (result?.code === '00') {
+         await clearCart();
+          const response = await axios.put(`${apiUrl}/update-status/${orderDetails._id}`, {
+             isPaid: true, 
           });
           if(Gmail){
             await sendOrderConfirmationEmail(Gmail, orderId);
           }
           if (response.status === 200) {
             queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
-  
+            clearCart();
             // Hiển thị thông báo thành công
           } 
         } 
-      else {
-          const newStatus = "đã hủy"; // Trạng thái mới của đơn hàng khi giao dịch thất bại
-          const response = await axios.put(`${apiUrl}/update-order/${orderDetails._id}`, {
-            newStatus,
-          });
-          if(Gmail){
-            await sendOrderHuyConfirmationEmail(Gmail, orderId);
-          }
+      if(result?.code === '24') {
+          const response = await axios.put(`${apiUrl}/delete-order/${orderDetails._id}`);
           if (response.status === 200) {
             queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
             // Hiển thị thông báo thành công
@@ -120,7 +148,7 @@ useEffect(() => {
     if ((result?.code === "00" || result?.code !== "00") && Gmail) {
       cancelOrder(); // Chỉ gọi hàm khi có giá trị `result` và `Gmail`.
     }
-  }, [result, orderDetails, _id, apiUrl, Gmail]); // Đảm bảo có các phụ thuộc đúng
+  }, [result, orderDetails, _id, apiUrl, Gmail,orderCart]); // Đảm bảo có các phụ thuộc đúng
   
   if (loading)
     return (

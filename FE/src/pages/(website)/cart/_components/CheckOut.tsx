@@ -112,7 +112,7 @@ const CheckOut = () => {
   const handleDialogClose = () => setDialogOpen(false);
   // lấy dữ liệu giỏ hàng
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
-
+  const fullName = user?.fullName;
   const onSubmit = async (data: FormOut) => {
     const selectedProducts =
       carts?.products?.filter((product: Cart) => product.selected) || [];
@@ -121,25 +121,28 @@ const CheckOut = () => {
       products: selectedProducts,
       userId: _id,
       note: data.note,
+      email: Gmail,
+      fullName,
+      discount: carts.discount,
       payment: data.paymentMethod,
       totalPrice: carts?.total ?? 0,
     };
     try {
       // Gửi yêu cầu tạo đơn hàng đến backend
-      const response = await axios.post(
-        "http://localhost:8080/api/create-order",
-        orderData
-      );
-      const createOrder = response.data;
-      const orderCode = createOrder?.order?.orderCode;
-      // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
-      socket.emit("orderPlaced", {
-        orderCode,
-        userId: _id,
-        message: "Đặt hàng thành công!",
-      });
-
+      
       if (data.paymentMethod === "Vnpay") {
+        const orderResponse  = await axios.post(
+          "http://localhost:8080/api/create-order-Vnpay",
+          orderData
+        );
+        const createOrder = orderResponse.data;
+        const orderCode = createOrder?.order?.orderCode;
+        // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
+        socket.emit("orderPlaced", {
+          orderCode,
+          userId: _id,
+          message: "Đặt hàng thành công!",
+        });
         const response = await axios.post(
           "http://localhost:8080/api/create_payment_url",
           {
@@ -149,9 +152,22 @@ const CheckOut = () => {
           }
         );
         const paymentUrl = response.data.redirectUrl;
-        console.log("paymentUrl", paymentUrl);
         window.location.href = paymentUrl;
       }
+      if(data.paymentMethod === "COD"){
+        const response = await axios.post(
+          "http://localhost:8080/api/create-order",
+          orderData
+        );
+        const createOrder = response.data;
+        const orderCode = createOrder?.order?.orderCode;
+        // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
+        socket.emit("orderPlaced", {
+          orderCode,
+          userId: _id,
+          message: "Đặt hàng thành công!",
+        });
+      
       if (data.paymentMethod === "COD" && response.status === 201) {
         // Đơn hàng đã được tạo thành công
         toast({
@@ -164,6 +180,7 @@ const CheckOut = () => {
         // Gửi email xác nhận đơn hàng
         await sendOrderConfirmationEmail(Gmail, orderCode);
       }
+    }
     } catch (error: unknown) {
       console.error("Lỗi khi tạo đơn hàng: ", error);
 
@@ -516,31 +533,12 @@ const CheckOut = () => {
 
               <button
                 type="submit"
-                className="bg-[#C8C9CB] hover:bg-light-400 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none"
+                className="bg-light-400 hover:bg-light-500 transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium cursor-pointer select-none"
               >
                 <div>ĐẶT HÀNG</div>
                 <div className="">|</div>
                 <div>{formatCurrency(carts?.total)} VNĐ</div>
               </button>
-              {/* <div className="Payments flex flex-col gap-4">
-                <p className="text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]">
-                  THANH TOÁN ĐƯỢC CUNG CẤP BỞI
-                </p>
-                <div className="flex gap-3">
-                  <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
-                    <img src={idk} alt="" />
-                  </div>
-                  <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
-                    <img src={visa} alt="" />
-                  </div>
-                  <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
-                    <img src={bitcoin} alt="" />
-                  </div>
-                  <div className="border border-[#e2e2e2] py-2 px-3 flex justify-center items-center rounded-[6px]">
-                    <img src={interac} alt="" />
-                  </div>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
