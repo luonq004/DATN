@@ -26,7 +26,6 @@ import { Cart, FormOut } from "@/common/types/formCheckOut";
 import { Address } from "../../address/ListAddress";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import CheckOutVoucher from "./CheckOutVoucher";
 import CreateAddress from "../../address/CreatAddress";
 import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
@@ -37,6 +36,7 @@ import { formatCurrency } from "@/lib/utils";
 // import { useQueryClient } from "@tanstack/react-query";
 
 import io from "socket.io-client";
+import CheckOutCart from "./CheckOutCart";
 
 const socket = io("http://localhost:3000");
 
@@ -385,7 +385,7 @@ const CheckOut = () => {
                             <div className="">
                               <p>
                                 <span>
-                                  {formatCurrency(item.variantItem.price)} VNĐ
+                                  {formatCurrency(item.variantItem.priceSale || item.variantItem.price)} VNĐ
                                 </span>
                               </p>
                             </div>
@@ -446,7 +446,7 @@ const CheckOut = () => {
 
           <div>
             <div className="flex flex-col gap-6 border border-[#F4F4F4] rounded-[16px] p-6">
-              <CheckOutVoucher />
+              <CheckOutCart />
               <hr />
               <FormField
                 control={control}
