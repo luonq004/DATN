@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AddLogoPage = () => {
@@ -9,6 +9,7 @@ const AddLogoPage = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -37,17 +38,24 @@ const AddLogoPage = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      toast.success("Logo added successfully!");
-      navigate("/dashboard/logos");
+      toast({
+        title: "Thành công",
+        description: "Logo đã được tạo thành công!",
+      });
+      navigate("/admin/logos");
     } catch (error) {
-      toast.error("Failed to add logo.");
+      toast({
+        variant: "destructive",
+        title: "Thất bại",
+        description: "Có lỗi sảy ra khi tạo Logo!",
+      });
     }finally{
       setLoading(false)
     }
   };
 
   return (
-    <div className="px-20 mx-auto p-6 ">
+    <div className="md:px-20 mx-auto p-6 ">
       <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">Thêm Mới Logo</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-5">

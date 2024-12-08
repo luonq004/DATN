@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateLogoPage = () => {
@@ -11,6 +11,7 @@ const UpdateLogoPage = () => {
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchLogo = async () => {
@@ -20,7 +21,11 @@ const UpdateLogoPage = () => {
         setTitle(response.data.title);
         setPreview(response.data.image);
       } catch (error) {
-        toast.error("Không thể lấy thông tin logo.");
+        toast({
+        variant: "destructive",
+        title: "Thất bại",
+        description: "Có lỗi sảy ra khi lấy thông tin logo!",
+      });
       }
     };
 
@@ -56,10 +61,17 @@ const UpdateLogoPage = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      toast.success("Cập nhật logo thành công!");
+      toast({
+        title: "Thành công",
+        description: "Logo đã được cập nhật thành công!",
+      });
       navigate("/dashboard/logos");
     } catch (error) {
-      toast.error("Cập nhật logo thất bại.");
+      toast({
+        variant: "destructive",
+        title: "Thất bại",
+        description: "Có lỗi sảy ra khi cập nhật logo!",
+      });
     }finally{
       setLoading(false); 
     }
@@ -68,7 +80,7 @@ const UpdateLogoPage = () => {
   if (!logo) return <div>Đang tải...</div>;
 
   return (
-    <div className="px-20 mx-auto p-6">
+    <div className="md:px-20 mx-auto p-6">
   <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">Cập Nhật Logo</h2>
   <form onSubmit={handleSubmit}>
     <div className="mb-6">

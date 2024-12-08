@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SlHeart } from "react-icons/sl";
 import { IoBagHandleSharp } from "react-icons/io5";
 import { IoSearch } from "react-icons/io5";
@@ -6,19 +6,82 @@ import { IoIosClose } from "react-icons/io";
 
 import MobileNav from "@/components/MobileNav";
 
-import logo from "@/assets/logo.png";
+import { Link, useLocation } from "react-router-dom";
+import { useClerk, useUser } from "@clerk/clerk-react";
+import { useUserContext } from "@/common/context/UserProvider";
+import useCart from "@/common/hooks/useCart";
 
-import { Link } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+const menuItems = [
+  { label: "Trang chủ", to: "/" },
+  { label: "Về chúng tôi", to: "/about" },
+  { label: "Sản phẩm", to: "/shopping" },
+  { label: "Dịch vụ", to: "/services" },
+  { label: "Tin tức", to: "/blog" },
+  // { label: "Trưng bày", to: "/" },
+  // { label: "Liên hệ", href: "#" },
+];
 
 const Header = () => {
   const { isSignedIn, user } = useUser();
-
+  const { _id } = useUserContext();
+  const { openSignIn, openSignUp } = useClerk();
   const [isOpen, setIsOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [showUserInfo, setShowUserInfo] = useState(false);
+
+  const { cart, isLoading } = useCart(_id);
+
+  // console.log("cart", cart);
+
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  const opensignin = async () => {
+    await openSignIn({
+      redirectUrl: "/",
+    });
+  };
+
+  const opensignup = async () => {
+    await openSignUp({
+      redirectUrl: "/",
+    });
+  };
+
+  const fetchLogo = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/logo");
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setLogoUrl(data[0].image);
+      }
+    } catch (error) {
+      console.error("Error fetching logo:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogo();
+  }, []);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      // const timer = setTimeout(() => {
+      setShowUserInfo(true); // Sau 1 giây sẽ hiển thị thông tin người dùng
+      // }, 1000);
+
+      // return () => clearTimeout(timer);
+    }
+  }, [isSignedIn]); // Chạy lại effect khi trạng thái người dùng thay đổi
+
   return (
     <>
       <header
-        className={`fixed left-0 top-0 w-full z-50 transition-all duration-300 ease-in-out`}
+        className={`fixed left-0 top-0 w-full z-40 transition-all duration-300 ease-in-out`}
       >
         {/* Header TOP */}
         <div
@@ -52,7 +115,7 @@ const Header = () => {
               {/* NAVIGATION */}
               <div className="w-full lg:w-7/12 text-right flex justify-between lg:justify-end items-center px-[15px]">
                 <div className="border-l border-r lg:border-r-0 border-[#eee] px-[15px] py-[10px] md:p-5 lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase">
-                  {isSignedIn ? (
+                  {isSignedIn && showUserInfo ? (
                     <Link className="flex gap-2" to="/users">
                       <img
                         className="rounded-full w-[20px] h-[20px] object-cover"
@@ -67,14 +130,16 @@ const Header = () => {
                   ) : (
                     <>
                       <Link
-                        to="/signin"
+                        to="#"
+                        onClick={opensignin}
                         className="cursor-pointer hover:text-[#b8cd06] transition-all"
                       >
                         <b>Đăng nhập</b>
                       </Link>
                       &nbsp; hoặc &nbsp;
                       <Link
-                        to="/signup"
+                        to="#"
+                        onClick={opensignup}
                         className="cursor-pointer hover:text-[#b8cd06] transition-all"
                       >
                         <b>Đăng ký</b>
@@ -84,27 +149,52 @@ const Header = () => {
                 </div>
 
                 <div className="border-l border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase hidden lg:inline">
-                  <a
-                    href="#"
+                  <Link
+                    to="/wishlist"
                     className="cursor-pointer hover:text-[#b8cd06] transition-all"
                   >
                     <SlHeart className="text-xl" />
-                  </a>
+                  </Link>
+                </div>
+
+                {/* Thông báo */}
+                <div className="border-l border-[#eee] py-[10px] lg:px-[10px] lg:py-[16px] xl:px-[25px] text-[10px] leading-5 text-[#555] uppercase hidden lg:inline">
+                  <div className="relative hover:text-[#b8cd06]  cursor-pointer">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="size-[23px] "
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"
+                      />
+                    </svg>
+
+                    {/* Chấm đỏ thông báo */}
+                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-[19px] h-[19px] rounded-full text-[11px] text-white bg-red-500 ">
+                      1
+                    </span>
+                  </div>
                 </div>
 
                 <div className="border-x border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase relative hidden lg:inline">
-                  <a
-                    href="#"
+                  <Link
+                    to="/cart"
                     className="cursor-pointer text-[#555] hover:text-[#b8cd06] transition-all flex items-center"
                   >
-                    <b className="font-bold">your bag</b>
+                    <b className="font-bold">giỏ hàng</b>
                     <span className="relative">
                       <IoBagHandleSharp className="text-xl ml-1 mr-2" />
                       <span className="absolute -top-2 -right-1 bg-[#b8cd06] text-white text-[10px] w-[20px] h-[20px] text-center rounded-full">
-                        5
+                        {cart?.products?.length || 0}
                       </span>
                     </span>
-                  </a>
+                  </Link>
                 </div>
 
                 {/* HumBurger Icon */}
@@ -119,89 +209,80 @@ const Header = () => {
           <div className="border-x-0 lg:border-x-[50px] border-transparent h-full">
             <div className="flex h-full items-center">
               <Link to="/" className="w-4/12 md:w-2/12 px-[15px]">
-                <img className="w-20 md:w-36" src={logo} alt="Logo" />
+                <img
+                  className="w-20 md:w-36"
+                  src={logoUrl || "fallback_logo.jpg"}
+                  alt="Logo"
+                />
               </Link>
 
               <div className="w-8/12 md:w-10/12 justify-items-end px-[15px]">
                 <nav className="hidden lg:block">
                   <ul className="flex">
-                    <li className="">
-                      <a
-                        className="text-[11px] leading-4 uppercase font-bold rounded-2xl px-5 py-[9px] bg-[#b8cd06] text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Trang chủ
-                      </a>
-                    </li>
-                    <li className="">
-                      <a
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Về chúng tôi
-                      </a>
-                    </li>
-                    <li className="">
-                      <a
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Sản phẩm
-                      </a>
-                    </li>
-                    <li className="">
-                      <a
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Dịch vụ
-                      </a>
-                    </li>
-                    <li className="">
-                      <a
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Bài viết
-                      </a>
-                    </li>
-                    <li className="">
-                      <Link
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        to="/"
-                      >
-                        Trưng bày
-                      </Link>
-                    </li>
+                    {menuItems.map((item) => (
+                      <li className="!list-none" key={item.to}>
+                        <Link
+                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${
+                            pathname === item.to
+                              ? "bg-[#b8cd06] text-white"
+                              : ""
+                          }`}
+                          to={item.to}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
 
-                    <li className="">
-                      <a
-                        className="text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all"
-                        href="#"
-                      >
-                        Liên hệ
-                      </a>
-                    </li>
-                    <li className="">
+                    {/* <li className="!list-none">
                       <IoSearch
                         className="text-2xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                         onClick={() => setIsOpen(!isOpen)}
                       />
-                    </li>
+                    </li> */}
                   </ul>
                 </nav>
 
                 <div className="lg:hidden flex gap-3">
-                  <IoSearch
+                  {/* <IoSearch
                     className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                     onClick={() => setIsOpen(!isOpen)}
-                  />
-                  <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                  /> */}
+                  <Link to="/wishlist">
+                    <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                  </Link>
+                  {/* Thông báo */}
+                  <div className=" border-[#eee] hover:text-[#b8cd06]  uppercase lg:hidden">
+                    <div className="relative cursor-pointer">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-[33px]"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"
+                        />
+                      </svg>
+
+                      {/* Chấm đỏ thông báo */}
+                      <span className="absolute -top-3 -right-2 flex items-center justify-center w-[20px] h-[20px] rounded-full text-[11px] text-white bg-red-500 ">
+                        1
+                      </span>
+                    </div>
+                  </div>
+
                   <span className="relative mr-2">
-                    <IoBagHandleSharp className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
-                    <span className="absolute size-5 rounded-full text-white text-[11px] leading-5 text-center bg-[#b8cd06] top-[-39%] right-[-23%]">
-                      5
-                    </span>
+                    <Link to="/cart">
+                      <IoBagHandleSharp className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                      <span className="absolute size-5 rounded-full text-white text-[11px] leading-5 text-center bg-[#b8cd06] top-[-39%] right-[-23%]">
+                        {cart?.products?.length || 0}
+                      </span>
+                    </Link>
                   </span>
                 </div>
               </div>

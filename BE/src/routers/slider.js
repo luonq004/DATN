@@ -6,8 +6,8 @@ const sliderRouter = Router();
 
 sliderRouter.get("/", getAllSlides);
 sliderRouter.get("/:id", getSlideDetail);
-sliderRouter.post("/", upload.single("image"), createSlide);
-sliderRouter.put("/:id", upload.single("image"), updateSlide);
+sliderRouter.post("/", upload.fields([{ name: "image", maxCount: 1 }, { name: "backgroundImage", maxCount: 1 }]), createSlide); 
+sliderRouter.put("/:id", upload.fields([{ name: "image", maxCount: 1 }, { name: "backgroundImage", maxCount: 1 }]), updateSlide);
 sliderRouter.delete("/:id", deleteSlide);
 
 export default sliderRouter;

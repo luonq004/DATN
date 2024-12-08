@@ -7,14 +7,25 @@ const attributeValueSchema = new mongoose.Schema(
       required: true,
     },
 
+    slugName: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     type: {
       type: String,
-      // required: true
+      // required: true,
     },
 
     value: {
       type: String,
       required: true,
+    },
+
+    deleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true, versionKey: false }
