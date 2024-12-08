@@ -11,13 +11,13 @@ const OurServices = () => {
             <div className="flex flex-col items-center h-auto text-center">
               <div className="mb-8 sm:mb-16" />
               <h1
-                className="text-[66px]  highlight  max-[1199px]:text-[46px] max-[1199px]:leading-[46px] max-[767px]:text-[34px] max-[767px]:leading-[40px]  leading-[70px] font-black uppercase text-white "
+                className="text-[66px]  highlight  max-[1199px]:text-[46px] max-[1199px]:leading-[46px] max-[767px]:text-[34px] max-[767px]:leading-[40px]  leading-[90px] font-black uppercase text-white "
                 style={{
                   textShadow: "1px 1px 1px rgba(0, 0, 0, .1)",
                   fontFamily: "'Raleway', sans-serif",
                 }}
               >
-                our services
+                dịch vụ của chúng tôi
               </h1>
               <div className="p-[20px_0] title-underline h-[21px] ">
                 <span className="w-[55px]  text-[#c2d805] h-[1px] bg-current inline-block align-top relative"></span>
@@ -30,9 +30,7 @@ const OurServices = () => {
                 textShadow: "1px 1px 1px rgba(0, 0, 0, .1)",
               }}
             >
-              In feugiat molestie tortor a malesuada. Etiam a venenatis ipsum.
-              Proin pharetra elit at feugiat commodo vel placerat tincidunt
-              sapien nec
+            Trong dịch vụ của chúng tôi, sự hỗ trợ được thực hiện với tất cả tâm huyết. Chúng tôi luôn gắn kết với sự nhạy cảm, nâng cao phẩm giá và mang lại sự tinh tế như một giá trị cốt lõi.
             </p>
             <div className="mb-8 sm:mb-16" />
           </div>

@@ -1,41 +1,42 @@
 const services = [
   {
-    title: "Discount",
-    subtitle: "Loyalty System",
+    title: "Giảm giá",
+    subtitle: "Hệ thống khách hàng thân thiết",
     description:
-      "Mollis nec consequat at In feugiat molestie tortor a malesuada etiam a venenatis.",
+      "Hỗ trợ nhẹ nhàng và tiện lợi, mang lại sự hài lòng cho khách hàng.",
   },
   {
     title: "24/7",
-    subtitle: "Customer Support",
+    subtitle: "Hỗ trợ khách hàng",
     description:
-      "Mollis nec consequat at In feugiat molestie tortor a malesuada etiam a venenatis.",
+      "Đội ngũ hỗ trợ tận tâm luôn sẵn sàng phục vụ bạn bất kỳ lúc nào.",
   },
   {
-    title: "Delivery System",
-    subtitle: "Whole World",
+    title: "Hệ thống giao hàng",
+    subtitle: "Toàn cầu",
     description:
-      "Mollis nec consequat at In feugiat molestie tortor a malesuada etiam a venenatis.",
+      "Dịch vụ giao hàng nhanh chóng và đảm bảo đến bất kỳ nơi đâu trên thế giới.",
   },
   {
-    title: "Smart Support",
-    subtitle: "For Every Problem",
+    title: "Hỗ trợ thông minh",
+    subtitle: "Dành cho mọi vấn đề",
     description:
-      "Mollis nec consequat at In feugiat molestie tortor a malesuada etiam a venenatis.",
+      "Giải pháp linh hoạt và hiệu quả cho các vấn đề của bạn.",
   },
   {
-    title: "Quality",
-    subtitle: "Best Materials",
+    title: "Chất lượng",
+    subtitle: "Nguyên liệu tốt nhất",
     description:
-      "Mollis nec consequat at In feugiat molestie tortor a malesuada etiam a venenatis.",
+      "Cam kết sử dụng những nguyên liệu chất lượng cao nhất.",
   },
   {
-    title: "Professional Staff",
-    subtitle: "Over 5,000 Employers",
+    title: "Nhân viên chuyên nghiệp",
+    subtitle: "Hơn 5.000 nhân viên",
     description:
-      "Mollis nec consequat at In feugiat molestie tortor a malesuada etiam a venenatis.",
+      "Đội ngũ nhân viên giàu kinh nghiệm, sẵn sàng phục vụ bạn.",
   },
 ];
+
 
 const ChooseTheBest = () => {
   return (
@@ -52,16 +53,16 @@ const ChooseTheBest = () => {
                 <div className="h-[700px] max-[991px]:h-auto flex flex-col justify-center items-center text-center">
                   <div className="mb-9 sm:mb-14" />
                   <div className="text-[14px] highlight leading-[22px] text-[rgba(255,_255,_255,_.8)] font-light uppercase mb-2">
-                    we offer
+                    Chúng tôi cung cấp
                   </div>
                   <h2
-                    className="text-[66px] highlight   max-[1199px]:text-[46px] max-[1199px]:leading-[46px] max-[767px]:text-[34px] max-[767px]:leading-[40px]  leading-[70px] font-black uppercase text-white "
+                    className="text-[60px] highlight   max-[1199px]:text-[46px] max-[1199px]:leading-[46px] max-[767px]:text-[34px] max-[767px]:leading-[40px]  leading-[70px] font-black uppercase text-white "
                     style={{
                       textShadow: "1px 1px 1px rgba(0, 0, 0, .1)",
                       fontFamily: "'Raleway', sans-serif",
                     }}
                   >
-                    choose the best
+                  Chọn điều tốt nhất
                   </h2>
                   <div className="p-[20px_0] light  title-underline h-[21px] ">
                     <span className="w-[55px]  text-white h-[1px] bg-current inline-block align-top relative"></span>
@@ -72,8 +73,7 @@ const ChooseTheBest = () => {
                       textShadow: "1px 1px 1px rgba(0, 0, 0, .1)",
                     }}
                   >
-                    Praesent nec finibus massa. Phasellus id auctor lacus, at
-                    iaculis lorem. Donec quis arcu elit. In vehicula purus sem
+                   Hãy hướng tới sự hoàn hảo. Chúng tôi mang đến những giải pháp tối ưu, giúp bạn dễ dàng đạt được thành công.
                   </div>
                   <div className="mb-9 sm:mb-14" />
                 </div>
