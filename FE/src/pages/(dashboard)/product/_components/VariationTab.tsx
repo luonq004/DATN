@@ -34,6 +34,8 @@ const VariationTab = ({
   replaceFields,
   removeFields,
   duplicate,
+  previewImages,
+  setPreviewImages,
 }: {
   fields: FieldArrayWithId<Variant>[];
   stateAttribute: State;
@@ -43,12 +45,18 @@ const VariationTab = ({
   replaceFields: (fields: Variant[]) => void;
   removeFields: (index: number) => void;
   duplicate: number[];
+  previewImages: {
+    [key: string]: string | "";
+  };
+  setPreviewImages: React.Dispatch<
+    React.SetStateAction<{ [key: string]: string | "" }>
+  >;
 }) => {
   const [stateSelect, setStateSelect] = useState<string>("create");
 
-  const [previewImages, setPreviewImages] = useState<{
-    [key: string]: string | null;
-  }>({});
+  // const [previewImages, setPreviewImages] = useState<{
+  //   [key: string]: string | null;
+  // }>({});
 
   const [openItems, setOpenItems] = useState<string[]>([]);
 
@@ -61,15 +69,15 @@ const VariationTab = ({
     setOpenItems((prev) => [...new Set([...prev, ...errorKeys])]);
   }, [form.formState.errors]);
 
-  useEffect(() => {
-    const initialImages = fields.reduce((acc, field) => {
-      if (field.image) {
-        acc[field.id] = field.image; // Use the existing image URL
-      }
-      return acc;
-    }, {} as { [key: string]: string | null });
-    setPreviewImages(initialImages);
-  }, [fields]);
+  // useEffect(() => {
+  //   const initialImages = fields.reduce((acc, field) => {
+  //     if (field.image) {
+  //       acc[field.id] = field.image; // Use the existing image URL
+  //     }
+  //     return acc;
+  //   }, {} as { [key: string]: string | null });
+  //   setPreviewImages(initialImages);
+  // }, [fields]);
 
   const handleImageChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -128,6 +136,9 @@ const VariationTab = ({
 
   const matchingAttributes = getAttributesUsedInArray(fields, attributes);
 
+  // console.log(form.getValues("variants"));
+  // console.log(previewImages);
+
   return (
     <>
       <div className="flex gap-3 border-b pb-3">
@@ -146,7 +157,7 @@ const VariationTab = ({
           className="bg-gray-200 text-black"
           onClick={handleButtonClick}
         >
-          Ấn
+          Chọn
         </Button>
       </div>
       <div>
@@ -156,7 +167,7 @@ const VariationTab = ({
             return (
               <div className={`pb-4 `} key={field.id}>
                 <Accordion
-                  className="w-full"
+                  className="w-full border-black"
                   type="multiple"
                   value={openItems} // Điều khiển các mục được mở
                   onValueChange={(values) => setOpenItems(values)}
@@ -215,8 +226,8 @@ const VariationTab = ({
                     </div>
 
                     <AccordionContent className="mt-4">
-                      <div className="pt-4 border-t">
-                        <div className="mt-2 flex border-b border-gray-300 pb-4">
+                      <div className="pt-4 border-t border-black">
+                        <div className="mt-2 flex flex-col lg:flex-row border-b border-gray-300 pb-4">
                           <input
                             className={`input-file__${field.id}`}
                             type="file"
@@ -228,46 +239,56 @@ const VariationTab = ({
                           />
 
                           {/* Preview Image */}
-                          <div
-                            onClick={() => {
-                              const inputElement = document.querySelector(
-                                `.input-file__${field.id}`
-                              );
-                              if (inputElement) {
-                                (inputElement as HTMLInputElement).click();
+                          <div>
+                            <div
+                              onClick={() => {
+                                const inputElement = document.querySelector(
+                                  `.input-file__${field.id}`
+                                );
+                                if (inputElement) {
+                                  (inputElement as HTMLInputElement).click();
+                                }
+                              }}
+                              className="h-[100px] w-[100px] border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center"
+                            >
+                              {previewImages[field.id] ? (
+                                <div className="relative">
+                                  <img
+                                    src={previewImages[field.id] || ""}
+                                    alt="Preview"
+                                    className="object-cover w-[90px] h-[90px]"
+                                  />
+                                </div>
+                              ) : (
+                                <FaCloudUploadAlt className="text-4xl text-blue-400" />
+                              )}
+                            </div>
+                            <span className="text-xs block text-red-600 mt-2">
+                              {
+                                form.formState.errors.variants?.[index]?.image
+                                  ?.message
                               }
-                            }}
-                            className="h-[100px] w-[100px] border border-dashed border-blue-300 cursor-pointer rounded p-1 flex items-center justify-center"
-                          >
-                            {previewImages[field.id] ? (
-                              <div className="relative">
-                                <img
-                                  src={previewImages[field.id] || ""}
-                                  alt="Preview"
-                                  className="object-cover w-[90px] h-[90px]"
-                                />
-                              </div>
-                            ) : (
-                              <FaCloudUploadAlt className="text-4xl text-blue-400" />
-                            )}
+                            </span>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPreviewImages((prev) => ({
+                                  ...prev,
+                                  [field.id]: "", // Xóa ảnh từ preview
+                                }));
+                                form.setValue(`variants.${index}.image`, ""); // Xóa ảnh từ form
+                              }}
+                              className="mt-4"
+                            >
+                              Xóa ảnh
+                            </button>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPreviewImages((prev) => ({
-                                ...prev,
-                                [field.id]: null, // Xóa ảnh từ preview
-                              }));
-                              form.setValue(`variants.${index}.image`, null); // Xóa ảnh từ form
-                            }}
-                            className="mt-10"
-                          >
-                            X
-                          </button>
-
-                          <div className="self-end ml-auto">
-                            <label className="block">Số lượng tồn kho</label>
+                          <div className="lg:self-end lg:ml-auto">
+                            <label className="block text-lg">
+                              Số lượng tồn kho
+                            </label>
                             <input
                               type="text"
                               {...form.register(
@@ -296,6 +317,8 @@ const VariationTab = ({
             );
           })}
       </div>
+
+      {/* {form.formState.errors.variants?.message} */}
     </>
   );
 };

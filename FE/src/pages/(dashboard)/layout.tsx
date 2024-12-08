@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "./_components/SideBar";
 import { useUserContext } from "@/common/context/UserProvider";
@@ -18,11 +18,14 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { AppSidebar } from "./_components/app-sidebar";
+import { saveUserToDatabase } from "@/common/hooks/useCheckUser";
 
 const LayoutAdmin = () => {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState(true);
+  const isUserSaved = useRef(false);
+  const { login } = useUserContext();
 
   // const { role } = useUserContext();
 
@@ -44,6 +47,27 @@ const LayoutAdmin = () => {
       navigate("*", { replace: true });
     }
   }, [user, isLoaded, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      // Gọi saveUserToDatabase một lần
+      const saveUserIfNeeded = async () => {
+        if (user && !isUserSaved.current) {
+          try {
+            console.log("user", user.id);
+            const data = await saveUserToDatabase(user.id);
+            // console.log("data", data);
+            login(data); // Lưu _id vào context
+            isUserSaved.current = true; // Đánh dấu đã lưu
+          } catch (error) {
+            console.error("Lỗi khi lưu user vào database:", error);
+          }
+        }
+      };
+      // Kiểm tra trạng thái khóa khi người dùng đăng nhập
+      saveUserIfNeeded();
+    }
+  }, [user, login]);
 
   // Trì hoãn render giao diện khi đang kiểm tra quyền truy cập
   if (!isLoaded || !isAuthorized) {
@@ -86,7 +110,7 @@ const LayoutAdmin = () => {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 pt-0">
-          <div className="w-full h-full">
+          <div className="w-full bg-[#f1f5f9] h-full">
             {/* <div className="h-20 bg-red-400"></div> */}
             <div className="rounded-lg m-7 min-h-80">
               <Outlet />

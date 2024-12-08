@@ -27,6 +27,9 @@ export const variantSchema = z
       .number({
         message: "Giá giảm giá phải là số",
       })
+      .gte(0, {
+        message: "Giá giảm giá không thể âm",
+      })
       .optional(),
     values: z.array(
       z.object({
@@ -40,10 +43,20 @@ export const variantSchema = z
       message: "Số lượng phải lớn hơn hoặc bằng 1",
     }),
     // image: z.string().optional(),
-    image: z.union([
-      z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
-      z.instanceof(File).optional(), // File là tùy chọn
-    ]),
+    image: z
+      .union([
+        z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
+        z.instanceof(File).refine(
+          (file) =>
+            ["image/png", "image/jpeg", "image/jpg", "image/gif"].includes(
+              file.type
+            ), // Kiểm tra định dạng MIME
+          {
+            message: "Chỉ được upload file ảnh (PNG, JPEG, JPG, GIF)", // Thông báo lỗi
+          }
+        ),
+      ])
+      .optional(),
   })
   .refine(
     (data) => data.priceSale === undefined || data.priceSale < data.price,
@@ -60,9 +73,13 @@ export const productSchema = z.object({
     .transform((val) => new Date(val))
     .optional(),
   deleted: z.boolean().optional(),
-  description: z.string().min(1),
+  description: z.string().min(10, {
+    message: "Mô tả sản phẩm phải có ít nhất 10 ký tự",
+  }),
   descriptionDetail: z.string().optional(),
-  name: z.string().min(1),
+  name: z.string().min(1, {
+    message: "Tên sản phẩm không được để trống",
+  }),
   category: z.array(z.string()).optional(),
   image: z.union([
     z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
@@ -75,7 +92,11 @@ export const productSchema = z.object({
     .string()
     .transform((val) => new Date(val))
     .optional(),
-  variants: z.array(variantSchema),
+  variants: z
+    .array(variantSchema)
+    .refine((variantArr) => variantArr.length > 0, {
+      message: "Danh sách biến thể không được để trống",
+    }),
   _id: z.string().optional(),
 });
 
