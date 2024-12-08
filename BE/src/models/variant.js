@@ -12,7 +12,7 @@ const variantSchema = new mongoose.Schema(
 
     originalPrice: {
       type: Number,
-      required: true,
+      // required: true,
     },
 
     priceSale: {

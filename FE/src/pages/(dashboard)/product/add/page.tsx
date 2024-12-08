@@ -63,29 +63,29 @@ const ProductAddPage = () => {
       : {
           name: "",
           description: "",
-          variants: [
-            {
-              price: 0,
-              priceSale: 0,
-              originalPrice: 0,
-              image: "",
-              values: [
-                {
-                  _id: "",
-                  name: "",
-                  type: "",
-                  value: "",
-                },
-              ],
-              countOnStock: 0,
-            },
-          ],
+          // variants: [
+          //   {
+          //     price: 0,
+          //     priceSale: 0,
+          //     originalPrice: 0,
+          //     image: "",
+          //     values: [
+          //       {
+          //         _id: "",
+          //         name: "",
+          //         type: "",
+          //         value: "",
+          //       },
+          //     ],
+          //     countOnStock: 0,
+          //   },
+          // ],
           createdAt: "",
           updatedAt: "",
           deleted: false,
           price: 0,
           priceSale: 0,
-          category: [],
+          category: ["674f3deca63479f361d8f499"],
           image: "",
           type: "variable",
         },
@@ -93,33 +93,34 @@ const ProductAddPage = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof productSchema>) {
-    setIsDoing(true);
-    if (id) {
-      const duplicateValues = checkForDuplicateVariants(values);
-      setDuplicate(duplicateValues);
-      if (!duplicateValues.length) {
-        const result = await UploadFiles(values);
-        updateProduct({ data: result, id });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Trùng giá trị biến thể của sản phẩm",
-        });
-      }
-    } else {
-      const duplicateValues = checkForDuplicateVariants(values);
-      setDuplicate(duplicateValues);
-      if (!duplicateValues.length) {
-        const result = await UploadFiles(values);
-        createProduct(result);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Trùng giá trị biến thể của sản phẩm",
-        });
-      }
-    }
-    if (!isCreatting || !isUpdating) setIsDoing(false);
+    console.log(values);
+    // setIsDoing(true);
+    // if (id) {
+    //   const duplicateValues = checkForDuplicateVariants(values);
+    //   setDuplicate(duplicateValues);
+    //   if (!duplicateValues.length) {
+    //     const result = await UploadFiles(values);
+    //     updateProduct({ data: result, id });
+    //   } else {
+    //     toast({
+    //       variant: "destructive",
+    //       title: "Trùng giá trị biến thể của sản phẩm",
+    //     });
+    //   }
+    // } else {
+    //   const duplicateValues = checkForDuplicateVariants(values);
+    //   setDuplicate(duplicateValues);
+    //   if (!duplicateValues.length) {
+    //     const result = await UploadFiles(values);
+    //     createProduct(result);
+    //   } else {
+    //     toast({
+    //       variant: "destructive",
+    //       title: "Trùng giá trị biến thể của sản phẩm",
+    //     });
+    //   }
+    // }
+    // if (!isCreatting || !isUpdating) setIsDoing(false);
   }
 
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
@@ -131,6 +132,8 @@ const ProductAddPage = () => {
     : [];
 
   const attributeValue = id ? getUniqueAttributeValue(product) : [];
+
+  // console.log(form.formState.errors.variants);
 
   return (
     // <Container>

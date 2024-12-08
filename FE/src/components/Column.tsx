@@ -15,7 +15,7 @@ export const columnProducts: ColumnDef<IProduct>[] = [
         <img
           src={attribute.image}
           alt={attribute.name}
-          className="w-20 h-20 object-cover rounded"
+          className="size-14 md:size-20 object-cover rounded"
         />
       );
     },

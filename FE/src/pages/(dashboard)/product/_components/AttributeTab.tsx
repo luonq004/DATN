@@ -1,4 +1,10 @@
-import { Action, Attribute, Data, State } from "@/common/types/Product";
+import {
+  Action,
+  Attribute,
+  Data,
+  State,
+  Variant,
+} from "@/common/types/Product";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -8,6 +14,7 @@ import {
 import { useState } from "react";
 import Select from "react-select";
 import { AddNewValue } from "./AddNewValue";
+import { toast } from "@/components/ui/use-toast";
 
 const AttributeTab = ({
   attributes,
@@ -16,6 +23,7 @@ const AttributeTab = ({
   selectedValues,
   setSelectedValues,
   handleAttributeValueChange,
+  replaceFields,
 }: {
   attributes: Attribute[];
   stateAttribute: State;
@@ -42,6 +50,7 @@ const AttributeTab = ({
       label: string;
     }
   ) => void;
+  replaceFields: (fields: Variant[]) => void;
 }) => {
   // State
   const [valueOptions, setValueOptions] = useState<{
@@ -65,7 +74,7 @@ const AttributeTab = ({
   }
 
   // console.log("valueOptions: ", stateAttribute.attributesChoose);
-  // console.log("selectedValues: ", selectedValues);
+  // console.log("selectedValues: ", Object.values(selectedValues));
 
   return (
     <>
@@ -107,7 +116,7 @@ const AttributeTab = ({
             setValueOptions(null);
           }}
         >
-          Ấn
+          Chọn
         </Button>
         {selectError && (
           <span className="text-red-500">Bạn phải chọn một giá trị!</span>
@@ -175,10 +184,25 @@ const AttributeTab = ({
           type="button"
           onClick={() => {
             dispatch({ type: "CLEAR_VALUES" });
+            replaceFields([]);
             dispatch({
               type: "ADD_VALUE",
               payload: Object.values(selectedValues).flatMap((val) => [val]),
             });
+            if (
+              Object.values(selectedValues).length === 0 ||
+              Object.values(selectedValues)[0].length === 0
+            ) {
+              toast({
+                variant: "destructive",
+                title: "Bạn chưa chọn giá trị cho biến thể",
+              });
+            } else {
+              toast({
+                variant: "success",
+                title: "Đã tạo biến thể thành công",
+              });
+            }
             dispatch({ type: "MIX_VALUES" });
           }}
         >
