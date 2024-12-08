@@ -25,18 +25,18 @@ const voucherSchema = Joi.object({
             .min(subMonths(new Date(), 1))
             .max(addMonths(new Date(), 1))
             .required().messages({
-                'any.required': 'Start date is required',
-                'date.base': 'Start date must be a valid date',
+                'any.required': 'Ngày bắt đầu là bắt buộc',
+                'date.base': 'Ngày bắt đầu phải là ngày hợp lệ',
             }),
         to: Joi.date()
             .min(subMonths(new Date(), 1))
             .max(addMonths(new Date(), 1))
             .required().messages({
-                'any.required': 'End date is required',
-                'date.base': 'End date must be a valid date',
+                'any.required': 'Ngày kết thúc là bắt buộc',
+                'date.base': 'Ngày kết thúc phải là ngày hợp lệ',
             }),
     }).required().messages({
-        'any.required': 'Date is required'
+        'any.required': 'Ngày hết hạn là bắt buộc',
     }),
     type: Joi.string().valid("percent", "fixed").required(),
 })
@@ -118,7 +118,7 @@ const VoucherAddForm = () => {
                 </div>
 
                 <div className='flex flex-col gap-2 *:w-full'>
-                    {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Danh mục</Label> : <Label htmlFor="category" >Danh mục</Label>}
+                    {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Loại</Label> : <Label htmlFor="category" >Loại</Label>}
                     <Controller
                         control={control}
                         name="category"
@@ -126,13 +126,12 @@ const VoucherAddForm = () => {
                         render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
                                 <SelectTrigger className="w-[180px] mt-0">
-                                    <SelectValue placeholder="Select a category" />
+                                    <SelectValue placeholder="Chọn loại Voucher" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectItem value="product">Product</SelectItem>
+                                        <SelectItem value="product">Sản phẩm</SelectItem>
                                         <SelectItem value="ship">Ship</SelectItem>
-                                        <SelectItem value="test">Test</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>

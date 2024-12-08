@@ -26,7 +26,7 @@ export const columnsProducts: ColumnDef<Payment>[] = [
         accessorKey: "image",
         header: "Ảnh sản phẩm",
         cell: ({ row }) => (
-            <img src={row.getValue('image')} alt={row.getValue('productName')} className="w-12 h-12 rounded-lg" />
+            <img src={row.getValue('image')} alt={row.getValue('productName')} className="w-12 h-14 rounded-lg" />
         )
     },
     {

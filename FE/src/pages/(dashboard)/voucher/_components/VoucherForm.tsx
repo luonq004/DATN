@@ -163,7 +163,7 @@ const VoucherForm = ({ id }: any) => {
                 </div>
 
                 <div className='flex flex-col gap-2 *:w-full'>
-                    {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Danh mục</Label> : <Label htmlFor="category" >Danh mục</Label>}
+                    {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Loại</Label> : <Label htmlFor="category" >Loại</Label>}
                     <Controller
                         control={control}
                         name="category"
@@ -175,9 +175,8 @@ const VoucherForm = ({ id }: any) => {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectItem value="product">Product</SelectItem>
+                                        <SelectItem value="product">Sản phẩm</SelectItem>
                                         <SelectItem value="ship">Ship</SelectItem>
-                                        <SelectItem value="test">Test</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
@@ -187,10 +186,10 @@ const VoucherForm = ({ id }: any) => {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Giảm</Label> : <Label htmlFor="discount" >Giảm</Label>}
+                    {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Giảm giá</Label> : <Label htmlFor="discount" >Giảm giá</Label>}
                     <Input
                         disabled={openEdit === id ? false : true}
-                        placeholder='discount...'
+                        placeholder='Giảm...'
                         className='mb-0'
                         {...register('discount', { required: true, minLength: 3, maxLength: 255 })}
                     />
@@ -201,7 +200,7 @@ const VoucherForm = ({ id }: any) => {
                     {errors?.countOnStock?.message ? <Label htmlFor="countOnStock" className='text-red-500'>Số lượng</Label> : <Label htmlFor="countOnStock" >Số lượng</Label>}
                     <Input
                         disabled={openEdit === id ? false : true}
-                        placeholder='countOnStock...'
+                        placeholder='Số lượng...'
                         className='mb-0'
                         {...register('countOnStock', { required: true, minLength: 3, maxLength: 255 })}
                     />
