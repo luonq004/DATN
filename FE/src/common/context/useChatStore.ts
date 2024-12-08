@@ -2,13 +2,15 @@ import { create } from "zustand";
 import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { ChatStoreActions, IChatStoreState } from "../types/Chat";
+import { useAuthStore } from "./useAuthStore";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export const useChatStore = create<IChatStoreState & ChatStoreActions>(
   (set, get) => ({
-    messages: [],
+    listMessage: [],
     conversations: [],
     selectedUser: null,
+    selectedConversation: null,
     isConversationsLoading: false,
     isMessagesLoading: false,
 
@@ -31,8 +33,10 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
       set({ isMessagesLoading: true });
       try {
         const res = await axios.get(`${apiUrl}/conversation/${conversationId}`);
-        set({ messages: res.data });
+
+        set({ listMessage: res.data });
       } catch (error) {
+        console.log(error);
         toast({
           variant: "destructive",
           title: error.response.data.message,
@@ -42,14 +46,26 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
       }
     },
 
-    sendMessage: async (messageData) => {
-      const { selectedUser, messages } = get();
+    sendMessage: async (messageData, adminId) => {
+      const { selectedConversation, listMessage, selectedUser } = get();
       try {
         const res = await axios.post(
-          `/messages/send/${selectedUser!}`,
-          messageData
+          `${apiUrl}/conversation/${selectedConversation}/messageAdmin`,
+          {
+            text: messageData,
+            adminId,
+            receiverId: selectedUser,
+          }
         );
-        set({ messages: [...messages, res.data] });
+
+        console.log("RETURN: ", res.data);
+
+        set({
+          listMessage: {
+            ...listMessage, // Giữ nguyên các thuộc tính khác của listMessage
+            messages: [...listMessage.messages, res.data], // Cập nhật messages
+          },
+        });
       } catch (error) {
         toast({
           variant: "destructive",
@@ -70,7 +86,7 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
         if (!isMessageSentFromSelectedUser) return;
 
         set({
-          messages: [...get().messages, newMessage],
+          listMessage: [...get().listMessage, newMessage],
         });
       });
     },
@@ -81,5 +97,8 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
     },
 
     setSelectedUser: (selectedUser) => set({ selectedUser }),
+
+    setSelectedConversation: (selectedConversation) =>
+      set({ selectedConversation }),
   })
 );

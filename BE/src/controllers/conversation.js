@@ -1,5 +1,7 @@
 import Conversation from "../models/conversation.js";
 import Message from "../models/message.js";
+import User from "../models/users.js";
+import { getReceiverSocketId } from "./socket.js";
 
 export const getAllConversations = async (req, res) => {
   try {
@@ -17,11 +19,15 @@ export const getAllConversations = async (req, res) => {
 
 export const sendMessageFromAdmin = async (req, res) => {
   const { conversationId } = req.params;
-  const { adminId, text } = req.body;
+  const { adminId, text, receiverId } = req.body;
+
+  console.log("RECEIVER ID : ", receiverId);
 
   try {
     // Kiểm tra xem cuộc trò chuyện có tồn tại không
     const conversation = await Conversation.findById(conversationId);
+    const user = await User.findById(adminId);
+    const { role, _id, imageUrl, firstName, lastName } = user;
 
     if (!conversation) {
       return res.status(404).json({ error: "Không tìm thấy cuộc trò chuyện." });
@@ -40,7 +46,25 @@ export const sendMessageFromAdmin = async (req, res) => {
     conversation.updatedAt = Date.now();
     await conversation.save();
 
-    return res.status(200).json({ message });
+    const result = {
+      ...message._doc,
+      sender: {
+        _id,
+        imageUrl,
+        firstName,
+        lastName,
+        role,
+      },
+    };
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    console.log("RECEIVER : ", receiverSocketId);
+    if (receiverSocketId) {
+      console.log("SEARCH : ", receiverSocketId);
+      io.to(receiverSocketId).emit("newMessage", result);
+    }
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -101,7 +125,7 @@ export const getConversation = async (req, res) => {
       return res.status(404).json({ error: "Không tìm thấy cuộc trò chuyện" });
     }
 
-    return res.status(200).json({ conversation });
+    return res.status(200).json(conversation);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });

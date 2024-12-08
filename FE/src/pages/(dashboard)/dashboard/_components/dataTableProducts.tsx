@@ -86,7 +86,7 @@ export function DataTableProducts<TData extends { image?: string; productName?: 
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    Không có dữ liệu
                                 </TableCell>
                             </TableRow>
                         )}

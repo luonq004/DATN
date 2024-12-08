@@ -246,7 +246,7 @@ const SizeColorSelector = ({
           return (
             <React.Fragment key={item._id}>
               <div key={item._id} className="flex flex-col gap-2">
-                <h1 className="font-medium">Select {item.name}</h1>
+                <h1 className="font-medium">Chọn {item.name}</h1>
                 <div className="flex gap-2">
                   {item.values.map((itemOther: any) => (
                     <div
@@ -291,13 +291,13 @@ const SizeColorSelector = ({
             className="p-1 hover:text-red-500 cursor-pointer"
             onClick={() => changeAttribute("1")}
           >
-            Cancel
+            Đóng
           </div>
           <button
             onClick={() => saveVariant(selectedValue)}
             className="py-1 px-3 bg-background border border-background1 text-background1 rounded-sm hover:bg-background1 hover:text-background transition-all duration-300"
           >
-            Save
+            Lưu
           </button>
         </div>
       </div>

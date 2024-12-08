@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet"
 import VoucherForm from "./VoucherForm"
 import { Button } from "@/components/ui/button"
+import { formatCurrency } from "@/lib/utils"
 
 
 export type Payment = {
@@ -46,7 +47,7 @@ export const columns: ColumnDef<Payment>[] = [
     },
     {
         accessorKey: "category",
-        header: "Danh mục",
+        header: "Loại",
     },
     {
         accessorKey: "discount",
@@ -55,7 +56,7 @@ export const columns: ColumnDef<Payment>[] = [
             if (row.original.type === 'percent') {
                 return <>{row.getValue('discount')}%</>
             } else
-                return <>{row.getValue('discount')}$</>
+                return <>{formatCurrency(row.getValue('discount'))} VNĐ</>
         }
     },
     {
