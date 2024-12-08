@@ -31,12 +31,17 @@ export const setupSocketIO = (server, app) => {
         const message = isSuccess
           ? `Đơn hàng với mã <strong>${orderData.orderCode}</strong>  đã được đặt thành công!`
           : `Đơn hàng với mã <strong>${orderData.orderCode}</strong>  đã thất bại. Vui lòng thử lại!`;
+
+        const productName = orderData.productName; 
+        const productImage = orderData.productImage;
+
         // Sau khi nhận được đơn hàng, lưu thông báo vào database
         const newNotification = new Notification({
           userId: orderData.userId,
           orderCode: orderData.orderCode,
           message,
-          productImage: orderData.productImage,
+          productImage: productImage,
+          productName: productName,
           type: "info", // Loại thông báo
           status: isSuccess ? "success" : "failed", // Trạng thái thông báo
           isRead: false, // Chưa đọc
@@ -56,6 +61,7 @@ export const setupSocketIO = (server, app) => {
           message: newNotification.message,
           orderCode: newNotification.orderCode,
           productImage: newNotification.productImage || null,
+          productName: newNotification.productName,
           isRead: newNotification.isRead,
           createdAt: newNotification.createdAt,
         });
@@ -73,8 +79,11 @@ export const setupSocketIO = (server, app) => {
     // Lắng nghe sự kiện 'orderStatusChanged' từ frontend
     socket.on("orderStatusChanged", async (data) => {
       console.log("Trạng thái đơn hàng đã thay đổi:", data);
+      
       try {
-        const { orderCode, newStatus, userId, productImage } = data;
+        const { orderCode, newStatus, userId, productImage, productName } = data;
+        console.log("productImage từ dữ liệu nhận được:", productImage);
+        
         const message = `Đơn hàng với mã <strong>${orderCode}</strong> đã được cập nhật và chuyển sang trạng thái <strong>${newStatus}</strong>.`;
 
         const userIdStr =
@@ -86,6 +95,7 @@ export const setupSocketIO = (server, app) => {
           userId: userIdStr,
           orderCode,
           productImage,
+          productName,
           message,
           type: "info", // Loại thông báo
           status:
@@ -105,9 +115,11 @@ export const setupSocketIO = (server, app) => {
           _id: newNotification._id,
           message: newNotification.message,
           orderCode: newNotification.orderCode,
+          productImage: newNotification.productImage || null,
+          productName: newNotification.productName,
           isRead: newNotification.isRead,
           createdAt: newNotification.createdAt,
-          productImage: newNotification.productImage, 
+          
         });
 
         console.log("Đã phát thông báo cho người dùng về trạng thái mới.");

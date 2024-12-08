@@ -32,11 +32,12 @@ import { Link, useNavigate } from "react-router-dom";
 import CreateAddress from "../../address/CreatAddress";
 import { Address } from "../../address/ListAddress";
 import AddressDialog from "./AddressDialog ";
-import CheckOutVoucher from "./CheckOutVoucher";
 import sendOrderConfirmationEmail from "./sendEmail";
 // import { useQueryClient } from "@tanstack/react-query";
-import CheckOutCart from "./CheckOutCart";
+import { useQueryClient } from "@tanstack/react-query";
 import io from "socket.io-client";
+import CheckOutCart from "./CheckOutCart";
+
 const socket = io("http://localhost:3000");
 
 interface ErrorResponse {
@@ -65,6 +66,7 @@ const CheckOut = () => {
 
   const { user } = useUser();
   const { _id } = useUserContext() ?? {};
+  const queryClient = useQueryClient(); // Đặt useQueryClient ở trên đầu
   const Gmail = user?.primaryEmailAddress?.emailAddress;
   const {
     data: addresses,
@@ -123,6 +125,7 @@ const CheckOut = () => {
         const status = response.status === 201 ? "success" : "failed";
 
         if (data.paymentMethod === "COD" && response.status === 201) {
+          queryClient.invalidateQueries(["CART"]);
           // Đơn hàng đã được tạo thành công
           toast({
             title: "Thành công!",

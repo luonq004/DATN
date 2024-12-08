@@ -109,17 +109,17 @@ const OrderHistory = () => {
           variant: "default",
         });
 
-        console.log("Thông báo đã được gửi", {
-          orderCode,
-          newStatus,
-          userId: _id,
-        });
+        const firstProductImage = orderToCancel?.products[0]?.productItem?.image;
 
+        // Emit thông báo qua socket 
         socket.emit("orderStatusChanged", {
           orderCode,
           newStatus,
           userId: _id,
+          productImage: firstProductImage,
+          productName: orderToCancel?.products[0]?.productItem?.name
         });
+        
       }
     } catch (error) {
       console.error(error);

@@ -65,6 +65,7 @@ const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
                         >
                           <FormControl>
                             <Checkbox
+                              disabled={item._id === "674f3deca63479f361d8f499"}
                               checked={field.value?.includes(item._id)}
                               onCheckedChange={(checked) => {
                                 return checked

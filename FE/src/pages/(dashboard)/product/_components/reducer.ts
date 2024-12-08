@@ -41,8 +41,6 @@ export const reducer = (state: State, action: Action): State => {
         (value) => value && Object.keys(value).length > 0
       );
 
-      // console.log("FILTERED VALUES: ", filteredValues);
-
       if (!filteredValues.length) return state;
 
       return {

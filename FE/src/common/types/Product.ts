@@ -127,6 +127,7 @@ export interface OrderProduct {
     variantItem: VariantItem;
     // statusComment?: boolean;
     // isCommented?: boolean;
+    image?: string;
     quantity: number;
     _id: string;
   }[];
