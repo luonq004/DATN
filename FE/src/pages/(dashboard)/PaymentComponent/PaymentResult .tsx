@@ -102,6 +102,7 @@ useEffect(() => {
           });
       
           console.log("Cart đã được xóa hoàn toàn.");
+        queryClient.invalidateQueries(["CART"]);
 
         }
         } catch (error) {

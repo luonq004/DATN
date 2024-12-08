@@ -14,6 +14,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
+import { PiChatCentered } from "react-icons/pi";
+
 import { useUser } from "@clerk/clerk-react";
 import {
   Book,
@@ -98,7 +100,7 @@ const data = {
     {
       title: "Tin nhắn",
       url: "/admin/message",
-      icon: Image,
+      icon: PiChatCentered,
     },
     {
       title: "Voucher",

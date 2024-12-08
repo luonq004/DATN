@@ -22,14 +22,6 @@ export const createOrder = async (req, res) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Phương thức thanh toán là bắt buộc" });
     }
-    // Log tất cả sản phẩm và lọc các sản phẩm bị ngừng bán
-    // if (deletedProduct) {
-    //   return res.status(StatusCodes.NOT_FOUND).json({
-    //     message: `Sản phẩm hoặc biến thể đã bị xóa`,
-    //   });
-    // }
-
-
     if (!products || !Array.isArray(products) || products.length === 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)

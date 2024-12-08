@@ -56,6 +56,10 @@ const InfoGeneralProduct: React.FC<{
     string | undefined
   >("item-1");
 
+  const [previewImages, setPreviewImages] = useState<{
+    [key: string]: string | "";
+  }>({});
+
   useEffect(() => {
     const hasErrorInVariations =
       Boolean(form.formState.errors.variants) || Boolean(duplicate.length);
@@ -105,7 +109,19 @@ const InfoGeneralProduct: React.FC<{
     name: "variants",
   });
 
+  useEffect(() => {
+    const initialImages = fields.reduce((acc, field) => {
+      if (field.image) {
+        acc[field.id] = field.image; // Use the existing image URL
+      }
+      return acc;
+    }, {} as { [key: string]: string | "" });
+    setPreviewImages(initialImages);
+  }, [fields]);
+
   const typeFields: string[] = getUniqueTypesFromFields(fields) as string[];
+
+  // console.log(selectedValues);
 
   return (
     <div className="w-full xl:w-3/4">
@@ -158,9 +174,9 @@ const InfoGeneralProduct: React.FC<{
               <Tabs
                 value={valuetab}
                 onValueChange={(value) => setValueTab(value)}
-                className="flex"
+                className="flex flex-col md:flex-row"
               >
-                <TabsList className="flex flex-col justify-start gap-2 h-auto bg-white border-r rounded-none p-0">
+                <TabsList className="flex flex-col justify-start gap-2 h-auto bg-white border-b md:border-r border-black md:border-inherit rounded-none pb-3 md:p-0">
                   {tabProductData.map((tab) => (
                     <TabsTrigger
                       key={tab.value}
@@ -185,6 +201,7 @@ const InfoGeneralProduct: React.FC<{
                     selectedValues={selectedValues}
                     setSelectedValues={setSelectedValues}
                     handleAttributeValueChange={handleAttributeValueChange}
+                    replaceFields={replace}
                   />
                 </TabsContent>
                 <TabsContent
@@ -200,6 +217,8 @@ const InfoGeneralProduct: React.FC<{
                     replaceFields={replace}
                     removeFields={remove}
                     duplicate={duplicate}
+                    previewImages={previewImages}
+                    setPreviewImages={setPreviewImages}
                   />
                 </TabsContent>
                 <TabsContent className="px-3 pt-2" value="advanced">
@@ -210,11 +229,15 @@ const InfoGeneralProduct: React.FC<{
           </AccordionItem>
         </Accordion>
       </div>
+      <span className="block mt-5 text-red-700">
+        {form.formState.errors.variants?.message}
+      </span>
 
       <div>
         <ReactQuill
           placeholder="Viết mô tả chi tiết sản phẩm"
           className="bg-white mt-9"
+          style={{ height: "200px", marginBottom: "50px" }}
           theme="snow"
           value={value}
           onChange={handleChange} // Sử dụng handleChange
