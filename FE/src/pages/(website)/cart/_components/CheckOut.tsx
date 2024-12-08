@@ -37,6 +37,7 @@ import { formatCurrency } from "@/lib/utils";
 
 import io from "socket.io-client";
 import CheckOutCart from "./CheckOutCart";
+import { useQueryClient } from "@tanstack/react-query";
 
 const socket = io("http://localhost:3000");
 
@@ -102,6 +103,7 @@ const CheckOut = () => {
 
   const { user } = useUser();
   const { _id } = useUserContext() ?? {};
+  const queryClient = useQueryClient(); // Đặt useQueryClient ở trên đầu
   const Gmail = user?.primaryEmailAddress?.emailAddress;
   const {
     data: addresses,
@@ -169,6 +171,7 @@ const CheckOut = () => {
         });
       
       if (data.paymentMethod === "COD" && response.status === 201) {
+        queryClient.invalidateQueries(["CART"]);
         // Đơn hàng đã được tạo thành công
         toast({
           title: "Thành công!",
