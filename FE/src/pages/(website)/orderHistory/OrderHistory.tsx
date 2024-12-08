@@ -17,6 +17,9 @@ import { OrderProduct } from "@/common/types/Product";
 import CommentProduct from "./CommentProduct";
 import { useUser } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3000");
+
 interface Order {
   _id: string;
   orderCode: string;
@@ -72,6 +75,17 @@ const OrderHistory = () => {
       alert("Vui lòng nhập lý do hủy.");
       return;
     }
+
+    // Lấy orderCode từ orderIdToCancel
+    const orderToCancel = (data || []).find(
+      (order:any) => order._id === orderIdToCancel
+    );
+    const orderCode = orderToCancel?.orderCode;
+
+    if (!orderCode) {
+      alert("Không tìm thấy mã đơn hàng.");
+      return;
+    }
     // Gửi lý do hủy đơn hàng ở đây
     // await updateOrderStatus(
     //   orderIdToCancel,
@@ -83,6 +97,7 @@ const OrderHistory = () => {
         {
           newStatus,
           user,
+          userId: _id,
           reason,
         }
       ); // Đường dẫn API hủy đơn hàng
@@ -92,6 +107,18 @@ const OrderHistory = () => {
           title: "Thành công",
           description: "Đơn hàng đã được hủy thành công.",
           variant: "default",
+        });
+
+        console.log("Thông báo đã được gửi", {
+          orderCode,
+          newStatus,
+          userId: _id,
+        });
+
+        socket.emit("orderStatusChanged", {
+          orderCode,
+          newStatus,
+          userId: _id,
         });
       }
     } catch (error) {
@@ -313,9 +340,19 @@ const OrderHistory = () => {
                 {/* <h3 className="font-semibold">Địa chỉ nhận hàng</h3> */}
                 {order.addressId && Object.keys(order.addressId).length > 0 ? (
                   <div>
-                    <p><span className="font-semibold">Người nhận:</span> {order.addressId.name}</p>
-                    <p><span className="font-semibold">Số điện thoại:</span> {order.addressId.phone}</p>
-                    <p><span className="font-semibold">Địa chỉ:</span> {order.addressId.addressDetail}, {order.addressId.wardId}, {order.addressId.districtId}, {order.addressId.cityId}</p>
+                    <p>
+                      <span className="font-semibold">Người nhận:</span>{" "}
+                      {order.addressId.name}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Số điện thoại:</span>{" "}
+                      {order.addressId.phone}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Địa chỉ:</span>{" "}
+                      {order.addressId.addressDetail}, {order.addressId.wardId},{" "}
+                      {order.addressId.districtId}, {order.addressId.cityId}
+                    </p>
                   </div>
                 ) : (
                   <div>Không có địa chỉ được cung cấp.</div>
@@ -379,15 +416,14 @@ const OrderHistory = () => {
                     </div>
                   </div>
                 )}
-                {order.isPaid === false &&
-                  order.payment === "Vnpay" && (
-                    <button
-                      className="px-4 ml-[2%] py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
-                      onClick={() => paymentMethod(order)}
-                    >
-                      Thanh toán ngay
-                    </button>
-                  )}
+                {order.isPaid === false && order.payment === "Vnpay" && (
+                  <button
+                    className="px-4 ml-[2%] py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                    onClick={() => paymentMethod(order)}
+                  >
+                    Thanh toán ngay
+                  </button>
+                )}
               </div>
             </div>
           ))

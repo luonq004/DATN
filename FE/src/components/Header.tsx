@@ -384,7 +384,7 @@ const Header = () => {
                               key={notification._id}
                               className={`flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-all duration-200 ${
                                 !notification.isRead
-                                  ? "bg-[#f5ffcc] font-semibold"
+                                  ? "bg-[#f5ffcc]"
                                   : "bg-gray-50"
                               }`}
                               onClick={() =>
@@ -420,7 +420,7 @@ const Header = () => {
                                 {/* Nút ba chấm */}
                                 <div className="relative">
                                   <button
-                                    className="p-2 text-[20px] text-gray-500 hover:text-gray-700"
+                                    className="text-[20px] text-gray-500 hover:text-gray-700"
                                     onClick={() =>
                                       setOpenDropdown((prev) =>
                                         prev === notification._id

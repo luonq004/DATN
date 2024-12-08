@@ -36,11 +36,12 @@ const socket = io("http://localhost:3000");
 
 export type Order = {
   id: string;
+  userId: string;
   orderCode: string;
   amount: number;
-  isPaid: boolean;  
+  isPaid: boolean;
   payment: string;
-  email?:string
+  email?: string;
   status: string;
   createdAt: string;
 };
@@ -63,7 +64,6 @@ const formatDate = (dateString: string) => {
   }).format(date);
 };
 
-
 const AdminOrder = () => {
   const queryClient = useQueryClient();
 
@@ -73,10 +73,12 @@ const AdminOrder = () => {
   const Gmail = dataUser?.primaryEmailAddress?.emailAddress;
   const [isOpen, setIsOpen] = React.useState(false); // Điều khiển hiển thị của modal
   const [reason, setReason] = React.useState(""); // Lý do hủy đơn hàng
-  const [orderIdToCancel, setOrderIdToCancel] = React.useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = React.useState<string>(""); 
+  const [orderIdToCancel, setOrderIdToCancel] = React.useState<string | null>(
+    null
+  );
+  const [selectedStatus, setSelectedStatus] = React.useState<string>("");
   // Mở modal
-  
+
   const openModal = () => setIsOpen(true);
 
   // Đóng modal
@@ -92,8 +94,22 @@ const AdminOrder = () => {
       alert("Vui lòng nhập lý do hủy.");
       return;
     }
+
+
+  const order = orders.find((o) => o.id === orderIdToCancel);  // Tìm đơn hàng theo orderId
+  if (!order || !order.userId) {
+    alert("Không tìm thấy thông tin người dùng");
+    return;
+  }
+
     // Gửi lý do hủy đơn hàng ở đây
-    await updateOrderStatus(orderIdToCancel, newStatus, reason);
+    await updateOrderStatus(
+      orderIdToCancel,
+      newStatus,
+      reason,
+      order.userId,
+      order.orderCode
+    );
     setReason("");
     setIsOpen(false); // Đóng modal sau khi hủy
   };
@@ -166,13 +182,14 @@ const AdminOrder = () => {
   };
 
   // hủy
-  const cancelOrder = async (orderId: string) => {
+  const cancelOrder = async (orderId: string, userId: string) => {
     const newStatus = "đã hủy";
     try {
       const reason = "quá thời gian thanh toán!";
       const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
         newStatus,
-        reason
+        reason,
+        userId,
       }); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", orderId]);
@@ -267,7 +284,6 @@ const AdminOrder = () => {
             {row.original.payment}
           </span>
         ),
-      
       },
       {
         header: "Trạng thái",
@@ -282,17 +298,21 @@ const AdminOrder = () => {
         header: "Khách hàng",
         accessorKey: "email",
         cell: ({ row }) => (
-          <span className={row.original.email}>
-            {row.original.email}
-          </span>
+          <span className={row.original.email}>{row.original.email}</span>
         ),
       },
       {
         header: "Trạng thái thanh toán",
-        accessorKey: "isPaid", 
+        accessorKey: "isPaid",
         cell: ({ row }) => (
-          <span className={row.original.isPaid ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>
-            {row.original.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+          <span
+            className={
+              row.original.isPaid
+                ? "text-green-500 font-semibold"
+                : "text-red-500 font-semibold"
+            }
+          >
+            {row.original.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
           </span>
         ),
       },
@@ -313,7 +333,7 @@ const AdminOrder = () => {
                   Xem chi tiết
                 </Button>
               </Link>
-      
+
               <div className="*:m-0">
                 <Select
                   value={row.original.status}
@@ -329,7 +349,7 @@ const AdminOrder = () => {
                         newStatus,
                         reason, // Lý do nếu có
                         row.original.userId,
-                        row.original.orderCode 
+                        row.original.orderCode
                       );
                       if (isUpdated) {
                         row.original.status = newStatus; // Cập nhật trạng thái mới cho dòng
@@ -364,25 +384,24 @@ const AdminOrder = () => {
             </div>
           );
         },
-      }
-      
+      },
     ],
     []
   );
 
-   // Lọc kết quả dựa trên Search và Status
-   const filteredOrders = React.useMemo(() => {
+  // Lọc kết quả dựa trên Search và Status
+  const filteredOrders = React.useMemo(() => {
     return orders.filter((order) => {
       const matchesSearch =
         order.orderCode.toLowerCase().includes(search.toLowerCase()) ||
-        (order?.email && order.email.toLowerCase().includes(search.toLowerCase()));
+        (order?.email &&
+          order.email.toLowerCase().includes(search.toLowerCase()));
       const matchesStatus =
         selectedStatus === "" || order.status === selectedStatus;
 
       return matchesSearch && matchesStatus;
     });
   }, [orders, search, selectedStatus]);
-  
 
   const [paginationState, setPaginationState] = React.useState({
     pageIndex: 0, // Trang đầu tiên
@@ -427,10 +446,13 @@ const AdminOrder = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
         {/* Lọc trạng thái */}
-        <Select value={selectedStatus} onValueChange={(value) => {
-  // Nếu giá trị là 'all', chuyển thành ''
-  setSelectedStatus(value === "all" ? "" : value);
-}}>
+        <Select
+          value={selectedStatus}
+          onValueChange={(value) => {
+            // Nếu giá trị là 'all', chuyển thành ''
+            setSelectedStatus(value === "all" ? "" : value);
+          }}
+        >
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Lọc theo trạng thái" />
           </SelectTrigger>
@@ -578,7 +600,5 @@ const getPaymentClassName = (payment: string) => {
       return "text-gray-600 font-semibold"; // Màu xám trung bình, chữ vừa
   }
 };
-
-
 
 export default AdminOrder;

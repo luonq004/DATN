@@ -29,8 +29,8 @@ export const setupSocketIO = (server, app) => {
       try {
         const isSuccess = orderData.status === "success"; // Kiểm tra trạng thái thành công
         const message = isSuccess
-          ? `Đơn hàng có mã <strong>${orderData.orderCode}</strong>  đã được đặt thành công!`
-          : `Đơn hàng có mã <strong>${orderData.orderCode}</strong>  đã thất bại. Vui lòng thử lại!`;
+          ? `Đơn hàng với mã <strong>${orderData.orderCode}</strong>  đã được đặt thành công!`
+          : `Đơn hàng với mã <strong>${orderData.orderCode}</strong>  đã thất bại. Vui lòng thử lại!`;
         // Sau khi nhận được đơn hàng, lưu thông báo vào database
         const newNotification = new Notification({
           userId: orderData.userId,
@@ -46,6 +46,10 @@ export const setupSocketIO = (server, app) => {
         await newNotification.save(); // Lưu vào database
         console.log("Thông báo đã được lưu vào database.");
 
+        console.log(
+          "Đang phát thông báo trạng thái cho phòng:",
+          orderData.userId.toString()
+        );
         // Phát thông báo cho phòng của người dùng
         io.to(orderData.userId.toString()).emit("orderNotification", {
           _id: newNotification._id,
@@ -66,19 +70,22 @@ export const setupSocketIO = (server, app) => {
       }
     });
 
-
-
     // Lắng nghe sự kiện 'orderStatusChanged' từ frontend
     socket.on("orderStatusChanged", async (data) => {
       console.log("Trạng thái đơn hàng đã thay đổi:", data);
       try {
-        const { orderCode, newStatus, userId  } = data;
-        const message = `Trạng thái đơn hàng <strong>${orderCode}</strong> đã thay đổi thành <strong>${newStatus}</strong> `;
+        const { orderCode, newStatus, userId, productImage } = data;
+        const message = `Đơn hàng với mã <strong>${orderCode}</strong> đã được cập nhật và chuyển sang trạng thái <strong>${newStatus}</strong>.`;
 
+        const userIdStr =
+          typeof userId === "object" && userId._id
+            ? userId._id.toString()
+            : userId;
         // Lưu thông báo vào database
         const newNotification = new Notification({
-          userId,
+          userId: userIdStr,
           orderCode,
+          productImage,
           message,
           type: "info", // Loại thông báo
           status:
@@ -93,18 +100,20 @@ export const setupSocketIO = (server, app) => {
         console.log("Thông báo đã được lưu vào database.");
 
         // Phát thông báo cho phòng của người dùng
-        io.to(userId.toString()).emit("orderStatusNotification", {
+        console.log("Đang phát thông báo trạng thái cho phòng:", userIdStr);
+        io.to(userIdStr).emit("orderStatusNotification", {
           _id: newNotification._id,
           message: newNotification.message,
           orderCode: newNotification.orderCode,
           isRead: newNotification.isRead,
           createdAt: newNotification.createdAt,
+          productImage: newNotification.productImage, 
         });
 
         console.log("Đã phát thông báo cho người dùng về trạng thái mới.");
       } catch (error) {
         console.error("Lỗi khi lưu thông báo về trạng thái đơn hàng:", error);
-        io.to(data.userId.toString()).emit("orderStatusNotificationError", {
+        io.to(userIdStr).emit("orderStatusNotificationError", {
           error: "Không thể lưu thông báo trạng thái. Vui lòng thử lại.",
         });
       }
