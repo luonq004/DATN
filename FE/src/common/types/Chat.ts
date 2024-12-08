@@ -1,15 +1,38 @@
-export interface IMessage {
+export interface IListMessage {
   _id: string;
-  conversationId: string;
-  sender: string;
-  senderType: "User" | "Admin";
-  text: string;
+  user: string;
+  admin: string;
+  messages: IMessage[];
   createdAt: Date;
   updatedAt: Date;
 }
 
+export interface IMessage {
+  createdAt: Date;
+  sender: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    imageUrl: string;
+    role: "Admin" | "User";
+  };
+  senderType: "User" | "Admin";
+  text: string;
+  _id: string;
+}
+
+// sender: {
+//   _id: string;
+//   firstName: string;
+//   lastName: string;
+//   imageUrl: string;
+//   role: "Admin" | "User";
+// };
+// senderType: "User" | "Admin";
+// text: string;
+
 export interface IMessageData {
-  content: string;
+  text: string;
   adminId: string;
 }
 
@@ -31,9 +54,10 @@ export interface IConversation {
 }
 
 export interface IChatStoreState {
-  messages: IMessage[];
+  listMessage: IListMessage | [];
   conversations: IConversation[];
   selectedUser: string | null;
+  selectedConversation: string | null;
   isConversationsLoading: boolean;
   isMessagesLoading: boolean;
 }
@@ -41,8 +65,9 @@ export interface IChatStoreState {
 export interface ChatStoreActions {
   getConversations: () => Promise<void>;
   getMessages: (userId: string) => Promise<void>;
-  sendMessage: (messageData: IMessageData) => Promise<void>;
+  sendMessage: (text: string, adminId: string) => Promise<void>;
   subscribeToMessages: () => void;
   unsubscribeFromMessages: () => void;
   setSelectedUser: (selectedUser: string) => void;
+  setSelectedConversation: (selectedConversation: string) => void;
 }

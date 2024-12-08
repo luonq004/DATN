@@ -10,7 +10,7 @@ const Comment = () => {
   // console.log("adminId", _id);
 
   const sendUserMessageSocket = (conversationId, text, userId) => {
-    socket.emit("sendUserMessage", { conversationId, text, userId });
+    socket.emit("newMessage", { conversationId, text, userId });
   };
 
   // Ví dụ sử dụng trong sự kiện gửi tin nhắn
