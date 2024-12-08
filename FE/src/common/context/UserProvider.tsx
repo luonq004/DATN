@@ -3,6 +3,7 @@ import { createContext, useContext, useReducer } from "react";
 interface UserContextType {
   // Define the properties of your context here
   _id: string;
+  clerkId: string;
   role: string;
   login: (id: string) => void;
   logout: () => void;
@@ -12,6 +13,7 @@ const UserContext = createContext<UserContextType | null>(null);
 
 const initialState = {
   _id: null,
+  clerkId: null,
   role: null,
 };
 
@@ -22,6 +24,7 @@ function reducer(state, action) {
       return {
         ...state,
         _id: action.payload._id,
+        clerkId: action.payload.clerkId,
         role: action.payload.role,
       };
 
@@ -29,6 +32,8 @@ function reducer(state, action) {
       return {
         ...state,
         _id: null,
+        clerkId: null,
+        role: null,
       };
 
     default:
@@ -37,7 +42,7 @@ function reducer(state, action) {
 }
 
 function UserInfoProvider({ children }: { children: React.ReactNode }) {
-  const [{ _id, role }, dispatch] = useReducer(reducer, initialState);
+  const [{ _id, role, clerkId }, dispatch] = useReducer(reducer, initialState);
 
   function login(id: string) {
     dispatch({ type: "LOGIN", payload: id });
@@ -52,6 +57,7 @@ function UserInfoProvider({ children }: { children: React.ReactNode }) {
       value={{
         _id,
         role,
+        clerkId,
         login,
         logout,
       }}
