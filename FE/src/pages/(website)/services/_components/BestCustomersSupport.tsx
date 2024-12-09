@@ -12,7 +12,7 @@ const BestCustomersSupport = () => {
             fontFamily: "'Raleway', sans-serif",
           }}
         >
-          best customers support
+          Hỗ trợ khách hàng tốt nhất
         </div>
         <div className="p-[20px_0]  title-underline h-[21px]">
           <span className="w-[55px]  text-[#c2d805] h-[1px] bg-current inline-block align-top relative"></span>
@@ -37,23 +37,13 @@ const BestCustomersSupport = () => {
                   fontFamily: "'Raleway', sans-serif",
                 }}
               >
-                Quisque scelerisque leo nisl
+              Một sự kết hợp giữa các yếu tố tạo nên sự hoàn hảo.
               </h4>
               <p className="mb-[22px]  highlight text-[#888]">
-                Aenean facilisis, purus ut tristique pulvinar, odio neque
-                commodo ligula, non vestibulum lacus justo vel diam. Aenean ac
-                aliquet tortor, nec gravida urna. Ut nec urna elit. Etiam id
-                scelerisque ante. Cras velit nunc, luctus a volutpat nec,
-                blandit id dolor. Quisque commodo elit nulla, eu semper quam
-                feugiat et. Integer quam velit, suscipit eget consectetur ac,
-                molestie eu diam.
+              Một hệ thống được xây dựng một cách kỹ lưỡng, với sự phối hợp hoàn hảo giữa các yếu tố, mang lại sự ổn định và hiệu quả. Chúng tôi chú trọng đến từng chi tiết nhỏ, đảm bảo mọi phần đều hoàn thiện và tối ưu hóa hiệu suất. Mọi thứ đều được chuẩn bị chu đáo, hướng đến sự thành công và hiệu quả lâu dài. Chúng tôi cam kết mang đến những giải pháp tối ưu, dễ dàng tiếp cận và đáp ứng mọi nhu cầu của khách hàng.
               </p>
               <p className="text-[#888] highlight">
-                Fusce semper rhoncus dignissim. Curabitur dapibus convallis
-                varius. Suspendisse sem urna, ullamcorper eget porttitor ut,
-                sagittis in justo. Vestibulum egestas nulla nec purus porttitor
-                fermentum. Integer mauris mi, viverra eget nibh at, efficitur
-                consectetur erat. Curabitur et imperdiet enim.
+              Chúng tôi luôn duy trì sự xuất sắc và uy tín trong mọi dịch vụ mà mình cung cấp. Với các giải pháp linh hoạt và đa dạng, đội ngũ của chúng tôi luôn sẵn sàng hỗ trợ bạn, từ những vấn đề nhỏ nhất cho đến những yêu cầu phức tạp. Môi trường làm việc của chúng tôi luôn sạch sẽ, ngăn nắp và chuyên nghiệp, đảm bảo mang lại sự hài lòng tối đa cho khách hàng. Chúng tôi tận dụng tối đa mọi nguồn lực để tạo ra những kết quả xuất sắc, đáp ứng mọi yêu cầu khắt khe. Cam kết mang lại sự hoàn hảo trong từng chi tiết, mỗi sản phẩm và dịch vụ mà chúng tôi cung cấp.
               </p>
             </div>
           </div>

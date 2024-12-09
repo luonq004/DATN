@@ -1,14 +1,18 @@
 import Product from "../models/product";
 import slugify from "slugify";
 import Variant from "../models/variant";
+import Category from "../models/category";
 
 export const getAllProducts = async (req, res) => {
   const {
     _page = 1,
-    _limit = 12,
+    _limit = 9,
     _sort = "createAt",
-    _order = "asc",
+    _order = "desc",
     _expand = true,
+    _price,
+    _category,
+    _status = "display",
   } = req.query;
 
   const options = {
@@ -17,40 +21,65 @@ export const getAllProducts = async (req, res) => {
     sort: { [_sort]: _order === "desc" ? -1 : 1 },
   };
   const populateOptions = _expand
-    ? [{ path: "category", select: "name" }, { path: "attribites" }]
+    ? [
+        { path: "category", select: "name", match: { deleted: false } },
+        { path: "attribites", match: { deleted: false } },
+        { path: "comments", match: { deleted: false } },
+        {
+          path: "variants",
+          match: { deleted: false },
+        },
+      ]
     : [];
+
+  const query = {};
+
+  if (_price) {
+    const [minPrice, maxPrice] = _price.split(",");
+    query.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+  } else {
+    query.price = { $gte: 0 };
+  }
+
+  if (_category) {
+    const categories = Array.isArray(_category) ? _category : [_category];
+
+    // Sử dụng `$in` để kiểm tra nếu `category` trong sản phẩm khớp bất kỳ giá trị nào trong mảng
+    query.category = { $in: categories };
+  }
+
+  if (_status === "hidden") {
+    query.deleted = { $ne: false };
+  } else {
+    query.deleted = { $ne: true };
+  }
+
+  // console.log(query);
+
   try {
-    const result = await Product.paginate({}, { ...options });
+    const result = await Product.paginate(query, { ...options });
+    const populatedDocs = await Product.populate(result.docs, populateOptions);
 
-    if (result.docs.length === 0) throw new Error("No products found");
+    // console.log(result);
 
-    const { data } = {
-      data: result.docs,
+    const data = {
+      data: populatedDocs,
       pagination: {
         currentPage: result.page,
         totalPages: result.totalPages,
         totalItems: result.totalDocs,
       },
     };
+
+    // setTimeout(() => {
+    //   res.status(200).json(data);
+    // }, 2000);
+
     return res.status(200).json(data);
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
 };
-
-// export const getAllProducts = async (req, res) => {
-//   try {
-//     const data = await Product.find()
-//       .populate("category")
-//       .populate("attributes");
-//     if (data.length < 0) {
-//       return res.status(404).json({ message: "No products found" });
-//     }
-//     res.json(data);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 
 export const getProductById = async (req, res) => {
   try {
@@ -60,15 +89,63 @@ export const getProductById = async (req, res) => {
         populate: {
           path: "values",
           model: "AttributeValue",
+          match: { deleted: false },
           select: "-__v", // Loại bỏ __v cho các trường values
         },
         select: "-__v", // Loại bỏ __v cho các trường variants
+      })
+      .populate({
+        path: "category",
+      })
+      .populate({
+        path: "comments",
+        match: { deleted: false },
+        populate: {
+          path: "userId",
+          model: "Users",
+          select: { firstName: 1, lastName: 1, imageUrl: 1 },
+        },
       })
       .select("-__v"); // Loại bỏ __v cho sản phẩm chính
 
     if (!data) {
       return res.status(404).json({ message: "No products found" });
     }
+
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getProductByIdForEdit = async (req, res) => {
+  try {
+    const data = await Product.findOne({ _id: req.params.id })
+      .populate({
+        path: "variants",
+        populate: {
+          path: "values",
+          model: "AttributeValue",
+          match: { deleted: false },
+          select: "-__v", // Loại bỏ __v cho các trường values
+        },
+        select: "-__v", // Loại bỏ __v cho các trường variants
+      })
+      .populate({
+        path: "comments",
+        match: { deleted: false },
+        populate: {
+          path: "userId",
+          model: "Users",
+          select: { firstName: 1, lastName: 1, imageUrl: 1 },
+        },
+      })
+      .select("-__v"); // Loại bỏ __v cho sản phẩm chính
+
+    if (!data) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -123,56 +200,83 @@ export const getProductForEdit = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, image, price, priceSale, description, category, variants } =
-      req.body;
+    let {
+      name,
+      image,
+      price,
+      priceSale,
+      description,
+      descriptionDetail,
+      category,
+      variants,
+    } = req.body;
 
     const slug = slugify(req.body.name, "-");
 
-    if (!variants) {
-      const data = await Product({
-        name,
-        image,
-        price,
-        priceSale,
-        description,
-        category,
-        slug,
-      }).save();
-
-      return res.status(201).json({
-        message: "Tạo sản phẩm thành công",
-        data,
-      });
+    if (!category.length) {
+      category = ["674f3deca63479f361d8f499"];
     } else {
-      const variantsId = [];
+      if (category.length > 1) {
+        for (let i = 0; i < category.length; i++) {
+          const existCategory = await Category.findOne({ _id: category[i] });
 
-      for (let i = 0; i < variants.length; i++) {
-        const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+          if (!existCategory) {
+            return res.status(400).json({ message: "Danh mục không tồn tại" });
+          }
+        }
+      }
+    }
 
-        const variant = await Variant({
-          price: variants[i].price,
-          priceSale: variants[i].priceSale,
-          values,
-          countOnStock: variants[i].countOnStock,
-          image: variants[i].image,
-        }).save();
-        variantsId.push(variant._id);
+    const variantsId = [];
+    let priceFinal = Infinity;
+    let priceSaleFinal = -Infinity;
+    let count = 0;
+    let totalOriginalPrice = 0;
+
+    for (let i = 0; i < variants.length; i++) {
+      const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+
+      count += variants[i].countOnStock;
+      totalOriginalPrice +=
+        variants[i].originalPrice * variants[i].countOnStock;
+
+      if (priceFinal > variants[i].price) {
+        priceFinal = variants[i].price;
       }
 
-      const data = await Product({
-        name,
-        image,
-        category,
-        description,
-        slug: slugify(req.body.name, "-"),
-        variants: variantsId,
-      }).save();
+      if (priceSaleFinal < variants[i].priceSale) {
+        priceSaleFinal = variants[i].priceSale;
+      }
 
-      return res.status(201).json({
-        message: "Tạo sản phẩm thành công",
-        data,
-      });
+      const variant = await Variant({
+        price: variants[i].price,
+        priceSale: variants[i].priceSale,
+        values,
+        originalPrice: variants[i].originalPrice,
+        countOnStock: variants[i].countOnStock,
+        image: variants[i].image,
+      }).save();
+      variantsId.push(variant._id);
     }
+
+    const data = await Product({
+      name,
+      price: priceFinal,
+      priceSale: priceSaleFinal,
+      totalOriginalPrice,
+      countOnStock: count,
+      image,
+      category,
+      description,
+      descriptionDetail,
+      slug: slugify(req.body.name, "-"),
+      variants: variantsId,
+    }).save();
+
+    return res.status(201).json({
+      message: "Tạo sản phẩm thành công",
+      data,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -180,74 +284,116 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const { name, image, price, priceSale, description, category, variants } =
-      req.body;
+    let {
+      name,
+      image,
+      priceSale,
+      description,
+      descriptionDetail,
+      category,
+      variants,
+    } = req.body;
 
     const slug = slugify(req.body.name, "-");
-    if (!variants) {
-      const data = await Product.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-          name,
-          image,
-          price,
-          priceSale,
-          description,
-          category,
-          slug,
-        },
-        { new: true }
-      );
-      return res.json(data);
-    } else {
-      const variantsId = [];
 
-      for (let i = 0; i < variants.length; i++) {
-        // const values = variants[i].values.map((obj) => Object.values(obj)[0]);
-        if (variants[i]._id) {
-          const variant = await Variant.findOneAndUpdate(
-            { _id: variants[i]._id },
-            {
-              price: variants[i].price,
-              priceSale: variants[i].priceSale,
-              // values,
-              countOnStock: variants[i].countOnStock,
-              image: variants[i].image,
-            },
-            { new: true }
-          );
-          variantsId.push(variant._id);
-        } else {
-          const values = variants[i].values.map((obj) => Object.values(obj)[0]);
-          const variant = await Variant({
-            price: variants[i].price,
-            priceSale: variants[i].priceSale,
-            values,
-            countOnStock: variants[i].countOnStock,
-            image: variants[i].image,
-          }).save();
-          variantsId.push(variant._id);
+    if (!category.length) {
+      category = ["674f3deca63479f361d8f499"];
+    } else {
+      if (category.length > 1) {
+        for (let i = 0; i < category.length; i++) {
+          const existCategory = await Category.findOne({ _id: category[i] });
+
+          if (!existCategory) {
+            return res.status(400).json({ message: "Danh mục không tồn tại" });
+          }
         }
       }
-
-      const data = await Product.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-          name,
-          image,
-          category,
-          description,
-          slug: slugify(req.body.name, "-"),
-          variants: variantsId,
-        },
-        { new: true }
-      );
-
-      return res.json({
-        message: "Cập nhật sản phẩm thành công",
-        data,
-      });
     }
+
+    const variantsId = [];
+    let priceFinal = Infinity;
+    let priceSaleFinal = -Infinity;
+    let count = 0;
+    let totalOriginalPrice = 0;
+
+    const data = await Product.findOne({ _id: req.params.id });
+
+    // console.log("Data:", data);
+
+    for (let i = 0; i < variants.length; i++) {
+      // const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+      count += variants[i].countOnStock;
+      totalOriginalPrice +=
+        variants[i].originalPrice * variants[i].countOnStock;
+
+      if (priceFinal > variants[i].price) {
+        priceFinal = variants[i].price;
+      }
+
+      if (priceSaleFinal < variants[i].priceSale) {
+        priceSaleFinal = variants[i].priceSale;
+      }
+
+      if (variants[i]._id) {
+        const variant = await Variant.findOneAndUpdate(
+          { _id: variants[i]._id },
+          {
+            price: variants[i].price,
+            priceSale: variants[i].priceSale,
+            // values,
+            originalPrice: variants[i].originalPrice,
+            countOnStock: variants[i].countOnStock,
+            image: variants[i].image,
+          },
+          { new: true }
+        );
+        variantsId.push(variant._id);
+      } else {
+        // Nếu không có _id cũ thì xóa mềm variant cũ
+
+        const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+        const variant = await Variant({
+          price: variants[i].price,
+          priceSale: variants[i].priceSale,
+          originalPrice: variants[i].originalPrice,
+          values,
+          countOnStock: variants[i].countOnStock,
+          image: variants[i].image,
+        }).save();
+        variantsId.push(variant._id);
+      }
+    }
+
+    const variantsIdSet = new Set(variantsId.map((id) => id.toString()));
+
+    data.variants.forEach((variant) => {
+      if (!variantsIdSet.has(variant["_id"].toString())) {
+        hiddenVariant(variant["_id"]);
+      }
+    });
+
+    const dataRes = await Product.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        name,
+        price: priceFinal,
+        priceSale: priceSaleFinal,
+        totalOriginalPrice,
+        countOnStock: count,
+        image,
+        category,
+        description,
+        descriptionDetail,
+        slug: slugify(req.body.name, "-"),
+        variants: variantsId,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      message: "Cập nhật sản phẩm thành công",
+      dataRes,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -255,12 +401,39 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const data = await Product.findOneAndDelete({ _id: req.params.id });
+    const data = await Product.findOne({ _id: req.params.id, deleted: false });
     if (data.length < 0) {
-      return res.status(404).json({ message: "No products found" });
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
     }
-    res.json(data);
+
+    data.deleted = true;
+
+    await data.save();
+
+    return res.json({ message: "Ẩn sản phẩm thành công", data });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const displayProduct = async (req, res) => {
+  try {
+    const data = await Product.findOne({ _id: req.params.id });
+    if (data.length < 0) {
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+    }
+
+    data.deleted = false;
+
+    await data.save();
+
+    return res.json({ message: "Hiển thị sản phẩm thành công", data });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Hidden variant when delete product or create new variant
+async function hiddenVariant(variantId) {
+  await Variant.findOneAndUpdate({ _id: variantId }, { deleted: true });
+}

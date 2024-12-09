@@ -45,10 +45,10 @@ const SlideShow = () => {
                         <img className='max-w-[415px] w-full rounded-xl' src={thum_35} alt="thum_35" />
                         <div className='Content max-w-[415px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <h6 className='uppercase font-bold'>
-                                Phasellus rhoncus in nunc sit
+                                Chiếc thuyền bây giờ đã đi
                             </h6>
                             <div className='text-[#888] text-sm'>
-                                Etiam mollis tristique mi ac ultrices. Morbi vel neque eget lacus sollicitudin facilisis. Lorem ipsum dolor sit amet semper ante vehicula
+                                Tôi cũng rất buồn và bóng rổ. Bệnh tật hay bệnh tật không cần chăm sóc dễ dàng. Dịch vụ khách hàng phải luôn đi trước xe cộ
                             </div>
                         </div>
                     </div>
@@ -58,10 +58,10 @@ const SlideShow = () => {
                         <img className='max-w-[415px] w-full rounded-xl' src={thum_36} alt="thum_36" />
                         <div className='Content max-w-[415px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <h6 className='uppercase font-bold'>
-                                amet mattis molestie nec tortor quis
+                                Tôi sẽ không trở thành nhân viên của điền trang, cũng không phải người giám sát
                             </h6>
                             <div className='text-[#888] text-sm'>
-                                Etiam mollis tristique mi ac ultrices. Morbi vel neque eget lacus sollicitudin facilisis. Lorem ipsum dolor sit amet semper ante vehicula
+                                Tôi cũng rất buồn và bóng rổ. Bệnh tật hay bệnh tật không cần chăm sóc dễ dàng. Dịch vụ khách hàng phải luôn đi trước xe cộ
                             </div>
                         </div>
                     </div>
@@ -71,10 +71,10 @@ const SlideShow = () => {
                         <img className='max-w-[415px] w-full rounded-xl' src={thum_37} alt="thum_37" />
                         <div className='Content max-w-[415px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <h6 className='uppercase font-bold'>
-                                molestie nec tortor quis
+                                Tôi sẽ không trở thành nhân viên của điền trang, cũng không phải người giám sát
                             </h6>
                             <div className='text-[#888] text-sm'>
-                                Etiam mollis tristique mi ac ultrices. Morbi vel neque eget lacus sollicitudin facilisis. Lorem ipsum dolor sit amet semper ante vehicula
+                                Tôi cũng rất buồn và bóng rổ. Bệnh tật hay bệnh tật không cần chăm sóc dễ dàng. Dịch vụ khách hàng phải luôn đi trước xe cộ
                             </div>
                         </div>
                     </div>
@@ -84,10 +84,10 @@ const SlideShow = () => {
                         <img className='max-w-[415px] w-full rounded-xl' src={thum_35} alt="thum_35" />
                         <div className='Content max-w-[415px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <h6 className='uppercase font-bold'>
-                                Phasellus rhoncus in nunc sit
+                                Chiếc thuyền bây giờ đã đi
                             </h6>
                             <div className='text-[#888] text-sm'>
-                                Etiam mollis tristique mi ac ultrices. Morbi vel neque eget lacus sollicitudin facilisis. Lorem ipsum dolor sit amet semper ante vehicula
+                                Tôi cũng rất buồn và bóng rổ. Bệnh tật hay bệnh tật không cần chăm sóc dễ dàng. Dịch vụ khách hàng phải luôn đi trước xe cộ
                             </div>
                         </div>
                     </div>
@@ -97,10 +97,10 @@ const SlideShow = () => {
                         <img className='max-w-[415px] w-full rounded-xl' src={thum_36} alt="thum_36" />
                         <div className='Content max-w-[415px] text-[13px] lg:text-[16px] flex flex-col gap-y-[18px]'>
                             <h6 className='uppercase font-bold'>
-                                amet mattis molestie nec tortor quis
+                                Tôi sẽ không trở thành nhân viên của điền trang, cũng không phải người giám sát
                             </h6>
                             <div className='text-[#888] text-sm'>
-                                Etiam mollis tristique mi ac ultrices. Morbi vel neque eget lacus sollicitudin facilisis. Lorem ipsum dolor sit amet semper ante vehicula
+                                Tôi cũng rất buồn và bóng rổ. Bệnh tật hay bệnh tật không cần chăm sóc dễ dàng. Dịch vụ khách hàng phải luôn đi trước xe cộ
                             </div>
                         </div>
                     </div>

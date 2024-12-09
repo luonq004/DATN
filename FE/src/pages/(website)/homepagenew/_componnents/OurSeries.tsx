@@ -95,9 +95,9 @@ const OurSeries = () => {
           CHỌN MỘT PHONG CÁCH
         </h2>
         <div className="flex items-center gap-1 justify-center my-6">
-          <span className="h-[1px] w-2 bg-lime-400 mb-2"></span>
-          <span className="h-[1px] w-12 bg-lime-400 mb-2"></span>
-          <span className="h-[1px] w-2 bg-lime-400 mb-2"></span>
+          <span className="h-[1px] w-2 bg-[#b8cd06] mb-2"></span>
+          <span className="h-[1px] w-12 bg-[#b8cd06] mb-2"></span>
+          <span className="h-[1px] w-2 bg-[#b8cd06] mb-2"></span>
         </div>
       </div>
 
@@ -107,7 +107,6 @@ const OurSeries = () => {
         slidesPerView={1}
         centeredSlides={false}
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-        pagination={{ clickable: true }}
         loop={true}
         speed={600}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
@@ -192,7 +191,7 @@ const OurSeries = () => {
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
                       />
-                      
+
                       <div className="max-w-[100%]">
                         <h3 className="text-lg font-raleway text-[#343434] font-extrabold mb-2">
                           {product.title.split(" ")[0]}{" "}
@@ -241,10 +240,10 @@ const OurSeries = () => {
         {productGroups.map((_, index) => (
           <div
             key={index}
-            className={`rounded-full w-3 h-3 bg-white ${
+            className={`rounded-full duration-300 bg-white ${
               index === activeIndex
-                ? "border-[3px] w-4 h-4 border-[#b8cd06]"
-                : "border-[1px] border-gray-500"
+                ? "border-[#b8cd06] border-4 size-4"
+                : "border-gray-300 border-2 size-3"
             }`}
             onClick={() => handleDotClick(index)}
           ></div>
