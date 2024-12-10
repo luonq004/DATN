@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState, forwardRef } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import {
   Select,
   SelectContent,
@@ -26,22 +26,25 @@ interface Ward {
 }
 
 interface CountryProps {
-  onCityChange: (cityId: string) => void; // Callback khi tỉnh/thành phố thay đổi
-  onDistrictChange: (districtId: string) => void; // Callback khi quận/huyện thay đổi
-  onWardChange: (wardId: string) => void; // Callback khi phường/xã thay đổi
+  onCityChange: (cityId: string) => void;
+  onDistrictChange: (districtId: string) => void;
+  onWardChange: (wardId: string) => void;
+  city?: string; // Truyền tên tỉnh thành đã chọn
+  district?: string; // Truyền tên quận huyện đã chọn
+  ward?: string; // Truyền tên phường xã đã chọn
 }
 
 const Country = forwardRef<HTMLDivElement, CountryProps>(({
   onCityChange,
   onDistrictChange,
   onWardChange,
+  city,
+  district,
+  ward
 }, ref) => {
   const [cities, setCities] = useState<City[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
-  const [selectedCity, setSelectedCity] = useState<City | null>(null); // State lưu trữ tỉnh/thành phố được chọn
-  const [selectedDistrict, setSelectedDistrict] = useState<District | null>(null); // State lưu trữ quận/huyện được chọn
-  const [selectedWard, setSelectedWard] = useState<Ward | null>(null); // State lưu trữ phường/xã được chọn
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -61,49 +64,47 @@ const Country = forwardRef<HTMLDivElement, CountryProps>(({
 
   const handleCityChange = (cityId: string) => {
     const city = cities.find((city) => city.Id === cityId) || null;
-    setSelectedCity(city);
     if (city) {
-      setDistricts(city.Districts);
-      setWards([]);
-      onCityChange(city.Name);
+      setDistricts(city.Districts); // Cập nhật quận huyện mới
+      setWards([]); // Reset danh sách xã phường
+      onCityChange(city.Name); // Cập nhật tên tỉnh/thành phố
+      onDistrictChange(""); // Reset quận
+      onWardChange(""); // Reset xã
     } else {
       setDistricts([]);
       setWards([]);
       onCityChange(""); // Gọi callback khi không có tỉnh/thành phố được chọn
+      onDistrictChange(""); // Reset quận
+      onWardChange(""); // Reset xã
     }
   };
 
   const handleDistrictChange = (districtId: string) => {
     const district = districts.find((district) => district.Id === districtId) || null;
-    setSelectedDistrict(district);
     if (district) {
-      setWards(district.Wards);
-      onDistrictChange(district.Name);
-      // Gọi callback khi quận/huyện thay đổi
+      setWards(district.Wards); // Cập nhật phường/xã mới
+      onDistrictChange(district.Name); // Cập nhật tên quận/huyện
     } else {
       setWards([]);
-      console.log(selectedWard);
       onDistrictChange(""); // Gọi callback khi không có quận/huyện được chọn
+      onWardChange(""); // Reset xã khi quận thay đổi
     }
   };
 
   const handleWardChange = (wardId: string) => {
     const ward = wards.find((ward) => ward.Id === wardId) || null;
-    setSelectedWard(ward);
     if (ward) {
-      onWardChange(ward.Name); // Gọi callback khi phường/xã thay đổi
-    }
-    else {
-      setWards([]);
-      onWardChange("")
+      onWardChange(ward.Name); // Cập nhật tên phường/xã
+    } else {
+      onWardChange(""); // Reset xã khi phường thay đổi
     }
   };
 
   return (
     <div ref={ref}>
-      <Select onValueChange={handleCityChange}>
+      <Select onValueChange={handleCityChange} value={city}>
         <SelectTrigger>
-          <SelectValue placeholder="Chọn tỉnh thành" />
+          <SelectValue placeholder="Chọn tỉnh thành">{city || "Chọn tỉnh thành"}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {cities.map((city) => (
@@ -116,10 +117,11 @@ const Country = forwardRef<HTMLDivElement, CountryProps>(({
 
       <Select
         onValueChange={handleDistrictChange}
-        disabled={districts.length === 0 || !selectedCity}
+        value={district}
+        disabled={districts.length === 0 || !city}
       >
         <SelectTrigger>
-          <SelectValue placeholder="Chọn quận huyện" />
+          <SelectValue placeholder="Chọn quận huyện">{district || "Chọn quận huyện"}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {districts.map((district) => (
@@ -131,11 +133,12 @@ const Country = forwardRef<HTMLDivElement, CountryProps>(({
       </Select>
 
       <Select
-        disabled={wards.length === 0 || !selectedDistrict}
         onValueChange={handleWardChange}
+        value={ward}
+        disabled={wards.length === 0 || !district}
       >
         <SelectTrigger>
-          <SelectValue placeholder="Chọn phường xã" />
+          <SelectValue placeholder="Chọn phường xã">{ward || "Chọn phường xã"}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {wards.map((ward) => (

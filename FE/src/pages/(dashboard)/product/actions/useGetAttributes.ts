@@ -4,12 +4,12 @@ import { getAtributes } from "./api";
 export function useGetAtributes() {
   const {
     isLoading: isLoadingAtributes,
-    data: atributes,
+    data: attributes,
     error,
   } = useQuery({
-    queryKey: ["Atributes"],
+    queryKey: ["Attributes"],
     queryFn: getAtributes,
   });
 
-  return { isLoadingAtributes, atributes, error };
+  return { isLoadingAtributes, attributes, error };
 }

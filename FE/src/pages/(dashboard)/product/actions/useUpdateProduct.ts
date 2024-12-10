@@ -1,12 +1,15 @@
-import { useMutation } from "@tanstack/react-query";
+import { toast } from "@/components/ui/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
-export const useUpdateProduct = () => {
+export const useUpdateProduct = (idP: string) => {
+  const queryClient = useQueryClient();
+
   const { mutate: updateProduct, isPending: isUpdating } = useMutation({
     mutationFn: async ({ data, id }: { data: unknown; id: string }) => {
       try {
         const response = await axios.put(
-          `http://localhost:8080/api/v1/products/${id}`,
+          `http://localhost:8080/api/products/${id}`,
           data
         );
         return response.data; // Trả về dữ liệu phản hồi
@@ -16,9 +19,16 @@ export const useUpdateProduct = () => {
       }
     },
 
-    // onSuccess: () => {
-    //   console.log("Success");
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["Product", idP],
+      });
+
+      toast({
+        variant: "success",
+        title: "Cập nhật sản phẩm thành công",
+      });
+    },
   });
 
   return { updateProduct, isUpdating };

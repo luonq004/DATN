@@ -51,7 +51,7 @@ export function DataTable<TData, TValue>({
         <>
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Filter code..."
+                    placeholder="Lọc theo mã voucher..."
                     value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("code")?.setFilterValue(event.target.value)
@@ -96,7 +96,7 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    Không có dữ liệu
                                 </TableCell>
                             </TableRow>
                         )}

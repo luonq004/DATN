@@ -1,4 +1,4 @@
-import { FormTypeProductCommon } from "@/common/types/validate";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import { Button } from "@/components/ui/button";
 import { FieldErrors } from "react-hook-form";
 
@@ -7,40 +7,64 @@ const VariationValues = ({
   indexValue,
   removeFields,
 }: {
-  form: FormTypeProductCommon;
+  form: FormTypeProductVariation;
   indexValue: number;
   removeFields: (index: number) => void;
 }) => {
   const errors = form.formState.errors.variants as
-    | FieldErrors<{ price: number; countOnStock: number; priceSale: number }>[]
+    | FieldErrors<{
+        price: number;
+        countOnStock: number;
+        priceSale: number;
+        originalPrice: number;
+      }>[]
     | undefined;
 
-  const renderInput = (
-    field: "price" | "countOnStock" | "priceSale",
-    label: string
-  ) => (
-    <div>
-      <label className="block">{label}</label>
-      <input
-        type="text"
-        {...form.register(`variants.${indexValue}.${field}` as const)}
-        className={errors?.[indexValue]?.[field] ? "border-red-500" : ""}
-      />
-      <span className="text-xs block text-red-600">
-        {errors?.[indexValue]?.[field]?.message}
-      </span>
-    </div>
-  );
-
   return (
-    <div>
-      {renderInput("price", "Giá")}
-      {renderInput("priceSale", "Giá giảm giá")}
-      {/* {renderInput("countOnStock", "Số lượng tồn kho")} */}
+    <div className="mt-4">
+      <div className="flex flex-col lg:flex-row justify-between">
+        <div>
+          <label className="block text-lg">Giá gốc</label>
+          <input
+            type="text"
+            {...form.register(`variants.${indexValue}.originalPrice` as const)}
+            className={
+              errors?.[indexValue]?.originalPrice ? "border-red-500" : ""
+            }
+          />
+          <span className="text-xs block text-red-600 mt-2">
+            {errors?.[indexValue]?.originalPrice?.message}
+          </span>
+        </div>
+
+        <div>
+          <label className="block text-lg">Giá bán</label>
+          <input
+            type="text"
+            {...form.register(`variants.${indexValue}.price` as const)}
+            className={errors?.[indexValue]?.price ? "border-red-500" : ""}
+          />
+          <span className="text-xs block text-red-600 mt-2">
+            {errors?.[indexValue]?.price?.message}
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-lg">Giá Giảm giá</label>
+        <input
+          type="text"
+          {...form.register(`variants.${indexValue}.priceSale` as const)}
+          className={errors?.[indexValue]?.priceSale ? "border-red-500" : ""}
+        />
+        <span className="text-xs block text-red-600 mt-2">
+          {errors?.[indexValue]?.priceSale?.message}
+        </span>
+      </div>
 
       <Button
         type="button"
-        className="bg-red-500"
+        className="bg-red-500 mt-2"
         onClick={() => removeFields(indexValue)}
       >
         Xóa

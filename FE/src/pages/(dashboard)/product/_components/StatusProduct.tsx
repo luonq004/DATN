@@ -1,11 +1,20 @@
-import { FormTypeProductCommon } from "@/common/types/validate";
-import ProductImage from "./ProductImage";
+import { FormTypeProductVariation } from "@/common/types/validate";
 import CategoryProduct from "./CategoryProduct";
+import ProductImage from "./ProductImage";
 
-const StatusProduct = ({ form }: { form: FormTypeProductCommon }) => {
+const StatusProduct = ({
+  form,
+  loading,
+}: {
+  form: FormTypeProductVariation;
+  loading: boolean;
+}) => {
   return (
-    <div className="w-1/4 flex flex-col gap-3">
-      <p>Publish</p>
+    <div
+      className={`w-full xl:w-1/4 flex flex-col gap-3 ${
+        loading ? "pointer-events-none" : ""
+      }`}
+    >
       <ProductImage form={form} />
       <CategoryProduct form={form} />
     </div>

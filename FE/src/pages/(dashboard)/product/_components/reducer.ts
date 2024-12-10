@@ -41,8 +41,6 @@ export const reducer = (state: State, action: Action): State => {
         (value) => value && Object.keys(value).length > 0
       );
 
-      // console.log("FILTERED VALUES: ", filteredValues);
-
       if (!filteredValues.length) return state;
 
       return {
@@ -74,6 +72,15 @@ export const reducer = (state: State, action: Action): State => {
         valuesMix: mix,
       };
     }
+
+    case "UPDATE_ATTRIBUTES":
+      return {
+        ...state,
+
+        attributesChoose: state.attributesChoose.map((attr) =>
+          attr._id === action.payload._id ? action.payload : attr
+        ),
+      };
 
     case "DELETE_INDEX_MIX_VALUE":
       return {

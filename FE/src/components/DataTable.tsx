@@ -1,9 +1,14 @@
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 import {
@@ -14,7 +19,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "./ui/button";
+
+import React from "react";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MixerHorizontalIcon } from "@radix-ui/react-icons";
+import { PaginationProducts } from "@/pages/(dashboard)/dashboard/_components/PaginationProducts";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -25,61 +41,76 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
-        pageSize: 5,
+        pageSize: 5, // Thiết lập giá trị mặc định là 5
       },
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
     },
   });
 
-  let paginationButtons = [];
-  const paginationGoups = [];
-  const paginationGoupLimit = 10;
-  const currentPage = table.getState().pagination.pageIndex;
-  for (let i = 0; i < table.getPageCount(); i++) {
-    if (i > 0 && i % paginationGoupLimit === 0) {
-      paginationButtons.push(<span>...</span>);
-      paginationGoups.push(paginationButtons);
-      paginationButtons = [];
-    }
-    paginationButtons.push(
-      <button
-        className={currentPage === i ? "active" : ""}
-        key={i}
-        onClick={() => table.setPageIndex(i)}
-      >
-        {i + 1}
-      </button>
-    );
-  }
-  if (paginationButtons.length > 0) {
-    if (paginationGoups.length > 0) {
-      paginationButtons.unshift(<span>...</span>);
-    }
-    paginationGoups.push(paginationButtons);
-    paginationButtons = [];
-  }
-  const getCurrentPaginationGroup = () => {
-    for (const i in paginationGoups) {
-      if (
-        paginationGoups[i].findIndex((u) => u.key === String(currentPage)) !==
-        -1
-      ) {
-        return paginationGoups[i];
-      }
-    }
-  };
-
   return (
     <>
-      <div className="border bg-white rounded-lg ">
-        <Table>
-          <TableHeader>
+      <div className="">
+        <div className="flex items-center gap-x-2 py-2">
+          <Input
+            placeholder="Tìm tên sản phẩm"
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm m-0"
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                <MixerHorizontalIcon className="h-4 w-4" />
+                View
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <Table className="border">
+          <TableHeader className="bg-slate-50 rounded-md">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -120,42 +151,14 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Không có sản phẩm
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          onClick={() => table.firstPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<<"}
-        </Button>
-        <Button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<"}
-        </Button>
-        <Button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">"}
-        </Button>
-        <Button
-          onClick={() => table.lastPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">>"}
-        </Button>
-
-        {/* {getCurrentPaginationGroup().map((button) => button)} */}
-      </div>
+      <PaginationProducts table={table} />
     </>
   );
 }

@@ -1,20 +1,16 @@
 const slidesData = [
   {
-    title: "YOUR PERFECT SOUND",
-    subtitle: "RELAX COLLECTION",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesentir pulvinar ante et nisl scelerisque.",
-    image:
-      "https://blog.btaskee.com/wp-content/uploads/2018/08/chup-hinh-dep-e1534849946134.jpg",
+    "title": "PHONG CÁCH HOÀN HẢO CỦA BẠN",
+    "subtitle": "BỘ SƯU TẬP THƯ GIÃN",
+    "description": "Khám phá những bộ trang phục thoải mái và phong cách, hoàn hảo cho những ngày thư giãn.",
+    "image": "https://blog.btaskee.com/wp-content/uploads/2018/08/chup-hinh-dep-e1534849946134.jpg"
   },
   {
-    title: "NOISE IS NOT A PROBLEM",
-    subtitle: "STREET COLLECTION",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesentir pulvinar ante et nisl scelerisque.",
-    image:
-      "https://studiovietnam.com/wp-content/uploads/2022/10/gia-thue-mau-chup-anh-quan-ao-05-1.jpg",
-  },
+    "title": "THỜI TRANG ĐƯỜNG PHỐ",
+    "subtitle": "BỘ SƯU TẬP ĐƯỜNG PHỐ",
+    "description": "Sẵn sàng cho mọi cuộc phiêu lưu với phong cách thời trang trẻ trung và năng động.",
+    "image": "https://studiovietnam.com/wp-content/uploads/2022/10/gia-thue-mau-chup-anh-quan-ao-05-1.jpg"
+  }
 ];
 
 const Collections = () => {
@@ -43,7 +39,7 @@ const Collections = () => {
 
               <button className="group relative w-full md:w-[40%] max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-6 py-6 text-xs md:text-sm bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">
                 <span className="absolute inset-0 flex items-center justify-center text-xs transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
-                  LEARN MORE
+                  XEM THÊM
                 </span>
                 <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#b8cd06] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
                   <svg
