@@ -31,14 +31,15 @@ import { OrderProduct } from "@/common/types/Product";
 import useAllOrders from "@/common/hooks/order/useAllOrders";
 import { useUser } from "@clerk/clerk-react";
 import { formatCurrency } from "@/lib/utils";
+import { PaginationProducts } from "../dashboard/_components/PaginationProducts";
 
 export type Order = {
   id: string;
   orderCode: string;
   amount: number;
-  isPaid: boolean;  
+  isPaid: boolean;
   payment: string;
-  email?:string
+  email?: string;
   status: string;
   createdAt: string;
 };
@@ -61,7 +62,6 @@ const formatDate = (dateString: string) => {
   }).format(date);
 };
 
-
 const AdminOrder = () => {
   const queryClient = useQueryClient();
 
@@ -71,10 +71,12 @@ const AdminOrder = () => {
   const Gmail = dataUser?.primaryEmailAddress?.emailAddress;
   const [isOpen, setIsOpen] = React.useState(false); // Điều khiển hiển thị của modal
   const [reason, setReason] = React.useState(""); // Lý do hủy đơn hàng
-  const [orderIdToCancel, setOrderIdToCancel] = React.useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = React.useState<string>(""); 
+  const [orderIdToCancel, setOrderIdToCancel] = React.useState<string | null>(
+    null
+  );
+  const [selectedStatus, setSelectedStatus] = React.useState<string>("");
   // Mở modal
-  
+
   const openModal = () => setIsOpen(true);
 
   // Đóng modal
@@ -161,7 +163,7 @@ const AdminOrder = () => {
       const reason = "quá thời gian thanh toán!";
       const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
         newStatus,
-        reason
+        reason,
       }); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", orderId]);
@@ -256,7 +258,6 @@ const AdminOrder = () => {
             {row.original.payment}
           </span>
         ),
-      
       },
       {
         header: "Trạng thái",
@@ -271,17 +272,21 @@ const AdminOrder = () => {
         header: "Khách hàng",
         accessorKey: "email",
         cell: ({ row }) => (
-          <span className={row.original.email}>
-            {row.original.email}
-          </span>
+          <span className={row.original.email}>{row.original.email}</span>
         ),
       },
       {
         header: "Trạng thái thanh toán",
-        accessorKey: "isPaid", 
+        accessorKey: "isPaid",
         cell: ({ row }) => (
-          <span className={row.original.isPaid ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>
-            {row.original.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+          <span
+            className={
+              row.original.isPaid
+                ? "text-green-500 font-semibold"
+                : "text-red-500 font-semibold"
+            }
+          >
+            {row.original.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
           </span>
         ),
       },
@@ -302,7 +307,7 @@ const AdminOrder = () => {
                   Xem chi tiết
                 </Button>
               </Link>
-      
+
               <div className="*:m-0">
                 <Select
                   value={row.original.status}
@@ -350,25 +355,24 @@ const AdminOrder = () => {
             </div>
           );
         },
-      }
-      
+      },
     ],
     []
   );
 
-   // Lọc kết quả dựa trên Search và Status
-   const filteredOrders = React.useMemo(() => {
+  // Lọc kết quả dựa trên Search và Status
+  const filteredOrders = React.useMemo(() => {
     return orders.filter((order) => {
       const matchesSearch =
         order.orderCode.toLowerCase().includes(search.toLowerCase()) ||
-        (order?.email && order.email.toLowerCase().includes(search.toLowerCase()));
+        (order?.email &&
+          order.email.toLowerCase().includes(search.toLowerCase()));
       const matchesStatus =
         selectedStatus === "" || order.status === selectedStatus;
 
       return matchesSearch && matchesStatus;
     });
   }, [orders, search, selectedStatus]);
-  
 
   const [paginationState, setPaginationState] = React.useState({
     pageIndex: 0, // Trang đầu tiên
@@ -413,10 +417,13 @@ const AdminOrder = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
         {/* Lọc trạng thái */}
-        <Select value={selectedStatus} onValueChange={(value) => {
-  // Nếu giá trị là 'all', chuyển thành ''
-  setSelectedStatus(value === "all" ? "" : value);
-}}>
+        <Select
+          value={selectedStatus}
+          onValueChange={(value) => {
+            // Nếu giá trị là 'all', chuyển thành ''
+            setSelectedStatus(value === "all" ? "" : value);
+          }}
+        >
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Lọc theo trạng thái" />
           </SelectTrigger>
@@ -459,47 +466,7 @@ const AdminOrder = () => {
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4 flex justify-between items-center">
-        <div>
-          <span>
-            {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
-          </span>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {"<<"}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {"<"}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {">"}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            {">>"}
-          </Button>
-        </div>
-      </div>
+      <PaginationProducts table={table} />
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg w-96">
@@ -564,7 +531,5 @@ const getPaymentClassName = (payment: string) => {
       return "text-gray-600 font-semibold"; // Màu xám trung bình, chữ vừa
   }
 };
-
-
 
 export default AdminOrder;

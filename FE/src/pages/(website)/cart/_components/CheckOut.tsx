@@ -310,7 +310,7 @@ const CheckOut = () => {
           </div>
         </div>
         {/* end địa chỉ */}
-        <div className=" 2xl:w-[1408px] xl:w-[1200px] py-8 px-4 lg:w-[900px] max-[830px]:flex-col max-[830px]:flex grid  xl:grid lg:grid-cols-[60%_40%] xl:grid-cols-[57%_auto] 2xl:grid-cols-[57%_auto] gap-x-16 mx-auto">
+        <div className=" 2xl:w-[1408px] xl:w-[1200px] py-8 px-4 lg:w-[900px] max-[830px]:flex-col max-[830px]:flex grid  xl:grid lg:grid-cols-[52%_40%] xl:grid-cols-[57%_auto] 2xl:grid-cols-[57%_auto] gap-x-[7%] mx-auto">
           <div className="">
             <div className="Top flex justify-between pb-6 border-b border-[#C8C9CB]">
               <p className="font-medium text-[24px] max-sm:text-[16px]">
