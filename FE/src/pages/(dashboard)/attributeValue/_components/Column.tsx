@@ -11,10 +11,10 @@ interface IAttributeValues {
 
 export const columnAttributeValues: ColumnDef<IAttributeValues>[] = [
   {
-    accessorKey: "_id",
-    header: "ID",
+    // accessorKey: "_id",
+    header: "#",
     cell: ({ row }) => {
-      return <span>{row.original._id}</span>;
+      return <span>{row.index + 1}</span>;
     },
   },
   {

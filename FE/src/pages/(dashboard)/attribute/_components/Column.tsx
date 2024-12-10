@@ -17,8 +17,11 @@ interface IAttribute {
 
 export const columnAttribute: ColumnDef<IAttribute>[] = [
   {
-    accessorKey: "_id",
-    header: "ID",
+    // accessorKey: "_id",
+    header: "#",
+    cell: ({ row }) => {
+      return <span>{row.index + 1}</span>;
+    },
   },
   {
     accessorKey: "name",

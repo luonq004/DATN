@@ -21,7 +21,7 @@ export const sendMessageFromAdmin = async (req, res) => {
   const { conversationId } = req.params;
   const { adminId, text, receiverId } = req.body;
 
-  console.log("RECEIVER ID : ", receiverId);
+  // console.log("RECEIVER ID : ", receiverId);
 
   try {
     // Kiểm tra xem cuộc trò chuyện có tồn tại không
@@ -58,10 +58,14 @@ export const sendMessageFromAdmin = async (req, res) => {
     };
 
     const receiverSocketId = getReceiverSocketId(receiverId);
-    console.log("RECEIVER : ", receiverSocketId);
+    const io = req.app.get("io");
+    // console.log(io);
+
     if (receiverSocketId) {
-      console.log("SEARCH : ", receiverSocketId);
+      console.log(`Sending message to socketId: ${receiverSocketId}`, result); // Thêm log để kiểm tra
       io.to(receiverSocketId).emit("newMessage", result);
+    } else {
+      console.log("Receiver socketId not found!");
     }
 
     return res.status(200).json(result);

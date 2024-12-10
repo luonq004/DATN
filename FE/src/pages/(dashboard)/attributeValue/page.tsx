@@ -21,9 +21,9 @@ const AttributeValuePage = () => {
   return (
     <Container>
       <div className="flex justify-between">
-        <h2>Attribute value</h2>
+        <h2>Giá trị thuộc tính</h2>
         <Link to={`/admin/attributesValues/add/${id}`}>
-          <Button className="bg-green-400">Add new</Button>
+          <Button className="bg-green-400">Thêm</Button>
         </Link>
       </div>
       <div className="min-h-80 mt-5">

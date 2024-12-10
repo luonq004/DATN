@@ -1,10 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiChat2 } from "react-icons/ci";
 import Comment from "./components/Comment";
 import Content from "./components/Content";
+import { io } from "socket.io-client";
+import { useChatStore } from "@/common/context/useChatStore";
+
+const socket = io("http://localhost:3000");
 
 const ChatPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    socket.on("newMessage", (data) => {
+      console.log("newMessage", data);
+    });
+
+    return () => {
+      socket.off("newMessage");
+    };
+  }, []);
+
+  // console.log(listMessage);
 
   return (
     <>

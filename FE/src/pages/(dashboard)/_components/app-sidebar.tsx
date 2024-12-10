@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { PiChatCentered } from "react-icons/pi";
+import { TbFileDescription } from "react-icons/tb";
 
 import { useUser } from "@clerk/clerk-react";
 import {
@@ -102,6 +103,11 @@ const data = {
       title: "Tin nhắn",
       url: "/admin/message",
       icon: PiChatCentered,
+    },
+    {
+      title: "Đánh giá",
+      url: "/admin/clear",
+      icon: TbFileDescription,
     },
     // {
     //   title: "Settings",

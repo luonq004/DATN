@@ -87,9 +87,9 @@ export const updateAttribute = async (req, res) => {
       { new: true }
     );
 
-    if (attribute.length < 0) {
-      return res.status(404).json({ message: "Không tìm thấy thuộc tính" });
-    }
+    // if (attribute.length < 0) {
+    //   return res.status(404).json({ message: "Không tìm thấy thuộc tính" });
+    // }
     res.status(200).json(attribute);
   } catch (error) {
     res.status(500).json({ message: error.message });

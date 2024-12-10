@@ -62,6 +62,7 @@ import CategoriesPage from "@/pages/(dashboard)/category/page";
 import CategoryEditPage from "@/pages/(dashboard)/category/edit/page";
 import CategoryAddPage from "@/pages/(dashboard)/category/add/page";
 import MessagePage from "@/pages/(dashboard)/message/page";
+import Comment from "@/pages/(dashboard)/comment/page";
 
 const Router = () => {
   return (
@@ -165,6 +166,8 @@ const Router = () => {
             path="attributesValues/add/:id"
             element={<CreateAttributeValuePage />}
           />
+
+          <Route path="clear" element={<Comment />} />
 
           <Route path="logos" element={<LogoPage />}>
             <Route index element={<ListLogoPage />} />

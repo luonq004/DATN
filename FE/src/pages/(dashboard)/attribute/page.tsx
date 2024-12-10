@@ -18,9 +18,9 @@ const AttributesPage = () => {
     <>
       <Container>
         <div className="flex justify-between">
-          <h2>Attribute</h2>
+          <h2>Thuộc tính</h2>
           <Link to={"add"}>
-            <Button className="bg-green-400">Add new</Button>
+            <Button className="bg-green-400">Thêm</Button>
           </Link>
         </div>
         <div className="min-h-80 mt-5">

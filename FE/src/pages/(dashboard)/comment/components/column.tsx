@@ -2,8 +2,9 @@ import { Category } from "@/common/types/Product";
 
 import { ColumnDef } from "@tanstack/react-table";
 import ActionCell from "./ActionCell";
+// import ActionCell from "./ActionCell";
 
-export const columnCategories: ColumnDef<Category>[] = [
+export const column: ColumnDef<Category>[] = [
   {
     header: "#",
     cell: ({ row }) => {
@@ -12,7 +13,7 @@ export const columnCategories: ColumnDef<Category>[] = [
   },
   {
     accessorKey: "image",
-    header: "Ảnh danh mục",
+    header: "Ảnh sản phẩm",
     cell: ({ row }) => {
       // console.log(row);
       return (
@@ -26,11 +27,19 @@ export const columnCategories: ColumnDef<Category>[] = [
   },
   {
     accessorKey: "name",
-    header: "Tên",
+    header: "Tên người dùng",
+    cell: ({ row }) => {
+      // console.log(row);
+      return <p>Hoàng Minh</p>;
+    },
   },
   {
     accessorKey: "title",
-    header: "Tiêu đề",
+    header: "Nội dung",
+    cell: ({ row }) => {
+      // console.log(row);
+      return <p>Tuyet voi</p>;
+    },
   },
 
   {

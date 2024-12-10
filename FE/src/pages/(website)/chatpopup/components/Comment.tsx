@@ -1,13 +1,12 @@
 import { useUserContext } from "@/common/context/UserProvider";
 import { Button } from "@/components/ui/button";
+
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3000");
 
 const Comment = () => {
   const { _id } = useUserContext();
-
-  // console.log("adminId", _id);
 
   const sendUserMessageSocket = (conversationId, text, userId) => {
     socket.emit("newMessage", { conversationId, text, userId });

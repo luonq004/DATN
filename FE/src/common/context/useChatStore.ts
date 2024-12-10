@@ -37,10 +37,10 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
         set({ listMessage: res.data });
       } catch (error) {
         console.log(error);
-        toast({
-          variant: "destructive",
-          title: error.response.data.message,
-        });
+        // toast({
+        //   variant: "destructive",
+        //   title: error.response.data.message,
+        // });
       } finally {
         set({ isMessagesLoading: false });
       }
@@ -58,7 +58,7 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
           }
         );
 
-        console.log("RETURN: ", res.data);
+        // console.log("RETURN: ", res.data);
 
         set({
           listMessage: {
@@ -76,18 +76,34 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
 
     subscribeToMessages: () => {
       const { selectedUser } = get();
+
+      console.log("selectedUser", selectedUser);
+
       if (!selectedUser) return;
 
       const socket = useAuthStore.getState().socket;
+      // console.log("socket", socket);
 
       socket.on("newMessage", (newMessage) => {
+        // console.log("listMessage", get().listMessage);
         const isMessageSentFromSelectedUser =
           newMessage.senderId === selectedUser;
-        if (!isMessageSentFromSelectedUser) return;
+
+        // console.log(
+        //   "isMessageSentFromSelectedUser",
+        //   isMessageSentFromSelectedUser
+        // );
+
+        // if (!isMessageSentFromSelectedUser) return;
 
         set({
-          listMessage: [...get().listMessage, newMessage],
+          listMessage: {
+            ...get().listMessage, // Giữ nguyên các thuộc tính khác của listMessage
+            messages: [...get().listMessage.messages, newMessage], // Cập nhật messages
+          },
         });
+
+        // console.log("NEW: ", get().listMessage.messages);
       });
     },
 
