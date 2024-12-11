@@ -103,7 +103,7 @@ const ListSlider = () => {
         <h2 className="text-3xl text-center font-semibold py-10">
           Danh Sách Slider
         </h2>
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4">
           <input
             type="text"
             placeholder="Tìm kiếm theo tiêu đề..."
@@ -143,7 +143,7 @@ const ListSlider = () => {
       {loading ? (
         <p>Đang tải...</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="grid overflow-x-auto ">
           <table className="min-w-full bg-white shadow-md rounded-lg">
             <thead className="bg-gray-100">
               <tr>

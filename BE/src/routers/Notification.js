@@ -5,6 +5,7 @@ import {
   getAllNotifications,
   getNotifications,
   markAsRead,
+  markAsReadByAdmin,
   unreadCount,
 } from "../controllers/Notification";
 
@@ -20,6 +21,7 @@ NotificationRouter.delete("/:id", deleteNotification);
 
 // Route đánh dấu thông báo là đã đọc
 NotificationRouter.patch("/mark-as-read/:id", markAsRead);
+NotificationRouter.post("/mark-as-read-by-admin/:id", markAsReadByAdmin);
 NotificationRouter.get("/unread-count/:userId", unreadCount);
 
 export default NotificationRouter;

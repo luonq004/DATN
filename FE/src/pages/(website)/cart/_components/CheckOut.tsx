@@ -119,6 +119,7 @@ const CheckOut = () => {
         );
         const createOrder = response.data;
         const orderCode = createOrder?.order?.orderCode;
+        const orderId = createOrder?.order?._id;
 
         // Lấy ảnh của sản phẩm đầu tiên trong danh sách sản phẩm đã chọn
         const firstProductImage = selectedProducts[0]?.productItem?.image;
@@ -135,6 +136,7 @@ const CheckOut = () => {
 
           // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
           socket.emit("orderPlaced", {
+            orderId,
             orderCode,
             userId: _id,
             status,

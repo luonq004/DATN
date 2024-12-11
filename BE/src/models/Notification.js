@@ -6,9 +6,13 @@ const notificationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    orderId: {
+      type: String,
+      required: false, 
+    },
     orderCode: {
       type: String,
-      required: false, // Chỉ khi có đơn hàng thì mới có orderCode
+      required: false, 
     },
     productImage: {
       type: String, // URL ảnh sản phẩm
@@ -31,6 +35,14 @@ const notificationSchema = new mongoose.Schema(
     isRead: {
       type: Boolean,
       default: false, // Đánh dấu đã đọc hay chưa
+    },
+    isReadByAdmin: {
+      type: Boolean,
+      default: false, // Đánh dấu đã đọc hay chưa
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false, 
     },
   },
   {

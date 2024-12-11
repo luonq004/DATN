@@ -88,11 +88,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
   
 
   return (
-    <div className="min-h-full flex items-center justify-center ">
-      <Card className="w-full max-w-md my-8">
+    <div className="min-h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md my-8 ">
         <CardHeader>
-          <CardTitle className="text-center">Đăng ký tài khoản</CardTitle>
-          <CardDescription className="text-center text-gray-500">
+          <CardTitle className="text-center text-xl sm:text-2xl">Đăng ký tài khoản</CardTitle>
+          <CardDescription className="text-center text-gray-500 text-sm sm:text-base">
             Điền thông tin bên dưới để tạo tài khoản mới
           </CardDescription>
         </CardHeader>
@@ -104,7 +104,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
           >
             {/* Email */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                 Email
               </label>
               <input
@@ -117,7 +117,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
                   },
                 })}
                 placeholder="example@example.com"
-                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 text-sm sm:text-base"
               />
               {errors.emailAddress?.message && (
                 <p className="text-red-500 text-sm mt-1">
@@ -125,15 +125,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
                 </p>
               )}
             </div>
-
+  
             {/* Họ */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Họ</label>
+              <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Họ</label>
               <input
                 type="text"
                 {...register("firstName", { required: "Họ là bắt buộc" })}
                 placeholder="Nguyễn"
-                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 text-sm sm:text-base"
               />
               {errors.firstName && (
                 <p className="text-red-500 text-sm mt-1">
@@ -141,17 +141,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
                 </p>
               )}
             </div>
-
+  
             {/* Tên */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                 Tên
               </label>
               <input
                 type="text"
                 {...register("lastName", { required: "Tên là bắt buộc" })}
                 placeholder="Văn A"
-                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 text-sm sm:text-base"
               />
               {errors.lastName?.message && (
                 <p className="text-red-500 text-sm mt-1">
@@ -159,10 +159,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
                 </p>
               )}
             </div>
-
+  
             {/* Mật khẩu */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                 Mật khẩu
               </label>
               <input
@@ -175,7 +175,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
                   },
                 })}
                 placeholder="Mật khẩu"
-                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 text-sm sm:text-base"
               />
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">
@@ -183,15 +183,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
                 </p>
               )}
             </div>
-
+  
             {/* Vai trò */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">
+              <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                 Role (Mặc định: User)
               </label>
               <select
                 {...register("role")}
-                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 text-sm sm:text-base"
               >
                 <option value="Admin">Quản trị</option>
                 <option value="User">Người dùng</option>
@@ -199,14 +199,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
             </div>
           </form>
         </CardContent>
-        <CardFooter >
-          <Button className="px-[173px]" form="register-form" type="submit">
+        <CardFooter>
+          <Button className="w-full sm:w-[173px]" form="register-form" type="submit">
             Đăng ký
           </Button>
         </CardFooter>
       </Card>
     </div>
   );
+  
 };
 
 export default RegisterForm;

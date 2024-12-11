@@ -163,6 +163,7 @@ const Header = () => {
         prevNotifications.map((notif) => ({ ...notif, isRead: true }))
       );
       setUnreadCount(0); // Reset số lượng chưa đọc về 0
+      setIsMarkAllDropdownOpen(false);
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
       toast({
@@ -182,10 +183,7 @@ const Header = () => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif._id !== notificationId)
       );
-      toast({
-        title: "Thành công",
-        description: "Thông báo đã được xóa thành công!",
-      });
+      setOpenDropdown(null);
     } catch (error) {
       console.error("Error deleting notification:", error);
       toast({
@@ -203,32 +201,64 @@ const Header = () => {
 
   // Lắng nghe thông báo mới từ Socket.IO
   useEffect(() => {
+    // Lắng nghe sự kiện orderNotification
     socket.on("orderNotification", (newNotification) => {
-      // Cập nhật trực tiếp thông báo
-      setNotifications((prevNotifications) => [
-        newNotification,
-        ...prevNotifications,
-      ]);
-      setUnreadCount((prevCount) => prevCount + 1);
+      console.log("Thông báo nhận được:", newNotification);
+  
+      // Kiểm tra nếu thông báo không phải của tài khoản hiện tại
+      if (newNotification.userId !== _id) {
+        return; // Nếu không phải, bỏ qua thông báo này
+      }
+  
+      setNotifications((prevNotifications) => {
+        // Kiểm tra xem thông báo đã tồn tại chưa
+        if (
+          prevNotifications.some(
+            (notif) =>
+              notif.orderCode === newNotification.orderCode &&
+              notif.orderId === newNotification.orderId
+          )
+        ) {
+          return prevNotifications; // Nếu trùng, không thêm vào nữa
+        }
+  
+        const updatedNotifications = [newNotification, ...prevNotifications];
+        const unreadCount = updatedNotifications.filter((n) => !n.isRead)
+          .length;
+        setUnreadCount(unreadCount);
+  
+        return updatedNotifications;
+      });
     });
   
+    // Lắng nghe sự kiện orderStatusNotification
     socket.on("orderStatusNotification", (newNotification) => {
-      console.log("Nhận thông báo trạng thái đơn hàng:", newNotification);
-      // Cập nhật thông báo ngay khi nhận từ socket
-      setNotifications((prevNotifications) => [
-        newNotification,
-        ...prevNotifications,
-      ]);
-      setUnreadCount((prevCount) => prevCount + 1);
+      console.log("Thông báo trạng thái nhận được:", newNotification);
+  
+      // Kiểm tra nếu thông báo không phải của tài khoản hiện tại
+      if (newNotification.userId !== _id) {
+        return; // Nếu không phải, bỏ qua thông báo này
+      }
+  
+      setNotifications((prevNotifications) => {
+        // Kiểm tra xem thông báo đã tồn tại chưa
+  
+        const updatedNotifications = [newNotification, ...prevNotifications];
+        const unreadCount = updatedNotifications.filter((n) => !n.isRead)
+          .length;
+        setUnreadCount(unreadCount);
+  
+        return updatedNotifications;
+      });
     });
   
     return () => {
       socket.off("orderNotification");
       socket.off("orderStatusNotification");
     };
-  }, [_id]);
+  }, [_id]); // _id sẽ thay đổi khi người dùng đăng nhập hoặc thay đổi tài khoản
   
-
+  
   return (
     <>
       <header
@@ -349,7 +379,7 @@ const Header = () => {
                         setOpenDropdown(null);
                       }}
                     >
-                      <div className="p-2 flex justify-between items-center">
+                      <div className="sticky top-0 z-10 bg-white p-2 flex justify-between items-center">
                         <h1 className="text-[13px] font-bold">
                           Thông báo mới nhận
                         </h1>
@@ -406,7 +436,11 @@ const Header = () => {
                                     to={"/users/order-history"}
                                     className="truncate text-wrap"
                                   >
-                                   <span dangerouslySetInnerHTML={{ __html: notification.message }} />
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html: notification.message,
+                                      }}
+                                    />
                                   </Link>
                                 </div>
 
@@ -531,6 +565,8 @@ const Header = () => {
                   <Link to="/wishlist">
                     <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
                   </Link>
+
+
                   {/* Thông báo */}
                   <div
                     className="relative lg:hidden border-[#eee]  text-[10px] leading-5  uppercase"

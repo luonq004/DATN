@@ -157,7 +157,7 @@ const AdminOrder = () => {
         });
 
         // Gửi thông báo thay đổi trạng thái đơn hàng tới server
-        socket.emit("orderStatusChanged", { orderCode, newStatus, userId });
+        socket.emit("orderStatusChanged", { orderCode, newStatus, userId,orderId });
 
         return true;
       }

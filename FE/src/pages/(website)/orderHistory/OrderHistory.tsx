@@ -113,6 +113,7 @@ const OrderHistory = () => {
 
         // Emit thông báo qua socket 
         socket.emit("orderStatusChanged", {
+          orderId: orderIdToCancel,
           orderCode,
           newStatus,
           userId: _id,

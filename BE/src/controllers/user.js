@@ -335,6 +335,8 @@ export const updateUser = async (req, res) => {
   try {
     const { clerkId } = req.params;
     const updateData = req.body;
+    console.log("Received updateData from FE:", updateData);
+
 
     // Kiểm tra nếu không có clerkId
     if (!clerkId) {
@@ -353,7 +355,7 @@ export const updateUser = async (req, res) => {
 
     let hashedPassword = updateData.password; // Mật khẩu chưa mã hóa
     if (updateData.password) {
-      // Nếu có mật khẩu mới thì mã hóa nó
+      // Nếu có mật khẩu mới thì mã hóa 
       hashedPassword = await bcrypt.hash(updateData.password, 10);
     }
 

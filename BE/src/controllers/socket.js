@@ -17,9 +17,26 @@ export const setupSocketIO = (server, app) => {
     // io.emit("messageSent", { message: "Lô Admin" });
 
     // Lắng nghe sự kiện join_room
-    socket.on("join_room", (userId) => {
-      socket.join(userId);
+    socket.on("join_room", async (userId) => {
+      const rooms = Object.keys(socket.rooms); // Lấy danh sách phòng hiện tại mà socket này đang tham gia
+      if (!rooms.includes(userId)) {
+        socket.join(userId);
+      }
+
+      // Lấy danh sách các admin
+      const admins = await Users.find({ role: "Admin" }).select("_id");
+
+      // Cho admin vào cùng phòng nếu chưa tham gia
+      admins.forEach((admin) => {
+        if (!rooms.includes(admin._id.toString())) {
+          socket.join(admin._id.toString());
+        }
+      });
+
       console.log(`Client ${socket.id} đã tham gia phòng: ${userId}`);
+      console.log(
+        `Các admin đã tham gia phòng: ${admins.map((admin) => admin._id)}`
+      );
     });
 
     // Lắng nghe sự kiện 'orderPlaced' từ client
@@ -29,16 +46,18 @@ export const setupSocketIO = (server, app) => {
       try {
         const isSuccess = orderData.status === "success"; // Kiểm tra trạng thái thành công
         const message = isSuccess
-          ? `Đơn hàng với mã <strong>${orderData.orderCode}</strong>  đã được đặt thành công!`
-          : `Đơn hàng với mã <strong>${orderData.orderCode}</strong>  đã thất bại. Vui lòng thử lại!`;
+          ? `Đơn hàng với mã <strong>${orderData.orderCode}</strong> đã được đặt thành công!`
+          : `Đơn hàng với mã <strong>${orderData.orderCode}</strong> đã thất bại. Vui lòng thử lại!`;
 
-        const productName = orderData.productName; 
+        const productName = orderData.productName;
         const productImage = orderData.productImage;
+        const orderId = orderData.orderId;
 
         // Sau khi nhận được đơn hàng, lưu thông báo vào database
         const newNotification = new Notification({
           userId: orderData.userId,
           orderCode: orderData.orderCode,
+          orderId: orderId,
           message,
           productImage: productImage,
           productName: productName,
@@ -51,15 +70,16 @@ export const setupSocketIO = (server, app) => {
         await newNotification.save(); // Lưu vào database
         console.log("Thông báo đã được lưu vào database.");
 
+        // Phát thông báo cho phòng của người dùng
         console.log(
           "Đang phát thông báo trạng thái cho phòng:",
           orderData.userId.toString()
         );
-        // Phát thông báo cho phòng của người dùng
         io.to(orderData.userId.toString()).emit("orderNotification", {
-          _id: newNotification._id,
+          userId: newNotification.userId,
           message: newNotification.message,
           orderCode: newNotification.orderCode,
+          orderId: newNotification.orderId,
           productImage: newNotification.productImage || null,
           productName: newNotification.productName,
           isRead: newNotification.isRead,
@@ -67,6 +87,22 @@ export const setupSocketIO = (server, app) => {
         });
 
         console.log("Đã phát thông báo cho người dùng.");
+
+        // Phát thông báo cho tất cả admin, nhưng chỉ gửi một lần
+        const adminIds = await Users.find({ role: "Admin" }).select("_id");
+        adminIds.forEach((admin) => {
+          io.to(admin._id.toString()).emit("orderNotification", {
+            userId: newNotification.userId,
+            message: newNotification.message,
+            orderCode: newNotification.orderCode,
+            orderId: newNotification.orderId,
+            productImage: newNotification.productImage || null,
+            productName: newNotification.productName,
+            isRead: newNotification.isRead,
+            createdAt: newNotification.createdAt,
+          });
+          console.log("Đã phát thông báo cho admin:", admin._id);
+        });
       } catch (error) {
         console.error("Lỗi khi lưu thông báo:", error);
         // Gửi thông báo lỗi đến client nếu lưu thông báo thất bại
@@ -77,23 +113,32 @@ export const setupSocketIO = (server, app) => {
     });
 
     // Lắng nghe sự kiện 'orderStatusChanged' từ frontend
+    // Lắng nghe sự kiện 'orderStatusChanged'
     socket.on("orderStatusChanged", async (data) => {
       console.log("Trạng thái đơn hàng đã thay đổi:", data);
-      
+
       try {
-        const { orderCode, newStatus, userId, productImage, productName } = data;
-        console.log("productImage từ dữ liệu nhận được:", productImage);
-        
+        const {
+          orderCode,
+          newStatus,
+          userId,
+          productImage,
+          productName,
+          orderId,
+        } = data;
+
         const message = `Đơn hàng với mã <strong>${orderCode}</strong> đã được cập nhật và chuyển sang trạng thái <strong>${newStatus}</strong>.`;
 
         const userIdStr =
           typeof userId === "object" && userId._id
             ? userId._id.toString()
             : userId;
+
         // Lưu thông báo vào database
         const newNotification = new Notification({
           userId: userIdStr,
           orderCode,
+          orderId,
           productImage,
           productName,
           message,
@@ -110,19 +155,17 @@ export const setupSocketIO = (server, app) => {
         console.log("Thông báo đã được lưu vào database.");
 
         // Phát thông báo cho phòng của người dùng
-        console.log("Đang phát thông báo trạng thái cho phòng:", userIdStr);
         io.to(userIdStr).emit("orderStatusNotification", {
-          _id: newNotification._id,
+          userId: newNotification.userId,
           message: newNotification.message,
           orderCode: newNotification.orderCode,
+          orderId: newNotification.orderId,
           productImage: newNotification.productImage || null,
           productName: newNotification.productName,
           isRead: newNotification.isRead,
           createdAt: newNotification.createdAt,
-          
         });
 
-        console.log("Đã phát thông báo cho người dùng về trạng thái mới.");
       } catch (error) {
         console.error("Lỗi khi lưu thông báo về trạng thái đơn hàng:", error);
         io.to(userIdStr).emit("orderStatusNotificationError", {

@@ -108,14 +108,8 @@ const Slider = () => {
                       ))}
                     </ul>
 
-                    <div className="flex flex-col xl:flex-row font-questrial xl:items-center gap-5">
+                    <div className="flex flex-col xl:flex-row font-questrial xl:items-center ">
                       <div className="text-lg text-left">
-                        <p className="text-lg">
-                          GIÁ TỐT NHẤT:{" "}
-                          <span>
-                            {slide.price?.toLocaleString("vi-VN")} VNĐ
-                          </span>
-                        </p>
                       </div>
                       <div className="flex flex-col font-questrial md:flex-row text-xs gap-3">
                         <button className="group relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-bold overflow-hidden">
@@ -222,10 +216,6 @@ const Slider = () => {
                     </ul>
 
                     <div className="flex flex-col xl:flex-row font-questrial md:justify-end xl:items-center gap-5">
-                      <p className="text-lg">
-                        GIÁ TỐT NHẤT:{" "}
-                        <span>{slide.price?.toLocaleString("vi-VN")} VNĐ</span>
-                      </p>
 
                       <div className="flex flex-col md:flex-row md:justify-end text-xs gap-3 font-questrial">
                         <button className="group relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">

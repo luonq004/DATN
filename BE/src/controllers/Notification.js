@@ -28,7 +28,7 @@ export const createNotification = async (req, res) => {
   }
 };
 
-// Lấy tất cả thông báo cho 
+// Lấy tất cả thông báo  
 export const getAllNotifications = async (req, res) => {
   try {
     const { status } = req.query; // Phân trang và lọc theo trạng thái nếu cần
@@ -126,6 +126,48 @@ export const markAsRead = async (req, res) => {
     res.status(500).json({ message: "Không thể cập nhật thông báo", error });
   }
 };
+
+// Đánh dấu thông báo là đã đọc cho admin
+export const markAsReadByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { adminId } = req.body; 
+
+    // Kiểm tra xem có adminId không
+    if (!adminId) {
+      return res.status(400).json({ message: "adminId là bắt buộc!" });
+    }
+
+     // Nếu id là "all", đánh dấu tất cả thông báo của admin là đã đọc
+     if (id === "all") {
+      await Notification.updateMany({}, { isReadByAdmin: true });
+      return res
+        .status(200)
+        .json({ message: "Tất cả thông báo đã được admin đánh dấu là đã đọc!" });
+    }
+
+
+    // Tìm thông báo theo id
+    const notification = await Notification.findById(id);
+    if (!notification) {
+      return res.status(404).json({ message: "Thông báo không tìm thấy" });
+    }
+
+    // Cập nhật trường isReadByAdmin của thông báo
+    notification.isReadByAdmin = true;
+
+    // Lưu thay đổi
+    await notification.save();
+
+
+    // Trả về thông báo đã được cập nhật
+    res.status(200).json(notification);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Không thể cập nhật thông báo", error });
+  }
+};
+
 
 // API trả về số lượng thông báo chưa đọc
 export const unreadCount = async (req, res) => {

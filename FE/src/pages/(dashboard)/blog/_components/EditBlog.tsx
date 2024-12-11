@@ -123,7 +123,7 @@ const EditBlog = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-semibold mb-4">Chỉnh sửa Blog</h1>
+      <h1 className="text-3xl font-semibold mb-4 uppercase">Chỉnh sửa bài viết</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Tiêu đề */}
         <div>

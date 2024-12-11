@@ -106,12 +106,16 @@ const PaymentResult = () => {
               userId: _id, // ID người dùng
             });
 
+            console.log("Cart đã được xóa hoàn toàn.");
+            queryClient.invalidateQueries(["CART"]);
+
             // Lấy ảnh của sản phẩm đầu tiên trong danh sách sản phẩm đã chọn
             const firstProductImage = orderCart?.[0]?.productItem?.image;
             const orderCode = orderDetails?.orderCode;
 
             // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
             socket.emit("orderPlaced", {
+              orderId: orderDetails?._id,
               orderCode,
               userId: _id,
               status: "success",

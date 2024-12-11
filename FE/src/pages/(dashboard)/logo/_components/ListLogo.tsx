@@ -100,7 +100,7 @@ const ListLogoPage = () => {
         </div>
       </div>
 
-      <div className=" overflow-x-auto">
+      <div className=" grid overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
           <thead className="bg-gray-100">
             <tr>
@@ -127,13 +127,15 @@ const ListLogoPage = () => {
                 <td className="px-4 md:px-6 py-4  text-sm font-medium text-gray-900">
                   {logo.title}
                 </td>
+
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <img
                     src={logo.image}
                     alt={logo.title}
-                    className="w-32 h-20 md:w-40 md:h-24 rounded-lg object-contain "
+                    className="w-full h-20 md:w-40 md:h-24 rounded-lg object-contain "
                   />
                 </td>
+                
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <button
                     onClick={() => handleSetCurrent(logo._id)}

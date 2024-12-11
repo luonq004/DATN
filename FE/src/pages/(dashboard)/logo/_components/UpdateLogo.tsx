@@ -65,7 +65,7 @@ const UpdateLogoPage = () => {
         title: "Thành công",
         description: "Logo đã được cập nhật thành công!",
       });
-      navigate("/dashboard/logos");
+      navigate("/admin/logos");
     } catch (error) {
       toast({
         variant: "destructive",
