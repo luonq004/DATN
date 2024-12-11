@@ -88,7 +88,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
   
 
   return (
-    <div className="min-h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-full flex items-center justify-center px-4 rounded-lg sm:px-6 lg:px-8 ">
       <Card className="w-full max-w-md my-8 ">
         <CardHeader>
           <CardTitle className="text-center text-xl sm:text-2xl">Đăng ký tài khoản</CardTitle>
@@ -200,7 +200,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
           </form>
         </CardContent>
         <CardFooter>
-          <Button className="w-full sm:w-[173px]" form="register-form" type="submit">
+          <Button className="w-full" form="register-form" type="submit">
             Đăng ký
           </Button>
         </CardFooter>

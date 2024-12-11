@@ -1,38 +1,50 @@
 import { useChatStore } from "@/common/context/useChatStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import SidebarSkeleton from "./SidebarSkeleton";
-import { useSearchParams } from "react-router-dom";
+
+import { useAuthStore } from "@/common/context/useAuthStore";
+import { useUserContext } from "@/common/context/UserProvider";
 
 const SideBarUser = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const conversationSelect = searchParams.get("conversation");
+  const [conversationSelect, setConversationSelect] = useState<string | null>(
+    null
+  );
+  const { clerkId } = useUserContext();
 
   const {
     conversations,
     getConversations,
     isConversationsLoading,
     setSelectedUser,
+    setSelectedConversation,
+    selectedConversation,
   } = useChatStore();
+
+  const { isCheckingAuth } = useAuthStore();
+
+  const { checkAuth } = useAuthStore();
 
   useEffect(() => {
     getConversations();
-    if (conversationSelect) setSelectedUser(conversationSelect);
-  }, [getConversations]);
+    if (clerkId) checkAuth(clerkId);
+  }, [getConversations, clerkId, checkAuth]);
 
-  if (isConversationsLoading) return <SidebarSkeleton />;
+  if (isConversationsLoading || isCheckingAuth) return <SidebarSkeleton />;
+
+  console.log(selectedConversation);
 
   return (
     <div className="cursor-pointer w-[120px] lg:w-[340px] max-h-[78vh] min-h-[78vh] overflow-y-auto border-r pt-4">
       {conversations.map((user) => (
         <div
           className={`flex gap-2 items-center w-full hover:bg-slate-100 px-4 py-2 mb-4 ${
-            conversationSelect === user._id ? "bg-slate-100" : ""
+            conversationSelect === user.user._id ? "bg-gray-200" : ""
           }`}
           key={user._id}
           onClick={() => {
-            searchParams.set("conversation", user._id);
-            setSearchParams(searchParams);
-            setSelectedUser(user._id);
+            setConversationSelect(user.user._id);
+            setSelectedUser(user.user._id);
+            setSelectedConversation(user._id);
           }}
         >
           <img

@@ -33,6 +33,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:3000");
+import { PaginationProducts } from "../dashboard/_components/PaginationProducts";
 
 export type Order = {
   id: string;
@@ -495,47 +496,7 @@ const AdminOrder = () => {
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4 flex justify-between items-center">
-        <div>
-          <span>
-            {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
-          </span>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {"<<"}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {"<"}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {">"}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            {">>"}
-          </Button>
-        </div>
-      </div>
+      <PaginationProducts table={table} />
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg w-96">

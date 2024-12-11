@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PaginationComponent from "../../user/_component/Paginations";
 
 const ListSlider = () => {
   const [sliders, setSliders] = useState<Slide[]>([]);
@@ -11,7 +12,7 @@ const ListSlider = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedSliderId, setSelectedSliderId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(3);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [filterType, setFilterType] = useState("all"); // Bộ lọc loại slide
   const [searchQuery, setSearchQuery] = useState(""); // Biến lưu trữ tìm kiếm
   const [expandedRows, setExpandedRows] = useState(new Set());
@@ -23,6 +24,23 @@ const ListSlider = () => {
       slider.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       slider.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const indexOfLastSlider = currentPage * itemsPerPage;
+  const indexOfFirstSlider = indexOfLastSlider - itemsPerPage;
+  const totalPages = Math.ceil(filteredSliders.length / itemsPerPage);
+  const currentSliders = filteredSliders.slice(
+    indexOfFirstSlider,
+    indexOfLastSlider
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setItemsPerPage(size);
+    setCurrentPage(1);
+  };
 
   useEffect(() => {
     const fetchSliders = async () => {
@@ -75,14 +93,6 @@ const ListSlider = () => {
       setIsConfirmOpen(false);
     }
   };
-
-  const indexOfLastSlider = currentPage * itemsPerPage;
-  const indexOfFirstSlider = indexOfLastSlider - itemsPerPage;
-  const totalPages = Math.ceil(filteredSliders.length / itemsPerPage);
-  const currentSliders = filteredSliders.slice(
-    indexOfFirstSlider,
-    indexOfLastSlider
-  );
 
   // Hàm toggle trạng thái mở rộng
   const toggleRowExpansion = (id: any) => {
@@ -139,7 +149,6 @@ const ListSlider = () => {
           </div>
         </div>
       </div>
-
       {loading ? (
         <p>Đang tải...</p>
       ) : (
@@ -386,55 +395,25 @@ const ListSlider = () => {
               )}
             </tbody>
           </table>
-
-          {/* Phân trang */}
-          <div className="mt-4 flex justify-between items-center">
-            <div className="text-sm">
-              Trang {currentPage} / {totalPages}
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage(1)}
-                className="px-3 py-2 bg-stone-100 rounded-md"
-                disabled={currentPage === 1}
-              >
-                {"<<"}
-              </button>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="px-3 py-2 bg-stone-100 rounded-md"
-                disabled={currentPage === 1}
-              >
-                {"<"}
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                className="px-3 py-2 bg-stone-100 rounded-md"
-                disabled={currentPage === totalPages}
-              >
-                {">"}
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                className="px-3 py-2 bg-stone-100 rounded-md"
-                disabled={currentPage === totalPages}
-              >
-                {">>"}
-              </button>
-            </div>
-          </div>
-
-          <Confirm
-            isOpen={isConfirmOpen}
-            onClose={closeConfirm}
-            onConfirm={confirmDelete}
-            title="Xác nhận xóa"
-            message="Bạn có chắc chắn muốn xóa slider này?"
-          />
         </div>
-      )}
+      )}{" "}
+      {/*phân trang  */}
+      <div className="mt-4 mb-3">
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSize={itemsPerPage}
+        />
+      </div>
+      <Confirm
+        isOpen={isConfirmOpen}
+        onClose={closeConfirm}
+        onConfirm={confirmDelete}
+        title="Xác nhận xóa"
+        message="Bạn có chắc chắn muốn xóa slider này?"
+      />
     </div>
   );
 };

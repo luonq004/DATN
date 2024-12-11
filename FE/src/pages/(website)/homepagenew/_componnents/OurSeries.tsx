@@ -177,19 +177,9 @@ const OurSeries = () => {
                   ) : (
                     <>
                       <img
-                        src={
-                          hoveredIndex === index
-                            ? product.altImage
-                            : product.image
-                        }
+                        src={product.image}
                         alt={product.title}
-                        className={`mb-4 w-[315px] xl:w-[315px] xl:h-[315px] object-cover transition-transform duration-300 ease-in-out ${
-                          hoveredIndex === index
-                            ? "scale-95 opacity-100"
-                            : "scale-100 opacity-100"
-                        }`}
-                        onMouseEnter={() => setHoveredIndex(index)}
-                        onMouseLeave={() => setHoveredIndex(null)}
+                        className={`mb-4 w-[315px] xl:w-[315px] xl:h-[315px] object-cover transition-transform duration-300 ease-in-out `}
                       />
 
                       <div className="max-w-[100%]">

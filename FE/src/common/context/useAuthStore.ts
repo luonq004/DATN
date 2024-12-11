@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { io } from "socket.io-client";
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
 
-const BASE_URL =
-  import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
+// const BASE_URL =
+//   import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -12,11 +13,9 @@ export const useAuthStore = create((set, get) => ({
   isCheckingAuth: true,
   socket: null,
 
-  checkAuth: (id: string) => {
+  checkAuth: async (clerkId: string) => {
     try {
-      if (id) {
-      }
-
+      const res = await axios.get(`${apiUrl}/users/${clerkId}`);
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
@@ -27,43 +26,14 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  signup: async (data) => {
-    set({ isSigningUp: true });
-    try {
-      const res = await axios.post("/auth/signup", data);
-      set({ authUser: res.data });
-      toast.success("Account created successfully");
-      get().connectSocket();
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ isSigningUp: false });
-    }
-  },
-
-  login: async (data) => {
-    set({ isLoggingIn: true });
-    try {
-      const res = await axios.post("/auth/login", data);
-      set({ authUser: res.data });
-      toast.success("Logged in successfully");
-
-      get().connectSocket();
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ isLoggingIn: false });
-    }
-  },
-
   logout: async () => {
     try {
       await axios.post("/auth/logout");
       set({ authUser: null });
-      toast.success("Logged out successfully");
+      // toast.success("Logged out successfully");
       get().disconnectSocket();
     } catch (error) {
-      toast.error(error.response.data.message);
+      // toast.error(error.response.data.message);
     }
   },
 
@@ -71,7 +41,7 @@ export const useAuthStore = create((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket = io(BASE_URL, {
+    const socket = io("http://localhost:3000", {
       query: {
         userId: authUser._id,
       },

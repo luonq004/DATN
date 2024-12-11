@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { categories } from "./Categories";
 import Confirm from "@/components/Confirm/Confirm";
+import PaginationComponent from "../../user/_component/Paginations";
 
 const ListBlog = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -16,10 +17,25 @@ const ListBlog = () => {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
   const [searchQuery, setSearchQuery] = useState("");
   const totalPages = Math.ceil(blogs.length / itemsPerPage);
   const { toast } = useToast();
+
+  const currentBlogs = filteredBlogs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setItemsPerPage(size);
+    setCurrentPage(1);
+  };
+
 
   useEffect(() => {
     fetch("http://localhost:8080/api/blogs")
@@ -99,11 +115,7 @@ const ListBlog = () => {
     return category ? category.label : categoryValue;
   };
 
-  // Chia các bài viết thành các trang
-  const indexOfLastBlog = currentPage * itemsPerPage;
-  const indexOfFirstBlog = indexOfLastBlog - itemsPerPage;
-  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
-
+  
   if (loading)
     return (
       <div className="text-center text-xl text-gray-600">
@@ -116,7 +128,9 @@ const ListBlog = () => {
   return (
     <div className=" mx-auto px-4 ">
       <div className="pb-6 flex flex-col lg:flex-row justify-between items-center">
-        <h1 className="text-3xl font-semibold mb-10 lg:mb-0">Danh sách bài viết</h1>
+        <h1 className="text-3xl font-semibold mb-10 lg:mb-0">
+          Danh sách bài viết
+        </h1>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between w-[100%] lg:w-auto  gap-8">
           {/* Trường nhập liệu tìm kiếm */}
@@ -219,42 +233,14 @@ const ListBlog = () => {
       />
 
       {/*phân trang  */}
-      <div className="mt-4 flex justify-between items-center">
-        <div className="text-sm">
-          Trang {currentPage} / {totalPages}
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentPage(1)}
-            className="px-3 py-2 bg-stone-100 rounded-md"
-            disabled={currentPage === 1}
-          >
-            {"<<"}
-          </button>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === 1}
-          >
-            {"<"}
-          </button>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === totalPages}
-          >
-            {">"}
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === totalPages}
-          >
-            {">>"}
-          </button>
-        </div>
+      <div className="mt-4">
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSize={itemsPerPage}
+        />
       </div>
     </div>
   );

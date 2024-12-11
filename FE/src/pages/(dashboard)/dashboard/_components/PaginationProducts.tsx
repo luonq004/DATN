@@ -21,7 +21,7 @@ export function PaginationProducts<TData>({
     return (
         <div className="flex items-center justify-end space-x-6 lg:space-x-8 my-2">
             <div className="flex items-center space-x-2">
-                <p className="text-sm font-medium">Rows per page</p>
+                <p className="text-sm font-medium">Hiển thị</p>
                 <Select
                     value={`${table.getState().pagination.pageSize}`}
                     onValueChange={(value) => {
@@ -32,7 +32,7 @@ export function PaginationProducts<TData>({
                         <SelectValue placeholder={table.getState().pagination.pageSize} />
                     </SelectTrigger>
                     <SelectContent side="top">
-                        {[3, 5, 10, 20, 30, 40, 50].map((pageSize) => (
+                        {[3, 5, 8 ,10, 20, 30, 40, 50].map((pageSize) => (
                             <SelectItem defaultChecked={pageSize === 5} key={pageSize} value={`${pageSize}`}>
                                 {pageSize}
                             </SelectItem>
@@ -41,7 +41,7 @@ export function PaginationProducts<TData>({
                 </Select>
             </div>
             <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                Page {table.getState().pagination.pageIndex + 1} of{" "}
+                Trang {table.getState().pagination.pageIndex + 1} /{" "}
                 {table.getPageCount()}
             </div>
             <div className="flex items-center space-x-2">

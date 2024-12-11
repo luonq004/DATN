@@ -5,17 +5,17 @@ const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams(); // lấy và cập nhật tham số URL (danh mục và trang)
   const currentCategory = searchParams.get("category");
   const tags = [
-    "TAI NGHE",
+    "ÁO THUN",
+    "QUẦN JEANS",
+    "THỜI TRANG NỮ",
     "PHỤ KIỆN",
-    "MỚI",
-    "KHÔNG DÂY",
-    "CÁP",
-    "THIẾT BỊ",
-    "ĐỒ CÔNG NGHỆ",
+    "ÁO KHOÁC",
+    "GIÀY DÉP",
+    "THỜI TRANG NAM",
     "THƯƠNG HIỆU",
-    "THAY THẾ",
-    "BAO DA",
-    "CHUYÊN NGHIỆP",
+    "SALE OFF",
+    "ĐỒ BỘ",
+    "THỜI TRANG TRẺ EM",
   ];
 
   // Hàm xử lý khi click vào danh mục
@@ -70,7 +70,9 @@ const Sidebar = () => {
                 <li
                   key={cat.value}
                   className={`text-[#888] text-[11px] font-raleway hover:text-[#b8cd06] cursor-pointer border-b border-[#efefef] pb-4 ${
-                    currentCategory === cat.value ? "text-[#b8cd06] font-bold" : ""
+                    currentCategory === cat.value
+                      ? "text-[#b8cd06] font-bold"
+                      : ""
                   }`}
                   onClick={() => handleCategoryClick(cat.value)}
                 >
@@ -88,37 +90,37 @@ const Sidebar = () => {
             <div className="flex flex-col items-start mb-10">
               <div className="lg:w-full h-full mb-4 bg-gray-200 rounded-md overflow-hidden">
                 <img
-                  src="http://unionagency.one/exzo/img/thumbnail-73.jpg"
-                  alt="Popular Tag"
+                  src="https://gcs.tripi.vn/public-tripi/tripi-feed/img/473784WaX/shop-quan-ao-nam-dep-tai-tinh-ninh-binh-duoc-nhieu-nguoi-lua-chon-1109342.jpg"
+                  alt="Áo thun phổ biến"
                   className="w-full h-full object-cover"
                 />
               </div>
               <p className="text-[#343434] text-[15px] font-raleway font-extrabold mb-1 cursor-pointer">
-                Phasellus Rhoncus in Nunc Sit
+                Áo Thun Trơn Mùa Hè
               </p>
               <p className="text-[11px] text-gray-500">
-                Apr 07 / 15 &nbsp;&bull;&nbsp;{" "}
-                <span className="text-[#b8cd06]">John Wick</span>{" "}
+                07 Tháng 4 / 15 &nbsp;&bull;&nbsp;{" "}
+                <span className="text-[#b8cd06]">Đỗ trọng khanh</span>{" "}
                 &nbsp;&bull;&nbsp;{" "}
-                <span className="text-[#b8cd06]">Gadgets</span>
+                <span className="text-[#b8cd06]">Thời Trang Nam</span>
               </p>
             </div>
             <div className="flex flex-col items-start">
               <div className="lg:w-full h-full mb-4 bg-gray-200 rounded-md overflow-hidden">
                 <img
-                  src="http://unionagency.one/exzo/img/thumbnail-74.jpg"
-                  alt="Popular Tag"
+                  src="https://toplist.vn/images/200px/shop-ban-quan-jean-nu-dep-va-chat-luong-nhat-quan-9-tp-hcm-1283754.jpg"
+                  alt="Quần jeans phổ biến"
                   className="w-full h-full object-cover"
                 />
               </div>
               <p className="text-[#343434] text-[15px] font-raleway font-extrabold mb-1 cursor-pointer">
-                Phasellus Rhoncus in Nunc Sit
+                Quần Jeans Rách Thời Thượng
               </p>
               <p className="text-[11px] text-gray-500">
-                Apr 07 / 15 &nbsp;&bull;&nbsp;{" "}
-                <span className="text-[#b8cd06]">John Wick</span>{" "}
+                07 Tháng 4 / 15 &nbsp;&bull;&nbsp;{" "}
+                <span className="text-[#b8cd06]">Đỗ trọng khanh</span>{" "}
                 &nbsp;&bull;&nbsp;{" "}
-                <span className="text-[#b8cd06]">Gadgets</span>
+                <span className="text-[#b8cd06]">Thời Trang Nữ</span>
               </p>
             </div>
           </div>

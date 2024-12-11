@@ -4,6 +4,8 @@ import Conversation from "../models/conversation.js";
 import Message from "../models/message.js";
 import Users from "../models/users.js";
 
+// Cấu hình và xử lý các sự kiện Socket.IO
+
 export const setupSocketIO = (server, app) => {
   const io = new Server(server, {
     cors: {
@@ -14,7 +16,11 @@ export const setupSocketIO = (server, app) => {
 
   io.on("connection", (socket) => {
     console.log("Client đã kết nối:", socket.id);
-    // io.emit("messageSent", { message: "Lô Admin" });
+
+    const userId = socket.handshake.query.userId;
+    if (userId) {
+      userSocketMap[userId] = socket.id; // Lưu socketId của người dùng vào userSocketMap
+    }
 
     // Lắng nghe sự kiện join_room
     socket.on("join_room", async (userId) => {
@@ -202,7 +208,7 @@ export const setupSocketIO = (server, app) => {
       // }
     });
 
-    socket.on("sendUserMessage", async ({ conversationId, text, userId }) => {
+    socket.on("newMessage", async ({ conversationId, text, userId }) => {
       // console.log("Tin nhắn từ user:", { conversationId, text, userId });
       // io.emit("messageSent", { message: "Message sent" });
       try {
@@ -244,10 +250,17 @@ export const setupSocketIO = (server, app) => {
 
     // Xử lý sự kiện ngắt kết nối
     socket.on("disconnect", () => {
-      console.log("Client đã ngắt kết nối:", socket.id);
+      delete userSocketMap[userId]; // Xóa socket id khi người dùng ngắt kết nối
     });
   });
 
   // Gán io vào app để có thể sử dụng trong controller
   app.set("io", io);
 };
+
+const userSocketMap = {};
+
+// Hàm tìm socketId của người nhận
+export function getReceiverSocketId(userId) {
+  return userSocketMap[userId];
+}

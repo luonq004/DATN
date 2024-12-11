@@ -24,7 +24,7 @@ const categorySchema = new mongoose.Schema(
 
     slug: {
       type: String,
-      unique: true,
+      // unique: true,
       lowercase: true,
     },
 

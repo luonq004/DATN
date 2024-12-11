@@ -13,12 +13,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "./RegisterForm";
 import EditUserForm from "./UpdateUser";
+import PaginationComponent from "./Paginations";
 
 function ListUser() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isModalOpendelete, setModalOpendelete] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isRegisterFormOpen, setIsRegisterFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isConfirmBanOpen, setConfirmBanOpen] = useState(false);
   const [userToBan, setUserToBan] = useState<User | null>(null);
@@ -30,7 +30,7 @@ function ListUser() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const itemsPerPage = 5;
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const totalUsers = allUsers.length;
   const totalPages = Math.ceil(totalUsers / itemsPerPage);
@@ -48,6 +48,15 @@ function ListUser() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setItemsPerPage(size);
+    setCurrentPage(1); 
+  };
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -256,34 +265,36 @@ function ListUser() {
     setModalOpen(false); // Đóng modal
   };
 
+  
+
   return (
     <div className="">
       <SignedIn>
         <div className="">
-          <h1 className="text-2xl sm:text-3xl py-10   text-center font-semibold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl pb-10 text-center font-semibold text-gray-900">
             Danh Sách Khách Hàng
           </h1>
 
           <div className="flex flex-col xl:flex-row gap-4 xl:items-center justify-center xl:justify-between">
-            <div className="flex flex-col sm:flex-row xl:hidden sm:items-center justify-between gap-5">
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo tên hoặc email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border xl:w-[300px] py-2 rounded-md"
+            />
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
               <select
                 value={includeDeleted ? "deleted" : "active"}
                 onChange={(e) =>
                   setIncludeDeleted(e.target.value === "deleted")
                 }
-                className="border text-[15px] w-full sm:w-auto px-4 py-[6px] rounded-md"
+                className="border w-full sm:w-auto px-4 py-2 rounded-md"
               >
                 <option value="active">Tài khoản đang hoạt động</option>
                 <option value="deleted">Tài khoản đã bị xóa</option>
               </select>
-
-              <input
-                type="text"
-                placeholder="Tìm kiếm theo tên hoặc email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="border flex-row sm:hidden xl:w-[300px] py-2 rounded-md"
-              />
 
               <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 {user?.publicMetadata?.role === "Admin" ? (
@@ -322,71 +333,6 @@ function ListUser() {
 
                 {/* Nội dung modal */}
                 <DialogContent className="p-0">
-                  <RegisterForm
-                    onClose={() => setIsOpen(false)} // hàm đóng form
-                    onSuccess={fetchUsers} // Hàm cập nhật danh sách người dùng
-                  />
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <input
-              type="text"
-              placeholder="Tìm kiếm theo tên hoặc email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border hidden sm:block xl:w-[300px] py-2 rounded-md"
-            />
-
-            <div className="xl:flex hidden items-center justify-between gap-5">
-              <select
-                value={includeDeleted ? "deleted" : "active"}
-                onChange={(e) =>
-                  setIncludeDeleted(e.target.value === "deleted")
-                }
-                className="border px-4 py-2 rounded-md"
-              >
-                <option value="active">Tài khoản đang hoạt động</option>
-                <option value="deleted">Tài khoản đã bị xóa</option>
-              </select>
-
-              <Dialog open={isRegisterFormOpen} onOpenChange={setIsRegisterFormOpen}>
-                {user?.publicMetadata?.role === "Admin" ? (
-                  <DialogTrigger asChild>
-                    <DialogTitle
-                      onClick={(e) => {
-                        // Kiểm tra quyền khi nhấn vào nút
-                        if (user?.publicMetadata?.role !== "Admin") {
-                          e.preventDefault();
-                          // Nếu không phải Admin, hiển thị toast thông báo và ngừng mở form
-                          toast({
-                            variant: "destructive", // Toast hiển thị màu đỏ (thông báo lỗi)
-                            title: "Quyền truy cập bị từ chối",
-                            description:
-                              "Chỉ Admin mới có thể tạo người dùng mới.", // Mô tả lỗi
-                          });
-                          return; // Ngừng thực hiện hành động mở form
-                        }
-                        // Nếu là Admin, mở Dialog
-                        setIsOpen(true);
-                      }}
-                      className="px-6 font-normal text-[15px] cursor-pointer flex items-center gap-2 py-2 rounded-md bg-black text-white"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-                      </svg>
-                      Thêm tài khoản
-                    </DialogTitle>
-                  </DialogTrigger>
-                ) : null}
-
-                {/* Nội dung modal */}
-                <DialogContent >
                   <RegisterForm
                     onClose={() => setIsOpen(false)} // hàm đóng form
                     onSuccess={fetchUsers} // Hàm cập nhật danh sách người dùng
@@ -555,42 +501,14 @@ function ListUser() {
       </SignedIn>
 
       {/*phân trang  */}
-      <div className="mt-4 flex justify-between items-center">
-        <div className="text-sm">
-          Trang {currentPage} / {totalPages}
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentPage(1)}
-            className="px-3 py-2 bg-stone-100 rounded-md"
-            disabled={currentPage === 1}
-          >
-            {"<<"}
-          </button>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === 1}
-          >
-            {"<"}
-          </button>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === totalPages}
-          >
-            {">"}
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === totalPages}
-          >
-            {">>"}
-          </button>
-        </div>
+      <div className="mt-4">
+      <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSize={itemsPerPage}
+        />
       </div>
 
       <Confirm

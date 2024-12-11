@@ -52,6 +52,9 @@ interface Address {
 
 export interface Category {
   _id: string;
+  image: string;
+  title: string;
+  description: string;
   name: string;
   slug: string;
   deleted: boolean;
@@ -106,18 +109,18 @@ interface VariantItem {
 
 export interface OrderProduct {
   _id: string;
-  email?:string;
+  email?: string;
   isPaid: boolean;
-  addressId:{
-    name?:string;
-    addressDetail?:string;
-    wardId?:string;
-    districtId?:string;
-    country?:string;
-    cityId?:string;
-    phone?:string;
-    wardId?:string;
-  }
+  addressId: {
+    name?: string;
+    addressDetail?: string;
+    wardId?: string;
+    districtId?: string;
+    country?: string;
+    cityId?: string;
+    phone?: string;
+    wardId?: string;
+  };
   payment?: string;
   userId: string;
   orderCode: string;

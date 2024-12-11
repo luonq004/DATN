@@ -13,7 +13,7 @@ router.get("/", getAllConversations);
 router.get("/:userId", getConversation);
 
 // Admin gửi tin nhắn
-router.post("/:conversationId/message", sendMessageFromAdmin);
+router.post("/:conversationId/messageAdmin", sendMessageFromAdmin);
 
 // User gửi tin nhắn
 router.post("/:userId/message", sendMessageFromUser);

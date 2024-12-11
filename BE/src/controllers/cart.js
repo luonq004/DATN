@@ -128,7 +128,7 @@ export const addToCart = async (req, res) => {
     if (!product || !variantValue) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Không tìm thấy Product hoặc Biến thể của Product" });
+        .json({ message: "Không tìm thấy sản phẩm hoặc Biến thể của sản phẩm" });
     }
 
     // kiểm tra xem sản phẩm hoặc biến thể có bị xóa mềm hay không

@@ -39,11 +39,7 @@ const notificationSchema = new mongoose.Schema(
     isReadByAdmin: {
       type: Boolean,
       default: false, // Đánh dấu đã đọc hay chưa
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false, 
-    },
+    }
   },
   {
     timestamps: true, // Tự động thêm các trường createdAt, updatedAt

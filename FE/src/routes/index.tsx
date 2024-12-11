@@ -186,7 +186,7 @@ const Router = () => {
           <Route path="categories/add" element={<CategoryAddPage />} />
 
           <Route path="message" element={<MessagePage />} />
-        </Route>
+        </Route>  
       </Routes>
     </>
   );

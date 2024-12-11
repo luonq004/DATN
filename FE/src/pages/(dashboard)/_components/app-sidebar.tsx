@@ -14,6 +14,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
+import { PiChatCentered } from "react-icons/pi";
+
 import { useUser } from "@clerk/clerk-react";
 import {
   Book,
@@ -22,7 +24,6 @@ import {
   Image,
   LayoutDashboard,
   LayoutPanelLeft,
-  Settings,
   ShoppingCart,
   Sliders,
   Ticket,
@@ -104,13 +105,13 @@ const data = {
     {
       title: "Tin nhắn",
       url: "/admin/message",
-      icon: Image,
+      icon: PiChatCentered,
     },
-    // {
-    //   title: "Settings",
-    //   url: "/dashboard/settings",
-    //   icon: Settings,
-    // },
+    {
+      title: "Voucher",
+      url: "/admin/voucher",
+      icon: Ticket,
+    },
   ],
 };
 
