@@ -153,17 +153,14 @@ const Router = () => {
           <Route path="attributes/add" element={<CreateAttributePage />} />
 
           <Route path="attributesValues/:id" element={<AttributeValuePage />} />
-          <Route
-            path="attributesValues/:id/add"
-            element={<AttributeValuePage />}
-          />
+
           <Route
             path="attributesValues/:id/edit"
             element={<UpdateAttributeValuePage />}
           />
 
           <Route
-            path="attributesValues/add/:id"
+            path="attributesValues/:id/add"
             element={<CreateAttributeValuePage />}
           />
 

@@ -45,6 +45,6 @@ export const columnAttributeValues: ColumnDef<IAttributeValues>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => <ActionCell id={row.original._id} />,
+    cell: ({ row }) => <ActionCell row={row} />,
   },
 ];

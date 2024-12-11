@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PaginationProducts } from "../../dashboard/_components/PaginationProducts";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -76,7 +77,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      <div className="border bg-white rounded-lg ">
+      <div className="border bg-white rounded-lg mb-4">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -119,13 +120,14 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Không có giá trị
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+      <PaginationProducts table={table} />
     </>
   );
 }

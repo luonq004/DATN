@@ -35,18 +35,30 @@ export const createAttribute = async (req, res) => {
 };
 
 export const getAllAttribute = async (req, res) => {
+  const { _status = "display" } = req.query;
+
+  let flag;
+  if (_status === "hidden") {
+    flag = true;
+  } else {
+    flag = false;
+  }
+
   try {
-    const attribute = await Attribute.find({ deleted: false })
+    const attribute = await Attribute.find({ deleted: flag })
       .populate({
         path: "values",
         match: { deleted: false },
         model: "AttributeValue",
         select: "-__v",
       })
+      .select("-__v")
+      .sort({ updatedAt: -1 });
 
-      .select("-__v");
     if (attribute.length < 0) {
-      return res.status(404).json({ message: "No attribute found" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy danh sách thuộc tính" });
     }
     res.status(200).json(attribute);
   } catch (error) {
@@ -59,8 +71,9 @@ export const getAttributeById = async (req, res) => {
     const attribute = await Attribute.findOne({ _id: req.params.id }).populate(
       "values"
     );
+
     if (attribute.length < 0) {
-      return res.status(404).json({ message: "No attribute found" });
+      return res.status(404).json({ message: "Không tìm thấy thuộc tính" });
     }
     res.status(200).json(attribute);
   } catch (error) {
@@ -104,10 +117,27 @@ export const deleteAttribute = async (req, res) => {
       { new: true }
     );
     if (!attribute) {
-      return res.status(404).json({ message: "Attribute not found" });
+      return res.status(404).json({ message: "Không tìm thấy thuộc tính" });
     }
     res.status(200).json();
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const displayAttribute = async (req, res) => {
+  try {
+    const data = await Attribute.findOne({ _id: req.params.id });
+    if (data.length < 0) {
+      return res.status(404).json({ message: "Không tìm thấy thuộc tính" });
+    }
+
+    data.deleted = false;
+
+    await data.save();
+
+    return res.json({ message: "Hiển thị thuộc tính thành công", data });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi không hiển thị được thuộc tính" });
   }
 };

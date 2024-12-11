@@ -573,6 +573,44 @@ export const UpdateStatusVnpay = async (req, res) => {
   }
 };
 // ============================ Xóa đơn hàng ===========================
+// export const deleteOrder = async (req, res) => {
+//   const { id } = req.params;
+
+//   try {
+//     // Tìm đơn hàng theo ID
+//     const order = await Order.findById(id);
+
+//     // Kiểm tra nếu không tìm thấy đơn hàng
+//     if (!order) {
+//       return res
+//         .status(StatusCodes.NOT_FOUND)
+//         .json({ message: "Không tìm thấy đơn hàng" });
+//     }
+
+//     // Kiểm tra trạng thái đơn hàng, chỉ xóa nếu đơn hàng chưa hoàn thành hoặc đã hủy
+//     const validStatuses = ["chờ xác nhận", "đã xác nhận", "đang giao hàng"];
+//     if (!validStatuses.includes(order.status)) {
+//       return res.status(StatusCodes.BAD_REQUEST).json({
+//         message: "Không thể xóa đơn hàng với trạng thái này",
+//       });
+//     }
+
+//     // Xóa đơn hàng
+//     await Order.findByIdAndDelete(id);
+
+//     return res.status(StatusCodes.OK).json({
+//       message: "Đơn hàng đã được xóa thành công",
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+//       message: "Lỗi khi xóa đơn hàng",
+//       error: error.message,
+//     });
+//   }
+// };
+
+
 export const deleteOrder = async (req, res) => {
   const { id } = req.params;
 
@@ -595,6 +633,35 @@ export const deleteOrder = async (req, res) => {
       });
     }
 
+    // Cập nhật lại số lượng sản phẩm trong kho
+    const updatePromises = order.products.map(async (item) => {
+      const { variantItem, quantity, productItem } = item;
+
+      if (!variantItem || !variantItem._id) {
+        console.error("variantItem hoặc _id không tồn tại:", item);
+        return; // Bỏ qua nếu variantItem hoặc _id không tồn tại
+      }
+
+      const product = await Product.findById(productItem._id);
+      if (product) {
+        product.countOnStock += quantity;
+        await product.save();
+      } else {
+        console.error("Sản phẩm không tồn tại:", productItem._id);
+      }
+
+      const productVariant = await Variant.findById(variantItem._id);
+      if (productVariant) {
+        productVariant.countOnStock += quantity; // Hoàn lại số lượng
+        await productVariant.save();
+      } else {
+        console.error("Biến thể sản phẩm không tồn tại:", variantItem._id);
+      }
+    });
+
+    // Chờ tất cả các cập nhật hoàn thành
+    await Promise.all(updatePromises);
+
     // Xóa đơn hàng
     await Order.findByIdAndDelete(id);
 
@@ -609,3 +676,4 @@ export const deleteOrder = async (req, res) => {
     });
   }
 };
+

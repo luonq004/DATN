@@ -25,7 +25,6 @@ import {
   Image,
   LayoutDashboard,
   LayoutPanelLeft,
-  Settings,
   ShoppingCart,
   Sliders,
   Ticket,
@@ -114,6 +113,11 @@ const data = {
     //   url: "/dashboard/settings",
     //   icon: Settings,
     // },
+    {
+      title: "Voucher",
+      url: "/admin/voucher",
+      icon: Ticket,
+    },
   ],
 };
 

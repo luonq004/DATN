@@ -6,6 +6,7 @@ import {
   getAttributeValueById,
   removeAttributeValue,
   updateAttributeValue,
+  displayAttributeValue,
 } from "../controllers/attributeValue";
 
 const attributeValueRouter = express.Router();
@@ -21,5 +22,6 @@ attributeValueRouter.get(
 attributeValueRouter.post("/attributevalue/:id", createAttributeValue);
 attributeValueRouter.put("/attributevalue/:id", updateAttributeValue);
 attributeValueRouter.delete("/attributevalue/:id", removeAttributeValue);
+attributeValueRouter.post("/attributevalue/:id/display", displayAttributeValue);
 
 export default attributeValueRouter;

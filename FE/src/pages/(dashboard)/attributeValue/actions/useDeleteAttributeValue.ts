@@ -12,7 +12,7 @@ export const useDeleteAttributeValue = () => {
 
     onSuccess: () => {
       toast({
-        title: "Xóa giá trị thuộc tính thành công",
+        title: "Ẩn giá trị thuộc tính thành công",
       });
       queryClient.invalidateQueries({
         queryKey: ["AtributesValue"],
