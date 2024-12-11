@@ -287,7 +287,7 @@ const OrderHistory = () => {
                           <div>
                             <span className="text-[#81cd06]">
                               Giá:{" "}
-                              {formatCurrencyVND(item.variantItem?.price ?? 0)}
+                              {formatCurrencyVND(item.variantItem?.priceSale || item.variantItem?.price)}
                             </span>
 
                             {item.statusComment && !item.isCommented && (
@@ -398,35 +398,65 @@ const OrderHistory = () => {
           </div>
         )}
       </div>
-
       {/* Phân trang */}
       <Pagination className="mt-8">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              className="cursor-pointer"
-              onClick={() => handlePageChange(currentPage - 1)}
-            />
+  <PaginationContent>
+    {/* Nút Trước */}
+    <PaginationItem>
+      <PaginationPrevious
+        className="cursor-pointer"
+        onClick={() => handlePageChange(currentPage - 1)}
+        // disabled={currentPage === 1}
+      />
+    </PaginationItem>
+
+    {/* Hiển thị danh sách các trang */}
+    {Array.from({ length: totalPages }, (_, i) => i + 1)
+      .filter((page) => {
+        // Hiển thị trang đầu, trang cuối, và các trang xung quanh currentPage
+        return (
+          page === 1 || // Trang đầu
+          page === totalPages || // Trang cuối
+          (page >= currentPage - 2 && page <= currentPage + 2) // Các trang xung quanh currentPage
+        );
+      })
+      .reduce((acc, page, index, array) => {
+        // Thêm dấu ... giữa các trang không liền kề
+        if (index > 0 && page > array[index - 1] + 1) {
+          acc.push('...');
+        }
+        acc.push(page);
+        return acc;
+      }, [] as (number | string)[])
+      .map((page, index) =>
+        page === '...' ? (
+          <PaginationItem key={`ellipsis-${index}`}>
+            <span className="px-2">...</span>
           </PaginationItem>
-          {[...Array(totalPages).keys()]?.map((page) => (
-            <PaginationItem key={page + 1}>
-              <PaginationLink
-                className="cursor-pointer"
-                onClick={() => handlePageChange(page + 1)}
-                isActive={page + 1 === currentPage}
-              >
-                {page + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationNext
+        ) : (
+          <PaginationItem key={page}>
+            <PaginationLink
               className="cursor-pointer"
-              onClick={() => handlePageChange(currentPage + 1)}
-            />
+              onClick={() => handlePageChange(page as number)}
+              isActive={page === currentPage}
+            >
+              {page}
+            </PaginationLink>
           </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+        )
+      )}
+
+    {/* Nút Tiếp */}
+    <PaginationItem>
+      <PaginationNext
+        className="cursor-pointer"
+        onClick={() => handlePageChange(currentPage + 1)}
+        // disabled={currentPage === totalPages}
+      />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>
+
     </div>
   );
 };

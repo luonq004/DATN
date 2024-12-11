@@ -32,7 +32,7 @@ export function PaginationProducts<TData>({
                         <SelectValue placeholder={table.getState().pagination.pageSize} />
                     </SelectTrigger>
                     <SelectContent side="top">
-                        {[3, 5, 10, 20, 30, 40, 50].map((pageSize) => (
+                        {[3, 5, 8 ,10, 20, 30, 40, 50].map((pageSize) => (
                             <SelectItem defaultChecked={pageSize === 5} key={pageSize} value={`${pageSize}`}>
                                 {pageSize}
                             </SelectItem>
