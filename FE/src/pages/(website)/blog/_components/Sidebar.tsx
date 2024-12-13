@@ -12,28 +12,35 @@ const Sidebar = () => {
 
   // Lấy danh mục từ API
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesAndPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/category");
-        setCategories([{ _id: null, name: "TẤT CẢ" }, ...response.data]);
+        // Lấy danh mục
+        const categoryResponse = await axios.get("http://localhost:8080/api/category");
+        const categoriesData = categoryResponse.data;
+        setCategories([{ _id: null, name: "TẤT CẢ" }, ...categoriesData]);
+  
+        // Lấy bài viết
+        const postResponse = await axios.get("http://localhost:8080/api/blogs");
+        const postsData = postResponse.data.slice(5, 10); // Lấy 10 bài viết đầu tiên
+  
+        // Kết hợp bài viết với tên danh mục
+        const combinedPosts = postsData.map((post:any) => {
+          const category = categoriesData.find((cat:any) => cat._id === post.category);
+          return {
+            ...post,
+            categoryName: category ? category.name : "Không xác định",
+          };
+        });
+  
+        setPosts(combinedPosts);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Lỗi khi lấy dữ liệu:", error);
       }
     };
-
-    // Lấy bài viết từ API
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/api/blogs");
-        setPosts(response.data.slice(5, 10)); // Lấy 5 bài viết gần đây
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
-
-    fetchCategories();
-    fetchPosts();
+  
+    fetchCategoriesAndPosts();
   }, []);
+  
 
   // Cập nhật từ khóa tìm kiếm
   const handleSearchChange = (e: any) => {
@@ -52,6 +59,9 @@ const Sidebar = () => {
     }
     searchParams.set("page", "1"); // Reset trang về 1
     setSearchParams(searchParams);
+    if (window.location.pathname.includes("/detail")) {
+      window.location.href = "/blog"; // Chuyển về trang danh sách bài viết
+    }
   };
 
   return (
@@ -96,7 +106,8 @@ const Sidebar = () => {
                 }`}
                 onClick={() => handleCategoryClick(cat._id)}
               >
-                {cat.name}
+                {/* {cat.name} */}
+                <Link to={cat._id ? `/blog?category=${cat._id}` : `/blog`}>{cat.name}</Link>
               </li>
             ))}
           </ul>
@@ -129,7 +140,7 @@ const Sidebar = () => {
                   &nbsp;&bull;&nbsp;{" "}
                   <span className="text-[#b8cd06]">{post.author}</span>{" "}
                   &nbsp;&bull;&nbsp;{" "}
-                  <span className="text-[#b8cd06]">{post.category}</span>
+                  <span className="text-[#b8cd06]">{post.categoryName}</span>
                 </p>
               </div>
             ))}

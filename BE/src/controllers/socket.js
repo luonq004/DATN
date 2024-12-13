@@ -267,6 +267,38 @@ export const setupSocketIO = (server, app) => {
     //   }
     // });
 
+    socket.on("setup", (userData) => {
+      console.log("User connected: ", userData);
+      socket.join(userData);
+
+      socket.emit("connected");
+    });
+
+    socket.on("joinChat", (room) => {
+      socket.join(room);
+      console.log("User joined Room", room);
+    });
+
+    socket.on("messageRecieved", (newMessageRecieved) => {
+      console.log("newMessageRecieved:", newMessageRecieved);
+    });
+
+    socket.on("newMessage", (newMessageRecieved) => {
+      console.log("newMessage:");
+      if (!newMessageRecieved.sender.listUsers)
+        return console.log("Khong co conversation.listUsers");
+
+      // const uniqueUsers = [...new Set(newMessageRecieved.sender.listUsers)];
+
+      socket.emit("agh", newMessageRecieved);
+
+      newMessageRecieved.sender.listUsers.forEach((user) => {
+        if (user == newMessageRecieved.sender._id) return;
+        // console.log(`Notifying user ${user} about the message.`);
+        socket.to(user).emit("messageRecieved", newMessageRecieved);
+      });
+    });
+
     // Xử lý sự kiện ngắt kết nối
     socket.on("disconnect", () => {
       delete userSocketMap[userId]; // Xóa socket id khi người dùng ngắt kết nối

@@ -1,12 +1,16 @@
 import { Blog } from "@/common/types/Blog";
+import { Category } from "@/common/types/Product";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 
 const Detail = () => {
-  const [blog, setblog] = useState<Blog | null>(null);
+  const [searchParams] = useSearchParams();
+  const [blog, setBlog] = useState<Blog | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<Blog[]>([]);
+  const [, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const currentCategory = searchParams.get("category");
   const [error, setError] = useState<string | null>(null);
 
   const { id } = useParams();
@@ -15,17 +19,50 @@ const Detail = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+
+        // Lấy danh mục
+        const categoryResponse = await axios.get(
+          "http://localhost:8080/api/category"
+        );
+        const categoriesData = categoryResponse.data;
+        setCategories(categoriesData);
+
         // Gọi API để lấy chi tiết bài viết
         const postResponse = await axios.get(
           `http://localhost:8080/api/blogs/${id}`
         );
-        setblog(postResponse.data);
+        const currentBlog = postResponse.data;
+
+        // Thêm tên danh mục vào bài viết
+        const category = categoriesData.find(
+          (cat: Category) => cat._id === currentBlog.category
+        );
+        setBlog({
+          ...currentBlog,
+          categoryName: category ? category.name : "Không xác định",
+        });
 
         // Gọi API để lấy các bài viết liên quan
         const relatedResponse = await axios.get(
-          `http://localhost:8080/api/blogs?category=${postResponse.data.category}&excludeId=${id}`
+          `http://localhost:8080/api/blogs?category=${currentBlog.category}`
         );
-        setRelatedPosts(relatedResponse.data);
+
+        // Lọc bài viết liên quan, loại bỏ bài viết hiện tại
+        const relatedPostsData = relatedResponse.data
+          .filter((post: Blog) => post._id !== id) // Loại bỏ bài viết hiện tại
+          .map((post: Blog) => {
+            const relatedCategory = categoriesData.find(
+              (cat: Category) => cat._id === post.category
+            );
+            return {
+              ...post,
+              categoryName: relatedCategory
+                ? relatedCategory.name
+                : "Không xác định",
+            };
+          });
+
+        setRelatedPosts(relatedPostsData);
       } catch (error) {
         setError("Lỗi khi tải dữ liệu.");
       } finally {
@@ -64,7 +101,7 @@ const Detail = () => {
             })}
           </span>
           <span className="text-[#b8cd06]">
-            {blog.author} - {blog.category}
+            {blog.author} - {blog.categoryName}
           </span>
         </p>
 
@@ -133,7 +170,7 @@ const Detail = () => {
                       })}
                     </span>
                     <span className="text-[#b8cd06]">
-                      {post.author} - {post.category}
+                      {post.author} - {post.categoryName}
                     </span>
                   </p>
                   <p className="text-[13px] text-[#888] line-clamp-3">

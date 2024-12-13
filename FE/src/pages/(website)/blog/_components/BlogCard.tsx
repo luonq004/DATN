@@ -1,6 +1,5 @@
 import { Blog } from "@/common/types/Blog";
 import Pagination from "@/components/Pagination";
-import { categories } from "@/pages/(dashboard)/blog/_components/Categories";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -10,7 +9,7 @@ const BlogCard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, ] = useSearchParams();
   const currentCategory = searchParams.get("category") || null;
   // console.log("Current category (frontend):", currentCategory);
   const currentPage = parseInt(searchParams.get("page") || "1");
@@ -87,7 +86,7 @@ const BlogCard = () => {
               className="max-w-4xl min-w-full mx-auto overflow-hidden"
             >
               {/* Image */}
-              <Link to={`/blog/detail/${item._id}`}>
+              <Link to={`/blog/detail/${item._id}?category=${currentCategory}`}>
                 <img
                   src={item.image}
                   alt="Blog"
@@ -114,7 +113,7 @@ const BlogCard = () => {
                 </div>
 
                 <div className="md:ml-[30px]">
-                  <Link to={`/blog/detail/${item._id}`}>
+                  <Link to={`/blog/detail/${item._id}?category=${currentCategory}`}>
                     <h2 className="text-xl font-raleway font-extrabold text-[#343434] mb-2 uppercase hover:text-[#b8cd06] cursor-pointer duration-200">
                       {item.title}
                     </h2>
@@ -129,7 +128,7 @@ const BlogCard = () => {
 
                   <div className="flex md:w-32 lg:space-x-2 space-y-3 lg:space-y-0 flex-col">
                     <Link
-                      to={`/blog/detail/${item._id}`}
+                      to={`/blog/detail/${item._id}?category=${currentCategory}`}
                       className="group relative px-8  py-6 text-xs bg-[#b8cd06] text-white rounded-full font-semibold overflow-hidden"
                     >
                       {/* Text chính */}

@@ -9,7 +9,7 @@ const SideBarUser = () => {
   const [conversationSelect, setConversationSelect] = useState<string | null>(
     null
   );
-  const { clerkId } = useUserContext();
+  const { clerkId, _id } = useUserContext();
 
   const {
     conversations,
@@ -20,21 +20,25 @@ const SideBarUser = () => {
     selectedConversation,
   } = useChatStore();
 
-  const { isCheckingAuth } = useAuthStore();
+  // const { isCheckingAuth } = useAuthStore();
 
-  const { checkAuth } = useAuthStore();
+  // const { checkAuth } = useAuthStore();
 
   useEffect(() => {
     getConversations();
-    if (clerkId) checkAuth(clerkId);
-  }, [getConversations, clerkId, checkAuth]);
 
-  if (isConversationsLoading || isCheckingAuth) return <SidebarSkeleton />;
+    // if (_id) {
+
+    // }
+  }, [getConversations, _id]);
+
+  // if (isConversationsLoading || isCheckingAuth) return <SidebarSkeleton />;
 
   // console.log(selectedConversation);
 
   return (
     <div className="cursor-pointer w-[120px] lg:w-[340px] max-h-[78vh] min-h-[78vh] overflow-y-auto border-r pt-4">
+      {/* asdsd */}
       {conversations.map((user) => (
         <div
           className={`flex gap-2 items-center w-full hover:bg-slate-100 px-4 py-2 mb-4 ${

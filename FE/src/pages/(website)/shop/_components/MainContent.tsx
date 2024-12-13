@@ -18,6 +18,7 @@ export function MainContent() {
 
   const currentFilter = searchParams.get("limit") || "9";
   const page = searchParams.get("page") || "1";
+  const keyProduct = searchParams.get("search") || "";
 
   function handleChange(value: string) {
     searchParams.set("limit", value);
@@ -29,7 +30,7 @@ export function MainContent() {
 
   const { isLoading, listProduct, error } = useGetAllProduct();
 
-  console.log(listProduct?.pagination?.totalItems)
+  // if (!error) return <div>Đã có lỗi xảy ra</div>;
 
   return (
     <div className="w-full lg:w-[75%] lg:order-1 lg:mb-10">
@@ -39,10 +40,11 @@ export function MainContent() {
       <div className="mt-[35px]">
         <div className="flex text-nowrap flex-wrap items-center">
           <h4 className="font-black text-[#343434] text-lg leading-6 mb-[10px] mr-5 uppercase">
-            thời trang mới
+            {keyProduct ? `Tìm kiếm: ${keyProduct}` : "Sản phẩm mới"}
           </h4>
           <p className="inline-block uppercase text-[11px] text-[#888] mb-[10px] mr-5">
-            hiển thị <b>{+currentFilter * +page}</b> của <b>2 345</b> kết quả
+            hiển thị <b>{+currentFilter * +page}</b> của{" "}
+            <b>{listProduct?.pagination?.totalItems}</b> kết quả
           </p>
 
           {/*  */}

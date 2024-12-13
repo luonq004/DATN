@@ -6,7 +6,7 @@ import Users from "../models/users";
 export const getDataCard = async (req, res) => {
     try {
         const order = await Order.find();
-        const total = order.reduce((acc, item) => item.status === "đã hoàn thành" ? acc + item.totalPrice : acc, 0);
+        const total = order.reduce((acc, item) => item.status === "đã hoàn thành" ? acc + (item.totalPrice - 30000) : acc, 0);
         const product = await Product.find();
         const user = await Users.find();
         const data = { total: total, order: order.length, product: product.length, user: user.length };
@@ -24,18 +24,66 @@ export const getDataAreaChart = async (req, res) => {
                 $match: { status: "đã hoàn thành" },
             },
             {
-                // Tạo một trường mới "date" chỉ chứa ngày (YYYY-MM-DD)
+                // Lấy timestamp của status "đã hoàn thành" từ statusHistory
                 $addFields: {
                     date: {
-                        $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+                        $let: {
+                            vars: {
+                                completedStatus: {
+                                    $arrayElemAt: [
+                                        {
+                                            $filter: {
+                                                input: "$statusHistory",
+                                                as: "statusItem",
+                                                cond: { $eq: ["$$statusItem.status", "đã hoàn thành"] },
+                                            },
+                                        },
+                                        0,
+                                    ],
+                                },
+                            },
+                            in: {
+                                $dateToString: { format: "%Y-%m-%d", date: "$$completedStatus.timestamp" },
+                            },
+                        },
                     },
                 },
             },
             {
-                // Nhóm theo "date" và tính tổng doanh thu trong ngày
+                // Tính toán desktop và mobile cho từng đơn hàng
+                $addFields: {
+                    desktop: {
+                        $subtract: ["$totalPrice", 30000],
+                    },
+                    mobile: {
+                        $subtract: [
+                            {
+                                $subtract: [
+                                    "$totalPrice",
+                                    {
+                                        $sum: {
+                                            $map: {
+                                                input: "$products",
+                                                as: "product",
+                                                in: {
+                                                    $multiply: ["$$product.variantItem.originalPrice", "$$product.quantity"],
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                            30000,
+                        ],
+                    },
+                },
+            },
+            {
+                // Nhóm theo "date" và tính tổng desktop và mobile theo ngày
                 $group: {
                     _id: "$date", // Nhóm theo ngày
-                    total: { $sum: "$totalPrice" }, // Tính tổng doanh thu
+                    desktop: { $sum: "$desktop" },
+                    mobile: { $sum: "$mobile" },
                 },
             },
             {
@@ -43,7 +91,8 @@ export const getDataAreaChart = async (req, res) => {
                 $project: {
                     _id: 0, // Loại bỏ _id
                     date: "$_id",
-                    total: 1,
+                    desktop: 1,
+                    mobile: 1,
                 },
             },
             {
@@ -56,22 +105,27 @@ export const getDataAreaChart = async (req, res) => {
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
-}
+};
 
 export const getDataUserList = async (req, res) => {
     try {
         const topUsers = await Order.aggregate([
             {
+                $addFields: {
+                    adjustedTotalPrice: { $subtract: ["$totalPrice", 30000] }, // Trừ đi 30000 cho mỗi totalPrice
+                },
+            },
+            {
                 $group: {
                     _id: "$userId", // Nhóm theo userId
-                    totalSpent: { $sum: "$totalPrice" }, // Tính tổng tiền cho mỗi user
+                    totalSpent: { $sum: "$adjustedTotalPrice" }, // Tính tổng tiền đã điều chỉnh cho mỗi user
                 },
             },
             {
                 $sort: { totalSpent: -1 }, // Sắp xếp theo tổng tiền chi tiêu giảm dần
             },
             {
-                $limit: 5, // Giới hạn số lượng kết quả 
+                $limit: 5, // Giới hạn số lượng kết quả
             },
             {
                 $lookup: {
@@ -106,25 +160,17 @@ export const getDataTopProducts = async (req, res) => {
         const result = await Order.aggregate([
             // Bóc tách danh sách sản phẩm từ mỗi đơn hàng
             { $unwind: "$products" },
-            { $unwind: "$products.products" },
+            { $unwind: "$products.productItem" }, // Bóc tách 'productItem'
 
-            // Gom nhóm dữ liệu theo sản phẩm (dựa trên variantItem._id)
+            // Gom nhóm dữ liệu theo sản phẩm (dựa trên productItem._id)
             {
                 $group: {
-                    _id: "$products.products.variantItem._id", // Gom nhóm theo ID của variantItem
-                    productName: { $first: "$products.products.productItem.name" },
-                    slug: { $first: "$products.products.productItem.slug" },
-                    image: { $first: "$products.products.productItem.image" },
-                    price: { $first: "$products.products.variantItem.price" }, // Lấy giá từ variantItem
-                    quantity: { $sum: "$products.products.quantity" }, // Tổng số lượng bán
-                    total: {
-                        $sum: {
-                            $multiply: [
-                                { $ifNull: ["$products.products.quantity", 0] },
-                                { $ifNull: ["$products.products.variantItem.price", 0] },
-                            ],
-                        },
-                    }, // Tổng doanh thu
+                    _id: "$products.productItem._id", // Gom nhóm theo productItem._id
+                    productName: { $first: "$products.productItem.name" }, // Lấy tên sản phẩm
+                    slug: { $first: "$products.productItem.slug" }, // Lấy tên sản phẩm
+                    category: { $first: "$products.productItem.category" }, // Lấy danh mục sản phẩm
+                    image: { $first: "$products.productItem.image" }, // Lấy hình ảnh sản phẩm
+                    quantity: { $sum: "$products.quantity" }, // Tổng số lượng bán
                 },
             },
 

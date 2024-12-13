@@ -2,12 +2,17 @@ import { create } from "zustand";
 import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { ChatStoreActions, IChatStoreState } from "../types/Chat";
-import { useAuthStore } from "./useAuthStore";
+// import { useAuthStore } from "./useAuthStore";
+import { io } from "socket.io-client";
+
 const apiUrl = import.meta.env.VITE_API_URL;
+
+const socket = io("http://localhost:3000");
 
 export const useChatStore = create<IChatStoreState & ChatStoreActions>(
   (set, get) => ({
     listMessage: [],
+    newMessage: "",
     conversations: [],
     selectedUser: null,
     selectedConversation: null,
@@ -19,6 +24,7 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
       try {
         const res = await axios.get(`${apiUrl}/conversation`);
         set({ conversations: res.data });
+        // socket.emit()
       } catch (error) {
         toast({
           variant: "destructive",
@@ -35,6 +41,8 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
         const res = await axios.get(`${apiUrl}/conversation/${conversationId}`);
 
         set({ listMessage: res.data });
+        // console.log("res.data", res.data);
+        socket.emit("joinChat", res.data._id);
       } catch (error) {
         console.log(error);
         // toast({
@@ -46,20 +54,21 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
       }
     },
 
-    sendMessage: async (messageData, adminId) => {
-      const { selectedConversation, listMessage, selectedUser } = get();
+    sendMessage: async (adminId) => {
+      const { selectedConversation, listMessage, selectedUser, newMessage } =
+        get();
       try {
+        set({ newMessage: "" });
         const res = await axios.post(
           `${apiUrl}/conversation/${selectedConversation}/messageAdmin`,
           {
-            text: messageData,
+            text: newMessage,
             adminId,
             receiverId: selectedUser,
           }
         );
 
-        // console.log("RETURN: ", res.data);
-
+        socket.emit("newMessage", res.data);
         set({
           listMessage: {
             ...listMessage, // Giữ nguyên các thuộc tính khác của listMessage
@@ -75,46 +84,63 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
     },
 
     subscribeToMessages: () => {
-      const { selectedUser } = get();
+      const { selectedUser, selectedConversation } = get();
 
-      console.log("selectedUser", selectedUser);
+      // console.log("selectedUser", selectedUser);
 
-      if (!selectedUser) return;
+      socket.on("messageRecieved", (newMessageRecieved) => {
+        console.log("newMessageRecieved");
 
-      const socket = useAuthStore.getState().socket;
+        if (
+          !selectedConversation ||
+          selectedConversation !== newMessageRecieved.conversationId
+        ) {
+          // thong bao
+          // console.log("newMessageRecieved", newMessageRecieved);
+        } else {
+          set({
+            listMessage: {
+              ...get().listMessage, // Giữ nguyên các thuộc tính khác của listMessage
+              messages: [...get().listMessage.messages, newMessageRecieved], // Cập nhật messages
+            },
+          });
+        }
+      });
+
+      // const socket = useAuthStore.getState().socket;
       // console.log("socket", socket);
 
-      socket.on("newMessage", (newMessage) => {
-        // console.log("listMessage", get().listMessage);
-        const isMessageSentFromSelectedUser =
-          newMessage.senderId === selectedUser;
+      // socket.on("newMessage", (newMessage) => {
+      //   // console.log("listMessage", get().listMessage);
+      //   const isMessageSentFromSelectedUser =
+      //     newMessage.senderId === selectedUser;
 
-        // console.log(
-        //   "isMessageSentFromSelectedUser",
-        //   isMessageSentFromSelectedUser
-        // );
+      //   // console.log(
+      //   //   "isMessageSentFromSelectedUser",
+      //   //   isMessageSentFromSelectedUser
+      //   // );
 
-        // if (!isMessageSentFromSelectedUser) return;
+      //   // if (!isMessageSentFromSelectedUser) return;
 
-        set({
-          listMessage: {
-            ...get().listMessage, // Giữ nguyên các thuộc tính khác của listMessage
-            messages: [...get().listMessage.messages, newMessage], // Cập nhật messages
-          },
-        });
-
-        // console.log("NEW: ", get().listMessage.messages);
-      });
+      //   set({
+      //     listMessage: {
+      //       ...get().listMessage, // Giữ nguyên các thuộc tính khác của listMessage
+      //       messages: [...get().listMessage.messages, newMessage], // Cập nhật messages
+      //     },
+      //   });
+      // });
     },
 
     unsubscribeFromMessages: () => {
-      const socket = useAuthStore.getState().socket;
-      socket.off("newMessage");
+      // const socket = useAuthStore.getState().socket;
+      // socket.off("newMessage");
     },
 
     setSelectedUser: (selectedUser) => set({ selectedUser }),
 
     setSelectedConversation: (selectedConversation) =>
       set({ selectedConversation }),
+
+    setNewMessage: (e) => set({ newMessage: e.target.value }),
   })
 );

@@ -1,7 +1,20 @@
+import { io } from "socket.io-client";
 import ContentChat from "./components/ContentChat";
 import SideBarUser from "./components/SideBarUser";
+import { useUserContext } from "@/common/context/UserProvider";
+import { useEffect } from "react";
+
+const socket = io("http://localhost:3000");
 
 const MessagePage = () => {
+  const { _id } = useUserContext();
+
+  useEffect(() => {
+    if (!_id) return;
+
+    socket.emit("setup", _id);
+  }, [_id]);
+
   return (
     <div className="bg-white py-2">
       <div className=" mt-5">

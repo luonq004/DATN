@@ -93,6 +93,8 @@ const CheckOut = () => {
       totalPrice: carts?.total ?? 0,
     };
     try {
+      // Gửi yêu cầu tạo đơn hàng đến backend
+
       if (data.paymentMethod === "Vnpay") {
         const orderResponse = await axios.post(
           "http://localhost:8080/api/create-order-Vnpay",
@@ -124,6 +126,12 @@ const CheckOut = () => {
         // Lấy ảnh của sản phẩm đầu tiên trong danh sách sản phẩm đã chọn
         const firstProductImage = selectedProducts[0]?.productItem?.image;
         const status = response.status === 201 ? "success" : "failed";
+        // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
+        socket.emit("orderPlaced", {
+          orderCode,
+          userId: _id,
+          message: "Đặt hàng thành công!",
+        });
 
         if (data.paymentMethod === "COD" && response.status === 201) {
           queryClient.invalidateQueries(["CART"]);
@@ -372,7 +380,7 @@ const CheckOut = () => {
                                     <div key={value._id}>
                                       {value.type}: {value.name}
                                       {index <
-                                      item.variantItem.values.length - 1
+                                        item.variantItem.values.length - 1
                                         ? ","
                                         : ""}
                                     </div>

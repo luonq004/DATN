@@ -8,9 +8,8 @@ export type Payment = {
     image: string,
     productName: string,
     slug: string,
-    price: number,
     quantity: number,
-    total: number,
+    category: [],
 }
 
 export const columnsProducts: ColumnDef<Payment>[] = [
@@ -34,14 +33,33 @@ export const columnsProducts: ColumnDef<Payment>[] = [
         header: "Tên sản phẩm",
     },
     {
-        accessorKey: "quantity",
-        header: "Số lượng bán",
+        accessorKey: "category",
+        header: "Danh mục",
+        cell: ({ row }) => {
+            const attribute = row.original;
+            const targetId = "674f3deca63479f361d8f499";
+
+            const exists = attribute.category.find(
+                (category) => category._id == targetId
+            )
+                ? true
+                : false;
+
+            const categories =
+                attribute.category.length >= 2 && exists
+                    ? attribute.category.filter((category) => category._id !== targetId)
+                    : attribute.category;
+
+            return (
+                <span className="text-sm text-gray-500">
+                    {categories.map((category) => category.name).join(", ") ||
+                        "Không có danh mục"}
+                </span>
+            );
+        },
     },
     {
-        accessorKey: "total",
-        header: "Tổng tiền",
-        cell: ({ row }) => (
-            <span className="text-sm font-medium">{formatCurrency(row.getValue('total'))} VNĐ</span>
-        )
+        accessorKey: "quantity",
+        header: "Số lượng bán",
     },
 ]

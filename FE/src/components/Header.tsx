@@ -8,12 +8,17 @@ import MobileNav from "@/components/MobileNav";
 import { useUserContext } from "@/common/context/UserProvider";
 import useCart from "@/common/hooks/useCart";
 import { useToast } from "@/components/ui/use-toast";
-import { useClerk, useUser } from "@clerk/clerk-react";
 import axios from "axios";
-import { Link, useLocation } from "react-router-dom";
 import io from "socket.io-client";
 
 const socket = io("http://localhost:3000");
+import { useClerk, useUser } from "@clerk/clerk-react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 const menuItems = [
   { label: "Trang chủ", to: "/" },
@@ -40,12 +45,27 @@ const Header = () => {
   const [isMarkAllDropdownOpen, setIsMarkAllDropdownOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { toast } = useToast();
+  const [keyProduct, setKeyProduct] = useState("");
+  const { pathname } = useLocation();
+
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  function handleSearch() {
+    if (!keyProduct) return;
+
+    if (pathname === "/shopping") {
+      console.log("OK");
+      searchParams.set("search", keyProduct);
+      setSearchParams(searchParams);
+    } else {
+      navigate(`/shopping?search=${keyProduct}`);
+    }
+    setKeyProduct("");
+    setIsOpen(false);
+  }
 
   const { cart, isLoading } = useCart(_id);
-
-  // console.log("cart", cart);
-
-  const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -546,23 +566,20 @@ const Header = () => {
                       </li>
                     ))}
 
-                    {/* <li className="!list-none">
+                    <li className="!list-none">
                       <IoSearch
                         className="text-2xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                         onClick={() => setIsOpen(!isOpen)}
                       />
-                    </li> */}
+                    </li>
                   </ul>
                 </nav>
 
                 <div className="lg:hidden flex gap-3">
-                  {/* <IoSearch
+                  <IoSearch
                     className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                     onClick={() => setIsOpen(!isOpen)}
                   />
-                  <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
-
-                  /> */}
                   <Link to="/wishlist">
                     <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
                   </Link>
@@ -750,11 +767,16 @@ const Header = () => {
 
                   <input
                     type="text"
+                    value={keyProduct}
+                    onChange={(e) => setKeyProduct(e.target.value)}
                     placeholder="Nhập từ khóa tìm kiếm"
                     className="bg-white border-0 border-b border-b-[#eee] outline-0 focus:ring-0 focus:border-b-[#b8cd06] text-[#555] w-full md:w-2/4"
                   />
                   <button>
-                    <IoSearch className="text-2xl hover:text-[#b8cd06]" />
+                    <IoSearch
+                      className="text-2xl hover:text-[#b8cd06]"
+                      onClick={handleSearch}
+                    />
                   </button>
                 </div>
               </div>

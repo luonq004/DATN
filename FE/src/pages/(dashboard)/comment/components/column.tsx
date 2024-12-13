@@ -24,24 +24,35 @@ interface IComment {
 }
 
 export const column: ColumnDef<IComment>[] = [
+  // {
+  //   header: "STT",
+  //   cell: ({ row }) => {
+  //     return <span className="text-sm text-gray-500">{row.index + 1}</span>;
+  //   },
+  // },
   {
-    header: "STT",
+    header: "Tên sản phẩm",
+    id: "productId.name", // Đặt id để liên kết với filter
+    accessorFn: (row) => row.productId?.name || "",
     cell: ({ row }) => {
-      return <span className="text-sm text-gray-500">{row.index + 1}</span>;
+      return (
+        <span className="text-sm text-gray-500">
+          {row.original.productId?.name || ""}
+        </span>
+      );
     },
   },
   {
     accessorKey: "image",
     header: "Ảnh sản phẩm",
     cell: ({ row }) => {
-      console.log(row);
       return (
         <>
           {row.original.productId ? (
             <img
               src={row.original.productId.image}
               alt="product"
-              className="size-14 object-cover rounded-full"
+              className="size-9 md:size-14 object-cover rounded-full"
             />
           ) : (
             <img alt="sản phẩm" className="size-14 object-cover rounded-full" />
@@ -51,8 +62,9 @@ export const column: ColumnDef<IComment>[] = [
     },
   },
   {
-    accessorKey: "name",
+    accessorKey: "userId",
     header: "Tên người dùng",
+
     cell: ({ row }) => {
       return (
         <p>
@@ -62,11 +74,24 @@ export const column: ColumnDef<IComment>[] = [
     },
   },
   {
-    accessorKey: "title",
+    accessorKey: "content",
     header: "Nội dung",
     cell: ({ row }) => {
-      // console.log(row);
-      return <p>{row.original.content}</p>;
+      return (
+        <p
+          dangerouslySetInnerHTML={{
+            __html: row.original.content,
+          }}
+        />
+      );
+    },
+  },
+  {
+    accessorKey: "rating",
+    header: "Số sao",
+
+    cell: ({ row }) => {
+      return <span>{row.original.rating}</span>;
     },
   },
 

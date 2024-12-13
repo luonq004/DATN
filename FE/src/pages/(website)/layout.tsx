@@ -1,4 +1,3 @@
-import { useAuthStore } from "@/common/context/useAuthStore";
 import { useChatStore } from "@/common/context/useChatStore";
 import { useUserContext } from "@/common/context/UserProvider";
 import { saveUserToDatabase } from "@/common/hooks/useCheckUser";
@@ -9,6 +8,9 @@ import { useClerk, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000");
 
 const LayoutWebsite = () => {
   const { user } = useUser();
@@ -21,13 +23,11 @@ const LayoutWebsite = () => {
   >(null);
 
   const {
+    setSelectedUser,
+    setSelectedConversation,
     getMessages,
     subscribeToMessages,
-    unsubscribeFromMessages,
-    setSelectedUser,
   } = useChatStore();
-
-  const { checkAuth } = useAuthStore();
 
   // Hàm để kiểm tra trạng thái khóa
   const checkBanStatus = async (userId: string) => {
@@ -73,14 +73,21 @@ const LayoutWebsite = () => {
             // Gọi hàm saveUserToDatabase với await
             const data = await saveUserToDatabase(user.id);
             // console.log("data", data);
-            checkAuth(data.clerkId);
-            getMessages(data._id); // Lấy tin nhắn của user
-            setSelectedUser(data._id); // Chọn cuộc trò chuyện của user
-            subscribeToMessages(); // Đăng ký nhận tin nhắn
+            setSelectedUser(data._id); // Lưu _id vào context
+            socket.emit("setup", data._id); // Gửi _id qua socket
+
+            const conversation = await axios.get(
+              `http://localhost:8080/api/conversation/${data._id}`
+            );
+            // console.log("conversation", conversation.data._id);
+            socket.emit("joinChat", conversation.data._id);
+
+            setSelectedConversation(conversation.data._id);
+            getMessages(data._id);
+            subscribeToMessages();
+
             login(data); // Lưu _id vào context
             isUserSaved.current = true; // Đánh dấu đã lưu
-
-            return () => unsubscribeFromMessages();
           } catch (error) {
             console.error("Lỗi khi lưu user vào database:", error);
           }
@@ -91,7 +98,24 @@ const LayoutWebsite = () => {
 
       saveUserIfNeeded();
     }
-  }, [user, login, getMessages, unsubscribeFromMessages, setSelectedUser]);
+  }, [
+    user,
+    login,
+    setSelectedUser,
+    setSelectedConversation,
+    getMessages,
+    // subscribeToMessages,
+  ]);
+
+  useEffect(() => {
+    socket.on("messageRecieved", (newMessageRecieved) => {
+      console.log("message Recieved", newMessageRecieved);
+    });
+
+    // return () => {
+    //   socket.off("newMessage");
+    // };
+  }, []);
 
   const clearAccountLockedStatus = () => {
     // Xóa trạng thái từ localStorage và ẩn thông báo

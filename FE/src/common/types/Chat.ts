@@ -55,6 +55,7 @@ export interface IConversation {
 
 export interface IChatStoreState {
   listMessage: IListMessage | [];
+  newMessage: string;
   conversations: IConversation[];
   selectedUser: string | null;
   selectedConversation: string | null;
@@ -65,9 +66,10 @@ export interface IChatStoreState {
 export interface ChatStoreActions {
   getConversations: () => Promise<void>;
   getMessages: (userId: string) => Promise<void>;
-  sendMessage: (text: string, adminId: string) => Promise<void>;
+  sendMessage: (adminId: string) => Promise<void>;
   subscribeToMessages: () => void;
   unsubscribeFromMessages: () => void;
   setSelectedUser: (selectedUser: string) => void;
   setSelectedConversation: (selectedConversation: string) => void;
+  setNewMessage: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
