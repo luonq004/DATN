@@ -128,7 +128,7 @@ const ContentChat = () => {
           disabled={selectedUser ? false : true}
           onClick={handleSendMessage}
         >
-          Send
+          Gửi
         </Button>
       </div>
     </div>

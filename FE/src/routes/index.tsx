@@ -52,12 +52,15 @@ import ListBlog from "@/pages/(dashboard)/blog/_components/ListBlog";
 import BlogPages from "@/pages/(dashboard)/blog/Page";
 import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
 import PaymentResult from "@/pages/(dashboard)/PaymentComponent/PaymentResult ";
+// import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
+import WishListPage from "@/pages/(website)/wishlist/page";
+// import TestSocket from "@/pages/(website)/Testsocket";
 import BlogCard from "@/pages/(website)/blog/_components/BlogCard";
 import Detail from "@/pages/(website)/blog/_components/Detail";
 import BlogPage from "@/pages/(website)/blog/page";
 import ProductDetail from "@/pages/(website)/product/page";
-import TestSocket from "@/pages/(website)/Testsocket";
-import WishListPage from "@/pages/(website)/wishlist/page";
+// import TestSocket from "@/pages/(website)/Testsocket";
+// import WishListPage from "@/pages/(website)/wishlist/page";
 import PageNotifications from "@/pages/(dashboard)/notifications/Page";
 import NotificationList from "@/pages/(dashboard)/notifications/_components/ListNotifications";
 import CategoriesPage from "@/pages/(dashboard)/category/page";
@@ -97,7 +100,7 @@ const Router = () => {
           <Route path="signup" element={<SignUp />} /> */}
 
           <Route path="services" element={<PageServices />} />
-          <Route path="socket" element={<TestSocket />} />
+          {/* <Route path="socket" element={<TestSocket />} /> */}
 
           <Route path="blog" element={<BlogPage />}>
             <Route index element={<BlogCard />} />
@@ -123,10 +126,9 @@ const Router = () => {
           <Route path="products" element={<ProductPage />} />
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />
-          <Route path="notifications" element={<PageNotifications />} >
-            <Route index element={<NotificationList/>}/>
+          <Route path="notifications" element={<PageNotifications />}>
+            <Route index element={<NotificationList />} />
           </Route>
-
 
           <Route path="users" element={<UserPage />}>
             <Route index element={<ListUser />} />
@@ -186,7 +188,7 @@ const Router = () => {
           <Route path="categories/add" element={<CategoryAddPage />} />
 
           <Route path="message" element={<MessagePage />} />
-        </Route>  
+        </Route>
       </Routes>
     </>
   );

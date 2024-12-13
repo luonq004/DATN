@@ -16,9 +16,11 @@ import { Action } from "@/common/types/Product";
 
 export function AddNewValue({
   attributeId,
+  type,
   dispatch,
 }: {
   attributeId: string;
+  type: string;
   dispatch: React.Dispatch<Action>;
 }) {
   const { createAttributeValue, isCreating } = useCreateAttributeValue(
@@ -58,7 +60,7 @@ export function AddNewValue({
       try {
         await createAttributeValue({
           name,
-          type: "",
+          type,
           value: valueAttribute,
         });
       } catch (error) {

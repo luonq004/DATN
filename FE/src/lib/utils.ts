@@ -208,6 +208,7 @@ export const checkForDuplicateVariants = (data: IProduct) => {
 
 export const extractAttributes = (variants: any) => {
   const attributes: any = {};
+  console.log("variants: ", variants);
 
   variants.forEach((variant) => {
     variant.values.forEach((value) => {
@@ -215,15 +216,19 @@ export const extractAttributes = (variants: any) => {
       if (!attributes[type]) {
         attributes[type] = new Set();
       }
+      // console.log("attributesTTYE: ", attributes[type]);
       attributes[type].add(`${value._id}:${value.value}`);
     });
   });
+
+  // console.log("attributesTT: ", attributes);
 
   // Chuyển đổi Set thành Array cho mỗi thuộc tính
   Object.keys(attributes).forEach((key) => {
     attributes[key] = Array.from(attributes[key]);
   });
 
+  console.log("attributes: ", attributes);
   return attributes;
 };
 

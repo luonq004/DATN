@@ -123,10 +123,9 @@ const NotificationList = () => {
   }, [_id]);
 
   // Lắng nghe thông báo mới từ Socket.IO
-  // Lắng nghe thông báo mới từ Socket.IO
   useEffect(() => {
     // Lắng nghe sự kiện orderNotification
-    socket.on("orderNotification", (newNotification) => {
+    socket.on("adminOrderPlacedNotification", (newNotification) => {
       console.log("Thông báo nhận được:", newNotification);
       setNotifications((prevNotifications) => {
         // Kiểm tra xem thông báo đã tồn tại chưa
@@ -150,7 +149,7 @@ const NotificationList = () => {
     });
   
     // Lắng nghe sự kiện orderStatusNotification
-    socket.on("orderStatusNotification", (newNotification) => {
+    socket.on("adminOrderStatusNotification", (newNotification) => {
       console.log("Thông báo trạng thái nhận được:", newNotification);
   
       setNotifications((prevNotifications) => {
@@ -164,8 +163,8 @@ const NotificationList = () => {
     });
   
     return () => {
-      socket.off("orderNotification");
-      socket.off("orderStatusNotification");
+      socket.off("adminOrderPlacedNotification");
+      socket.off("adminOrderStatusNotification");
     };
   }, [_id]); 
 
@@ -200,7 +199,7 @@ const NotificationList = () => {
       {/* Dropdown Thông báo */}
       {isNotificationsOpen && (
         <div
-          className="absolute right-5 text-right mt-2 w-[300px] bg-white shadow-2xl rounded-lg max-h-96 overflow-y-auto border border-gray-200 scrollbar-hide z-50"
+          className="absolute right-5 text-right  w-[300px] bg-white shadow-2xl rounded-lg max-h-96 overflow-y-auto border border-gray-200 scrollbar-hide z-50"
           style={{
             scrollbarWidth: "none", // Firefox
             msOverflowStyle: "none", // IE & Edge

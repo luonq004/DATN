@@ -123,15 +123,7 @@ const CheckOut = () => {
         const orderCode = createOrder?.order?.orderCode;
         const orderId = createOrder?.order?._id;
 
-        // Lấy ảnh của sản phẩm đầu tiên trong danh sách sản phẩm đã chọn
-        const firstProductImage = selectedProducts[0]?.productItem?.image;
-        const status = response.status === 201 ? "success" : "failed";
-        // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
-        socket.emit("orderPlaced", {
-          orderCode,
-          userId: _id,
-          message: "Đặt hàng thành công!",
-        });
+        
 
         if (data.paymentMethod === "COD" && response.status === 201) {
           queryClient.invalidateQueries(["CART"]);
@@ -141,6 +133,9 @@ const CheckOut = () => {
             description: "Đặt hàng thành công.",
             variant: "default",
           });
+          
+          // Lấy ảnh của sản phẩm đầu tiên trong danh sách sản phẩm đã chọn
+        const firstProductImage = selectedProducts[0]?.productItem?.image;
 
           // Gửi sự kiện 'orderPlaced' đến server khi đơn hàng được tạo thành công
           socket.emit("orderPlaced", {

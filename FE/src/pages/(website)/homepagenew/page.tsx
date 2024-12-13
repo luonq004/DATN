@@ -7,8 +7,21 @@ import OurSeries from "./_componnents/OurSeries";
 import Products from "./_componnents/Products";
 import Slider from "./_componnents/Slider";
 import SubscribeSection from "./_componnents/SubscribeSection";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000");
 
 const HomePageNew = () => {
+  useEffect(() => {
+    socket.on("messageRecieved", (newMessageRecieved) => {
+      console.log("message Recieved", newMessageRecieved);
+    });
+
+    // return () => {
+    //   socket.off("newMessage");
+    // };
+  }, []);
+
   return (
     <div className="bg-zinc-100">
       <main className="bg-white  lg:mx-[50px] mx-[14px] ">
