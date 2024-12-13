@@ -15,6 +15,7 @@ const EditBlog = () => {
     handleSubmit,
     register,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<Blog>();
   const [categories, setCategories] = useState<any[]>([]);
@@ -68,7 +69,7 @@ const EditBlog = () => {
     };
     fetchBlog();
     fetchCategories();
-  }, [id, setValue, toast]);
+  }, [id, setValue, categories,toast]);
 
   // Hàm xử lý thay đổi nội dung của React Quill
   const handleChange = (content: string) => {
@@ -174,7 +175,7 @@ const EditBlog = () => {
             {...register("category", { required: "Danh mục là bắt buộc" })}
             id="category"
             className="w-full p-2 border border-gray-300 rounded-md"
-            value={categories.length > 0 ? undefined : ""}
+            value={categories.length > 0 ? categories.find(cat => cat._id === watch('category'))?._id : ""} 
             onChange={(e) => setValue("category", e.target.value)}
           >
             <option value="" disabled>
