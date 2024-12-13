@@ -32,6 +32,7 @@ type ConversationResponse = {
 const ChatPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const { _id } = useUserContext();
 
   // const { conversation, isLoading, error } = useGetConversation(_id!);
@@ -43,6 +44,7 @@ const ChatPopup = () => {
       );
       // console.log("data", data.data);
       socket.emit("joinChat", data.data._id);
+      setConversationId(data.data._id);
       setMessages(data.data.messages);
     } catch (error) {
       console.log("error", error);
@@ -87,7 +89,7 @@ const ChatPopup = () => {
           <Content messages={messages} />
         </div>
 
-        <Comment />
+        <Comment conversationId={conversationId} setMessages={setMessages} />
       </div>
     </>
   );

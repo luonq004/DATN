@@ -36,15 +36,14 @@ export const setupSocketIO = (server, app) => {
         rooms.forEach((room) => {
           if (room !== socket.id) socket.leave(room);
         });
-    
+
         socket.join(userId);
         console.log(`Admin ${userId} đã tham gia phòng:`, userId);
-    
+
         // Cập nhật socket ID duy nhất cho admin
         userSocketMap[userId] = socket.id;
       }
     });
-    
 
     // Lắng nghe sự kiện 'orderPlaced' từ client
     socket.on("orderPlaced", async (orderData) => {
@@ -309,11 +308,13 @@ export const setupSocketIO = (server, app) => {
       if (!newMessageRecieved.sender.listUsers)
         return console.log("Khong co conversation.listUsers");
 
-      // const uniqueUsers = [...new Set(newMessageRecieved.sender.listUsers)];
+      const uniqueUsers = [...new Set(newMessageRecieved.sender.listUsers)];
 
-      newMessageRecieved.sender.listUsers.forEach((user) => {
+      // socket.emit("agh", newMessageRecieved);
+
+      uniqueUsers.forEach((user) => {
         if (user == newMessageRecieved.sender._id) return;
-        // console.log(`Notifying user ${user} about the message.`);
+        console.log(`Notifying user ${user} about the message.`);
         socket.to(user).emit("messageRecieved", newMessageRecieved);
       });
     });

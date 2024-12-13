@@ -5,18 +5,20 @@ import Loading from "./Loading";
 const Content = ({
   messages,
 }: {
-  _id: string;
-  text: string;
-  senderType: string;
-  createdAt: string;
-  sender: {
+  messages: {
     _id: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-    imageUrl: string;
-  };
-}[]) => {
+    text: string;
+    senderType: string;
+    createdAt: string;
+    sender: {
+      _id: string;
+      firstName: string;
+      lastName: string;
+      role: string;
+      imageUrl: string;
+    };
+  }[];
+}) => {
   // const { listMessage, isMessagesLoading } = useChatStore();
 
   // if (isMessagesLoading) {
@@ -51,7 +53,7 @@ const Content = ({
                 className="flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ml-auto bg-[#b8cd06] text-primary-foreground mr-2 mt-4"
                 key={message._id}
               >
-                Hey, I'm having trouble with my account.
+                {message.text}
               </div>
             );
           }
