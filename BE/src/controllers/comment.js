@@ -90,3 +90,22 @@ export const deleteComment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllComment = async (req, res) => {
+  try {
+    const comments = await Comment.find()
+      .populate("userId", "firstName lastName imageUrl") // Populate userId, chỉ lấy các trường `name` và `email`
+      .populate("productId", "name image")
+      .sort({
+        createdAt: -1,
+      }); // Populate productId, chỉ lấy các trường `name` và `price`
+
+    if (!comments) {
+      return res.status(400).json({ message: "Không tìm thấy comment" });
+    }
+
+    res.json(comments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

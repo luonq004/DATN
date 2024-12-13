@@ -9,7 +9,7 @@ import {
     SortingState,
     useReactTable,
     VisibilityState,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
     Table,
@@ -18,34 +18,34 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
-import { PaginationProducts } from "./PaginationProducts"
-import React from "react"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/table";
+import { PaginationProducts } from "./PaginationProducts";
+import React from "react";
+import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { MixerHorizontalIcon } from "@radix-ui/react-icons"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    columns: ColumnDef<TData, TValue>[];
+    data: TData[];
 }
 
 export function DataTableOrder<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = React.useState<SortingState>([])
+    const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
-    )
+    );
     const [columnVisibility, setColumnVisibility] =
-        React.useState<VisibilityState>({})
+        React.useState<VisibilityState>({});
     const table = useReactTable({
         data,
         columns,
@@ -66,7 +66,7 @@ export function DataTableOrder<TData, TValue>({
             columnFilters,
             columnVisibility,
         },
-    })
+    });
 
     return (
         <>

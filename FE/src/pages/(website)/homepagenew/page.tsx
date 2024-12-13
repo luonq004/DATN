@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import ChatPopup from "../chatpopup/page";
 import Accessories from "./_componnents/Accessories";
 import Collections from "./_componnents/Collections";

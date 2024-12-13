@@ -17,8 +17,11 @@ interface IAttribute {
 
 export const columnAttribute: ColumnDef<IAttribute>[] = [
   {
-    accessorKey: "_id",
-    header: "ID",
+    // accessorKey: "_id",
+    header: "#",
+    cell: ({ row }) => {
+      return <span>{row.index + 1}</span>;
+    },
   },
   {
     accessorKey: "name",
@@ -54,6 +57,6 @@ export const columnAttribute: ColumnDef<IAttribute>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => <ActionCell id={row.original._id} />,
+    cell: ({ row }) => <ActionCell row={row} />,
   },
 ];

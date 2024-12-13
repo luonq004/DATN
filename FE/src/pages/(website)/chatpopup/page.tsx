@@ -2,9 +2,12 @@ import { useState } from "react";
 import { CiChat2 } from "react-icons/ci";
 import Comment from "./components/Comment";
 import Content from "./components/Content";
+// import { useChatStore } from "@/common/context/useChatStore";
 
 const ChatPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // console.log("asd");
 
   return (
     <>
@@ -16,7 +19,7 @@ const ChatPopup = () => {
       </div>
 
       <div
-        className={`w-[340px] max-w-[340px] fixed bottom-[12%] right-5 border h-[410px] max-h-[410px] bg-white rounded-md text-black ${
+        className={`w-[340px] max-w-[340px] fixed bottom-[12%] right-5 border h-[410px] bg-white rounded-md text-black ${
           isOpen ? "opacity-100 z-40" : "opacity-0 z-0"
         }`}
       >

@@ -1,9 +1,9 @@
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export async function getAllAttribute() {
+export async function getAllAttribute({ status }: { status: string | "" }) {
   try {
-    const response = await axios.get(`${apiUrl}/attributes`);
+    const response = await axios.get(`${apiUrl}/attributes?_status=${status}`);
     return response?.data;
   } catch (error) {
     console.log(error);

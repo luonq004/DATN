@@ -6,15 +6,17 @@ export async function getAllProduct({
   limit,
   category,
   price,
+  search,
 }: {
   page: number;
   limit: number;
   price: number | string;
   category: string | null;
+  search: string | "";
 }) {
   try {
     const response = await axios.get(
-      `${apiUrl}/products?_page=${page}&_limit=${limit}&_category=${category}&_price=${price}`
+      `${apiUrl}/products?_page=${page}&_limit=${limit}&_category=${category}&_price=${price}&_search=${search}`
     );
     return response?.data;
   } catch (error) {

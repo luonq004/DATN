@@ -1,53 +1,68 @@
-import { useAuthStore } from "@/common/context/useAuthStore";
+// import { useAuthStore } from "@/common/context/useAuthStore";
 import { useChatStore } from "@/common/context/useChatStore";
 import { useUserContext } from "@/common/context/UserProvider";
 
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+
+import { useEffect, useRef } from "react";
 import ScrollableFeed from "react-scrollable-feed";
 
 const ContentChat = () => {
-  const [message, setMessage] = useState("");
   const { _id } = useUserContext();
 
   const {
     listMessage,
     getMessages,
     isMessagesLoading,
-    selectedUser,
     subscribeToMessages,
-    unsubscribeFromMessages,
+    selectedUser,
+    selectedConversation,
     sendMessage,
+    newMessage,
+    setNewMessage,
   } = useChatStore();
 
-  const { isCheckingAuth, authUser } = useAuthStore();
+  // const { isCheckingAuth, authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
-    if (!selectedUser) return;
+    if (!selectedUser || !selectedConversation) return;
     getMessages(selectedUser!);
-
     subscribeToMessages();
 
-    return () => unsubscribeFromMessages();
-  }, [selectedUser, getMessages, subscribeToMessages, unsubscribeFromMessages]);
+    // return () => unsubscribeFromMessages();
+  }, [selectedUser, getMessages, selectedConversation, subscribeToMessages]);
 
-  useEffect(() => {
-    if (messageEndRef.current && listMessage) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return; // Kiểm tra nếu tin nhắn rỗng thì không gửi
+    await sendMessage(_id);
+  };
+
+  const handleKeyDown = async (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === "Enter" && newMessage) {
+      console.log("OK");
+      await sendMessage(_id);
     }
-  }, [listMessage]);
+  };
 
-  async function handleSendMessage() {
-    if (!message) return;
+  // useEffect(() => {
+  //   if (messageEndRef.current && listMessage) {
+  //     messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [listMessage]);
 
-    try {
-      await sendMessage(message, _id);
-      setMessage(""); // Chỉ xóa nội dung sau khi gửi thành công
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    }
-  }
+  // async function handleSendMessage() {
+  //   if (!message) return;
+
+  //   try {
+  //     await sendMessage(message, _id);
+  //     setMessage(""); // Chỉ xóa nội dung sau khi gửi thành công
+  //   } catch (error) {
+  //     console.error("Failed to send message:", error);
+  //   }
+  // }
 
   // if (isMessagesLoading || isCheckingAuth) {
   //   return (
@@ -60,8 +75,6 @@ const ContentChat = () => {
   //   );
   // }
 
-  console.log(listMessage);
-
   return (
     <div className="relative w-full">
       <div className=" border-b pb-4">
@@ -71,13 +84,19 @@ const ContentChat = () => {
               listMessage.messages.map((message) => (
                 <div key={message._id}>
                   {message.senderType === "Admin" ? (
-                    <div className="flex gap-2 rounded-lg text-sm mr-auto mt-4 justify-end">
+                    <div
+                      className="flex gap-2 rounded-lg text-sm mr-auto mt-4 justify-end"
+                      ref={messageEndRef}
+                    >
                       <p className="bg-[#b8cd06] text-primary-foreground mr-2 max-w-[75%] px-3 py-2 break-words rounded-lg">
                         {message.text}
                       </p>
                     </div>
                   ) : (
-                    <div className="flex gap-2 rounded-lg text-sm ml-2 mt-4">
+                    <div
+                      className="flex gap-2 rounded-lg text-sm ml-2 mt-4"
+                      ref={messageEndRef}
+                    >
                       <img
                         className="w-8 h-8 rounded-full justify-end"
                         src={message.sender.imageUrl}
@@ -99,13 +118,13 @@ const ContentChat = () => {
       <div className="flex gap-2 items-center mt-4">
         <input
           type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={newMessage}
+          onChange={(e) => setNewMessage(e)}
+          onKeyDown={handleKeyDown}
           className="w-full rounded-lg border-gray-200"
           disabled={selectedUser ? false : true}
         />
         <Button
-          className=""
           disabled={selectedUser ? false : true}
           onClick={handleSendMessage}
         >

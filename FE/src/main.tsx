@@ -27,18 +27,16 @@ if (!PUBLISHABLE_KEY) {
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <UserInfoProvider>
-          <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-          </ClerkProvider>
-        </UserInfoProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <UserInfoProvider>
+        <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </ClerkProvider>
+      </UserInfoProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 );

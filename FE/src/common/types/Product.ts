@@ -53,6 +53,9 @@ interface Address {
 export interface Category {
   _id: string;
   name: string;
+  title: string;
+  image: string;
+  description: string;
   slug: string;
   deleted: boolean;
   __v: number;
@@ -106,18 +109,18 @@ interface VariantItem {
 
 export interface OrderProduct {
   _id: string;
-  email?:string;
+  email?: string;
   isPaid: boolean;
-  addressId:{
-    name?:string;
-    addressDetail?:string;
-    wardId?:string;
-    districtId?:string;
-    country?:string;
-    cityId?:string;
-    phone?:string;
-    wardId?:string;
-  }
+  addressId: {
+    name?: string;
+    addressDetail?: string;
+    wardId?: string;
+    districtId?: string;
+    country?: string;
+    cityId?: string;
+    phone?: string;
+    wardId?: string;
+  };
   payment?: string;
   userId: string;
   orderCode: string;
@@ -178,12 +181,24 @@ export interface Value {
 export interface Attribute {
   _id: string;
   name: string;
+  deleted: boolean;
   values: {
     _id?: string;
     name: string;
     type: string;
     value: string;
   }[];
+}
+
+export interface AttributeValue {
+  _id: string;
+  name: string;
+  type: string;
+  deleted: boolean;
+  value: string;
+  createdAt: string;
+  updatedAt: string;
+  slugName: string;
 }
 
 export interface Data {

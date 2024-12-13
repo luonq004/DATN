@@ -96,7 +96,7 @@ const ProductItem = ({
                         <span className="relative text left-0">xem thêm</span>
                       </span>
                     </Link>
-                    <a
+                    {/* <a
                       href="#"
                       className="btn bg-[#b8cd06] px-[30px] pt-[17px] pb-[15px] block text-center mb-[10px] text-[11px] font-bold text-white rounded-full font-raleway lg:w-[175px] cart"
                     >
@@ -107,7 +107,7 @@ const ProductItem = ({
                           thêm vào giỏ hàng
                         </span>
                       </span>
-                    </a>
+                    </a> */}
                   </div>
                 </div>
               </div>

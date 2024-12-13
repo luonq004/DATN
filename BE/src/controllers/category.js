@@ -148,13 +148,13 @@ export const updateCategory = async (req, res) => {
 
     const newSlug = slugify(name, "-");
 
-    const categoryExist = await Category.findOne({
-      slug: newSlug,
-    });
+    // const categoryExist = await Category.findOne({
+    //   slug: newSlug,
+    // });
 
-    if (categoryExist) {
-      return res.status(400).json({ message: "Danh mục đã tồn tại" });
-    }
+    // if (categoryExist) {
+    //   return res.status(400).json({ message: "Danh mục đã tồn tại" });
+    // }
 
     const category = await Category.findOneAndUpdate(
       { _id: req.params.id },
