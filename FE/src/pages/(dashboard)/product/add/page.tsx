@@ -85,7 +85,7 @@ const ProductAddPage = () => {
           deleted: false,
           price: 0,
           priceSale: 0,
-          category: ["674f3deca63479f361d8f499"],
+          category: [],
           image: "",
           type: "variable",
         },
@@ -94,36 +94,38 @@ const ProductAddPage = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof productSchema>) {
     console.log(values);
-    // setIsDoing(true);
-    // if (id) {
-    //   const duplicateValues = checkForDuplicateVariants(values);
-    //   setDuplicate(duplicateValues);
-    //   if (!duplicateValues.length) {
-    //     const result = await UploadFiles(values);
-    //     updateProduct({ data: result, id });
-    //   } else {
-    //     toast({
-    //       variant: "destructive",
-    //       title: "Trùng giá trị biến thể của sản phẩm",
-    //     });
-    //   }
-    // } else {
-    //   const duplicateValues = checkForDuplicateVariants(values);
-    //   setDuplicate(duplicateValues);
-    //   if (!duplicateValues.length) {
-    //     const result = await UploadFiles(values);
-    //     createProduct(result);
-    //   } else {
-    //     toast({
-    //       variant: "destructive",
-    //       title: "Trùng giá trị biến thể của sản phẩm",
-    //     });
-    //   }
-    // }
-    // if (!isCreatting || !isUpdating) setIsDoing(false);
+    setIsDoing(true);
+    if (id) {
+      const duplicateValues = checkForDuplicateVariants(values);
+      setDuplicate(duplicateValues);
+      if (!duplicateValues.length) {
+        const result = await UploadFiles(values);
+        updateProduct({ data: result, id });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Trùng giá trị biến thể của sản phẩm",
+        });
+      }
+    } else {
+      const duplicateValues = checkForDuplicateVariants(values);
+      setDuplicate(duplicateValues);
+      if (!duplicateValues.length) {
+        const result = await UploadFiles(values);
+        createProduct(result);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Trùng giá trị biến thể của sản phẩm",
+        });
+      }
+    }
+    if (!isCreatting || !isUpdating) setIsDoing(false);
   }
 
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
+  console.log(form.formState.errors);
+  
 
   const types = id ? getUniqueTypes(product) : [];
 

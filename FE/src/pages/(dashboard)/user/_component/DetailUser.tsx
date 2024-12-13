@@ -4,6 +4,7 @@ import { User } from "@/common/types/User";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PaginationComponent from "./Paginations";
 
 const UserDetailPage = () => {
   const { clerkId } = useParams();
@@ -14,7 +15,7 @@ const UserDetailPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-  const [itemsPerPage] = useState(5); // Số mục mỗi trang
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Số mục mỗi trang
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -54,12 +55,21 @@ const UserDetailPage = () => {
     return order.orderCode.toLowerCase().includes(cleanSearchQuery); // tìm theo mã đơn hàng
   });
 
-  const indexOfLastOrder = currentPage * itemsPerPage; // Chỉ số của đơn hàng cuối cùng trong trang
-  const indexOfFirstOrder = indexOfLastOrder - itemsPerPage; // Chỉ số của đơn hàng đầu tiên trong trang
+  // Lấy danh sách user hiển thị trên trang hiện tại
   const currentOrders = filteredOrders?.slice(
-    indexOfFirstOrder,
-    indexOfLastOrder
-  ); // Dữ liệu của đơn hàng trên trang hiện tại
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setItemsPerPage(size);
+    setCurrentPage(1);
+  };
 
   // Tính toán số trang
   const totalPages = Math.ceil((filteredOrders?.length || 0) / itemsPerPage);
@@ -241,51 +251,15 @@ const UserDetailPage = () => {
             </table>
           </div>
           {/* Phân trang */}
-            <div className="mt-4 flex justify-between items-center">
-              <div className="text-sm">
-                Trang {currentPage} / {totalPages}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  className="px-3 py-2 bg-stone-100 rounded-md"
-                  disabled={currentPage === 1}
-                >
-                  {"<<"}
-                </button>
-
-                {/* Nút < (Trang trước) */}
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  className="px-3 py-2 bg-stone-100  rounded-md"
-                  disabled={currentPage === 1}
-                >
-                  {"<"}
-                </button>
-
-                {/* Nút > (Trang sau) */}
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  className="px-3 py-2 bg-stone-100  rounded-md"
-                  disabled={currentPage === totalPages}
-                >
-                  {">"}
-                </button>
-
-                {/* Nút >> (Trang cuối) */}
-                <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  className="px-3 py-2 bg-stone-100  rounded-md"
-                  disabled={currentPage === totalPages}
-                >
-                  {">>"}
-                </button>
-              </div>
-            </div>
+          <div className="mt-4">
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              pageSize={itemsPerPage}
+            />
+          </div>
         </div>
       </div>
     </div>

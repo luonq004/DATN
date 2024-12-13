@@ -1,6 +1,7 @@
 import { IProduct } from "@/common/types/Product";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import SwiperCore from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -93,13 +94,15 @@ const Products = () => {
             )}
 
             {/* Ảnh sản phẩm */}
-            <div className="relative">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="mx-auto my-10 mb-20 w-[250px] h-[250px] object-cover"
-              />
-            </div>
+            <Link to={`/product/${product._id}`}>
+              <div className="relative">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="mx-auto my-10 mb-20 w-[250px] h-[250px] object-cover"
+                />
+              </div>
+            </Link>
 
             {/* Lớp phủ hiệu ứng hover với nút */}
 
@@ -110,7 +113,7 @@ const Products = () => {
               </h5>
 
               {/* Tên sản phẩm */}
-              <h3 className="font-raleway font-extrabold text-inherit text-[13px] mb-2 group-hover:text-[#b8cd06] uppercase">
+              <h3 className="font-raleway font-extrabold text-inherit text-[13px] mb-2 group-hover:text-[#b8cd06] line-clamp-1 uppercase">
                 {product.name}
               </h3>
 
@@ -121,10 +124,12 @@ const Products = () => {
               <div className="flex items-center justify-between mt-3">
                 {/* Giá */}
                 <div className="flex items-center justify-center space-x-2">
-                  <span className=" text-[18px] text-red-600 font-bold">{product.price.toLocaleString("vi-VN")} VNĐ</span>
-                  {product.priceSale > 0 &&  (
+                  <span className=" text-[18px] text-red-600 font-bold">
+                    {product.price.toLocaleString("vi-VN")} VNĐ
+                  </span>
+                  {product.priceSale > 0 && (
                     <span className="text-md text-gray-400 line-through">
-                      {product.priceSale}
+                      {product.priceSale.toLocaleString("vi-VN")} VNĐ
                     </span>
                   )}
                 </div>

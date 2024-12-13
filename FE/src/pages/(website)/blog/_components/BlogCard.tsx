@@ -12,20 +12,34 @@ const BlogCard = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const currentCategory = searchParams.get("category") || null;
-  const currentPage = +(searchParams.get("page") || 1); // Lấy trang hiện tại từ URL (mặc định là trang 1)
+  // console.log("Current category (frontend):", currentCategory);
+  const currentPage = parseInt(searchParams.get("page") || "1");
   const itemsPerPage = 3;
+  const searchQuery = searchParams.get("search") || "";
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/category")
+      .then((response) => response.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error("Lỗi khi lấy danh mục:", err));
+  }, []);
 
   // Fetch dữ liệu từ API
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        // Nếu có tham số category trong URL, thêm vào query string để lọc theo danh mục
+        // Tạo query string nếu có danh mục
         const categoryParam = currentCategory
-          ? `?category=${currentCategory}`
+          ? `category=${currentCategory}`
           : "";
+        const searchParam = searchQuery ? `search=${searchQuery}` : "";
+        const queryString = [categoryParam, searchParam]
+          .filter(Boolean)
+          .join("&"); // Kết hợp query string
         const response = await axios.get(
-          `http://localhost:8080/api/blogs${categoryParam}`
-        ); // Gửi request đến API để lấy dữ liệu
+          `http://localhost:8080/api/blogs?${queryString}`
+        );
         setBlogs(response.data);
         setLoading(false);
       } catch (err) {
@@ -36,7 +50,7 @@ const BlogCard = () => {
     };
 
     fetchBlogs();
-  }, [currentCategory]);
+  }, [currentCategory, searchQuery]);
 
   // Lọc bài viết theo danh mục (nếu có)
   const filteredData = currentCategory
@@ -47,9 +61,9 @@ const BlogCard = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
-  const getCategoryLabel = (categoryValue: string) => {
-    const category = categories.find((cat) => cat.value === categoryValue);
-    return category ? category.label : categoryValue; // Nếu không tìm thấy thì trả về giá trị ban đầu
+  const getCategoryLabel = (categoryId: string) => {
+    const category = categories.find((cat) => cat._id === categoryId);
+    return category ? category.name : categoryId; // Nếu không tìm thấy thì trả về giá trị ban đầu
   };
 
   return (
@@ -77,7 +91,7 @@ const BlogCard = () => {
                 <img
                   src={item.image}
                   alt="Blog"
-                  className="w-full mb-5 rounded-lg object-cover"
+                  className="w-full h-[500px] mb-5 rounded-lg object-cover"
                 />
               </Link>
 

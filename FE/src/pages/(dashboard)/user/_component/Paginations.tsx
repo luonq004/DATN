@@ -29,6 +29,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
   onPageSizeChange,
   pageSize,
 }) => {
+  const isPaginationDisabled = totalPages === 0;
   return (
     <div className="flex justify-end items-center gap-10 mt-4">
       <div className="flex items-center space-x-2">
@@ -36,6 +37,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
         <Select
           value={`${pageSize}`}
           onValueChange={(value) => onPageSizeChange?.(Number(value))}
+          disabled={isPaginationDisabled}
         >
           <SelectTrigger className="h-8 w-[70px] m-0">
             <SelectValue placeholder={`${pageSize}`} />
@@ -51,14 +53,14 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
       </div>
 
       <div className="text-sm">
-        Trang {currentPage} / {totalPages}
+        Trang {totalPages > 0 ? currentPage : 0} / {totalPages}
       </div>
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => onPageChange(1)}
-          disabled={currentPage === 1}
+          disabled={currentPage === 1 || isPaginationDisabled} 
         >
           <DoubleArrowLeftIcon className="h-4 w-4" />
         </Button>
@@ -66,7 +68,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
+          disabled={currentPage === 1 || isPaginationDisabled}
         >
           <ChevronLeftIcon className="h-4 w-4" />
         </Button>
@@ -74,7 +76,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || isPaginationDisabled}
         >
           <ChevronRightIcon className="h-4 w-4" />
         </Button>
@@ -82,7 +84,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || isPaginationDisabled}
         >
           <DoubleArrowRightIcon className="h-4 w-4" />
         </Button>

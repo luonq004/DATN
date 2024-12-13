@@ -1,133 +1,67 @@
-import { useRef, useState, useEffect } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import SwiperCore from "swiper";
-import { Pagination } from "swiper/modules";
-import product1 from "@/assets/products/product10.png";
-import product2 from "@/assets/products/product9.png";
-import product3 from "@/assets/products/product12.png";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 const NewArrivals = () => {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState(0);
   const [activeProductIndex, setActiveProductIndex] = useState(0);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperCore | null>(null);
-  const swiperRefs = useRef<SwiperCore[]>([]);
 
-  const categories = [
-    "TẤT CẢ",
-    "THỂ THAO",
-    "VĂN PHÒNG",
-    "DẠ HỘI",
-    "THƯ GIÃN",
-    "THỜI TRANG TRẺ",
-  ];
+  // Gọi API để lấy danh mục
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/category"
+        );
+        const categoryNames = [
+          "TẤT CẢ",
+          ...response.data.map((cat: any) => cat.name),
+        ];
+        setCategories(categoryNames);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh mục:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
-  const products = [
-    {
-      edition: "PHIÊN BẢN HIỆN ĐẠI",
-      name: "ÁO THỂ THAO HIỆN ĐẠI",
-      description:
-        "Thiết kế thoáng mát, chất liệu co giãn phù hợp cho các hoạt động thể thao.",
-      price: "$55.00",
-      oldPrice: null,
-      image: [product1, product2, product3],
-      colors: ["bg-blue-500", "bg-gray-300", "bg-red-300"],
-      badge: null,
-      category: "THỂ THAO",
-    },
-    {
-      edition: "PHIÊN BẢN CÔNG SỞ",
-      name: "ÁO SƠ MI CÔNG SỞ",
-      description:
-        "Áo sơ mi phong cách công sở, chất liệu cao cấp, dễ phối đồ.",
-      price: "$85.00",
-      oldPrice: "$100.00",
-      image: [product2, product1, product3],
-      colors: ["bg-white", "bg-gray-500", "bg-blue-500"],
-      badge: "GIẢM GIÁ 15%",
-      category: "VĂN PHÒNG",
-    },
-    {
-      edition: "PHIÊN BẢN DẠ HỘI",
-      name: "VÁY DẠ HỘI SANG TRỌNG",
-      description:
-        "Váy dạ hội thiết kế sang trọng, hoàn hảo cho các buổi tiệc tối.",
-      price: "$120.00",
-      oldPrice: "$150.00",
-      image: [product3, product2],
-      colors: ["bg-red-500", "bg-black", "bg-gray-300"],
-      badge: "20% GIẢM GIÁ",
-      category: "DẠ HỘI",
-    },
-    {
-      edition: "PHIÊN BẢN DẠ HỘI",
-      name: "VÁY DẠ HỘI SANG TRỌNG",
-      description:
-        "Váy dạ hội thiết kế sang trọng, hoàn hảo cho các buổi tiệc tối.",
-      price: "$120.00",
-      oldPrice: "$150.00",
-      image: [product3, product1],
-      colors: ["bg-red-500", "bg-black", "bg-gray-300"],
-      badge: "20% GIẢM GIÁ",
-      category: "DẠ HỘI",
-    },
-    {
-      edition: "PHIÊN BẢN THƯ GIÃN",
-      name: "ÁO HOODIE THOẢI MÁI",
-      description: "Áo hoodie mềm mại, lý tưởng cho những ngày thư giãn.",
-      price: "$70.00",
-      oldPrice: null,
-      image: [product1],
-      colors: ["bg-green-500", "bg-gray-300", "bg-teal-300"],
-      badge: null,
-      category: "THƯ GIÃN",
-    },
-    {
-      edition: "PHIÊN BẢN THỜI TRANG TRẺ",
-      name: "ÁO KHOÁC THỜI TRANG",
-      description:
-        "Áo khoác phong cách trẻ trung, phù hợp với xu hướng hiện đại.",
-      price: "$90.00",
-      oldPrice: "$110.00",
-      image: [product2],
-      colors: ["bg-black", "bg-blue-500", "bg-pink-300"],
-      badge: "GIÁ TỐT NHẤT",
-      category: "THỜI TRANG TRẺ",
-    },
-    {
-      edition: "PHIÊN BẢN THỜI TRANG TRẺ",
-      name: "ÁO KHOÁC THỜI TRANG",
-      description:
-        "Áo khoác phong cách trẻ trung, phù hợp với xu hướng hiện đại.",
-      price: "$90.00",
-      oldPrice: "$110.00",
-      image: [product2],
-      colors: ["bg-black", "bg-blue-500", "bg-pink-300"],
-      badge: "GIÁ TỐT NHẤT",
-      category: "THỜI TRANG TRẺ",
-    },
-    {
-      edition: "PHIÊN BẢN THỜI TRANG TRẺ",
-      name: "ÁO KHOÁC THỜI TRANG",
-      description:
-        "Áo khoác phong cách trẻ trung, phù hợp với xu hướng hiện đại.",
-      price: "$90.00",
-      oldPrice: "$110.00",
-      image: [product2],
-      colors: ["bg-black", "bg-blue-500", "bg-pink-300"],
-      badge: "GIÁ TỐT NHẤT",
-      category: "THỜI TRANG TRẺ",
-    },
-    // Thêm các sản phẩm khác ở đây
-  ];
+  // Gọi API để lấy sản phẩm
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/products");
+        setProducts(response.data.data); 
+      } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-  // Lọc sản phẩm theo danh mục
-  const filteredProducts = products.filter(
-    (product) =>
-      activeCategory === 0 || product.category === categories[activeCategory]
-  );
+  useEffect(() => {
+    if (swiperRef.current && products.length > 0) {
+      swiperRef.current.slideTo(0); // Đặt Swiper về slide đầu tiên
+    }
+  }, [products]);
+  
 
+  const filteredProducts = products.filter((product) => {
+    // Nếu chọn "TẤT CẢ", hiển thị tất cả sản phẩm
+    if (activeCategory === 0) return true;
+  
+    // Kiểm tra nếu danh mục của sản phẩm chứa danh mục đang chọn
+    return product.category.some(
+      (cat: any) => cat.name === categories[activeCategory]
+    );
+  });
+  
   // Đóng menu khi nhấp ra bên ngoài
   useEffect(() => {
     const handleClickOutside = (event: any) => {
@@ -154,9 +88,10 @@ const NewArrivals = () => {
     swiperRef.current?.slideTo(index);
     setActiveProductIndex(index);
   };
+  
 
   return (
-    <div className="mx-auto lg:pt-36 pt-20">
+    <div className="mx-auto pt-32 pb-10 md:pb-0">
       {/* Tiêu đề phần */}
       <div className="text-center md:mb-20">
         <h5 className="text-sm uppercase text-gray-500 font-questrial tracking-wider mb-3">
@@ -176,9 +111,9 @@ const NewArrivals = () => {
       <div className="flex md:hidden flex-col items-center mb-16" ref={menuRef}>
         <button
           onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-          className="px-6 py-4 text-gray-700 border rounded-full text-xs font-semibold flex justify-between items-center w-full max-w-[300px]"
+          className="px-6 py-4 text-gray-700 border rounded-full text-xs font-semibold flex justify-between items-center w-full max-w-[300px] uppercase"
         >
-          {categories[activeCategory]}
+          {categories[activeCategory] || "Loading..."}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className={`h-4 w-4 ml-2 transition-transform duration-300 ${
@@ -210,7 +145,7 @@ const NewArrivals = () => {
                 setActiveCategory(index);
                 setIsCategoryOpen(false);
               }}
-              className={`px-6 py-2 text-xs font-semibold cursor-pointer ${
+              className={`px-6 py-2 text-xs font-semibold cursor-pointer uppercase ${
                 index === activeCategory
                   ? "bg-[#b8cd06] rounded-full text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -232,7 +167,7 @@ const NewArrivals = () => {
 
             <button
               onClick={() => setActiveCategory(index)}
-              className={`px-6 py-2 mx-3 text-xs font-semibold transition-all duration-300 ${
+              className={`px-6 py-2 mx-3 text-xs font-semibold transition-all duration-300 uppercase ${
                 index === activeCategory
                   ? "bg-[#b8cd06] text-white rounded-full"
                   : "text-gray-500 hover:shadow rounded-full"
@@ -293,85 +228,30 @@ const NewArrivals = () => {
               key={index}
               className="relative bg-white border cursor-grab p-4 min-w-[100%] sm:min-w-[50%] md:min-w-[33.33%] lg:min-w-[25%] xl:min-w-[20%] max-w-[250px] group overflow-hidden"
             >
-              {/* Nhãn sản phẩm */}
-              {product.badge && (
-                <span
-                  className={`absolute top-5 left-6 text-xs text-white py-1 px-2 rounded-full ${
-                    product.badge.includes("GIẢM GIÁ")
-                      ? "bg-red-500"
-                      : product.badge === "GIÁ TỐT NHẤT"
-                      ? "bg-[#b8cd06]"
-                      : "bg-lime-500"
-                  }`}
-                >
-                  {product.badge}
+              {/* Nhãn giảm giá */}
+              {product.priceSale > 0 && (
+                <span className="absolute top-5 left-6 text-xs text-white py-1 px-2 rounded-full bg-red-500">
+                  GIẢM GIÁ
                 </span>
               )}
 
-              {/* Hình ảnh sản phẩm */}
-              <Swiper
-                loop={true}
-                modules={[Pagination]}
-                className="mx-auto my-5 w-[250px] h-[250px] object-cover"
-                onSwiper={(swiper) => {
-                  swiperRefs.current[index] = swiper;
-                }}
-              >
-                {product.image.map((image, i) => (
-                  <SwiperSlide key={i}>
-                    <img
-                      src={image}
-                      alt={`${product.name} image ${i + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-
-              {/* Mũi tên trái và phải */}
-              <button
-                onClick={() => swiperRefs.current[index].slidePrev()}
-                className="absolute top-1/3 left-6 transform -translate-y-1/2 -translate-x-4 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-5 text-slate-400"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z"
-                    clipRule="evenodd"
+              <div className="mt-10 mb-5">
+                <Link to={`/product/${product._id}`} >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-[250px] object-contain"
                   />
-                </svg>
-              </button>
-
-              <button
-                onClick={() => swiperRefs.current[index].slideNext()}
-                className="absolute top-1/3 right-6 transform -translate-y-1/2 translate-x-4 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-5 text-slate-400"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
+                </Link>
+              </div>
 
               {/* Phần nút hiển thị khi hover */}
 
               <div className="px-10">
-                <h5 className="text-xs uppercase font-questrial text-[#b8cd06] mb-1 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px]">
+                {/* <h5 className="text-xs uppercase font-questrial text-[#b8cd06] mb-1 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px]">
                   {product.edition}
-                </h5>
-                <h3 className="font-extrabold font-raleway text-[13px] text-inherit group-hover:text-[#b8cd06] mb-3 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px] line-clamp-1">
+                </h5> */}
+                <h3 className="font-extrabold font-raleway text-[13px] text-inherit group-hover:text-[#b8cd06] mb-3 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-3px] line-clamp-1">
                   {product.name}
                 </h3>
                 <p className="text-xs text-gray-500 mb-3  duration-200 text-wrap line-clamp-2">
@@ -381,10 +261,12 @@ const NewArrivals = () => {
                 {/* Các biểu tượng hover */}
 
                 <div className="flex items-center justify-center  duration-300 space-x-2">
-                  <span className="text-gray-800">{product.price}</span>
-                  {product.oldPrice && (
-                    <span className="text-sm text-gray-400 line-through">
-                      {product.oldPrice}
+                  <span className="font-bold text-red-600">
+                    {product.price.toLocaleString()} VNĐ
+                  </span>
+                  {product.priceSale > 0 && (
+                    <span className="text-xs text-gray-400 line-through">
+                      {product.priceSale.toLocaleString()} VNĐ
                     </span>
                   )}
                 </div>
@@ -415,7 +297,7 @@ const NewArrivals = () => {
 
       {/* Chỉ báo vòng tròn - chỉ hiển thị trên màn hình nhỏ */}
       {filteredProducts.length > 1 && (
-        <div className="flex space-x-2 md:mt-20 mt-8 lg:hidden justify-center items-center">
+        <div className="flex space-x-2 mt-10 sm:mt-20 lg:hidden justify-center items-center">
           {filteredProducts.map((_, index) => (
             <div
               key={index}

@@ -1,3 +1,5 @@
+import { useAuthStore } from "@/common/context/useAuthStore";
+import { useChatStore } from "@/common/context/useChatStore";
 import { useUserContext } from "@/common/context/UserProvider";
 import { saveUserToDatabase } from "@/common/hooks/useCheckUser";
 import Footer from "@/components/Footer";
@@ -18,7 +20,14 @@ const LayoutWebsite = () => {
     "banned" | "deleted" | null
   >(null);
 
-  // console.log("user", user);
+  const {
+    getMessages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+    setSelectedUser,
+  } = useChatStore();
+
+  const { checkAuth } = useAuthStore();
 
   // Hàm để kiểm tra trạng thái khóa
   const checkBanStatus = async (userId: string) => {
@@ -56,6 +65,7 @@ const LayoutWebsite = () => {
     }
 
     if (user) {
+      // console.log("user", user);
       // Gọi saveUserToDatabase một lần
       const saveUserIfNeeded = async () => {
         if (user && !isUserSaved.current) {
@@ -63,8 +73,14 @@ const LayoutWebsite = () => {
             // Gọi hàm saveUserToDatabase với await
             const data = await saveUserToDatabase(user.id);
             // console.log("data", data);
+            checkAuth(data.clerkId);
+            getMessages(data._id); // Lấy tin nhắn của user
+            setSelectedUser(data._id); // Chọn cuộc trò chuyện của user
+            subscribeToMessages(); // Đăng ký nhận tin nhắn
             login(data); // Lưu _id vào context
             isUserSaved.current = true; // Đánh dấu đã lưu
+
+            return () => unsubscribeFromMessages();
           } catch (error) {
             console.error("Lỗi khi lưu user vào database:", error);
           }
@@ -75,7 +91,7 @@ const LayoutWebsite = () => {
 
       saveUserIfNeeded();
     }
-  }, [user, login]);
+  }, [user, login, getMessages, unsubscribeFromMessages, setSelectedUser]);
 
   const clearAccountLockedStatus = () => {
     // Xóa trạng thái từ localStorage và ẩn thông báo
@@ -98,3 +114,12 @@ const LayoutWebsite = () => {
 };
 
 export default LayoutWebsite;
+
+// useEffect(() => {
+//   if (!selectedUser) return;
+//   getMessages(selectedUser!);
+
+//   subscribeToMessages();
+
+//   return () => unsubscribeFromMessages();
+// }, [selectedUser, getMessages, subscribeToMessages, unsubscribeFromMessages]);

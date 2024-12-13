@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input"; // Thêm ô nhập tìm kiếm
 
 interface City {
   Id: string;
@@ -46,6 +47,10 @@ const Country = forwardRef<HTMLDivElement, CountryProps>(({
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
 
+  const [citySearch, setCitySearch] = useState(""); // Bộ lọc tỉnh/thành phố
+  const [districtSearch, setDistrictSearch] = useState(""); // Bộ lọc quận/huyện
+  const [wardSearch, setWardSearch] = useState(""); // Bộ lọc phường/xã
+
   useEffect(() => {
     const fetchCities = async () => {
       try {
@@ -65,38 +70,38 @@ const Country = forwardRef<HTMLDivElement, CountryProps>(({
   const handleCityChange = (cityId: string) => {
     const city = cities.find((city) => city.Id === cityId) || null;
     if (city) {
-      setDistricts(city.Districts); // Cập nhật quận huyện mới
-      setWards([]); // Reset danh sách xã phường
-      onCityChange(city.Name); // Cập nhật tên tỉnh/thành phố
-      onDistrictChange(""); // Reset quận
-      onWardChange(""); // Reset xã
+      setDistricts(city.Districts);
+      setWards([]);
+      onCityChange(city.Name);
+      onDistrictChange("");
+      onWardChange("");
     } else {
       setDistricts([]);
       setWards([]);
-      onCityChange(""); // Gọi callback khi không có tỉnh/thành phố được chọn
-      onDistrictChange(""); // Reset quận
-      onWardChange(""); // Reset xã
+      onCityChange("");
+      onDistrictChange("");
+      onWardChange("");
     }
   };
 
   const handleDistrictChange = (districtId: string) => {
     const district = districts.find((district) => district.Id === districtId) || null;
     if (district) {
-      setWards(district.Wards); // Cập nhật phường/xã mới
-      onDistrictChange(district.Name); // Cập nhật tên quận/huyện
+      setWards(district.Wards);
+      onDistrictChange(district.Name);
     } else {
       setWards([]);
-      onDistrictChange(""); // Gọi callback khi không có quận/huyện được chọn
-      onWardChange(""); // Reset xã khi quận thay đổi
+      onDistrictChange("");
+      onWardChange("");
     }
   };
 
   const handleWardChange = (wardId: string) => {
     const ward = wards.find((ward) => ward.Id === wardId) || null;
     if (ward) {
-      onWardChange(ward.Name); // Cập nhật tên phường/xã
+      onWardChange(ward.Name);
     } else {
-      onWardChange(""); // Reset xã khi phường thay đổi
+      onWardChange("");
     }
   };
 
@@ -107,11 +112,21 @@ const Country = forwardRef<HTMLDivElement, CountryProps>(({
           <SelectValue placeholder="Chọn tỉnh thành">{city || "Chọn tỉnh thành"}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {cities.map((city) => (
-            <SelectItem key={city.Id} value={city.Id}>
-              {city.Name}
-            </SelectItem>
-          ))}
+          <Input
+           style={{marginBottom: 10,}}
+            placeholder="Tìm tỉnh/thành phố..."
+            value={citySearch}
+            onChange={(e) => setCitySearch(e.target.value)}
+          />
+          {cities
+            .filter((city) =>
+              city.Name.toLowerCase().includes(citySearch.toLowerCase())
+            )
+            .map((city) => (
+              <SelectItem key={city.Id} value={city.Id}>
+                {city.Name}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
 
@@ -124,11 +139,21 @@ const Country = forwardRef<HTMLDivElement, CountryProps>(({
           <SelectValue placeholder="Chọn quận huyện">{district || "Chọn quận huyện"}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {districts.map((district) => (
-            <SelectItem key={district.Id} value={district.Id}>
-              {district.Name}
-            </SelectItem>
-          ))}
+          <Input
+           style={{marginBottom: 10,}}
+            placeholder="Tìm quận/huyện..."
+            value={districtSearch}
+            onChange={(e) => setDistrictSearch(e.target.value)}
+          />
+          {districts
+            .filter((district) =>
+              district.Name.toLowerCase().includes(districtSearch.toLowerCase())
+            )
+            .map((district) => (
+              <SelectItem key={district.Id} value={district.Id}>
+                {district.Name}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
 
@@ -141,11 +166,22 @@ const Country = forwardRef<HTMLDivElement, CountryProps>(({
           <SelectValue placeholder="Chọn phường xã">{ward || "Chọn phường xã"}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {wards.map((ward) => (
-            <SelectItem key={ward.Id} value={ward.Id}>
-              {ward.Name}
-            </SelectItem>
-          ))}
+          <Input
+            placeholder="Tìm phường/xã..."
+           style={{marginBottom: 10,}}
+
+            value={wardSearch}
+            onChange={(e) => setWardSearch(e.target.value)}
+          />
+          {wards
+            .filter((ward) =>
+              ward.Name.toLowerCase().includes(wardSearch.toLowerCase())
+            )
+            .map((ward) => (
+              <SelectItem key={ward.Id} value={ward.Id}>
+                {ward.Name}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
     </div>

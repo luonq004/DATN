@@ -56,6 +56,9 @@ export interface Category {
   title: string;
   description: string;
   name: string;
+  title: string;
+  image: string;
+  description: string;
   slug: string;
   deleted: boolean;
   __v: number;
@@ -182,12 +185,24 @@ export interface Value {
 export interface Attribute {
   _id: string;
   name: string;
+  deleted: boolean;
   values: {
     _id?: string;
     name: string;
     type: string;
     value: string;
   }[];
+}
+
+export interface AttributeValue {
+  _id: string;
+  name: string;
+  type: string;
+  deleted: boolean;
+  value: string;
+  createdAt: string;
+  updatedAt: string;
+  slugName: string;
 }
 
 export interface Data {

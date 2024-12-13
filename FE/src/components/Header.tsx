@@ -204,12 +204,12 @@ const Header = () => {
     // Lắng nghe sự kiện orderNotification
     socket.on("orderNotification", (newNotification) => {
       console.log("Thông báo nhận được:", newNotification);
-  
+
       // Kiểm tra nếu thông báo không phải của tài khoản hiện tại
       if (newNotification.userId !== _id) {
         return; // Nếu không phải, bỏ qua thông báo này
       }
-  
+
       setNotifications((prevNotifications) => {
         // Kiểm tra xem thông báo đã tồn tại chưa
         if (
@@ -221,44 +221,45 @@ const Header = () => {
         ) {
           return prevNotifications; // Nếu trùng, không thêm vào nữa
         }
-  
+
         const updatedNotifications = [newNotification, ...prevNotifications];
-        const unreadCount = updatedNotifications.filter((n) => !n.isRead)
-          .length;
+        const unreadCount = updatedNotifications.filter(
+          (n) => !n.isRead
+        ).length;
         setUnreadCount(unreadCount);
-  
+
         return updatedNotifications;
       });
     });
-  
+
     // Lắng nghe sự kiện orderStatusNotification
     socket.on("orderStatusNotification", (newNotification) => {
       console.log("Thông báo trạng thái nhận được:", newNotification);
-  
+
       // Kiểm tra nếu thông báo không phải của tài khoản hiện tại
       if (newNotification.userId !== _id) {
         return; // Nếu không phải, bỏ qua thông báo này
       }
-  
+
       setNotifications((prevNotifications) => {
         // Kiểm tra xem thông báo đã tồn tại chưa
-  
+
         const updatedNotifications = [newNotification, ...prevNotifications];
-        const unreadCount = updatedNotifications.filter((n) => !n.isRead)
-          .length;
+        const unreadCount = updatedNotifications.filter(
+          (n) => !n.isRead
+        ).length;
         setUnreadCount(unreadCount);
-  
+
         return updatedNotifications;
       });
     });
-  
+
     return () => {
       socket.off("orderNotification");
       socket.off("orderStatusNotification");
     };
   }, [_id]); // _id sẽ thay đổi khi người dùng đăng nhập hoặc thay đổi tài khoản
-  
-  
+
   return (
     <>
       <header
@@ -566,7 +567,6 @@ const Header = () => {
                     <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
                   </Link>
 
-
                   {/* Thông báo */}
                   <div
                     className="relative lg:hidden border-[#eee]  text-[10px] leading-5  uppercase"
@@ -608,7 +608,7 @@ const Header = () => {
                           setOpenDropdown(null);
                         }}
                       >
-                        <div className="p-2 flex justify-between items-center">
+                        <div className="sticky top-0 z-10 bg-white p-2 flex justify-between items-center">
                           <h1 className="text-[13px] font-bold">
                             Thông báo mới nhận
                           </h1>
@@ -619,7 +619,7 @@ const Header = () => {
                               onClick={() =>
                                 setIsMarkAllDropdownOpen((prev) => !prev)
                               }
-                              className="p-2 text-[23px]  transition"
+                              className="pb-3 text-[23px]  transition"
                             >
                               ...
                             </button>
@@ -643,7 +643,7 @@ const Header = () => {
                                 key={notification._id}
                                 className={`flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-all duration-200 ${
                                   !notification.isRead
-                                    ? "bg-[#f5ffcc] font-semibold"
+                                    ? "bg-[#f5ffcc]"
                                     : "bg-gray-50"
                                 }`}
                                 onClick={() =>
@@ -661,9 +661,16 @@ const Header = () => {
                                 <div>
                                   {/* Nội dung thông báo */}
                                   <div className="flex-1 text-xs text-gray-800">
-                                    <p className="truncate text-wrap">
-                                      {notification.message}
-                                    </p>
+                                    <Link
+                                      to={"/users/order-history"}
+                                      className="truncate text-wrap"
+                                    >
+                                      <span
+                                        dangerouslySetInnerHTML={{
+                                          __html: notification.message,
+                                        }}
+                                      />
+                                    </Link>
                                   </div>
 
                                   {/* Thời gian thông báo */}
@@ -676,7 +683,7 @@ const Header = () => {
                                   {/* Nút ba chấm */}
                                   <div className="relative">
                                     <button
-                                      className="p-2 text-[20px] text-gray-500 hover:text-gray-700"
+                                      className="text-[20px] text-gray-500 hover:text-gray-700"
                                       onClick={() =>
                                         setOpenDropdown((prev) =>
                                           prev === notification._id

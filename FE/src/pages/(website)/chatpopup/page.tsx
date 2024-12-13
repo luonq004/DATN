@@ -1,10 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiChat2 } from "react-icons/ci";
 import Comment from "./components/Comment";
 import Content from "./components/Content";
+import { io } from "socket.io-client";
+import { useChatStore } from "@/common/context/useChatStore";
+
+const socket = io("http://localhost:3000");
 
 const ChatPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    socket.on("newMessage", (data) => {
+      console.log("newMessage", data);
+    });
+
+    return () => {
+      socket.off("newMessage");
+    };
+  }, []);
+
+  // console.log(listMessage);
 
   return (
     <>
@@ -16,8 +32,8 @@ const ChatPopup = () => {
       </div>
 
       <div
-        className={`w-[340px] max-w-[340px] fixed bottom-[12%] right-5 border h-[410px] max-h-[410px] bg-white rounded-md text-black ${
-          isOpen ? "opacity-100 z-40" : "opacity-0 z-0"
+        className={`w-[340px] max-w-[340px] fixed bottom-[12%] right-5 border h-[410px] bg-white rounded-md text-black ${
+          isOpen ? "opacity-100 z-40 block" : "opacity-0 z-0 hidden"
         }`}
       >
         <div className="h-[325px] py-5">

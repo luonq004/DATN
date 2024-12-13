@@ -91,12 +91,12 @@ const UpdateAttributeValuePage = () => {
           )}
         />
 
-        <div className="">
+        <div className="flex items-center gap-3">
           <FormField
             control={form.control}
             name="value"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Giá trị thuộc tính</FormLabel>
                 <FormControl>
                   <Input type={typeValue} placeholder="shadcn" {...field} />
@@ -107,6 +107,7 @@ const UpdateAttributeValuePage = () => {
             )}
           />
           <Button
+            className="mt-3 bg-blue-500 hover:bg-blue-600"
             type="button"
             onClick={() => {
               setTypeValue(typeValue === "text" ? "color" : "text");

@@ -71,13 +71,19 @@ const ContentChat = () => {
               listMessage.messages.map((message) => (
                 <div key={message._id}>
                   {message.senderType === "Admin" ? (
-                    <div className="flex gap-2 rounded-lg text-sm mr-auto mt-4 justify-end">
+                    <div
+                      className="flex gap-2 rounded-lg text-sm mr-auto mt-4 justify-end"
+                      ref={messageEndRef}
+                    >
                       <p className="bg-[#b8cd06] text-primary-foreground mr-2 max-w-[75%] px-3 py-2 break-words rounded-lg">
                         {message.text}
                       </p>
                     </div>
                   ) : (
-                    <div className="flex gap-2 rounded-lg text-sm ml-2 mt-4">
+                    <div
+                      className="flex gap-2 rounded-lg text-sm ml-2 mt-4"
+                      ref={messageEndRef}
+                    >
                       <img
                         className="w-8 h-8 rounded-full justify-end"
                         src={message.sender.imageUrl}

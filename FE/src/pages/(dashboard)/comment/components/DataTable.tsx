@@ -4,6 +4,8 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
+  ColumnFiltersState,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 
 import {
@@ -14,7 +16,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PaginationProducts } from "../../dashboard/_components/PaginationProducts";
+
+import { Input } from "@/components/ui/input";
+
+import { Pagination } from "@/pages/(dashboard)/product/_components/Pagination";
+import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -25,15 +31,22 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
     initialState: {
       pagination: {
-        pageSize: 20,
+        pageSize: 5,
       },
+    },
+    state: {
+      columnFilters,
     },
   });
 
@@ -64,21 +77,32 @@ export function DataTable<TData, TValue>({
     paginationGoups.push(paginationButtons);
     paginationButtons = [];
   }
-  // const getCurrentPaginationGroup = () => {
-  //   for (const i in paginationGoups) {
-  //     if (
-  //       paginationGoups[i].findIndex((u) => u.key === String(currentPage)) !==
-  //       -1
-  //     ) {
-  //       return paginationGoups[i];
-  //     }
-  //   }
-  // };
+  const getCurrentPaginationGroup = () => {
+    for (const i in paginationGoups) {
+      if (
+        paginationGoups[i].findIndex((u) => u.key === String(currentPage)) !==
+        -1
+      ) {
+        return paginationGoups[i];
+      }
+    }
+  };
 
   return (
     <>
-      <div className="border bg-white rounded-lg mb-4">
-        <Table>
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Tìm tên sản phẩm"
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-52 mb-2"
+        />
+      </div>
+
+      <div className="border bg-white rounded-lg ">
+        <Table className="">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -120,14 +144,16 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Không có danh mục nào
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <PaginationProducts table={table} />
+
+      <Pagination table={table} />
+      {/* </div> */}
     </>
   );
 }

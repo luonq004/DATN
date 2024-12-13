@@ -12,7 +12,8 @@ export const useDeleteAttribute = () => {
 
     onSuccess: () => {
       toast({
-        title: "Xóa thuộc tính thành công",
+        variant: "success",
+        title: "Ẩn thuộc tính thành công",
       });
       queryClient.invalidateQueries({
         queryKey: ["Attributes"],
@@ -21,7 +22,8 @@ export const useDeleteAttribute = () => {
 
     onError: (error: Error) => {
       toast({
-        title: "Xóa thuộc tính thất bại",
+        variant: "destructive",
+        title: "Ẩn thuộc tính thất bại",
       });
     },
   });

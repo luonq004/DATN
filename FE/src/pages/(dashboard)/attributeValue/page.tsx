@@ -1,14 +1,11 @@
-import { Link, useParams } from "react-router-dom";
-import { useGetAtributes } from "./actions/useGetAllAttributeValues";
-import Container from "../_components/Container";
-import { Button } from "@/components/ui/button";
-import { DataTable } from "./_components/DataTable";
+import { useParams } from "react-router-dom";
 import { columnAttributeValues } from "./_components/Column";
+import { DataTable } from "./_components/DataTable";
+import Header from "./_components/Header";
+import { useGetAtributes } from "./actions/useGetAllAttributeValues";
 
 const AttributeValuePage = () => {
   const { id } = useParams();
-
-  // console.log("type", id);
 
   const { isLoading, atributeValues, error } = useGetAtributes(id!);
 
@@ -16,23 +13,21 @@ const AttributeValuePage = () => {
     return <div>Loading...</div>;
   }
 
-  // console.log("atributeValues", atributeValues);
+  console.log("atributeValues", atributeValues);
 
   return (
-    <Container>
-      <div className="flex justify-between">
-        <h2>Attribute value</h2>
-        <Link to={`/admin/attributesValues/add/${id}`}>
-          <Button className="bg-green-400">Add new</Button>
-        </Link>
+    <>
+      <div className="bg-white p-6">
+        <Header />
+
+        <div className="mt-5 grid grid-cols-1">
+          <DataTable
+            columns={columnAttributeValues}
+            data={atributeValues.length ? atributeValues[0].values : []}
+          />
+        </div>
       </div>
-      <div className="min-h-80 mt-5">
-        <DataTable
-          columns={columnAttributeValues}
-          data={atributeValues[0].values}
-        />
-      </div>
-    </Container>
+    </>
   );
 };
 

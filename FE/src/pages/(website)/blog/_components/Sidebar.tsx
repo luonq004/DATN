@@ -1,144 +1,138 @@
-import { categories } from "@/pages/(dashboard)/blog/_components/Categories";
-import { useSearchParams } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 
 const Sidebar = () => {
-  const [searchParams, setSearchParams] = useSearchParams(); // lấy và cập nhật tham số URL (danh mục và trang)
+  const [searchParams, setSearchParams] = useSearchParams(); // Lấy và cập nhật tham số URL
   const currentCategory = searchParams.get("category");
-  const tags = [
-    "ÁO THUN",
-    "QUẦN JEANS",
-    "THỜI TRANG NỮ",
-    "PHỤ KIỆN",
-    "ÁO KHOÁC",
-    "GIÀY DÉP",
-    "THỜI TRANG NAM",
-    "THƯƠNG HIỆU",
-    "SALE OFF",
-    "ĐỒ BỘ",
-    "THỜI TRANG TRẺ EM",
-  ];
+  const [categories, setCategories] = useState<any[]>([]); // Lưu danh mục
+  const [posts, setPosts] = useState<any[]>([]);
 
-  // Hàm xử lý khi click vào danh mục
-  const handleCategoryClick = (category: string | null) => {
+  const [searchQuery, setSearchQuery] = useState(""); // Lưu từ khóa tìm kiếm
+
+  // Lấy danh mục từ API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/category");
+        setCategories([{ _id: null, name: "TẤT CẢ" }, ...response.data]);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    // Lấy bài viết từ API
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/blogs");
+        setPosts(response.data.slice(5, 10)); // Lấy 5 bài viết gần đây
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchCategories();
+    fetchPosts();
+  }, []);
+
+  // Cập nhật từ khóa tìm kiếm
+  const handleSearchChange = (e: any) => {
+    setSearchQuery(e.target.value);
+    searchParams.set("search", e.target.value);
+    searchParams.set("page", "1"); // Reset trang về 1 khi tìm kiếm
+    setSearchParams(searchParams);
+  };
+
+  // Cập nhật danh mục
+  const handleCategoryClick = (category: any) => {
     if (category) {
-      // Nếu category là một giá trị hợp lệ, thêm vào URL
-      searchParams.set("category", category);
+      searchParams.set("category", category); // Thêm category vào URL
     } else {
-      // Nếu là "Tất cả", xóa tham số category trong URL
-      searchParams.delete("category");
+      searchParams.delete("category"); // Xóa category khỏi URL nếu là "TẤT CẢ"
     }
-    searchParams.set("page", "1"); // Đặt lại trang về 1 khi thay đổi danh mục
-    setSearchParams(searchParams); // Cập nhật lại URL
+    searchParams.set("page", "1"); // Reset trang về 1
+    setSearchParams(searchParams);
   };
 
   return (
-    <div className="mb-20">
-      {/* Main Content Section */}
-      <div className="flex uppercase">
-        {/* Sidebar Section */}
-        <div className="lg:w-80">
-          {/* Search Box */}
-          <div className="mb-10 relative">
-            <input
-              type="text"
-              placeholder="Nhập từ khóa"
-              className="w-full text-xs py-3  pr-10 border border-[#efefef] rounded-full focus:outline-none focus:ring-[#b8cd06] focus:border-transparent"
-            />
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-black duration-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                className="size-5"
+    <div className="mb-20 lg:w-80">
+      <div className="flex flex-col uppercase">
+        {/* Input tìm kiếm */}
+        <div className="mb-10 relative">
+          <input
+            value={searchQuery}
+            onChange={handleSearchChange}
+            type="text"
+            placeholder="Tìm kiếm theo tên bài viết hoặc tác giả..."
+            className="w-full text-xs py-3 pr-10 border border-[#efefef] rounded-full focus:outline-none focus:ring-[#b8cd06] focus:border-transparent"
+          />
+          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-black duration-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              className="size-5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </span>
+        </div>
+
+        {/* Danh mục */}
+        <div className="mb-10">
+          <h3 className="mb-4 text-lg font-raleway font-extrabold uppercase text-[#343434]">
+            danh mục
+          </h3>
+          <ul className="space-y-4">
+            {categories.map((cat) => (
+              <li
+                key={cat._id}
+                className={`text-[#888] text-[11px] font-raleway hover:text-[#b8cd06] cursor-pointer border-b border-[#efefef] pb-4 ${
+                  currentCategory === cat._id ? "text-[#b8cd06] font-bold" : ""
+                }`}
+                onClick={() => handleCategoryClick(cat._id)}
               >
-                <path
-                  fillRule="evenodd"
-                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </span>
-          </div>
+                {cat.name}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          {/* Categories */}
-          <div className="mb-10">
-            <h3 className="mb-4 text-lg font-raleway font-extrabold uppercase text-[#343434]">
-              danh mục
-            </h3>
-            <ul className="space-y-4">
-              {categories.map((cat) => (
-                <li
-                  key={cat.value}
-                  className={`text-[#888] text-[11px] font-raleway hover:text-[#b8cd06] cursor-pointer border-b border-[#efefef] pb-4 ${
-                    currentCategory === cat.value
-                      ? "text-[#b8cd06] font-bold"
-                      : ""
-                  }`}
-                  onClick={() => handleCategoryClick(cat.value)}
-                >
-                  {cat.label}
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* Bài viết khác */}
+        <div className="mb-10">
 
-          {/* Popular Tags */}
           <div className="mb-10">
-            <h2 className="mb-4 text-[18px] text-[#343434] font-raleway font-extrabold uppercase">
-              THẺ PHỔ BIẾN
+            <h2 className="mb-4 text-[20px] text-[#343434] font-raleway font-extrabold uppercase">
+              Bài viết khác
             </h2>
-            <div className="flex flex-col items-start mb-10">
-              <div className="lg:w-full h-full mb-4 bg-gray-200 rounded-md overflow-hidden">
-                <img
-                  src="https://gcs.tripi.vn/public-tripi/tripi-feed/img/473784WaX/shop-quan-ao-nam-dep-tai-tinh-ninh-binh-duoc-nhieu-nguoi-lua-chon-1109342.jpg"
-                  alt="Áo thun phổ biến"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="text-[#343434] text-[15px] font-raleway font-extrabold mb-1 cursor-pointer">
-                Áo Thun Trơn Mùa Hè
-              </p>
-              <p className="text-[11px] text-gray-500">
-                07 Tháng 4 / 15 &nbsp;&bull;&nbsp;{" "}
-                <span className="text-[#b8cd06]">Đỗ trọng khanh</span>{" "}
-                &nbsp;&bull;&nbsp;{" "}
-                <span className="text-[#b8cd06]">Thời Trang Nam</span>
-              </p>
-            </div>
-            <div className="flex flex-col items-start">
-              <div className="lg:w-full h-full mb-4 bg-gray-200 rounded-md overflow-hidden">
-                <img
-                  src="https://toplist.vn/images/200px/shop-ban-quan-jean-nu-dep-va-chat-luong-nhat-quan-9-tp-hcm-1283754.jpg"
-                  alt="Quần jeans phổ biến"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="text-[#343434] text-[15px] font-raleway font-extrabold mb-1 cursor-pointer">
-                Quần Jeans Rách Thời Thượng
-              </p>
-              <p className="text-[11px] text-gray-500">
-                07 Tháng 4 / 15 &nbsp;&bull;&nbsp;{" "}
-                <span className="text-[#b8cd06]">Đỗ trọng khanh</span>{" "}
-                &nbsp;&bull;&nbsp;{" "}
-                <span className="text-[#b8cd06]">Thời Trang Nữ</span>
-              </p>
-            </div>
-          </div>
 
-          <div>
-            <h3 className=" font-raleway text-[18px] font-extrabold text-[#343434] mb-4">
-              THẺ PHỔ BIẾN
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-[#f7f7f7] font-raleway text-[10px]  hover:bg-[#b8cd06] hover:text-white cursor-pointer text-[#888] py-[10px] px-3 rounded-full"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {posts.map((post) => (
+              <div key={post.id} className="flex flex-col w-[350px] items-start mb-10">
+                <div className="lg:w-full h-full mb-4 bg-gray-200 rounded-md overflow-hidden">
+                  <Link to={`/blog/detail/${post._id}`}>
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </Link>
+                </div>
+                <p className="text-[#343434] text-[15px] font-raleway font-extrabold mb-1 cursor-pointer">
+                  {post.title}
+                </p>
+                <p className="text-[11px] text-gray-500">
+                  {new Date(post.createdAt).toLocaleDateString("vi-VN")}{" "}
+                  &nbsp;&bull;&nbsp;{" "}
+                  <span className="text-[#b8cd06]">{post.author}</span>{" "}
+                  &nbsp;&bull;&nbsp;{" "}
+                  <span className="text-[#b8cd06]">{post.category}</span>
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

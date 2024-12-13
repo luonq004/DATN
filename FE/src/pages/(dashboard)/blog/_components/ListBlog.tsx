@@ -1,9 +1,8 @@
 import { Blog } from "@/common/types/Blog";
+import Confirm from "@/components/Confirm/Confirm";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { categories } from "./Categories";
-import Confirm from "@/components/Confirm/Confirm";
 import PaginationComponent from "../../user/_component/Paginations";
 
 const ListBlog = () => {
@@ -35,6 +34,14 @@ const ListBlog = () => {
     setItemsPerPage(size);
     setCurrentPage(1);
   };
+  const [categories, setCategories] = useState<any[]>([]);
+
+useEffect(() => {
+  fetch("http://localhost:8080/api/category")
+    .then((response) => response.json())
+    .then((data) => setCategories(data))
+    .catch((err) => console.error("Lỗi khi lấy danh mục:", err));
+}, []);
 
 
   useEffect(() => {
@@ -110,9 +117,9 @@ const ListBlog = () => {
     }
   };
 
-  const getCategoryLabel = (categoryValue: string) => {
-    const category = categories.find((cat) => cat.value === categoryValue);
-    return category ? category.label : categoryValue;
+  const getCategoryLabel = (categoryId: string) => {
+    const category = categories.find((cat) => cat._id === categoryId);
+    return category ? category.name  : categoryId;
   };
 
   

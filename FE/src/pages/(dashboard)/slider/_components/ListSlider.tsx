@@ -150,7 +150,7 @@ const ListSlider = () => {
         </div>
       </div>
       {loading ? (
-        <p>Đang tải...</p>
+        <p className="text-center">Đang tải...</p>
       ) : (
         <div className="grid overflow-x-auto ">
           <table className="min-w-full bg-white shadow-md rounded-lg">

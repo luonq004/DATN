@@ -13,6 +13,8 @@ const Attributes: React.FC<ProductAttributesProps> = ({
   onAttributeSelect,
   deleted,
 }) => {
+
+  console.log(attributes)
   return (
     <>
       {attributes.map(([key, value]) => (

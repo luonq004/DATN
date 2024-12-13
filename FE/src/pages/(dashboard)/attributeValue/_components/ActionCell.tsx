@@ -9,21 +9,36 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDeleteAttributeValue } from "../actions/useDeleteAttributeValue";
+import { AttributeValue } from "@/common/types/Product";
+import { Row } from "@tanstack/react-table";
+import { useDisplayAttributeValue } from "../actions/useDisplayAttributeValue";
 
 interface ActionCellProps {
-  id: string;
+  row: Row<AttributeValue>;
 }
 
-const ActionCell: React.FC<ActionCellProps> = ({ id }) => {
+const ActionCell: React.FC<ActionCellProps> = ({ row }) => {
   const { deleteAtributesValue, isDeleting } = useDeleteAttributeValue();
+  const { displayAttributeValue, isUpdating } = useDisplayAttributeValue();
 
   const handleDelete = async () => {
-    if (confirm("Bạn có chắc muốn xóa thuộc tính này?")) {
+    if (confirm("Bạn có chắc muốn ẩn giá trị thuộc tính này?")) {
       try {
-        await deleteAtributesValue(id);
+        await deleteAtributesValue(row.original._id);
       } catch (error) {
-        console.error("Lỗi khi xóa thuộc tính:", error);
+        console.error("Lỗi khi ẩn giá trị thuộc tính:", error);
         // alert("Xóa thất bại, vui lòng thử lại.");
+      }
+    }
+  };
+
+  const handleDisplay = async () => {
+    if (confirm("Bạn có chắc hiển thị giá trị thuộc tính này?")) {
+      try {
+        await displayAttributeValue(row.original._id);
+      } catch (error) {
+        console.error("Lỗi khi hiển thị giá trị thuộc tính:", error);
+        alert("Hiển thị thất bại, vui lòng thử lại.");
       }
     }
   };
@@ -38,10 +53,21 @@ const ActionCell: React.FC<ActionCellProps> = ({ id }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>
-          <Link to={`/admin/attributesValues/${id}/edit`}>Sửa</Link>
+          <Link to={`/admin/attributesValues/${row.original._id}/edit`}>
+            Sửa
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleDelete}>
-          {isDeleting ? "Đang xóa..." : "Xóa"}
+        <DropdownMenuItem>
+          {row.original.deleted === false ? (
+            <DropdownMenuItem onClick={handleDelete}>
+              {isDeleting ? "Đang ẩn..." : "Ẩn"}
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem onClick={handleDisplay}>
+              {isUpdating ? "Đang hiện..." : "Hiện"}
+              {/* Hiện */}
+            </DropdownMenuItem>
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
