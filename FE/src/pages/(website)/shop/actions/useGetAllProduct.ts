@@ -12,6 +12,7 @@ export function useGetAllProduct() {
     ? JSON.parse(filterValuePriceJson)
     : null;
   const valueLimit = searchParams.get("limit");
+  const valueSearch = searchParams.get("search");
 
   const filterCategory =
     !filterValueCategory || filterValueCategory === "all"
@@ -20,6 +21,8 @@ export function useGetAllProduct() {
 
   const filterPrice =
     !filterValuePrice || filterValuePrice === "" ? "" : filterValuePrice;
+
+  const searchProduct = !valueSearch || valueSearch === "" ? "" : valueSearch;
 
   // Pagination
   const page = searchParams.get("page") ? +searchParams.get("page")! : 1;
@@ -32,13 +35,21 @@ export function useGetAllProduct() {
     data: listProduct,
     error,
   } = useQuery({
-    queryKey: ["Products", page, limit, filterCategory, filterPrice],
+    queryKey: [
+      "Products",
+      page,
+      limit,
+      filterCategory,
+      filterPrice,
+      searchProduct,
+    ],
     queryFn: () =>
       getAllProduct({
         page,
         limit,
         category: filterCategory,
         price: filterPrice,
+        search: valueSearch || "",
       }),
   });
 

@@ -93,9 +93,14 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center py-4">
         <Input
           placeholder="Tìm tên sản phẩm"
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("productId.name")?.getFilterValue() as string) ??
+            ""
+          }
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table
+              .getColumn("productId.name")
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-52 mb-2"
         />

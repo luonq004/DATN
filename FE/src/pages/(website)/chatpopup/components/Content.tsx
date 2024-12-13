@@ -17,7 +17,10 @@ const Content = () => {
         listMessage?.messages.map((message, index) => {
           if (message.senderType === "Admin") {
             return (
-              <div className="flex gap-2 rounded-lg text-sm ml-2 mt-4">
+              <div
+                className="flex gap-2 rounded-lg text-sm ml-2 mt-4"
+                key={message._id}
+              >
                 <img
                   className="w-10 h-10 rounded-full object-contain justify-end border"
                   src="https://res.cloudinary.com/do9l1lmcz/image/upload/v1726331293/zfbtxb1rprydlfsgicbt.png"
@@ -30,7 +33,10 @@ const Content = () => {
             );
           } else {
             return (
-              <div className="flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ml-auto bg-[#b8cd06] text-primary-foreground mr-2 mt-4">
+              <div
+                className="flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ml-auto bg-[#b8cd06] text-primary-foreground mr-2 mt-4"
+                key={message._id}
+              >
                 Hey, I'm having trouble with my account.
               </div>
             );

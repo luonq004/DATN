@@ -13,6 +13,7 @@ export const getAllProducts = async (req, res) => {
     _price,
     _category,
     _status = "display",
+    _search,
   } = req.query;
 
   const options = {
@@ -52,6 +53,13 @@ export const getAllProducts = async (req, res) => {
     query.deleted = { $ne: false };
   } else {
     query.deleted = { $ne: true };
+  }
+
+  if (_search && _search !== "") {
+    query.$or = [
+      { name: { $regex: _search, $options: "i" } }, // Tìm kiếm trong trường `name`
+      { slug: { $regex: _search, $options: "i" } }, // Tìm kiếm trong trường `description`
+    ];
   }
 
   // console.log(query);

@@ -19,19 +19,25 @@ export const getAllConversations = async (req, res) => {
 
 export const sendMessageFromAdmin = async (req, res) => {
   const { conversationId } = req.params;
-  const { adminId, text, receiverId } = req.body;
+  const { adminId, text } = req.body;
 
   // console.log("RECEIVER ID : ", receiverId);
 
   try {
     // Kiểm tra xem cuộc trò chuyện có tồn tại không
     const conversation = await Conversation.findById(conversationId);
-    const user = await User.findById(adminId);
-    const { role, _id, imageUrl, firstName, lastName } = user;
 
     if (!conversation) {
       return res.status(404).json({ error: "Không tìm thấy cuộc trò chuyện." });
     }
+
+    const user = await User.findById(adminId);
+
+    if (!user) {
+      return res.status(404).json({ error: "Không tìm thấy người dùng." });
+    }
+
+    const { role, _id, imageUrl, firstName, lastName } = user;
 
     // Tạo tin nhắn mới
     const message = await Message.create({
@@ -43,30 +49,34 @@ export const sendMessageFromAdmin = async (req, res) => {
 
     // Cập nhật cuộc trò chuyện
     conversation.messages.push(message._id);
+    // conversation.admins.push(adminId);
     conversation.updatedAt = Date.now();
     await conversation.save();
+
+    // console.log(conversation);
 
     const result = {
       ...message._doc,
       sender: {
         _id,
         imageUrl,
+        listUsers: [conversation.user, ...conversation.admins],
         firstName,
         lastName,
         role,
       },
     };
 
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    const io = req.app.get("io");
-    // console.log(io);
+    // const receiverSocketId = getReceiverSocketId(receiverId);
+    // const io = req.app.get("io");
+    // // console.log(io);
 
-    if (receiverSocketId) {
-      console.log(`Sending message to socketId: ${receiverSocketId}`, result); // Thêm log để kiểm tra
-      io.to(receiverSocketId).emit("newMessage", result);
-    } else {
-      console.log("Receiver socketId not found!");
-    }
+    // if (receiverSocketId) {
+    //   console.log(`Sending message to socketId: ${receiverSocketId}`, result); // Thêm log để kiểm tra
+    //   io.to(receiverSocketId).emit("newMessage", result);
+    // } else {
+    //   console.log("Receiver socketId not found!");
+    // }
 
     return res.status(200).json(result);
   } catch (error) {
@@ -76,24 +86,25 @@ export const sendMessageFromAdmin = async (req, res) => {
 };
 
 export const sendMessageFromUser = async (req, res) => {
-  const { userId } = req.params;
-  const { text } = req.body;
+  const { text, conversationId, senderId, userId } = req.body;
+
+  if (!text || !senderId) {
+    return res.status(400).json({ error: "Dữ liệu không hợp lệ" });
+  }
 
   try {
-    let conversation = await Conversation.findOne({ user: userId });
+    let conversation = await Conversation.findOne({ _id: conversationId });
 
     if (!conversation) {
-      const admins = await User.find({ role: "admin" }).select("_id");
-
       conversation = await Conversation.create({
         user: userId,
-        admins: admins.map((admin) => admin._id),
+        admins: [],
       });
     }
 
     const message = await Message.create({
       conversationId: conversation._id,
-      sender: userId,
+      userId: senderId,
       senderType: "User",
       text,
     });
@@ -102,7 +113,7 @@ export const sendMessageFromUser = async (req, res) => {
     conversation.updatedAt = Date.now();
     await conversation.save();
 
-    res.status(200).json({ message });
+    res.status(200).json(message);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
