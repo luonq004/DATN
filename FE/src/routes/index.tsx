@@ -57,7 +57,7 @@ import EditBlog from "@/pages/(dashboard)/blog/_components/EditBlog";
 import PaymentResult from "@/pages/(dashboard)/PaymentComponent/PaymentResult ";
 import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
 import WishListPage from "@/pages/(website)/wishlist/page";
-import TestSocket from "@/pages/(website)/Testsocket";
+// import TestSocket from "@/pages/(website)/Testsocket";
 import CategoriesPage from "@/pages/(dashboard)/category/page";
 import CategoryEditPage from "@/pages/(dashboard)/category/edit/page";
 import CategoryAddPage from "@/pages/(dashboard)/category/add/page";
@@ -95,7 +95,7 @@ const Router = () => {
           <Route path="signup" element={<SignUp />} /> */}
 
           <Route path="services" element={<PageServices />} />
-          <Route path="socket" element={<TestSocket />} />
+          {/* <Route path="socket" element={<TestSocket />} /> */}
 
           <Route path="blog" element={<BlogPage />}>
             <Route index element={<BlogCard />} />

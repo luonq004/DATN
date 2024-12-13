@@ -119,7 +119,7 @@ export const setupSocketIO = (server, app) => {
     });
 
     socket.on("newMessage", (newMessageRecieved) => {
-      console.log("newMessage:");
+      console.log("LUONG:");
       if (!newMessageRecieved.sender.listUsers)
         return console.log("Khong co conversation.listUsers");
 
