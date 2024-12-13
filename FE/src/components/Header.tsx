@@ -223,7 +223,7 @@ const Header = () => {
   useEffect(() => {
     // Lắng nghe sự kiện orderNotification
     socket.on("orderNotification", (newNotification) => {
-      console.log("Thông báo nhận được:", newNotification);
+      // console.log("Thông báo nhận được:", newNotification);
 
       // Kiểm tra nếu thông báo không phải của tài khoản hiện tại
       if (newNotification.userId !== _id) {
@@ -254,7 +254,7 @@ const Header = () => {
 
     // Lắng nghe sự kiện orderStatusNotification
     socket.on("orderStatusNotification", (newNotification) => {
-      console.log("Thông báo trạng thái nhận được:", newNotification);
+      // console.log("Thông báo trạng thái nhận được:", newNotification);
 
       // Kiểm tra nếu thông báo không phải của tài khoản hiện tại
       if (newNotification.userId !== _id) {
@@ -262,8 +262,6 @@ const Header = () => {
       }
 
       setNotifications((prevNotifications) => {
-        // Kiểm tra xem thông báo đã tồn tại chưa
-
         const updatedNotifications = [newNotification, ...prevNotifications];
         const unreadCount = updatedNotifications.filter(
           (n) => !n.isRead
@@ -278,7 +276,7 @@ const Header = () => {
       socket.off("orderNotification");
       socket.off("orderStatusNotification");
     };
-  }, [_id]); // _id sẽ thay đổi khi người dùng đăng nhập hoặc thay đổi tài khoản
+  }, [_id]); 
 
   return (
     <>
@@ -615,7 +613,7 @@ const Header = () => {
                     {/* Dropdown Thông báo */}
                     {isNotificationsOpen && (
                       <div
-                        className="absolute right-0 mt-2 w-[300px] bg-white shadow-2xl rounded-lg max-h-96 overflow-y-auto border border-gray-200 scrollbar-hide"
+                        className="absolute right-0  w-[300px] bg-white shadow-2xl rounded-lg max-h-96 overflow-y-auto border border-gray-200 scrollbar-hide"
                         style={{
                           scrollbarWidth: "none", // Firefox
                           msOverflowStyle: "none", // IE & Edge

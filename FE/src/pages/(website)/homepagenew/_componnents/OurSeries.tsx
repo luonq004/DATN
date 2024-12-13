@@ -66,7 +66,7 @@ const OurSeries = () => {
             <div className="flex flex-col md:flex-row gap-10 justify-center w-full">
               {group.map((product, index) => (
                 <div
-                  key={product.id}
+                  key={product._id}
                   className={`flex flex-col ${
                     (groupIndex % 2 === 0 && index === 0) ||
                     (groupIndex % 2 !== 0 && index === 2)

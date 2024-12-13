@@ -2,19 +2,33 @@ import { useChatStore } from "@/common/context/useChatStore";
 import ScrollableFeed from "react-scrollable-feed";
 import Loading from "./Loading";
 
-const Content = () => {
-  const { listMessage, isMessagesLoading } = useChatStore();
+const Content = ({
+  messages,
+}: {
+  _id: string;
+  text: string;
+  senderType: string;
+  createdAt: string;
+  sender: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    imageUrl: string;
+  };
+}[]) => {
+  // const { listMessage, isMessagesLoading } = useChatStore();
 
-  if (isMessagesLoading) {
-    return <Loading />;
-  }
+  // if (isMessagesLoading) {
+  //   return <Loading />;
+  // }
 
-  console.log(listMessage);
+  console.log(messages);
 
   return (
     <ScrollableFeed>
-      {listMessage?.messages?.length > 0 ? (
-        listMessage?.messages.map((message, index) => {
+      {messages?.length > 0 ? (
+        messages.map((message, index) => {
           if (message.senderType === "Admin") {
             return (
               <div

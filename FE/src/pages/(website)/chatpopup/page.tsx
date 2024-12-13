@@ -7,26 +7,67 @@ import Content from "./components/Content";
 import { io } from "socket.io-client";
 import { useUserContext } from "@/common/context/UserProvider";
 import { useGetConversation } from "./actions/useGetConversation";
+import axios from "axios";
 
 const socket = io("http://localhost:3000");
 
+type Message = {
+  _id: string;
+  text: string;
+  senderType: string;
+  createdAt: string;
+  sender: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    imageUrl: string;
+  };
+};
+
+type ConversationResponse = {
+  messages: Message[];
+};
+
 const ChatPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
   const { _id } = useUserContext();
 
-  const { conversation, isLoading, error } = useGetConversation(_id!);
+  // const { conversation, isLoading, error } = useGetConversation(_id!);
+
+  const fetchMessages = async () => {
+    try {
+      const data = await axios.get<ConversationResponse>(
+        `http://localhost:8080/api/conversation/${_id}`
+      );
+      // console.log("data", data.data);
+      socket.emit("joinChat", data.data._id);
+      setMessages(data.data.messages);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   useEffect(() => {
     if (!_id) return;
     socket.emit("setup", _id);
-    socket.emit("joinChat", conversation?._id);
+    fetchMessages();
+    // socket.emit("joinChat", conversation?._id);
+  }, [_id]);
+
+  useEffect(() => {
+    socket.on("messageRecieved", (message: Message) => {
+      console.log("message", message);
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      socket.off("message");
+    };
   }, []);
 
-  useEffect(() => {});
-
-  if (isLoading) return <div>Loading...</div>;
-
-  console.log("conversation", conversation);
+  // if (isLoading) return <div>Loading...</div>;
 
   return (
     <>
@@ -43,7 +84,7 @@ const ChatPopup = () => {
         }`}
       >
         <div className="h-[325px] py-5">
-          <Content />
+          <Content messages={messages} />
         </div>
 
         <Comment />
