@@ -53,6 +53,8 @@ const PreviewProduct = ({
 
   const { _id } = useUserContext();
 
+  console.log(_id);
+
   useEffect(() => {
     if (!selectedIndex || productPopup?._id === selectedIndex) return;
 
@@ -226,6 +228,8 @@ const PreviewProduct = ({
     productPopup?.category.length >= 2 && exists
       ? productPopup?.category.filter((category) => category._id !== targetId)
       : productPopup?.category;
+
+  console.log(productPopup?.variants);
 
   return createPortal(
     <div

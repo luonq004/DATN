@@ -29,6 +29,9 @@ const BlogPage = () => {
         </header>
       )}
       <div className="flex flex-col lg:flex-row gap-8 mt-20">
+      {/* <div>
+          <Sidebar />
+        </div> */}
         {/* Nội dung chính */}
         <div className="flex-1">
           <Outlet />

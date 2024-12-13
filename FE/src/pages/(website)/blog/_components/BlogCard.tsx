@@ -1,6 +1,5 @@
 import { Blog } from "@/common/types/Blog";
 import Pagination from "@/components/Pagination";
-import { categories } from "@/pages/(dashboard)/blog/_components/Categories";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -10,22 +9,36 @@ const BlogCard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, ] = useSearchParams();
   const currentCategory = searchParams.get("category") || null;
-  const currentPage = +(searchParams.get("page") || 1); // Lấy trang hiện tại từ URL (mặc định là trang 1)
+  // console.log("Current category (frontend):", currentCategory);
+  const currentPage = parseInt(searchParams.get("page") || "1");
   const itemsPerPage = 3;
+  const searchQuery = searchParams.get("search") || "";
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/category")
+      .then((response) => response.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error("Lỗi khi lấy danh mục:", err));
+  }, []);
 
   // Fetch dữ liệu từ API
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        // Nếu có tham số category trong URL, thêm vào query string để lọc theo danh mục
+        // Tạo query string nếu có danh mục
         const categoryParam = currentCategory
-          ? `?category=${currentCategory}`
+          ? `category=${currentCategory}`
           : "";
+        const searchParam = searchQuery ? `search=${searchQuery}` : "";
+        const queryString = [categoryParam, searchParam]
+          .filter(Boolean)
+          .join("&"); // Kết hợp query string
         const response = await axios.get(
-          `http://localhost:8080/api/blogs${categoryParam}`
-        ); // Gửi request đến API để lấy dữ liệu
+          `http://localhost:8080/api/blogs?${queryString}`
+        );
         setBlogs(response.data);
         setLoading(false);
       } catch (err) {
@@ -36,7 +49,7 @@ const BlogCard = () => {
     };
 
     fetchBlogs();
-  }, [currentCategory]);
+  }, [currentCategory, searchQuery]);
 
   // Lọc bài viết theo danh mục (nếu có)
   const filteredData = currentCategory
@@ -47,9 +60,9 @@ const BlogCard = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
-  const getCategoryLabel = (categoryValue: string) => {
-    const category = categories.find((cat) => cat.value === categoryValue);
-    return category ? category.label : categoryValue; // Nếu không tìm thấy thì trả về giá trị ban đầu
+  const getCategoryLabel = (categoryId: string) => {
+    const category = categories.find((cat) => cat._id === categoryId);
+    return category ? category.name : categoryId; // Nếu không tìm thấy thì trả về giá trị ban đầu
   };
 
   return (
@@ -73,11 +86,11 @@ const BlogCard = () => {
               className="max-w-4xl min-w-full mx-auto overflow-hidden"
             >
               {/* Image */}
-              <Link to={`/blog/detail/${item._id}`}>
+              <Link to={`/blog/detail/${item._id}?category=${currentCategory}`}>
                 <img
                   src={item.image}
                   alt="Blog"
-                  className="w-full mb-5 rounded-lg object-cover"
+                  className="w-full h-[500px] mb-5 rounded-lg object-cover"
                 />
               </Link>
 
@@ -100,7 +113,7 @@ const BlogCard = () => {
                 </div>
 
                 <div className="md:ml-[30px]">
-                  <Link to={`/blog/detail/${item._id}`}>
+                  <Link to={`/blog/detail/${item._id}?category=${currentCategory}`}>
                     <h2 className="text-xl font-raleway font-extrabold text-[#343434] mb-2 uppercase hover:text-[#b8cd06] cursor-pointer duration-200">
                       {item.title}
                     </h2>
@@ -115,7 +128,7 @@ const BlogCard = () => {
 
                   <div className="flex md:w-32 lg:space-x-2 space-y-3 lg:space-y-0 flex-col">
                     <Link
-                      to={`/blog/detail/${item._id}`}
+                      to={`/blog/detail/${item._id}?category=${currentCategory}`}
                       className="group relative px-8  py-6 text-xs bg-[#b8cd06] text-white rounded-full font-semibold overflow-hidden"
                     >
                       {/* Text chính */}

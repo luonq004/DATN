@@ -17,6 +17,9 @@ import { OrderProduct } from "@/common/types/Product";
 import CommentProduct from "./CommentProduct";
 import { useUser } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3000");
+
 interface Order {
   _id: string;
   orderCode: string;
@@ -72,6 +75,17 @@ const OrderHistory = () => {
       alert("Vui lòng nhập lý do hủy.");
       return;
     }
+
+    // Lấy orderCode từ orderIdToCancel
+    const orderToCancel = (data || []).find(
+      (order:any) => order._id === orderIdToCancel
+    );
+    const orderCode = orderToCancel?.orderCode;
+
+    if (!orderCode) {
+      alert("Không tìm thấy mã đơn hàng.");
+      return;
+    }
     // Gửi lý do hủy đơn hàng ở đây
     // await updateOrderStatus(
     //   orderIdToCancel,
@@ -83,6 +97,7 @@ const OrderHistory = () => {
         {
           newStatus,
           user,
+          userId: _id,
           reason,
         }
       ); // Đường dẫn API hủy đơn hàng
@@ -93,6 +108,19 @@ const OrderHistory = () => {
           description: "Đơn hàng đã được hủy thành công.",
           variant: "default",
         });
+
+        const firstProductImage = orderToCancel?.products[0]?.productItem?.image;
+
+        // Emit thông báo qua socket 
+        socket.emit("orderStatusChanged", {
+          orderId: orderIdToCancel,
+          orderCode,
+          newStatus,
+          userId: _id,
+          productImage: firstProductImage,
+          productName: orderToCancel?.products[0]?.productItem?.name
+        });
+        
       }
     } catch (error) {
       console.error(error);

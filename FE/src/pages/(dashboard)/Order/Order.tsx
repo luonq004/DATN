@@ -1,12 +1,14 @@
-import * as React from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import useAllOrders from "@/common/hooks/order/useAllOrders";
+import { OrderProduct } from "@/common/types/Product";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -15,26 +17,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link } from "react-router-dom";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-  SelectGroup,
-} from "@/components/ui/select";
-import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
-import { OrderProduct } from "@/common/types/Product";
-import useAllOrders from "@/common/hooks/order/useAllOrders";
-import { useUser } from "@clerk/clerk-react";
 import { formatCurrency } from "@/lib/utils";
+import { useUser } from "@clerk/clerk-react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import axios from "axios";
+import * as React from "react";
+import { Link } from "react-router-dom";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3000");
 import { PaginationProducts } from "../dashboard/_components/PaginationProducts";
 
 export type Order = {
   id: string;
+  userId: string;
   orderCode: string;
   amount: number;
   isPaid: boolean;
@@ -92,8 +95,22 @@ const AdminOrder = () => {
       alert("Vui lòng nhập lý do hủy.");
       return;
     }
+
+
+  const order = orders.find((o) => o.id === orderIdToCancel);  // Tìm đơn hàng theo orderId
+  if (!order || !order.userId) {
+    alert("Không tìm thấy thông tin người dùng");
+    return;
+  }
+
     // Gửi lý do hủy đơn hàng ở đây
-    await updateOrderStatus(orderIdToCancel, newStatus, reason);
+    await updateOrderStatus(
+      orderIdToCancel,
+      newStatus,
+      reason,
+      order.userId,
+      order.orderCode
+    );
     setReason("");
     setIsOpen(false); // Đóng modal sau khi hủy
   };
@@ -107,6 +124,7 @@ const AdminOrder = () => {
         payment: order.payment || "N/A",
         status: order.status || "unknown",
         createdAt: order.createdAt || "",
+        userId: order.userId,
         email: order.email || "",
         isPaid: order.isPaid,
       }))
@@ -119,12 +137,15 @@ const AdminOrder = () => {
   const updateOrderStatus = async (
     orderId: string,
     newStatus: string,
-    reason: string
+    reason: string,
+    userId: string,
+    orderCode: string
   ) => {
     try {
       const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
         newStatus,
         user,
+        userId,
         reason,
       });
 
@@ -135,6 +156,10 @@ const AdminOrder = () => {
           description: "Cập nhật trạng thái thành công!",
           variant: "default",
         });
+
+        // Gửi thông báo thay đổi trạng thái đơn hàng tới server
+        socket.emit("orderStatusChanged", { orderCode, newStatus, userId,orderId });
+
         return true;
       }
       return false;
@@ -156,14 +181,16 @@ const AdminOrder = () => {
       }
     }
   };
+
   // hủy
-  const cancelOrder = async (orderId: string) => {
+  const cancelOrder = async (orderId: string, userId: string) => {
     const newStatus = "đã hủy";
     try {
       const reason = "quá thời gian thanh toán!";
       const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
         newStatus,
         reason,
+        userId,
       }); // Đường dẫn API hủy đơn hàng
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", orderId]);
@@ -320,7 +347,10 @@ const AdminOrder = () => {
                     if (newStatus !== row.original.status) {
                       const isUpdated = await updateOrderStatus(
                         row.original.id,
-                        newStatus
+                        newStatus,
+                        reason, // Lý do nếu có
+                        row.original.userId,
+                        row.original.orderCode
                       );
                       if (isUpdated) {
                         row.original.status = newStatus; // Cập nhật trạng thái mới cho dòng

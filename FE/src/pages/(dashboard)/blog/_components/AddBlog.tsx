@@ -1,14 +1,13 @@
 import { Blog } from "@/common/types/Blog";
 import { useToast } from "@/components/ui/use-toast";
+import { uploadFile } from "@/lib/upload";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
-import { categories } from "./Categories";
-import { uploadFile } from "@/lib/upload";
 
 const AddBlog = () => {
   const { user } = useUser();
@@ -23,12 +22,32 @@ const AddBlog = () => {
       author: user?.fullName || "",
     },
   });
+  const [categories, setCategories] = useState<any[]>([]);
   const [value, setValueEditor] = useState(""); // Lưu giá trị editor của React Quill
   const [previewImage, setPreviewImage] = useState<string | null>(null); // Lưu ảnh xem trước
   const [imageFile, setImageFile] = useState<File | null>(null); // Lưu file ảnh
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Hàm lấy danh mục từ API
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/category"); // Đường dẫn API
+        setCategories(response.data); // Lưu danh mục vào state
+      } catch (error) {
+        console.error("Lỗi khi lấy danh mục:", error);
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: "Không thể lấy danh mục từ server",
+        });
+      }
+    };
+
+    fetchCategories(); // Gọi hàm lấy danh mục
+  }, []);
 
   const formats = [
     "header",
@@ -167,8 +186,8 @@ const AddBlog = () => {
               Chọn danh mục
             </option>
             {categories.map((cat) => (
-              <option key={cat.value} value={cat.value}>
-                {cat.label}
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
               </option>
             ))}
           </select>
@@ -177,7 +196,7 @@ const AddBlog = () => {
           )}
         </div>
         {/* Tác giả */}
-        <div>
+        <div className="hidden">
           <label htmlFor="author" className="block text-lg font-medium mb-2">
             Tác giả
           </label>

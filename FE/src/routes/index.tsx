@@ -43,21 +43,26 @@ import NotFound from "@/components/Notfound";
 import CreateAttributePage from "@/pages/(dashboard)/attribute/add/page";
 import UpdateAttributePage from "@/pages/(dashboard)/attribute/edit/page";
 import AttributesPage from "@/pages/(dashboard)/attribute/page";
+import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
 import UpdateAttributeValuePage from "@/pages/(dashboard)/attributeValue/edit/page";
 import AttributeValuePage from "@/pages/(dashboard)/attributeValue/page";
-import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
-import BlogCard from "@/pages/(website)/blog/_components/BlogCard";
-import ProductDetail from "@/pages/(website)/product/page";
-import Detail from "@/pages/(website)/blog/_components/Detail";
-import ListBlog from "@/pages/(dashboard)/blog/_components/ListBlog";
-import BlogPage from "@/pages/(website)/blog/page";
-import BlogPages from "@/pages/(dashboard)/blog/Page";
 import AddBlog from "@/pages/(dashboard)/blog/_components/AddBlog";
 import EditBlog from "@/pages/(dashboard)/blog/_components/EditBlog";
+import ListBlog from "@/pages/(dashboard)/blog/_components/ListBlog";
+import BlogPages from "@/pages/(dashboard)/blog/Page";
+import OrderDetail from "@/pages/(dashboard)/Order/OrderDetail";
 import PaymentResult from "@/pages/(dashboard)/PaymentComponent/PaymentResult ";
-import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
+// import CreateAttributeValuePage from "@/pages/(dashboard)/attributeValue/add/page";
 import WishListPage from "@/pages/(website)/wishlist/page";
 // import TestSocket from "@/pages/(website)/Testsocket";
+import BlogCard from "@/pages/(website)/blog/_components/BlogCard";
+import Detail from "@/pages/(website)/blog/_components/Detail";
+import BlogPage from "@/pages/(website)/blog/page";
+import ProductDetail from "@/pages/(website)/product/page";
+// import TestSocket from "@/pages/(website)/Testsocket";
+// import WishListPage from "@/pages/(website)/wishlist/page";
+import PageNotifications from "@/pages/(dashboard)/notifications/Page";
+import NotificationList from "@/pages/(dashboard)/notifications/_components/ListNotifications";
 import CategoriesPage from "@/pages/(dashboard)/category/page";
 import CategoryEditPage from "@/pages/(dashboard)/category/edit/page";
 import CategoryAddPage from "@/pages/(dashboard)/category/add/page";
@@ -121,6 +126,9 @@ const Router = () => {
           <Route path="products" element={<ProductPage />} />
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />
+          <Route path="notifications" element={<PageNotifications />}>
+            <Route index element={<NotificationList />} />
+          </Route>
 
           <Route path="users" element={<UserPage />}>
             <Route index element={<ListUser />} />

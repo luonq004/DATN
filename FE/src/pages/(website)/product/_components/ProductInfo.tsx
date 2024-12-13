@@ -37,6 +37,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     extractAttributes(product.variants || [])
   ) as [string, string[]][];
 
+  console.log(attributesProduct)
+
   const handleAttributeSelect = (type: string, value: string) => {
     setSelectedAttributes((prev) => {
       const newSelected = { ...prev };

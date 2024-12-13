@@ -85,7 +85,7 @@ const ProductAddPage = () => {
           deleted: false,
           price: 0,
           priceSale: 0,
-          category: ["674f3deca63479f361d8f499"],
+          category: [],
           image: "",
           type: "variable",
         },
@@ -93,7 +93,7 @@ const ProductAddPage = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof productSchema>) {
-    // console.log(values);
+    console.log(values);
     setIsDoing(true);
     if (id) {
       const duplicateValues = checkForDuplicateVariants(values);
@@ -124,6 +124,8 @@ const ProductAddPage = () => {
   }
 
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
+  console.log(form.formState.errors);
+  
 
   const types = id ? getUniqueTypes(product) : [];
 

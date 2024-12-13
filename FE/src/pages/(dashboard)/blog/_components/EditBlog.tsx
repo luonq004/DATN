@@ -15,8 +15,10 @@ const EditBlog = () => {
     handleSubmit,
     register,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<Blog>();
+  const [categories, setCategories] = useState<any[]>([]);
   const [value, setValueEditor] = useState(""); // Lưu giá trị editor của React Quill
   const [previewImage, setPreviewImage] = useState<string | null>(null); // Lưu ảnh xem trước
   const [imageFile, setImageFile] = useState<File | null>(null); // Lưu file ảnh
@@ -25,6 +27,20 @@ const EditBlog = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Lấy danh mục từ backend
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/category");
+        setCategories(response.data); // Lưu danh mục vào state
+      } catch (error) {
+        console.error("Lỗi khi lấy danh mục:", error);
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: "Không thể tải danh mục từ server.",
+        });
+      }
+    };
     // Lấy thông tin bài viết từ backend khi trang load
     const fetchBlog = async () => {
       try {
@@ -32,6 +48,7 @@ const EditBlog = () => {
           `http://localhost:8080/api/blogs/${id}`
         );
         const blog = response.data;
+        console.log(blog);
 
         // Cập nhật giá trị vào form
         setValue("title", blog.title);
@@ -51,7 +68,8 @@ const EditBlog = () => {
       }
     };
     fetchBlog();
-  }, [id, setValue, toast]);
+    fetchCategories();
+  }, [id, setValue, categories,toast]);
 
   // Hàm xử lý thay đổi nội dung của React Quill
   const handleChange = (content: string) => {
@@ -123,7 +141,9 @@ const EditBlog = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-semibold mb-4">Chỉnh sửa Blog</h1>
+      <h1 className="text-3xl font-semibold mb-4 uppercase">
+        Chỉnh sửa bài viết
+      </h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Tiêu đề */}
         <div>
@@ -155,13 +175,15 @@ const EditBlog = () => {
             {...register("category", { required: "Danh mục là bắt buộc" })}
             id="category"
             className="w-full p-2 border border-gray-300 rounded-md"
+            value={categories.length > 0 ? categories.find(cat => cat._id === watch('category'))?._id : ""} 
+            onChange={(e) => setValue("category", e.target.value)}
           >
             <option value="" disabled>
               Chọn danh mục
             </option>
             {categories.map((cat) => (
-              <option key={cat.value} value={cat.value}>
-                {cat.label}
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
               </option>
             ))}
           </select>
@@ -171,7 +193,7 @@ const EditBlog = () => {
         </div>
 
         {/* Tác giả */}
-        <div>
+        <div className="hidden">
           <label htmlFor="author" className="block text-lg font-medium mb-2">
             Tác giả
           </label>

@@ -1,6 +1,7 @@
 import { Slide } from "@/common/types/Slide";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import SwiperCore from "swiper";
 import "swiper/css/autoplay";
 import { Autoplay } from "swiper/modules";
@@ -18,7 +19,7 @@ const Slider = () => {
         const response = await axios.get(
           "http://localhost:8080/api/sliders?type=homepage"
         );
-        setSlidesData(response.data);
+        setSlidesData(response.data.slice(0, 3));
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu slide:", error);
       }
@@ -68,15 +69,17 @@ const Slider = () => {
               />
               {/* Overlay Gradient */}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${defaultGradientColor} opacity-60`}
+                className={`absolute inset-0 bg-gradient-to-br ${defaultGradientColor} opacity-50`}
               ></div>
 
               {index === 0 && (
                 <div className="flex flex-col md:flex-row md:items-center w-full h-full justify-between  p-5 wqAZ:p-0 mt-5 md:mt-0 relative z-20 space-y-4 md:space-y-0">
                   {/* Left Content */}
                   <div className="text-slate-50 w-full space-y-3 lg:pl-32">
-                    <h5 className="text-sm font-questrial">{slide.subtitle}</h5>
-                    <h2 className="xl:text-6xl md:text-5xl text-4xl text-[#fff]  font-raleway font-extrabold mb-2">
+                    <h5 className="text-sm font-questrial uppercase">
+                      {slide.subtitle}
+                    </h5>
+                    <h2 className="xl:text-6xl md:text-5xl text-4xl text-[#fff] uppercase font-raleway font-extrabold mb-2">
                       {slide.title}
                     </h2>
                     <div className="flex items-center gap-1">
@@ -108,37 +111,32 @@ const Slider = () => {
                       ))}
                     </ul>
 
-                    <div className="flex flex-col xl:flex-row font-questrial xl:items-center gap-5">
-                      <div className="text-lg text-left">
-                        <p className="text-lg">
-                          GIÁ TỐT NHẤT:{" "}
-                          <span>
-                            {slide.price?.toLocaleString("vi-VN")} VNĐ
-                          </span>
-                        </p>
-                      </div>
+                    <div className="flex flex-col xl:flex-row font-questrial xl:items-center ">
+                      <div className="text-lg text-left"></div>
                       <div className="flex flex-col font-questrial md:flex-row text-xs gap-3">
                         <button className="group relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-bold overflow-hidden">
-                          <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
-                            TÌM HIỂU THÊM
-                          </span>
-                          <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#b8cd06] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              className="w-5 h-5"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </span>
+                          <Link to={"/shopping"}>
+                            <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
+                              TÌM HIỂU THÊM
+                            </span>
+                            <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#b8cd06] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-5 h-5"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </span>
+                          </Link>
                         </button>
 
-                        <button className="group relative md:px-20 py-6 text-xs bg-[#343434] text-[#fff] rounded-full font-bold overflow-hidden">
+                        {/* <button className="group relative md:px-20 py-6 text-xs bg-[#343434] text-[#fff] rounded-full font-bold overflow-hidden">
                           <span className="absolute px-2 inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                             THÊM VÀO GIỎ HÀNG
                           </span>
@@ -156,7 +154,7 @@ const Slider = () => {
                               />
                             </svg>
                           </span>
-                        </button>
+                        </button> */}
                       </div>
                     </div>
                   </div>
@@ -185,8 +183,10 @@ const Slider = () => {
 
                   {/* Right Content */}
                   <div className="w-full md:items-end md:text-right text-left text-slate-50 lg:space-y-4 space-y-2 lg:pr-32">
-                    <h5 className="text-sm font-questrial">{slide.subtitle}</h5>
-                    <h2 className="xl:text-6xl md:text-5xl text-4xl font-raleway font-extrabold mb-2">
+                    <h5 className="text-sm font-questrial uppercase">
+                      {slide.subtitle}
+                    </h5>
+                    <h2 className="xl:text-6xl md:text-5xl text-4xl uppercase font-raleway font-extrabold mb-2">
                       {slide.title}
                     </h2>
                     <div className="flex md:justify-end items-center gap-1">
@@ -222,33 +222,30 @@ const Slider = () => {
                     </ul>
 
                     <div className="flex flex-col xl:flex-row font-questrial md:justify-end xl:items-center gap-5">
-                      <p className="text-lg">
-                        GIÁ TỐT NHẤT:{" "}
-                        <span>{slide.price?.toLocaleString("vi-VN")} VNĐ</span>
-                      </p>
-
                       <div className="flex flex-col md:flex-row md:justify-end text-xs gap-3 font-questrial">
                         <button className="group relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">
-                          <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
-                            TÌM HIỂU THÊM
-                          </span>
-                          <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#b8cd06] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              className="w-5 h-5"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </span>
+                          <Link to={"/shopping"}>
+                            <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
+                              TÌM HIỂU THÊM
+                            </span>
+                            <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#b8cd06] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-5 h-5"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </span>
+                          </Link>
                         </button>
 
-                        <button className="group relative md:px-20 py-6 text-xs bg-[#343434] text-[#fff] rounded-full font-semibold overflow-hidden">
+                        {/* <button className="group relative md:px-20 py-6 text-xs bg-[#343434] text-[#fff] rounded-full font-semibold overflow-hidden">
                           <span className="absolute px-2 inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
                             THÊM VÀO GIỎ HÀNG
                           </span>
@@ -266,7 +263,7 @@ const Slider = () => {
                               />
                             </svg>
                           </span>
-                        </button>
+                        </button> */}
                       </div>
                     </div>
                   </div>
@@ -283,10 +280,10 @@ const Slider = () => {
 
               {index === 2 && (
                 <div className="flex flex-col mb-10 p-5 lg:p-0 mt-5 md:mt-0 lg:items-center lg:justify-center md:text-center w-full h-full space-y-5 z-20">
-                  <h5 className="text-sm text-slate-100 md:mt-20 lg:mt-0 z-20">
+                  <h5 className="text-sm text-slate-100 md:mt-20 lg:mt-0 z-20 uppercase">
                     {slide.subtitle}
                   </h5>
-                  <h2 className="md:text-5xl xl:text-6xl text-4xl font-raleway font-extrabold text-white mb-2 z-20">
+                  <h2 className="md:text-5xl xl:text-6xl text-4xl font-raleway uppercase font-extrabold text-white mb-2 z-20">
                     {slide.title}
                   </h2>
                   <div className="flex md:justify-center md:items-center gap-1 z-20">
@@ -322,23 +319,25 @@ const Slider = () => {
                   </ul>
                   <div className="flex relative md:justify-center flex-col lg:flex-row md:items-center gap-5 z-20">
                     <button className="group text-xs relative md:px-16 py-6 bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">
-                      <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
-                        TÌM HIỂU THÊM
-                      </span>
-                      <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#b8cd06] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-5 h-5"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
+                      <Link to={"/shopping"}>
+                        <span className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">
+                          TÌM HIỂU THÊM
+                        </span>
+                        <span className="absolute inset-y-0 left-0 flex items-center justify-center w-full text-[#b8cd06] transition-all duration-200 ease-in-out transform -translate-x-full group-hover:translate-x-0 opacity-0 group-hover:opacity-100">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-5 h-5"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </Link>
                     </button>
                   </div>
                 </div>

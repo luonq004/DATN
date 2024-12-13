@@ -12,9 +12,12 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "./RegisterForm";
+import EditUserForm from "./UpdateUser";
+import PaginationComponent from "./Paginations";
 
 function ListUser() {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalOpendelete, setModalOpendelete] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isConfirmBanOpen, setConfirmBanOpen] = useState(false);
@@ -27,7 +30,7 @@ function ListUser() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const itemsPerPage = 5;
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const totalUsers = allUsers.length;
   const totalPages = Math.ceil(totalUsers / itemsPerPage);
@@ -46,6 +49,15 @@ function ListUser() {
     currentPage * itemsPerPage
   );
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setItemsPerPage(size);
+    setCurrentPage(1); 
+  };
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -62,13 +74,20 @@ function ListUser() {
 
       const usersData = Array.isArray(res.data?.data) ? res.data.data : [];
 
-      setAllUsers(usersData);
+      // Lọc bỏ tài khoản có role là admin
+      const filteredUsers = usersData.filter(
+        (user: User) => user.role !== "Admin"
+      );
+
+      setAllUsers(filteredUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const isAdmin = user?.publicMetadata?.role === "Admin";
 
   const getCookie = (name: string) => {
     const value = `; ${document.cookie}`;
@@ -109,7 +128,9 @@ function ListUser() {
         description:
           "Tài khoản đã được xóa thành công, có thể khôi phục được tài khoản!",
       });
-      fetchUsers();
+      setAllUsers((prevUsers) =>
+        prevUsers.filter((user) => user.clerkId !== clerkId)
+      );
     } catch (error) {
       toast({
         variant: "destructive",
@@ -146,6 +167,7 @@ function ListUser() {
         title: "Khôi phục thành công",
         description: "Tài khoản đã được khôi phục thành công!",
       });
+
       fetchUsers();
     } catch (error) {
       toast({
@@ -159,13 +181,13 @@ function ListUser() {
 
   const handleDeleteClick = (user: User) => {
     setSelectedUser(user);
-    setModalOpen(true);
+    setModalOpendelete(true);
   };
 
   const handleConfirmDelete = () => {
     if (selectedUser) {
       softDeleteUser(selectedUser.clerkId);
-      setModalOpen(false);
+      setModalOpendelete(false);
     }
   };
 
@@ -198,7 +220,12 @@ function ListUser() {
           description: "Tài khoản đã được khóa thành công!",
         });
       }
-      fetchUsers();
+      // Cập nhật lại trạng thái của người dùng trong danh sách allUsers
+      setAllUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.clerkId === clerkId ? { ...user, isBanned: !isBanned } : user
+        )
+      );
     } catch (error) {
       toast({
         variant: "destructive",
@@ -221,82 +248,103 @@ function ListUser() {
     }
   };
 
+  // Cập nhật hàm để mở modal khi nhấn "Edit"
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setModalOpen(true); // Mở modal
+  };
+
+  const handleSuccessUpdate = (updatedUser: User) => {
+    // Cập nhật thông tin người dùng trong danh sách
+    setAllUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.clerkId === updatedUser.clerkId ? updatedUser : user
+      )
+    );
+    fetchUsers();
+    setModalOpen(false); // Đóng modal
+  };
+
+  
+
   return (
-    <div className="mx-auto p-8">
+    <div className="">
       <SignedIn>
-        <div className="flex flex-col md:flex-row justify-between md:items-center ">
-          <h1 className="text-3xl mb-5 md:mb-0 text-center font-semibold text-gray-900">
-            Danh Sách User
+        <div className="">
+          <h1 className="text-2xl sm:text-3xl pb-10 text-center font-semibold text-gray-900">
+            Danh Sách Khách Hàng
           </h1>
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+
+          <div className="flex flex-col xl:flex-row gap-4 xl:items-center justify-center xl:justify-between">
             <input
               type="text"
-              placeholder="Tìm kiếm..."
+              placeholder="Tìm kiếm theo tên hoặc email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border px-4 py-2 rounded-md"
+              className="border xl:w-[300px] py-2 rounded-md"
             />
-            <select
-              value={includeDeleted ? "deleted" : "active"}
-              onChange={(e) => setIncludeDeleted(e.target.value === "deleted")}
-              className="border px-4 py-2 rounded-md"
-            >
-              <option value="active">Tài khoản đang hoạt động</option>
-              <option value="deleted">Tài khoản đã bị xóa</option>
-            </select>
 
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              {user?.publicMetadata?.role === "Admin" ? (
-                <DialogTrigger asChild>
-                  <DialogTitle
-                    onClick={(e) => {
-                      // Kiểm tra quyền khi nhấn vào nút
-                      if (user?.publicMetadata?.role !== "Admin") {
-                        e.preventDefault();
-                        // Nếu không phải Admin, hiển thị toast thông báo và ngừng mở form
-                        toast({
-                          variant: "destructive", // Toast hiển thị màu đỏ (thông báo lỗi)
-                          title: "Quyền truy cập bị từ chối",
-                          description:
-                            "Chỉ Admin mới có thể tạo người dùng mới.", // Mô tả lỗi
-                        });
-                        return; // Ngừng thực hiện hành động mở form
-                      }
-                      // Nếu là Admin, mở Dialog
-                      setIsOpen(true);
-                    }}
-                    className="px-6 font-normal text-[15px] cursor-pointer flex items-center gap-2 py-2 rounded-md bg-black text-white"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5"
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <select
+                value={includeDeleted ? "deleted" : "active"}
+                onChange={(e) =>
+                  setIncludeDeleted(e.target.value === "deleted")
+                }
+                className="border w-full sm:w-auto px-4 py-2 rounded-md"
+              >
+                <option value="active">Tài khoản đang hoạt động</option>
+                <option value="deleted">Tài khoản đã bị xóa</option>
+              </select>
+
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                {user?.publicMetadata?.role === "Admin" ? (
+                  <DialogTrigger asChild>
+                    <DialogTitle
+                      onClick={(e) => {
+                        // Kiểm tra quyền khi nhấn vào nút
+                        if (user?.publicMetadata?.role !== "Admin") {
+                          e.preventDefault();
+                          // Nếu không phải Admin, hiển thị toast thông báo và ngừng mở form
+                          toast({
+                            variant: "destructive", // Toast hiển thị màu đỏ (thông báo lỗi)
+                            title: "Quyền truy cập bị từ chối",
+                            description:
+                              "Chỉ Admin mới có thể tạo người dùng mới.", // Mô tả lỗi
+                          });
+                          return; // Ngừng thực hiện hành động mở form
+                        }
+                        // Nếu là Admin, mở Dialog
+                        setIsOpen(true);
+                      }}
+                      className="px-6 w-[180px] sm:w-auto font-normal text-[15px] cursor-pointer flex items-center gap-2  py-2 rounded-md bg-black text-white"
                     >
-                      <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-                    </svg>
-                    Thêm user
-                  </DialogTitle>
-                </DialogTrigger>
-              ) : null}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="w-5 h-5"
+                      >
+                        <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                      </svg>
+                      Thêm tài khoản
+                    </DialogTitle>
+                  </DialogTrigger>
+                ) : null}
 
-              {/* Nội dung modal */}
-              <DialogContent className="p-0">
-                <RegisterForm
-                  onClose={() => setIsOpen(false)} // hàm đóng form
-                  onSuccess={fetchUsers} // Hàm cập nhật danh sách người dùng
-                />
-              </DialogContent>
-            </Dialog>
+                {/* Nội dung modal */}
+                <DialogContent className="p-0">
+                  <RegisterForm
+                    onClose={() => setIsOpen(false)} // hàm đóng form
+                    onSuccess={fetchUsers} // Hàm cập nhật danh sách người dùng
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white shadow-lg rounded-lg overflow-x-auto mt-5 mb-5">
-          <table
-            className={`min-w-full leading-normal ${
-              isLoading ? "opacity-50" : ""
-            }`}
-          >
+        <div className=" grid overflow-x-auto bg-white my-6">
+          <table className="min-w-full">
             <thead>
               <tr>
                 <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -314,9 +362,11 @@ function ListUser() {
                 <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Trạng thái
                 </th>
-                <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Hành động
-                </th>
+                {isAdmin && (
+                  <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Hành động
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -328,13 +378,7 @@ function ListUser() {
                 </tr>
               ) : currentUsers.length > 0 ? (
                 currentUsers.map((user) => (
-                  <tr
-                    key={user.clerkId}
-                    onClick={() =>
-                      navigate(`/admin/users/detail/${user.clerkId}`)
-                    }
-                    className=" cursor-pointer"
-                  >
+                  <tr key={user.clerkId}>
                     <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
                       <img
                         src={user.imageUrl}
@@ -342,13 +386,18 @@ function ListUser() {
                         className="w-12 h-12 object-contain rounded"
                       />
                     </td>
-                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
+                    <td
+                      onClick={() =>
+                        navigate(`/admin/users/detail/${user.clerkId}`)
+                      }
+                      className="px-6 py-5 border-b border-gray-200 bg-white text-blue-500 text-sm underline cursor-pointer"
+                    >
                       {user.firstName} {user.lastName}
                     </td>
-                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm  max-w-xs break-words">
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm  ">
                       {user.email}
                     </td>
-                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm  max-w-xs break-words">
+                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm   ">
                       {user.role}
                     </td>
                     <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm">
@@ -367,44 +416,62 @@ function ListUser() {
                       )}
                     </td>
 
-                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm items-center flex mt-[15px]">
-                      {user.isDeleted ? (
-                        <button
-                          onClick={() => handleRestoreClick(user)}
-                          className="mr-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                          Khôi phục
-                        </button>
-                      ) : (
-                        <>
+                    {isAdmin && (
+                      <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm items-center flex mt-[15px]">
+                        {user.isDeleted ? (
                           <button
-                            onClick={() => handleBanClick(user)}
-                            className={`mr-4 ${
-                              user.isBanned ? "bg-green-500" : "bg-amber-500"
-                            } hover:bg-opacity-75 text-white font-bold py-2 px-4 rounded`}
+                            onClick={() => handleRestoreClick(user)}
+                            className="mr-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                           >
-                            {user.isBanned ? "Mở khóa" : "Khóa"}
+                            Khôi phục
                           </button>
-                          <button
-                            onClick={() => handleDeleteClick(user)}
-                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              className="size-5"
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handleBanClick(user)}
+                              className={`mr-4 ${
+                                user.isBanned ? "bg-green-500" : "bg-amber-500"
+                              } hover:bg-opacity-75 text-white font-bold py-2 px-4 rounded`}
                             >
-                              <path
-                                fillRule="evenodd"
-                                d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                        </>
-                      )}
-                    </td>
+                              {user.isBanned ? "Mở khóa" : "Khóa"}
+                            </button>
+
+                            <button
+                              onClick={() => handleDeleteClick(user)}
+                              className="text-red-600 font-bold py-2 px-4 rounded mr-3"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                className="size-5"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+
+                            <button
+                              onClick={() => handleEditUser(user)}
+                              className=" font-bold py-2 px-4 rounded"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 16 16"
+                                fill="currentColor"
+                                className="size-5"
+                              >
+                                <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
+                                <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
+                              </svg>
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))
               ) : (
@@ -416,51 +483,37 @@ function ListUser() {
               )}
             </tbody>
           </table>
+
+          {/* Modal hiển thị form chỉnh sửa */}
+          {selectedUser && (
+            <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
+              <DialogTitle></DialogTitle>
+              <DialogContent>
+                <EditUserForm
+                  onClose={() => setModalOpen(false)}
+                  onSuccess={handleSuccessUpdate}
+                  userData={selectedUser}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </SignedIn>
 
       {/*phân trang  */}
-      <div className="mt-4 flex justify-between items-center">
-        <div className="text-sm">
-          Trang {currentPage} / {totalPages}
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentPage(1)}
-            className="px-3 py-2 bg-stone-100 rounded-md"
-            disabled={currentPage === 1}
-          >
-            {"<<"}
-          </button>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === 1}
-          >
-            {"<"}
-          </button>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === totalPages}
-          >
-            {">"}
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === totalPages}
-          >
-            {">>"}
-          </button>
-        </div>
+      <div className="mt-4">
+      <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSize={itemsPerPage}
+        />
       </div>
 
       <Confirm
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
+        isOpen={isModalOpendelete}
+        onClose={() => setModalOpendelete(false)}
         onConfirm={handleConfirmDelete}
         title="Xác nhận xóa người dùng"
         message={`Bạn có chắc chắn muốn xóa user "<strong>${selectedUser?.firstName} ${selectedUser?.lastName}</strong>" ?`}

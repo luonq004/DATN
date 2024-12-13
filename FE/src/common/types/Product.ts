@@ -52,6 +52,9 @@ interface Address {
 
 export interface Category {
   _id: string;
+  image: string;
+  title: string;
+  description: string;
   name: string;
   title: string;
   image: string;
@@ -130,6 +133,7 @@ export interface OrderProduct {
     variantItem: VariantItem;
     // statusComment?: boolean;
     // isCommented?: boolean;
+    image?: string;
     quantity: number;
     _id: string;
   }[];

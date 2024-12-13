@@ -9,7 +9,7 @@ export const getAllSlides = async (req, res) => {
 
     const query = type ? { type } : {}; // Nếu có `type`, lọc theo loại slide
 
-    const slides = await Slider.find(query);
+    const slides = await Slider.find(query).sort({ createdAt: -1 });
 
     if (!slides.length) {
       return res.status(404).json({ message: "Không tìm thấy slide nào" });

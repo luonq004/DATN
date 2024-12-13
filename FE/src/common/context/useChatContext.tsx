@@ -1,79 +1,79 @@
-import { createContext, useContext, useReducer } from "react";
+// import { createContext, useContext, useReducer } from "react";
 
-// interface UserContextType {
-//   // Define the properties of your context here
-//   _id: string;
-//   clerkId: string;
-//   role: string;
-//   login: (id: string) => void;
-//   logout: () => void;
+// // interface UserContextType {
+// //   // Define the properties of your context here
+// //   _id: string;
+// //   clerkId: string;
+// //   role: string;
+// //   login: (id: string) => void;
+// //   logout: () => void;
+// // }
+
+// const ChatContext = createContext<UserContextType | null>(null);
+
+// const initialState = {
+//   _id: null,
+//   clerkId: null,
+//   role: null,
+// };
+
+// function reducer(state, action) {
+//   switch (action.type) {
+//     case "LOGIN":
+//       // console.log("action.payload", action.payload);
+//       return {
+//         ...state,
+//         _id: action.payload._id,
+//         clerkId: action.payload.clerkId,
+//         role: action.payload.role,
+//       };
+
+//     case "LOGOUT":
+//       return {
+//         ...state,
+//         _id: null,
+//         clerkId: null,
+//         role: null,
+//       };
+
+//     default:
+//       return state;
+//   }
 // }
 
-const ChatContext = createContext<UserContextType | null>(null);
+// function UserInfoProvider({ children }: { children: React.ReactNode }) {
+//   const [{ _id, role, clerkId }, dispatch] = useReducer(reducer, initialState);
 
-const initialState = {
-  _id: null,
-  clerkId: null,
-  role: null,
-};
+//   function login(id: string) {
+//     dispatch({ type: "LOGIN", payload: id });
+//   }
 
-function reducer(state, action) {
-  switch (action.type) {
-    case "LOGIN":
-      // console.log("action.payload", action.payload);
-      return {
-        ...state,
-        _id: action.payload._id,
-        clerkId: action.payload.clerkId,
-        role: action.payload.role,
-      };
+//   function logout() {
+//     dispatch({ type: "LOGOUT" });
+//   }
 
-    case "LOGOUT":
-      return {
-        ...state,
-        _id: null,
-        clerkId: null,
-        role: null,
-      };
+//   return (
+//     <UserContext.Provider
+//       value={{
+//         _id,
+//         role,
+//         clerkId,
+//         login,
+//         logout,
+//       }}
+//     >
+//       {children}
+//     </UserContext.Provider>
+//   );
+// }
 
-    default:
-      return state;
-  }
-}
+// function useUserContext() {
+//   const context = useContext(UserContext);
 
-function UserInfoProvider({ children }: { children: React.ReactNode }) {
-  const [{ _id, role, clerkId }, dispatch] = useReducer(reducer, initialState);
+//   if (context === null)
+//     throw new Error("UserContext was outside the UserProvider");
 
-  function login(id: string) {
-    dispatch({ type: "LOGIN", payload: id });
-  }
+//   return context;
+// }
 
-  function logout() {
-    dispatch({ type: "LOGOUT" });
-  }
-
-  return (
-    <UserContext.Provider
-      value={{
-        _id,
-        role,
-        clerkId,
-        login,
-        logout,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
-  );
-}
-
-function useUserContext() {
-  const context = useContext(UserContext);
-
-  if (context === null)
-    throw new Error("UserContext was outside the UserProvider");
-
-  return context;
-}
-
-export { UserInfoProvider, useUserContext };
+// export { UserInfoProvider, useUserContext };

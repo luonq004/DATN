@@ -1,86 +1,55 @@
 import logo from "@/assets/logo3.png";
-import imageFoot1 from "@/assets/img/Footer/foot1.jpeg";
-import imageFoot2 from "@/assets/img/Footer/foot2.jpeg";
+import { Blog } from "@/common/types/Blog";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const [posts, setPosts] = useState<Blog[]>([]);
   const quickLinks = [
-    "Trang Chủ",
-    "Giới Thiệu",
-    "Sản Phẩm",
-    "Dịch Vụ",
-    "Blog",
-    "Thư Viện",
-    "Liên Hệ",
-    "Chính Sách Bảo Mật",
-    "Bảo Hành",
-    "Đăng Nhập",
-    "Đăng Ký",
-    "Giao Hàng",
-    "Trang",
-    "Cửa Hàng",
+    { name: "Trang Chủ", url: "/" },
+    { name: "Giới Thiệu", url: "/about" },
+    { name: "Sản Phẩm", url: "/shopping" },
+    { name: "Dịch Vụ", url: "/services" },
+    { name: "Bài Viết", url: "/blog" },
+    { name: "Liên Hệ", url: "/contact" },
+    { name: "Chính Sách Bảo Mật", url: "/privacy-policy" },
+    { name: "Bảo Hành", url: "/warranty" },
   ];
 
-  const posts = [
-    {
-      title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
-      date: "07 Tháng 4 / 15",
-      imgSrc: imageFoot1,
-    },
-    {
-      title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
-      date: "07 Tháng 4 / 15",
-      imgSrc: imageFoot2,
-    },
-    {
-      title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
-      date: "07 Tháng 4 / 15",
-      imgSrc: imageFoot1,
-    },
-  ];
-  const tags = [
-    "TAI NGHE",
-    "PHỤ KIỆN",
-    "MỚI",
-    "KHÔNG DÂY",
-    "CÁP",
-    "THIẾT BỊ",
-    "ĐỒ CÔNG NGHỆ",
-    "THƯƠNG HIỆU",
-    "THAY THẾ",
-    "BAO DA",
-    "CHUYÊN NGHIỆP",
-  ];
+  // const posts = [
+  //   {
+  //     title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
+  //     date: "07 Tháng 4 / 15",
+  //     imgSrc: imageFoot1,
+  //   },
+  //   {
+  //     title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
+  //     date: "07 Tháng 4 / 15",
+  //     imgSrc: imageFoot2,
+  //   },
+  //   {
+  //     title: "FUSCE TINCIDUNT ACCUMSAN GIÁ TRỊ TẠI ĐÂY",
+  //     date: "07 Tháng 4 / 15",
+  //     imgSrc: imageFoot1,
+  //   },
+  // ];
 
-  const paymentMethods = [
-    {
-      imgSrc:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfECtHBI6QcuMYWSx8tTwXsAm9kne2DvLMUg&s",
-      link: "#skrill",
-    },
-    {
-      imgSrc:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
-      link: "#bitcoin",
-    },
-    {
-      imgSrc: "https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg",
-      link: "#paypal",
-    },
-    {
-      imgSrc:
-        "https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png",
-      link: "#mastercard",
-    },
-    {
-      imgSrc:
-        "https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png",
-      link: "#visa",
-    },
-  ];
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/blogs");
+        setPosts(response.data.slice(3,6));
+      } catch (error) {
+        console.error("Lỗi khi lấy bài viết:", error);
+      }
+    };
+    fetchPosts();
+  }, []);
 
   return (
     <footer className="bg-[#343434] text-xs text-gray-400 py-10 px-5">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Thông Tin Công Ty */}
         <div>
           <img src={logo} className="w-32 mb-3" alt="Logo" />
@@ -158,30 +127,34 @@ const Footer = () => {
           <h3 className="font-raleway font-extrabold text-white mb-4">
             LIÊN KẾT NHANH
           </h3>
-          <div className="grid grid-cols-2 gap-x-2">
+          <div className="grid grid-cols-2 gap-x-4">
             <ul className="space-y-5">
-              {quickLinks.slice(0, 7).map((link) => (
-                <li key={link}>
-                  <a
-                    href={`#${link.toLowerCase()}`}
-                    className="hover:text-[#b8cd06] cursor-pointer"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              {quickLinks
+                .slice(0, Math.ceil(quickLinks.length / 2))
+                .map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.url}
+                      className="hover:text-[#b8cd06] cursor-pointer"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
             </ul>
             <ul className="space-y-5">
-              {quickLinks.slice(7).map((link) => (
-                <li key={link}>
-                  <a
-                    href={`#${link.toLowerCase()}`}
-                    className="hover:text-[#b8cd06] cursor-pointer"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              {quickLinks
+                .slice(Math.ceil(quickLinks.length / 2))
+                .map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.url}
+                      className="hover:text-[#b8cd06] cursor-pointer"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
@@ -198,36 +171,23 @@ const Footer = () => {
                 className="flex items-center space-x-3 cursor-pointer"
               >
                 <img
-                  src={post.imgSrc}
+                  src={post.image}
                   alt="Ảnh Bài Viết"
                   className="w-16 h-16 rounded-lg object-cover"
                 />
                 <div>
-                  <p>{post.date}</p>
-                  <p className="hover:text-[#b8cd06] text-slate-200 font-raleway font-bold">
-                    {post.title}
-                  </p>
+                  <Link to={`/blog/detail/${post._id}`}>
+                    <p className="text-gray-400 text-xs">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </p>
+                    <p className="hover:text-[#b8cd06] text-slate-200 font-raleway font-bold uppercase line-clamp-2">
+                      {post.title}
+                    </p>
+                  </Link>
                 </div>
               </li>
             ))}
           </ul>
-        </div>
-
-        {/* Thẻ Phổ Biến */}
-        <div>
-          <h3 className=" font-raleway font-extrabold text-white mb-4">
-            THẺ PHỔ BIẾN
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="bg-[#424242] font-raleway text-[10px]  hover:bg-[#b8cd06] hover:text-white cursor-pointer text-zinc-400 py-2 px-2 rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

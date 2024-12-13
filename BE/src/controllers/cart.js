@@ -195,6 +195,7 @@ export const addToCart = async (req, res) => {
           productItem: productId,
           variantItem: variantId,
           quantity: +quantity,
+          selected: true,
         });
       } else {
         return res

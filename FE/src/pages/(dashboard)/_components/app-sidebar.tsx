@@ -74,6 +74,11 @@ const data = {
       icon: Grip,
     },
     {
+      title: "Voucher",
+      url: "/admin/voucher",
+      icon: Ticket,
+    },
+    {
       title: "Đơn hàng",
       url: "/admin/orders",
       icon: ShoppingCart,

@@ -1,9 +1,9 @@
 import { Blog } from "@/common/types/Blog";
+import Confirm from "@/components/Confirm/Confirm";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { categories } from "./Categories";
-import Confirm from "@/components/Confirm/Confirm";
+import PaginationComponent from "../../user/_component/Paginations";
 
 const ListBlog = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -16,10 +16,33 @@ const ListBlog = () => {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
   const [searchQuery, setSearchQuery] = useState("");
   const totalPages = Math.ceil(blogs.length / itemsPerPage);
   const { toast } = useToast();
+
+  const currentBlogs = filteredBlogs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setItemsPerPage(size);
+    setCurrentPage(1);
+  };
+  const [categories, setCategories] = useState<any[]>([]);
+
+useEffect(() => {
+  fetch("http://localhost:8080/api/category")
+    .then((response) => response.json())
+    .then((data) => setCategories(data))
+    .catch((err) => console.error("Lỗi khi lấy danh mục:", err));
+}, []);
+
 
   useEffect(() => {
     fetch("http://localhost:8080/api/blogs")
@@ -94,16 +117,12 @@ const ListBlog = () => {
     }
   };
 
-  const getCategoryLabel = (categoryValue: string) => {
-    const category = categories.find((cat) => cat.value === categoryValue);
-    return category ? category.label : categoryValue;
+  const getCategoryLabel = (categoryId: string) => {
+    const category = categories.find((cat) => cat._id === categoryId);
+    return category ? category.name  : categoryId;
   };
 
-  // Chia các bài viết thành các trang
-  const indexOfLastBlog = currentPage * itemsPerPage;
-  const indexOfFirstBlog = indexOfLastBlog - itemsPerPage;
-  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
-
+  
   if (loading)
     return (
       <div className="text-center text-xl text-gray-600">
@@ -114,11 +133,13 @@ const ListBlog = () => {
     return <div className="text-center text-xl text-red-500">{error}</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="pb-6 flex justify-between items-center">
-        <h1 className="text-3xl font-semibold">Danh sách bài viết</h1>
+    <div className=" mx-auto px-4 ">
+      <div className="pb-6 flex flex-col lg:flex-row justify-between items-center">
+        <h1 className="text-3xl font-semibold mb-10 lg:mb-0">
+          Danh sách bài viết
+        </h1>
 
-        <div className="flex items-center gap-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between w-[100%] lg:w-auto  gap-8">
           {/* Trường nhập liệu tìm kiếm */}
           <div className="flex justify-between items-center">
             <input
@@ -126,13 +147,13 @@ const ListBlog = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm kiếm theo tên hoặc tác giả..."
-              className="p-2 w-[300px] border border-gray-300 rounded-lg"
+              className="p-2 w-full sm:w-[300px] border border-gray-300 rounded-lg"
             />
           </div>
 
           <Link
             to="/admin/blogs/add"
-            className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-300"
+            className="flex w-[180px] items-center justify-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -219,42 +240,14 @@ const ListBlog = () => {
       />
 
       {/*phân trang  */}
-      <div className="mt-4 flex justify-between items-center">
-        <div className="text-sm">
-          Trang {currentPage} / {totalPages}
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentPage(1)}
-            className="px-3 py-2 bg-stone-100 rounded-md"
-            disabled={currentPage === 1}
-          >
-            {"<<"}
-          </button>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === 1}
-          >
-            {"<"}
-          </button>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === totalPages}
-          >
-            {">"}
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            className="px-3 py-2 bg-stone-100  rounded-md"
-            disabled={currentPage === totalPages}
-          >
-            {">>"}
-          </button>
-        </div>
+      <div className="mt-4">
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSize={itemsPerPage}
+        />
       </div>
     </div>
   );

@@ -32,16 +32,26 @@ export const createBlog = async (req, res) => {
 // Lấy tất cả bài viết (không phân trang)
 export const getBlogs = async (req, res) => {
   try {
-    const { category } = req.query; // Lấy danh mục từ query string
+    const { category, search } = req.query;
 
-    // Nếu có category, lọc theo category, nếu không, lấy tất cả bài viết
-    const filter = category ? { category } : {};
+    const filter = {};
 
-    const blogs = await Blog.find(filter).sort({ createdAt: -1 }); // Sắp xếp theo ngày tạo mới nhất
+    if (category) {
+      filter.category = category; // Lọc theo danh mục
+    }
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } }, // Tìm theo tiêu đề
+        { author: { $regex: search, $options: "i" } }, // Tìm theo tác giả
+      ];
+    }
+
+    const blogs = await Blog.find(filter).sort({ createdAt: -1 }); // Sắp xếp mới nhất
     res.status(200).json(blogs);
   } catch (error) {
     console.error("Lỗi khi lấy bài viết:", error);
-    res.status(500).json({ message: "Lỗi khi lấy bài viết", error });
+    res.status(500).json({ message: "Lỗi server", error });
   }
 };
 
@@ -97,7 +107,6 @@ export const updateBlog = async (req, res) => {
     return res.status(500).json({ message: "Lỗi khi cập nhật bài viết" });
   }
 };
-
 
 // Xóa bài viết
 export const deleteBlog = async (req, res) => {

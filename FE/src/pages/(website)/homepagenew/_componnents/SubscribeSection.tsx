@@ -32,7 +32,7 @@ const SubscribeSection = () => {
           mỗi tuần với mức giá tốt nhất dành cho bạn.
         </p>
 
-        <div className="flex mb-10 items-center border border-gray-300 rounded-full overflow-hidden">
+        {/* <div className="flex mb-10 items-center border border-gray-300 rounded-full overflow-hidden">
           <input
             type="email"
             placeholder="Nhập email của bạn"
@@ -61,7 +61,7 @@ const SubscribeSection = () => {
               </svg>
             </span>
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

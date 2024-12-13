@@ -73,20 +73,20 @@ const LayoutWebsite = () => {
             // Gọi hàm saveUserToDatabase với await
             const data = await saveUserToDatabase(user.id);
             // console.log("data", data);
-            setSelectedUser(data._id); // Lưu _id vào context
-            socket.emit("setup", data._id); // Gửi _id qua socket
-
-            const conversation = await axios.get(
-              `http://localhost:8080/api/conversation/${data._id}`
-            );
-            // console.log("conversation", conversation.data._id);
-            socket.emit("joinChat", conversation.data._id);
-
-            setSelectedConversation(conversation.data._id);
-            getMessages(data._id);
-            subscribeToMessages();
-
             login(data); // Lưu _id vào context
+            setSelectedUser(data); // Lưu _id vào context
+            // socket.emit("setup", data._id); // Gửi _id qua socket
+
+            // const conversation = await axios.get(
+            //   `http://localhost:8080/api/conversation/${data._id}`
+            // );
+            // console.log("conversation", conversation.data._id);
+            // socket.emit("joinChat", conversation.data._id);
+
+            // setSelectedConversation(conversation.data._id);
+            // getMessages(data._id);
+            // subscribeToMessages();
+
             isUserSaved.current = true; // Đánh dấu đã lưu
           } catch (error) {
             console.error("Lỗi khi lưu user vào database:", error);
@@ -101,9 +101,9 @@ const LayoutWebsite = () => {
   }, [
     user,
     login,
-    setSelectedUser,
-    setSelectedConversation,
-    getMessages,
+    // setSelectedUser,
+    // setSelectedConversation,
+    // getMessages,
     // subscribeToMessages,
   ]);
 

@@ -3,9 +3,20 @@ import mongoose from "mongoose";
 const notificationSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",  // Liên kết với model User
+      type: String,
       required: true,
+    },
+    orderId: {
+      type: String,
+      required: false, 
+    },
+    orderCode: {
+      type: String,
+      required: false, 
+    },
+    productImage: {
+      type: String, // URL ảnh sản phẩm
+      required: false,
     },
     message: {
       type: String,
@@ -13,16 +24,25 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["info", "warning", "error"],  // Định nghĩa các loại thông báo
-      default: "info",
+      enum: ["info", "warning", "error", "success"], // Các loại thông báo
+      default: "info", // Mặc định là thông báo thông tin
+    },
+    status: {
+      type: String,
+      enum: ["success", "pending", "failed"], // Trạng thái của thông báo
+      default: "pending", // Trạng thái mặc định
     },
     isRead: {
       type: Boolean,
-      default: false,  // Để đánh dấu xem thông báo đã đọc hay chưa
+      default: false, // Đánh dấu đã đọc hay chưa
     },
+    isReadByAdmin: {
+      type: Boolean,
+      default: false, // Đánh dấu đã đọc hay chưa
+    }
   },
   {
-    timestamps: true,  // Tự động thêm các trường createdAt, updatedAt
+    timestamps: true, // Tự động thêm các trường createdAt, updatedAt
   }
 );
 

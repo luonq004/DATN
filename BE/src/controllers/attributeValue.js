@@ -64,8 +64,9 @@ export const getAttributeValueByAttributeId = async (req, res) => {
 export const createAttributeValue = async (req, res) => {
   try {
     const id = req.params.id; //id Attribute
+    console.log(req.body);
 
-    const { name, value } = req.body;
+    const { name, value, type } = req.body;
 
     const checkName = await checkNameExist(name);
 
@@ -89,6 +90,7 @@ export const createAttributeValue = async (req, res) => {
         .replace(/ /g, "-")
         .toLowerCase(),
       value,
+      type,
     });
 
     const addValue = {

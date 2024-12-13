@@ -1,29 +1,21 @@
-import { useUser } from "@clerk/clerk-react";
-import { useEffect, useRef, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import Sidebar from "./_components/SideBar";
 import { useUserContext } from "@/common/context/UserProvider";
+import { saveUserToDatabase } from "@/common/hooks/useCheckUser";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { useUser } from "@clerk/clerk-react";
+import { useEffect, useRef, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { AppSidebar } from "./_components/app-sidebar";
-import { saveUserToDatabase } from "@/common/hooks/useCheckUser";
+import NotificationList from "./notifications/_components/ListNotifications";
 
 const LayoutAdmin = () => {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState(true);
+  const { _id } = useUserContext();
   const isUserSaved = useRef(false);
   const { login } = useUserContext();
 
@@ -36,11 +28,7 @@ const LayoutAdmin = () => {
     }
 
     // Kiểm tra quyền truy cập
-    if (
-      user &&
-      (user.publicMetadata.role === "Admin" ||
-        user.publicMetadata.role === "Employee")
-    ) {
+    if (user && user.publicMetadata.role === "Admin") {
       // Xác nhận quyền truy cập
       setIsAuthorized(true);
     } else {
@@ -90,7 +78,7 @@ const LayoutAdmin = () => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             {/* <Separator orientation="vertical" className="mr-2 h-4" /> */}
@@ -107,8 +95,10 @@ const LayoutAdmin = () => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb> */}
-          </div>
+          </div>{" "}
+            <NotificationList />
         </header>
+
         <div className="flex flex-1 flex-col gap-4 pt-0">
           <div className="w-full bg-[#f1f5f9] h-full">
             {/* <div className="h-20 bg-red-400"></div> */}

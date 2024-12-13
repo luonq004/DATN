@@ -155,7 +155,11 @@ const AttributeTab = ({
               />
 
               <div className="flex gap-2">
-                <AddNewValue attributeId={value._id} dispatch={dispatch} />
+                <AddNewValue
+                  attributeId={value._id}
+                  type={value.name}
+                  dispatch={dispatch}
+                />
 
                 <Button
                   type="button"

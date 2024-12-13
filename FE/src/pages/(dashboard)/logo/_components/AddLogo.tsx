@@ -2,19 +2,30 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+
+interface FormData {
+  title: string;
+}
 
 const AddLogoPage = () => {
-  const [title, setTitle] = useState("");
-  const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [image, setImage] = useState<File | null>(null); // State lưu trữ ảnh
   const [loading, setLoading] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false); // State kiểm tra form đã được submit chưa
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
+    if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setImage(file);
+      setImage(file); // Lưu trữ file vào state
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -23,16 +34,25 @@ const AddLogoPage = () => {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append("title", title);
-    if (image) {
-      formData.append("image", image);
+  const onSubmit = async (data: FormData) => {
+    setIsSubmitted(true); // Đánh dấu form đã được submit
+
+    if (!image) {
+      // Nếu chưa chọn ảnh, hiện thông báo lỗi
+      toast({
+        variant: "destructive",
+        title: "Thất bại",
+        description: "Vui lòng chọn hình ảnh!",
+      });
+      return;
     }
 
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("image", image);
+
     try {
-      setLoading(true)
+      setLoading(true);
       await axios.post("http://localhost:8080/api/logo", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -47,17 +67,20 @@ const AddLogoPage = () => {
       toast({
         variant: "destructive",
         title: "Thất bại",
-        description: "Có lỗi sảy ra khi tạo Logo!",
+        description: "Có lỗi xảy ra khi tạo Logo!",
       });
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="md:px-20 mx-auto p-6 ">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">Thêm Mới Logo</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="md:px-20 mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">
+        Thêm Mới Logo
+      </h2>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {/* Tiêu đề */}
         <div className="mb-5">
           <label
             htmlFor="title"
@@ -67,13 +90,19 @@ const AddLogoPage = () => {
           </label>
           <input
             type="text"
+            placeholder="Tiêu đề"
             id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            {...register("title", { required: "Tiêu đề không được để trống!" })}
+            className={`mt-1 block w-full p-2 border ${
+              errors.title ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
+          {errors.title && (
+            <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+          )}
         </div>
+
+        {/* Hình ảnh */}
         <div className="mb-4">
           <label
             htmlFor="image"
@@ -86,14 +115,22 @@ const AddLogoPage = () => {
             id="image"
             accept="image/*"
             onChange={handleImageChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            className={`mt-1 block w-full border ${
+              isSubmitted && !image ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
+          {isSubmitted && !image && (
+            <p className="text-red-500 text-sm mt-1">
+              Hình ảnh không được để trống!
+            </p>
+          )}
         </div>
+
+        {/* Xem trước ảnh */}
         {preview && (
           <div className="my-6">
             <label className="block text-sm font-medium text-gray-700">
-              Xem Trước Ảnh Được Thêm: 
+              Xem Trước Ảnh Được Thêm:
             </label>
             <div className="mt-2 w-full flex justify-center">
               <img
@@ -104,12 +141,16 @@ const AddLogoPage = () => {
             </div>
           </div>
         )}
+
+        {/* Nút submit */}
         <button
           type="submit"
-          className={` bg-blue-500 text-white px-4 py-2 mt-6 rounded hover:bg-blue-600 shadow-sm transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-blue-500 text-white px-4 py-2 mt-6 rounded hover:bg-blue-600 shadow-sm transition duration-200 ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           disabled={loading}
         >
-          {loading ? 'Đang Thêm...' : 'Thêm Logo'}
+          {loading ? "Đang Thêm..." : "Thêm Logo"}
         </button>
       </form>
     </div>
