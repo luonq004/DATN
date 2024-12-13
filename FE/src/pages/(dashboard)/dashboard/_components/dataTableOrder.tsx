@@ -73,7 +73,7 @@ export function DataTableOrder<TData, TValue>({
             <div className="">
                 <div className="flex items-center gap-x-2 py-2">
                     <Input
-                        placeholder="Lọc theo Order Code..."
+                        placeholder="Lọc theo mã đơn hàng..."
                         value={(table.getColumn("orderCode")?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
                             table.getColumn("orderCode")?.setFilterValue(event.target.value)
@@ -146,7 +146,7 @@ export function DataTableOrder<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    Không có dữ liệu
+                                    Không có đơn hàng nào được đặt gần đây
                                 </TableCell>
                             </TableRow>
                         )}

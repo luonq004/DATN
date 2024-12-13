@@ -20,7 +20,7 @@ export type Payment = {
 export const columnsOrder: ColumnDef<{ id: string; amount: number; status: string; email: string; imageUrl: string; customer: string; phone: number; payment: string; }>[] = [
     {
         accessorKey: "orderCode",
-        header: "Order Code",
+        header: "Mã đơn hàng",
         cell: ({ row }) => (
             <Link to={`/admin/orders/orderdetails/${row?.original?.id}`}>
                 <span className="text-sm font-semibold text-blue-600">

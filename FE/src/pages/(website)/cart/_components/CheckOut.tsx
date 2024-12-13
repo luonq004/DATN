@@ -131,9 +131,9 @@ const CheckOut = () => {
     };
     try {
       // Gửi yêu cầu tạo đơn hàng đến backend
-      
+
       if (data.paymentMethod === "Vnpay") {
-        const orderResponse  = await axios.post(
+        const orderResponse = await axios.post(
           "http://localhost:8080/api/create-order-Vnpay",
           orderData
         );
@@ -156,7 +156,7 @@ const CheckOut = () => {
         const paymentUrl = response.data.redirectUrl;
         window.location.href = paymentUrl;
       }
-      if(data.paymentMethod === "COD"){
+      if (data.paymentMethod === "COD") {
         const response = await axios.post(
           "http://localhost:8080/api/create-order",
           orderData
@@ -169,21 +169,21 @@ const CheckOut = () => {
           userId: _id,
           message: "Đặt hàng thành công!",
         });
-      
-      if (data.paymentMethod === "COD" && response.status === 201) {
-        queryClient.invalidateQueries(["CART"]);
-        // Đơn hàng đã được tạo thành công
-        toast({
-          title: "Thành công!",
-          description: "Đặt hàng thành công.",
-          variant: "default",
-        });
-        // queryClient.invalidateQueries(["CART", _id]);
-        navigate("/cart/order"); // Điều hướng đến trang đơn hàng
-        // Gửi email xác nhận đơn hàng
-        await sendOrderConfirmationEmail(Gmail, orderCode);
+
+        if (data.paymentMethod === "COD" && response.status === 201) {
+          queryClient.invalidateQueries(["CART"]);
+          // Đơn hàng đã được tạo thành công
+          toast({
+            title: "Thành công!",
+            description: "Đặt hàng thành công.",
+            variant: "default",
+          });
+          // queryClient.invalidateQueries(["CART", _id]);
+          navigate("/cart/order"); // Điều hướng đến trang đơn hàng
+          // Gửi email xác nhận đơn hàng
+          await sendOrderConfirmationEmail(Gmail, orderCode);
+        }
       }
-    }
     } catch (error: unknown) {
       console.error("Lỗi khi tạo đơn hàng: ", error);
 
@@ -406,7 +406,7 @@ const CheckOut = () => {
                                     <div key={value._id}>
                                       {value.type}: {value.name}
                                       {index <
-                                      item.variantItem.values.length - 1
+                                        item.variantItem.values.length - 1
                                         ? ","
                                         : ""}
                                     </div>

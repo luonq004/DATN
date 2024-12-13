@@ -31,7 +31,7 @@ export function CardTabsList() {
                             <DollarSign />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>{formatCurrency(234423000) || NaN} VNĐ</div>
+                            <div className='text-2xl font-bold'>{formatCurrency(data?.total) || NaN} VNĐ</div>
                         </CardContent>
                     </Card>
                     <Card className="hover:-translate-y-1 hover:shadow-md">
@@ -42,7 +42,7 @@ export function CardTabsList() {
                             <Truck />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>+{data.order || NaN}1</div>
+                            <div className='text-2xl font-bold'>+{data?.order || NaN}</div>
                         </CardContent>
                     </Card>
                     <Card className="hover:-translate-y-1 hover:shadow-md">
