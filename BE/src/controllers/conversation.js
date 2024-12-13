@@ -10,10 +10,14 @@ export const getAllConversations = async (req, res) => {
       .select("_id user updatedAt") // Chỉ lấy các trường cần thiết
       .sort({ updatedAt: -1 });
 
+    if (!conversations) {
+      return res.status(401).json({ error: "Không tìm thấy cuộc trò chuyện" });
+    }
+
     res.status(200).json(conversations);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Không tìm thấy cuộc trò chuyện" });
   }
 };
 

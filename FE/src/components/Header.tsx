@@ -112,12 +112,12 @@ const Header = () => {
 
   // Tham gia phòng socket khi _id thay đổi
 
-  useEffect(() => {
-    if (_id) {
-      socket.emit("join_room", _id); // Tham gia phòng với userId
-      console.log(`User với id: ${_id} đã tham gia phòng`);
-    }
-  }, [_id]);
+  // useEffect(() => {
+  //   if (_id) {
+  //     socket.emit("join_room", _id); // Tham gia phòng với userId
+  //     // console.log(`User với id: ${_id} đã tham gia phòng`);
+  //   }
+  // }, [_id]);
 
   // Lấy thông báo từ API
   const fetchNotifications = async () => {

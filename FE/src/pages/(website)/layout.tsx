@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3000");
+// const socket = io("http://localhost:3000");
 
 const LayoutWebsite = () => {
   const { user } = useUser();
@@ -74,7 +74,7 @@ const LayoutWebsite = () => {
             const data = await saveUserToDatabase(user.id);
             // console.log("data", data);
             login(data); // Lưu _id vào context
-            setSelectedUser(data); // Lưu _id vào context
+            // setSelectedUser(data._id);
             // socket.emit("setup", data._id); // Gửi _id qua socket
 
             // const conversation = await axios.get(
@@ -107,15 +107,15 @@ const LayoutWebsite = () => {
     // subscribeToMessages,
   ]);
 
-  useEffect(() => {
-    socket.on("messageRecieved", (newMessageRecieved) => {
-      console.log("message Recieved", newMessageRecieved);
-    });
+  // useEffect(() => {
+  //   socket.on("messageRecieved", (newMessageRecieved) => {
+  //     console.log("message Recieved", newMessageRecieved);
+  //   });
 
-    // return () => {
-    //   socket.off("newMessage");
-    // };
-  }, []);
+  //   // return () => {
+  //   //   socket.off("newMessage");
+  //   // };
+  // }, []);
 
   const clearAccountLockedStatus = () => {
     // Xóa trạng thái từ localStorage và ẩn thông báo

@@ -1,13 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiChat2 } from "react-icons/ci";
 import Comment from "./components/Comment";
 import Content from "./components/Content";
 // import { useChatStore } from "@/common/context/useChatStore";
 
+import { io } from "socket.io-client";
+import { useUserContext } from "@/common/context/UserProvider";
+import { useGetConversation } from "./actions/useGetConversation";
+
+const socket = io("http://localhost:3000");
+
 const ChatPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { _id } = useUserContext();
 
-  // console.log("asd");
+  const { conversation, isLoading, error } = useGetConversation(_id!);
+
+  useEffect(() => {
+    if (!_id) return;
+    socket.emit("setup", _id);
+    socket.emit("joinChat", conversation?._id);
+  }, []);
+
+  useEffect(() => {});
+
+  if (isLoading) return <div>Loading...</div>;
+
+  console.log("conversation", conversation);
 
   return (
     <>

@@ -51,10 +51,8 @@ export const setupSocketIO = (server, app) => {
       console.log("Đơn hàng được đặt: ", orderData);
 
       try {
-        const isSuccess = orderData.status === "success"; // Kiểm tra trạng thái thành công
-        const message = isSuccess
-          ? `Đơn hàng với mã <strong>${orderData.orderCode}</strong> đã được đặt thành công!`
-          : `Đơn hàng với mã <strong>${orderData.orderCode}</strong> đã thất bại. Vui lòng thử lại!`;
+        const isSuccess = "success"; // Trạng thái thành công
+        const message = `Đơn hàng với mã <strong>${orderData.orderCode}</strong> đã được đặt thành công!`;
 
         const productName = orderData.productName;
         const productImage = orderData.productImage;
@@ -69,7 +67,7 @@ export const setupSocketIO = (server, app) => {
           productImage: productImage,
           productName: productName,
           type: "info", // Loại thông báo
-          status: isSuccess ? "success" : "failed", // Trạng thái thông báo
+          status: isSuccess, // Trạng thái thông báo
           isRead: false, // Chưa đọc
           timestamp: new Date(),
         });
@@ -170,7 +168,6 @@ export const setupSocketIO = (server, app) => {
           isRead: newNotification.isRead,
           createdAt: newNotification.createdAt,
         });
-
       } catch (error) {
         console.error("Lỗi khi lưu thông báo về trạng thái đơn hàng:", error);
         io.to(userIdStr).emit("orderStatusNotificationError", {
@@ -289,8 +286,6 @@ export const setupSocketIO = (server, app) => {
         return console.log("Khong co conversation.listUsers");
 
       // const uniqueUsers = [...new Set(newMessageRecieved.sender.listUsers)];
-
-      socket.emit("agh", newMessageRecieved);
 
       newMessageRecieved.sender.listUsers.forEach((user) => {
         if (user == newMessageRecieved.sender._id) return;
