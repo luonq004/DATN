@@ -19,7 +19,12 @@ export const setupSocketIO = (server, app) => {
 
     const userId = socket.handshake.query.userId;
     if (userId) {
-      userSocketMap[userId] = socket.id; // Lưu socketId của người dùng vào userSocketMap
+      if (userSocketMap[userId] && userSocketMap[userId] !== socket.id) {
+        console.log(`Đóng kết nối socket cũ cho user: ${userId}`);
+        const oldSocketId = userSocketMap[userId];
+        io.sockets.sockets.get(oldSocketId)?.disconnect();
+      }
+      userSocketMap[userId] = socket.id; // Cập nhật socket ID mới
       console.log("Người dùng đã kết nối:", userId);
     }
 
@@ -27,20 +32,19 @@ export const setupSocketIO = (server, app) => {
     socket.on("join_room", async (userId) => {
       const rooms = Object.keys(socket.rooms);
       if (!rooms.includes(userId)) {
+        // Rời khỏi các phòng trước đó để tránh nhận trùng lặp
+        rooms.forEach((room) => {
+          if (room !== socket.id) socket.leave(room);
+        });
+    
         socket.join(userId);
+        console.log(`Admin ${userId} đã tham gia phòng:`, userId);
+    
+        // Cập nhật socket ID duy nhất cho admin
+        userSocketMap[userId] = socket.id;
       }
-
-      // Lấy danh sách các admin
-      const admins = await Users.find({ role: "Admin" }).select("_id");
-
-      // Lưu socketId của admin vào userSocketMap
-      admins.forEach((admin) => {
-        if (!rooms.includes(admin._id.toString())) {
-          socket.join(admin._id.toString());
-          userSocketMap[admin._id.toString()] = socket.id; // Lưu socketId của admin
-        }
-      });
     });
+    
 
     // Lắng nghe sự kiện 'orderPlaced' từ client
     socket.on("orderPlaced", async (orderData) => {
@@ -167,6 +171,8 @@ export const setupSocketIO = (server, app) => {
           isRead: newNotification.isRead,
           createdAt: newNotification.createdAt,
         });
+
+        console.log("đã phát thông báo cho", userIdStr);
 
         // Lưu thông báo cho admin
         const adminMessage = `Đơn hàng với mã <strong>${orderCode}</strong> của user <strong>${userIdStr}</strong> đã chuyển sang trạng thái <strong>${newStatus}</strong>.`;

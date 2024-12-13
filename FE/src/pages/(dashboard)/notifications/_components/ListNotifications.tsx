@@ -199,7 +199,7 @@ const NotificationList = () => {
       {/* Dropdown Thông báo */}
       {isNotificationsOpen && (
         <div
-          className="absolute right-5 text-right  w-[300px] bg-white shadow-2xl rounded-lg max-h-96 overflow-y-auto border border-gray-200 scrollbar-hide z-50"
+          className="absolute right-2 lg:right-5 text-right  w-[300px] bg-white shadow-2xl rounded-lg max-h-96 overflow-y-auto border border-gray-200 scrollbar-hide z-50"
           style={{
             scrollbarWidth: "none", // Firefox
             msOverflowStyle: "none", // IE & Edge
