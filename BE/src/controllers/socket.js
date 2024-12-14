@@ -5,9 +5,10 @@ import Message from "../models/message.js";
 import Users from "../models/users.js";
 
 // Cấu hình và xử lý các sự kiện Socket.IO
+let io;
 
 export const setupSocketIO = (server, app) => {
-  const io = new Server(server, {
+  io = new Server(server, {
     cors: {
       origin: "*",
       methods: ["GET", "POST"],
@@ -336,3 +337,10 @@ export function getReceiverSocketId(conversationId) {
   console.log(userSocketMap);
   return userSocketMap[conversationId];
 }
+
+export const getIO = () => {
+  if (!io) {
+    throw new Error("Socket.io chưa được khởi tạo!");
+  }
+  return io; // Trả về đối tượng io để sử dụng trong file khác
+};
