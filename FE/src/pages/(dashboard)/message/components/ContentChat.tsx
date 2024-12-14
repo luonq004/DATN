@@ -3,39 +3,103 @@ import { useChatStore } from "@/common/context/useChatStore";
 import { useUserContext } from "@/common/context/UserProvider";
 
 import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { Socket } from "dgram";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ScrollableFeed from "react-scrollable-feed";
+import { io } from "socket.io-client";
 
-const ContentChat = () => {
+const socket = io("http://localhost:3000");
+
+type Message = {
+  _id: string;
+  text: string;
+  senderType: string;
+  createdAt: string;
+  sender: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    imageUrl: string;
+    listUsers: string[];
+  };
+};
+
+type ConversationResponse = {
+  messages: Message[];
+};
+
+const ContentChat = ({ socket }: { socket: Socket }) => {
   const { _id } = useUserContext();
+  const [listMessage, setListMessage] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  console.log(_id);
 
   const {
-    listMessage,
-    getMessages,
-    isMessagesLoading,
-    subscribeToMessages,
     selectedUser,
-    selectedConversation,
-    sendMessage,
     newMessage,
     setNewMessage,
+    selectedConversation,
+    clearNewMessage,
   } = useChatStore();
+
+  const fetchMessages = async () => {
+    try {
+      setIsLoading(true);
+      const data = await axios.get<ConversationResponse>(
+        `http://localhost:8080/api/conversation/${selectedUser}`
+      );
+
+      setListMessage(data.data.messages);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedUser) return;
+    fetchMessages();
+  }, [selectedUser]);
+
+  useEffect(() => {
+    socket.on("messageRecieved", (message: Message) => {
+      // console.log("message", message);
+
+      if (message.sender.listUsers.includes(_id)) {
+        setListMessage((prev: any) => [...prev, message]);
+      }
+    });
+  }, [_id]);
 
   // const { isCheckingAuth, authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
-  useEffect(() => {
-    if (!selectedUser || !selectedConversation) return;
-    getMessages(selectedUser!);
-    subscribeToMessages();
-
-    // return () => unsubscribeFromMessages();
-  }, [selectedUser, getMessages, selectedConversation, subscribeToMessages]);
-
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return; // Kiểm tra nếu tin nhắn rỗng thì không gửi
-    await sendMessage(_id);
+    try {
+      const data = await axios.post(
+        `http://localhost:8080/api/conversation/${selectedConversation}/messageAdmin`,
+        {
+          text: newMessage,
+          adminId: _id,
+          receiverId: selectedUser,
+        }
+      );
+
+      // conversation/${selectedConversation}/messageAdmin
+
+      socket.emit("newMessage", data.data);
+      setListMessage((prev: any) => [...prev, data.data]);
+      clearNewMessage();
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+    // await sendMessage(_id);
   };
 
   const handleKeyDown = async (
@@ -43,15 +107,15 @@ const ContentChat = () => {
   ) => {
     if (event.key === "Enter" && newMessage) {
       console.log("OK");
-      await sendMessage(_id);
+      // await sendMessage(_id);
     }
   };
 
-  // useEffect(() => {
-  //   if (messageEndRef.current && listMessage) {
-  //     messageEndRef.current.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // }, [listMessage]);
+  useEffect(() => {
+    if (messageEndRef.current && listMessage) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [listMessage]);
 
   // async function handleSendMessage() {
   //   if (!message) return;
@@ -75,13 +139,18 @@ const ContentChat = () => {
   //   );
   // }
 
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <div className="relative w-full">
       <div className=" border-b pb-4">
         <div className="w-full max-h-[70vh] min-h-[70vh]">
           <ScrollableFeed>
-            {listMessage?.messages?.length > 0 ? (
-              listMessage.messages.map((message) => (
+            asdasd
+            {listMessage?.length > 0 ? (
+              listMessage.map((message) => (
                 <div key={message._id}>
                   {message.senderType === "Admin" ? (
                     <div

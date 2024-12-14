@@ -5,6 +5,7 @@ import Variant from "../models/variant";
 import cart from "../models/cart";
 import Product from "../models/product";
 import mongoose from "mongoose";
+import { getIO } from "./socket";
 
 //=========================tạo đơn hàng mới===============
 export const createOrder = async (req, res) => {
@@ -664,6 +665,10 @@ export const deleteOrder = async (req, res) => {
 
     // Xóa đơn hàng
     await Order.findByIdAndDelete(id);
+
+    const io = getIO();
+
+    io.emit('order', "Luong")
 
     return res.status(StatusCodes.OK).json({
       message: "Đơn hàng đã được xóa thành công",

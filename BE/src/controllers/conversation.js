@@ -10,10 +10,14 @@ export const getAllConversations = async (req, res) => {
       .select("_id user updatedAt") // Chỉ lấy các trường cần thiết
       .sort({ updatedAt: -1 });
 
+    if (!conversations) {
+      return res.status(401).json({ error: "Không tìm thấy cuộc trò chuyện" });
+    }
+
     res.status(200).json(conversations);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Không tìm thấy cuộc trò chuyện" });
   }
 };
 
@@ -51,6 +55,11 @@ export const sendMessageFromAdmin = async (req, res) => {
     conversation.messages.push(message._id);
     // conversation.admins.push(adminId);
     conversation.updatedAt = Date.now();
+
+    if (conversation.admins.indexOf(adminId) === -1) {
+      conversation.admins.push(adminId);
+    }
+
     await conversation.save();
 
     // console.log(conversation);
@@ -67,17 +76,6 @@ export const sendMessageFromAdmin = async (req, res) => {
       },
     };
 
-    // const receiverSocketId = getReceiverSocketId(receiverId);
-    // const io = req.app.get("io");
-    // // console.log(io);
-
-    // if (receiverSocketId) {
-    //   console.log(`Sending message to socketId: ${receiverSocketId}`, result); // Thêm log để kiểm tra
-    //   io.to(receiverSocketId).emit("newMessage", result);
-    // } else {
-    //   console.log("Receiver socketId not found!");
-    // }
-
     return res.status(200).json(result);
   } catch (error) {
     console.error(error);
@@ -86,13 +84,20 @@ export const sendMessageFromAdmin = async (req, res) => {
 };
 
 export const sendMessageFromUser = async (req, res) => {
-  const { text, conversationId, senderId, userId } = req.body;
+  const { userId } = req.params;
+  const { text, conversationId } = req.body;
 
-  if (!text || !senderId) {
+  if (!text || !userId) {
     return res.status(400).json({ error: "Dữ liệu không hợp lệ" });
   }
 
   try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(400).json({ error: "Gửi tin nhắn không thành công" });
+    }
+
     let conversation = await Conversation.findOne({ _id: conversationId });
 
     if (!conversation) {
@@ -102,18 +107,37 @@ export const sendMessageFromUser = async (req, res) => {
       });
     }
 
+    const allAdmin = await User.find({ role: "Admin" });
+
+    conversation.admins = allAdmin.map((admin) => admin._id);
+
+    const { role, _id, imageUrl, firstName, lastName } = user;
+
     const message = await Message.create({
       conversationId: conversation._id,
-      userId: senderId,
+      sender: userId,
       senderType: "User",
       text,
     });
 
     conversation.messages.push(message._id);
     conversation.updatedAt = Date.now();
+
     await conversation.save();
 
-    res.status(200).json(message);
+    const result = {
+      ...message._doc,
+      sender: {
+        _id,
+        imageUrl,
+        listUsers: [conversation.user, ...conversation.admins],
+        firstName,
+        lastName,
+        role,
+      },
+    };
+
+    res.status(200).json(result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

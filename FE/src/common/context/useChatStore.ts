@@ -91,10 +91,7 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
       socket.on("messageRecieved", (newMessageRecieved) => {
         console.log("newMessageRecieved");
 
-        if (
-          !selectedConversation ||
-          selectedConversation !== newMessageRecieved.conversationId
-        ) {
+        if (!selectedConversation || !selectedConversation) {
           // thong bao
           // console.log("newMessageRecieved", newMessageRecieved);
         } else {
@@ -142,5 +139,7 @@ export const useChatStore = create<IChatStoreState & ChatStoreActions>(
       set({ selectedConversation }),
 
     setNewMessage: (e) => set({ newMessage: e.target.value }),
+
+    clearNewMessage: () => set({ newMessage: "" }),
   })
 );
