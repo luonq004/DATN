@@ -96,11 +96,11 @@ const LayoutAdmin = () => {
               </BreadcrumbList>
             </Breadcrumb> */}
           </div>{" "}
-            <NotificationList />
+          <NotificationList />
         </header>
 
         <div className="flex flex-1 flex-col gap-4 pt-0">
-          <div className="w-full bg-[#f1f5f9] h-full">
+          <div className="w-full bg-[#ffffff] h-full">
             {/* <div className="h-20 bg-red-400"></div> */}
             <div className="rounded-lg m-7 min-h-80">
               <Outlet />

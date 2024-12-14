@@ -52,9 +52,7 @@ export const setupSocketIO = (server, app) => {
 
       try {
         const isSuccess = orderData.status === "success"; // Kiểm tra trạng thái thành công
-        const message = isSuccess
-          ? `Đơn hàng với mã <strong>${orderData.orderCode}</strong> đã được đặt thành công!`
-          : `Đơn hàng với mã <strong>${orderData.orderCode}</strong> đã thất bại. Vui lòng thử lại!`;
+        const message = isSuccess`Đơn hàng với mã <strong>${orderData.orderCode}</strong> đã được đặt thành công!`;
 
         const productName = orderData.productName;
         const productImage = orderData.productImage;
