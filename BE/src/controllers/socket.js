@@ -5,9 +5,10 @@ import Message from "../models/message.js";
 import Users from "../models/users.js";
 
 // Cấu hình và xử lý các sự kiện Socket.IO
+let io;
 
 export const setupSocketIO = (server, app) => {
-  const io = new Server(server, {
+  io = new Server(server, {
     cors: {
       origin: "*",
       methods: ["GET", "POST"],
@@ -36,15 +37,14 @@ export const setupSocketIO = (server, app) => {
         rooms.forEach((room) => {
           if (room !== socket.id) socket.leave(room);
         });
-    
+
         socket.join(userId);
         console.log(`Admin ${userId} đã tham gia phòng:`, userId);
-    
+
         // Cập nhật socket ID duy nhất cho admin
         userSocketMap[userId] = socket.id;
       }
     });
-    
 
     // Lắng nghe sự kiện 'orderPlaced' từ client
     socket.on("orderPlaced", async (orderData) => {
@@ -175,7 +175,7 @@ export const setupSocketIO = (server, app) => {
         console.log("đã phát thông báo cho", userIdStr);
 
         // Lưu thông báo cho admin
-        const adminMessage = `Đơn hàng với mã <strong>${orderCode}</strong> của user <strong>${userIdStr}</strong> đã chuyển sang trạng thái <strong>${newStatus}</strong>.`;
+        const adminMessage = `Đơn hàng với mã <strong>${orderCode}</strong> đã được cập nhật và chuyển sang trạng thái <strong>${newStatus}</strong>.`;
 
         const adminIds = await Users.find({ role: "Admin" }).select("_id");
         adminIds.forEach((admin) => {
@@ -300,22 +300,22 @@ export const setupSocketIO = (server, app) => {
       console.log("User joined Room", room);
     });
 
-    socket.on("messageRecieved", (newMessageRecieved) => {
-      console.log("newMessageRecieved:", newMessageRecieved);
-    });
+    // socket.on("messageRecieved", (newMessageRecieved) => {
+    //   console.log("newMessageRecieved:", newMessageRecieved);
+    // });
 
     socket.on("newMessage", (newMessageRecieved) => {
       console.log("LUONG:");
       if (!newMessageRecieved.sender.listUsers)
         return console.log("Khong co conversation.listUsers");
 
-      // const uniqueUsers = [...new Set(newMessageRecieved.sender.listUsers)];
+      const uniqueUsers = [...new Set(newMessageRecieved.sender.listUsers)];
 
-      socket.emit("agh", newMessageRecieved);
+      // socket.emit("agh", newMessageRecieved);
 
-      newMessageRecieved.sender.listUsers.forEach((user) => {
+      uniqueUsers.forEach((user) => {
         if (user == newMessageRecieved.sender._id) return;
-        // console.log(`Notifying user ${user} about the message.`);
+        console.log(`Notifying user ${user} about the message.`);
         socket.to(user).emit("messageRecieved", newMessageRecieved);
       });
     });
@@ -337,3 +337,10 @@ export function getReceiverSocketId(conversationId) {
   console.log(userSocketMap);
   return userSocketMap[conversationId];
 }
+
+export const getIO = () => {
+  if (!io) {
+    throw new Error("Socket.io chưa được khởi tạo!");
+  }
+  return io; // Trả về đối tượng io để sử dụng trong file khác
+};

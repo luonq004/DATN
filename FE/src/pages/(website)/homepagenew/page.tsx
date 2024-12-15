@@ -12,15 +12,15 @@ import { io } from "socket.io-client";
 const socket = io("http://localhost:3000");
 
 const HomePageNew = () => {
-  useEffect(() => {
-    socket.on("messageRecieved", (newMessageRecieved) => {
-      console.log("message Recieved", newMessageRecieved);
-    });
+  // useEffect(() => {
+  //   socket.on("messageRecieved", (newMessageRecieved) => {
+  //     console.log("message Recieved", newMessageRecieved);
+  //   });
 
-    // return () => {
-    //   socket.off("newMessage");
-    // };
-  }, []);
+  //   // return () => {
+  //   //   socket.off("newMessage");
+  //   // };
+  // }, []);
 
   return (
     <div className="bg-zinc-100">

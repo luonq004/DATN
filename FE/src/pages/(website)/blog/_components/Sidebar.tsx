@@ -21,7 +21,7 @@ const Sidebar = () => {
   
         // Lấy bài viết
         const postResponse = await axios.get("http://localhost:8080/api/blogs");
-        const postsData = postResponse.data.slice(5, 10); // Lấy 10 bài viết đầu tiên
+        const postsData = postResponse.data.slice(5, 10); 
   
         // Kết hợp bài viết với tên danh mục
         const combinedPosts = postsData.map((post:any) => {

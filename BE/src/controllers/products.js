@@ -23,7 +23,7 @@ export const getAllProducts = async (req, res) => {
   };
   const populateOptions = _expand
     ? [
-        { path: "category", select: "name", match: { deleted: false } },
+        { path: "category", select: "name deleted", match: { deleted: false } },
         { path: "attribites", match: { deleted: false } },
         { path: "comments", match: { deleted: false } },
         {
@@ -68,14 +68,38 @@ export const getAllProducts = async (req, res) => {
     const result = await Product.paginate(query, { ...options });
     const populatedDocs = await Product.populate(result.docs, populateOptions);
 
-    // console.log(result);
+    // console.log(populatedDocs);
+
+    let listProduct;
+
+    if (_category == "675dadfde9a2c0d93f9ba531") {
+      const filteredProducts = populatedDocs.filter((product) => {
+        const categoryProduct = product.category.filter(
+          (cat) => cat.deleted == false
+        );
+
+        const exists = categoryProduct.some(
+          (category) => category._id.toString() == "675dadfde9a2c0d93f9ba531"
+        );
+
+        return product.category.length == 1 && exists;
+      });
+
+      // Gắn lại danh sách sản phẩm đã lọc vào `result` để giữ thông tin phân trang
+      listProduct = {
+        ...result,
+        docs: filteredProducts, // Cập nhật danh sách sản phẩm đã lọc
+      };
+    } else {
+      listProduct = result; // Nếu không lọc, sử dụng toàn bộ `result`
+    }
 
     const data = {
-      data: populatedDocs,
+      data: listProduct.docs, // Sản phẩm
       pagination: {
-        currentPage: result.page,
-        totalPages: result.totalPages,
-        totalItems: result.totalDocs,
+        currentPage: listProduct.page,
+        totalPages: listProduct.totalPages,
+        totalItems: listProduct.totalDocs,
       },
     };
 

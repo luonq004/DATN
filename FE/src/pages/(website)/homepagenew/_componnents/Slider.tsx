@@ -164,7 +164,7 @@ const Slider = () => {
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className="w-[400px] mb-14 md:w-[400px] h-auto object-cover z-20"
+                      className="w-[350px] mb-14 h-auto object-cover z-20"
                     />
                   </div>
                 </div>
@@ -177,7 +177,7 @@ const Slider = () => {
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className="w-[400px] md:w-[400px] h-auto object-cover z-20"
+                      className="w-[350px] h-auto object-cover z-20"
                     />
                   </div>
 

@@ -118,7 +118,7 @@ const Products = () => {
               </h3>
 
               {/* Mô tả */}
-              <p className="text-sm font-questrial text-gray-500 mb-2 transition-opacity duration-300 line-clamp-3">
+              <p className="text-sm font-questrial text-gray-500 mb-2 transition-opacity duration-300 line-clamp-2">
                 {product.description}
               </p>
               <div className="flex items-center justify-between mt-3">

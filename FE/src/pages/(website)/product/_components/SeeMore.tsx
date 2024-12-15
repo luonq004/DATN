@@ -45,7 +45,7 @@ const SeeMore = ({
         </TabsList>
         <TabsContent value="description">
           <div
-            className="detail mt-[30px] md:mt-[60px]"
+            className="detail mt-[30px] md:mt-[60px] bg-slate-100 p-4"
             dangerouslySetInnerHTML={{ __html: descriptionDetail }}
           />
         </TabsContent>

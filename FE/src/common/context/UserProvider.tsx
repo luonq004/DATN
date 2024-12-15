@@ -20,7 +20,6 @@ const initialState = {
 function reducer(state, action) {
   switch (action.type) {
     case "LOGIN":
-      console.log("action.payload", action.payload);
       return {
         ...state,
         _id: action.payload._id,

@@ -137,7 +137,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                 {/* ${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'} */}
                 <Link to={`${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'}`}>
                     <div className={`bg-[#C8C9CB] ${cart?.products?.every((item: any) => item.selected === false) ? 'cursor-not-allowed' : 'bg-light-400 hover:bg-light-500'} transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium select-none`}>
-                        <div>Checkout</div>
+                        <div>Thanh toán</div>
                         <div className=''>|</div>
                         <div><span>{formatCurrency(cart?.total ?? 0)} VNĐ</span></div>
                     </div>

@@ -208,7 +208,6 @@ export const checkForDuplicateVariants = (data: IProduct) => {
 
 export const extractAttributes = (variants: any) => {
   const attributes: any = {};
-  console.log("variants: ", variants);
 
   variants.forEach((variant) => {
     variant.values.forEach((value) => {
@@ -228,7 +227,6 @@ export const extractAttributes = (variants: any) => {
     attributes[key] = Array.from(attributes[key]);
   });
 
-  console.log("attributes: ", attributes);
   return attributes;
 };
 

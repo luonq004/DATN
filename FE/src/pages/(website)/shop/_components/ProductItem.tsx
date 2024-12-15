@@ -45,12 +45,19 @@ const ProductItem = ({
   const destrucId =
     wishList && wishList?.products?.map((item) => item.productItem._id);
 
-  // console.log("destrucId", destrucId);
+  if (listProduct?.data[0] == null || !listProduct?.data) {
+    return (
+      <div className="w-full text-center">
+        <img src={noData} alt="No data" className="w-2/3 mx-auto mb-5" />
+      </div>
+    );
+  }
 
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-3 mt-6">
-        {listProduct?.data.length > 0 &&
+        {listProduct &&
+          listProduct?.data?.length > 0 &&
           listProduct?.data.map((product) => (
             // console.log("product", product),
             <div
@@ -179,11 +186,11 @@ const ProductItem = ({
           ))}
       </div>
       {/* wishList.products */}
-      {listProduct?.data.length === 0 && (
+      {/* {listProduct?.data.length === 0 && (
         <div className="w-full text-center">
           <img src={noData} alt="No data" className="w-2/3 mx-auto mb-5" />
         </div>
-      )}
+      )} */}
 
       {/* PORTAL */}
       <PreviewProduct

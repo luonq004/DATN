@@ -113,7 +113,7 @@ const UpdateAttributePage = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ml-5">
-        <h2 className="text-2xl font-medium">Tạo danh mục</h2>
+        <h2 className="text-2xl font-medium">Cập nhật danh mục</h2>
 
         <div className="flex flex-col xl:flex-row gap-10">
           <div className="w-full">

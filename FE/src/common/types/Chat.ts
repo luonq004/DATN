@@ -72,4 +72,5 @@ export interface ChatStoreActions {
   setSelectedUser: (selectedUser: string) => void;
   setSelectedConversation: (selectedConversation: string) => void;
   setNewMessage: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  clearNewMessage: () => void;
 }

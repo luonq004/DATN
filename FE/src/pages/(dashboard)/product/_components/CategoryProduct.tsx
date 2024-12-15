@@ -25,6 +25,8 @@ type Category = {
 };
 
 const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
+  const defaultCategory = "675dadfde9a2c0d93f9ba531";
+
   const { category, isLoadingCategory } = useCategory();
 
   const [accordionValue, setAccordionValue] = useState<string | undefined>(
@@ -65,7 +67,7 @@ const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
                         >
                           <FormControl>
                             <Checkbox
-                              disabled={item._id === "674f3deca63479f361d8f499"}
+                              disabled={item._id === defaultCategory}
                               checked={field.value?.includes(item._id)}
                               onCheckedChange={(checked) => {
                                 return checked

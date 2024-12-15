@@ -120,7 +120,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Không có giá trị
+                  Thuộc tính này chưa có giá trị
                 </TableCell>
               </TableRow>
             )}

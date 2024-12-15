@@ -15,7 +15,7 @@ export const getAllCategory = async (req, res) => {
 
     const category = await Category.find({
       deleted: flag,
-    });
+    }).sort({ createdAt: 1 });
 
     if (category.length < 0) {
       return res.status(400).json({ message: "Không tìm thấy danh mục nào" });

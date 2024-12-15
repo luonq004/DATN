@@ -123,6 +123,47 @@ const VariationTab = ({
     if (stateSelect === "deleteAll") {
       replaceFields([]);
     }
+
+    if (stateSelect === "countOnStock") {
+      const value = prompt("Nhập số lượng tồn kho cho tất cả biến thể");
+
+      fields.forEach((field, index) => {
+        form.setValue(
+          `variants.${index}.countOnStock`,
+          parseInt(value || "1", 10)
+        );
+      });
+    }
+
+    if (stateSelect === "priceOriginal") {
+      const value = prompt("Nhập giá gốc cho tất cả biến thể");
+
+      fields.forEach((field, index) => {
+        form.setValue(
+          `variants.${index}.originalPrice`,
+          parseInt(value || "1", 10)
+        );
+      });
+    }
+
+    if (stateSelect === "price") {
+      const value = prompt("Nhập giá bán cho tất cả biến thể");
+
+      fields.forEach((field, index) => {
+        form.setValue(`variants.${index}.price`, parseInt(value || "1", 10));
+      });
+    }
+
+    if (stateSelect === "priceSale") {
+      const value = prompt("Nhập giá giảm giá cho tất cả biến thể");
+
+      fields.forEach((field, index) => {
+        form.setValue(
+          `variants.${index}.priceSale`,
+          parseInt(value || "0", 10)
+        );
+      });
+    }
   };
 
   const handleToggle = (value: string) => {
@@ -151,10 +192,14 @@ const VariationTab = ({
             Tạo biến thể từ tất cả thuộc tính đã chọn
           </option>
           <option value="deleteAll">Xóa tất cả</option>
+          <option value="countOnStock">Số lượng tồn kho</option>
+          <option value="priceOriginal">Đồng giá gốc</option>
+          <option value="price">Đồng giá bán</option>
+          <option value="priceSale">Đồng giá giảm giá</option>
         </select>
         <Button
           type="button"
-          className="bg-gray-200 text-black"
+          className="bg-gray-200 hover:bg-gray-300 text-black"
           onClick={handleButtonClick}
         >
           Chọn

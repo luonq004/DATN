@@ -97,11 +97,11 @@ const AdminOrder = () => {
     }
 
 
-  const order = orders.find((o) => o.id === orderIdToCancel);  // Tìm đơn hàng theo orderId
-  if (!order || !order.userId) {
-    alert("Không tìm thấy thông tin người dùng");
-    return;
-  }
+    const order = orders.find((o) => o.id === orderIdToCancel);  // Tìm đơn hàng theo orderId
+    if (!order || !order.userId) {
+      alert("Không tìm thấy thông tin người dùng");
+      return;
+    }
 
     // Gửi lý do hủy đơn hàng ở đây
     await updateOrderStatus(
@@ -158,7 +158,7 @@ const AdminOrder = () => {
         });
 
         // Gửi thông báo thay đổi trạng thái đơn hàng tới server
-        socket.emit("orderStatusChanged", { orderCode, newStatus, userId,orderId });
+        socket.emit("orderStatusChanged", { orderCode, newStatus, userId, orderId });
 
         return true;
       }
@@ -183,42 +183,42 @@ const AdminOrder = () => {
   };
 
   // hủy
-  const cancelOrder = async (orderId: string, userId: string) => {
-    const newStatus = "đã hủy";
-    try {
-      const reason = "quá thời gian thanh toán!";
-      const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
-        newStatus,
-        reason,
-        userId,
-      }); // Đường dẫn API hủy đơn hàng
-      if (response.status === 200) {
-        queryClient.invalidateQueries(["ORDER_HISTORY", orderId]);
-        toast({
-          title: "Thành công",
-          description: "Đơn hàng đã được hủy thành công.",
-          variant: "default",
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      const err = error as ErrorResponse;
-      if (err.response && err.response.data) {
-        toast({
-          title: "Lỗi",
-          description:
-            err.response.data.message || "Cập nhật trạng thái thất bại!",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Lỗi kết nối",
-          description: "Lỗi kết nối server!",
-          variant: "destructive",
-        });
-      }
-    }
-  };
+  // const cancelOrder = async (orderId: string, userId: string) => {
+  //   const newStatus = "đã hủy";
+  //   try {
+  //     const reason = "Lỗi thao tác của người dùng!";
+  //     const response = await axios.put(`${apiUrl}/update-order/${orderId}`, {
+  //       newStatus,
+  //       reason,
+  //       userId,
+  //     }); // Đường dẫn API hủy đơn hàng
+  //     if (response.status === 200) {
+  //       queryClient.invalidateQueries(["ORDER_HISTORY", orderId]);
+  //       toast({
+  //         title: "Thành công",
+  //         description: "Đơn hàng đã được hủy thành công.",
+  //         variant: "default",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     const err = error as ErrorResponse;
+  //     if (err.response && err.response.data) {
+  //       toast({
+  //         title: "Lỗi",
+  //         description:
+  //           err.response.data.message || "Cập nhật trạng thái thất bại!",
+  //         variant: "destructive",
+  //       });
+  //     } else {
+  //       toast({
+  //         title: "Lỗi kết nối",
+  //         description: "Lỗi kết nối server!",
+  //         variant: "destructive",
+  //       });
+  //     }
+  //   }
+  // };
 
   // Kiểm tra nếu đơn hàng cần hủy sau 5 phút từ thời điểm tạo đơn hàng
   React.useEffect(() => {
@@ -226,33 +226,13 @@ const AdminOrder = () => {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
     // Lặp qua các đơn hàng để kiểm tra
-    orders.forEach((order) => {
+    orders.forEach(async (order) => {
       // Chỉ xử lý các đơn hàng có trạng thái "chờ xác nhận" và payment là "Vnpay"
       if (order.isPaid === false && order.payment === "Vnpay") {
-        // sendOrderErrorConfirmationEmail("hai31569@gmail.com",order.orderCode)
-        const createdAt = new Date(order.createdAt);
-        const currentTime = new Date();
-        const timeElapsed = currentTime.getTime() - createdAt.getTime();
-
-        // Kiểm tra nếu đơn hàng đã được tạo hơn 5 phút
-        if (timeElapsed >= 300000) {
-          // Nếu quá 5 phút, hủy đơn hàng ngay lập tức
-          cancelOrder(order.id);
-        } else {
-          // Nếu chưa đến 5 phút, cài đặt hủy sau khoảng thời gian còn lại
-          const remainingTime = 300000 - timeElapsed;
-
-          // Cài đặt một timeout để hủy đơn hàng sau khoảng thời gian còn lại
-          const timerId = setTimeout(() => {
-            // Kiểm tra lại trạng thái của đơn hàng trước khi hủy
-            if (order.isPaid === false) {
-              cancelOrder(order.id);
-            }
-          }, remainingTime);
-
-          // Lưu timerId để có thể clear sau nếu trạng thái thay đổi
-          timers.push(timerId);
-        }
+        await axios.put(
+          `${apiUrl}/delete-order/${order.id}`
+        );
+        queryClient.invalidateQueries(["ORDER_HISTORY"]);
       }
     });
 
@@ -476,9 +456,9 @@ const AdminOrder = () => {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
               ))}
             </TableRow>

@@ -206,7 +206,8 @@ const NewArrivals = () => {
           onSlideChange={(swiper) => setActiveProductIndex(swiper.realIndex)}
           loop={true}
           touchRatio={1}
-          resistance={false}
+          // resistance={true}
+          // direction="horizontal" 
           centerInsufficientSlides={true}
           breakpoints={{
             320: {
@@ -247,7 +248,7 @@ const NewArrivals = () => {
 
               {/* Phần nút hiển thị khi hover */}
 
-              <div className="px-10">
+              <div >
                 {/* <h5 className="text-xs uppercase font-questrial text-[#b8cd06] mb-1 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px]">
                   {product.edition}
                 </h5> */}
@@ -260,7 +261,7 @@ const NewArrivals = () => {
 
                 {/* Các biểu tượng hover */}
 
-                <div className="flex items-center justify-center  duration-300 space-x-2">
+                <div className="flex items-center justify-center duration-300 gap-2">
                   <span className="font-bold text-red-600">
                     {product.price.toLocaleString()} VNĐ
                   </span>

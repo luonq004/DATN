@@ -9,7 +9,7 @@ const FeatureCards = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get("http://localhost:8080/api/category");
-      setCategories(response.data.slice(2, 5));
+      setCategories(response.data.slice(3, 6 ));
     } catch (error) {
       console.error("Error fetching categories:", error);
     }

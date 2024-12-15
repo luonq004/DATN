@@ -391,7 +391,7 @@ export const updateUser = async (req, res) => {
       { new: true }
     );
 
-    console.log("Updated user in MongoDB: ", updatedUser);
+    // console.log("Updated user in MongoDB: ", updatedUser);
 
     return res.status(200).json({
       message: "Cập nhật người dùng thành công",

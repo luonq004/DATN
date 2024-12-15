@@ -85,7 +85,7 @@ const ProductAddPage = () => {
           deleted: false,
           price: 0,
           priceSale: 0,
-          category: [],
+          category: ["675dadfde9a2c0d93f9ba531"],
           image: "",
           type: "variable",
         },
@@ -124,8 +124,7 @@ const ProductAddPage = () => {
   }
 
   if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
-  console.log(form.formState.errors);
-  
+  // console.log(form.formState.errors);
 
   const types = id ? getUniqueTypes(product) : [];
 

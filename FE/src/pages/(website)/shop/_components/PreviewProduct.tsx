@@ -53,8 +53,6 @@ const PreviewProduct = ({
 
   const { _id } = useUserContext();
 
-  console.log(_id);
-
   useEffect(() => {
     if (!selectedIndex || productPopup?._id === selectedIndex) return;
 
@@ -205,7 +203,9 @@ const PreviewProduct = ({
   const images = [
     productPopup?.image,
     ...(productPopup?.variants
-      ? productPopup.variants.map((v) => v.image)
+      ? productPopup.variants.filter((v) => {
+          return v.image != "";
+        })
       : []),
   ];
 
@@ -216,7 +216,7 @@ const PreviewProduct = ({
     productPopup && activeData.reduce((sum, item) => sum + item.rating, 0); // Tính tổng rating
   const averageRating = productPopup && totalRating / activeData.length; // Tính trung bình rating
 
-  const targetId = "674f3deca63479f361d8f499";
+  const targetId = "675dadfde9a2c0d93f9ba531";
 
   const exists = productPopup?.category.find(
     (category) => category._id == targetId
@@ -229,7 +229,7 @@ const PreviewProduct = ({
       ? productPopup?.category.filter((category) => category._id !== targetId)
       : productPopup?.category;
 
-  console.log(productPopup?.variants);
+  // console.log(productPopup?.variants);
 
   return createPortal(
     <div
@@ -254,7 +254,7 @@ const PreviewProduct = ({
                   <CarouselItem key={index}>
                     <img
                       className="w-full"
-                      src={img}
+                      src={typeof img === "string" ? img : img?.image}
                       alt="Anh san pham"
                       loading="lazy"
                     />
@@ -274,7 +274,7 @@ const PreviewProduct = ({
                   <img
                     key={index}
                     className={`size-14 `}
-                    src={img}
+                    src={typeof img === "string" ? img : img?.image}
                     alt="Ảnh sản phẩm"
                     onClick={() => apiImage?.scrollTo(index)}
                   />
@@ -287,7 +287,7 @@ const PreviewProduct = ({
           <div className="px-[15px]">
             {/* Category */}
             <div className="uppercase text-[#555] text-sm leading-5 flex gap-4 mb-2">
-              {(productPopup &&
+              {productPopup &&
                 categories.map((category) => (
                   <Link
                     onClick={onClose}
@@ -296,8 +296,7 @@ const PreviewProduct = ({
                   >
                     {category.name}
                   </Link>
-                ))) ||
-                "Không có danh mục"}
+                ))}
             </div>
             <h2 className="text-3xl leading-8 uppercase font-black font-raleway text-[#343434] mb-[25px]">
               {productPopup?.name}

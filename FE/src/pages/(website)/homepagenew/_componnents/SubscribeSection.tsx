@@ -1,10 +1,12 @@
+import imageEnd from "../../../../assets/products/imageEnd.png"
+
 const SubscribeSection = () => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between pt-16 bg-white">
       {/* Hình ảnh bên trái */}
       <div className="md:flex hidden  justify-center md:ml-16 mb-8 md:mb-0 w-full md:w-1/2">
         <img
-          src="http://unionagency.one/exzo/img/background-8.jpg"
+          src={"http://unionagency.one/exzo/img/background-8.jpg"}
           alt="Ưu Đãi Đặc Biệt"
           className=" max-h[100%] max-w[100%] object-cover"
         />
