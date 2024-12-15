@@ -48,6 +48,11 @@ export const getBlogs = async (req, res) => {
     }
 
     const blogs = await Blog.find(filter).sort({ createdAt: -1 }); // Sắp xếp mới nhất
+
+    if (blogs.length === 0) {
+      return res.status(404).json({ message: "Không có bài viết nào" });
+    }
+
     res.status(200).json(blogs);
   } catch (error) {
     console.error("Lỗi khi lấy bài viết:", error);
