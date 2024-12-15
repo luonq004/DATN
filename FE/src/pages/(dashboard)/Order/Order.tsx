@@ -230,7 +230,7 @@ const AdminOrder = () => {
       // Chỉ xử lý các đơn hàng có trạng thái "chờ xác nhận" và payment là "Vnpay"
       if (order.isPaid === false && order.payment === "Vnpay") {
         await axios.put(
-          `${apiUrl}/delete-order/${order.id}`
+          `${apiUrl}/delete-orderAdmin/${order.id}`
         );
         queryClient.invalidateQueries(["ORDER_HISTORY"]);
       }
