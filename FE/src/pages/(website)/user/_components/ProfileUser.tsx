@@ -3,147 +3,98 @@ import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import ImageUser from "./ImageUser";
 import { useNavigate } from "react-router-dom";
+import ImageUser from "./ImageUser";
 
 const ProfilePageModern: React.FC = () => {
   const { user } = useUser();
-  const navigate = useNavigate()
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [gender, setGender] = useState("");
-  const [birthdate, setBirthdate] = useState("");
+  const navigate = useNavigate();
   const [editField, setEditField] = useState<string | null>(null);
-  const emailInputRef = useRef<HTMLInputElement>(null);
-  const phoneInputRef = useRef<HTMLInputElement>(null);
-  const { register, setValue, getValues } = useForm();
   const imageUserRef = useRef<any>();
   const { toast } = useToast();
   const apiUrl = import.meta.env.VITE_API_URL;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      gender: "",
+      birthdate: "",
+    },
+  });
 
   const fetchUserData = async () => {
     if (user) {
-      console.log(user);
-      
       try {
-        const clerkId = user.id;
-        const response = await axios.get(
-          `${apiUrl}/users/${clerkId}`
-        );
+        const response = await axios.get(`${apiUrl}/users/${user.id}`);
         const userData = response.data;
 
-        const formatBirthdate = (dateString: string) => {
-          const date = new Date(dateString);
-          return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
-        };
-
-        setPhone(userData.phone);
-        setGender(userData.gender);
-        setBirthdate(formatBirthdate(userData.birthdate));
+        setValue("firstName", user.firstName || "");
+        setValue("lastName", user.lastName || "");
+        setValue("email", user.primaryEmailAddress?.emailAddress || "");
+        setValue("phone", userData.phone || "");
+        setValue("gender", userData.gender || "");
+        setValue("birthdate", userData.birthdate?.split("T")[0] || "");
       } catch (error) {
-        console.error("Error fetching user data from backend:", error);
+        console.error("Error fetching user data:", error);
       }
     }
   };
 
   useEffect(() => {
-     // Nếu user không tồn tại, chuyển hướng về trang chủ
-     if (!user) {
+    if (!user) {
       navigate("/");
-      return;
-    }
-
-    if (user) {
-      setFirstName(user.firstName || "");
-      setLastName(user.lastName || "");
-      setEmail(user.primaryEmailAddress?.emailAddress || "");
+    } else {
       fetchUserData();
     }
-  }, [user,navigate]);
+  }, [user, navigate]);
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      editField === "email" &&
-      emailInputRef.current &&
-      !emailInputRef.current.contains(event.target as Node)
-    ) {
-      setEditField(null);
-    }
-    if (
-      editField === "phone" &&
-      phoneInputRef.current &&
-      !phoneInputRef.current.contains(event.target as Node)
-    ) {
-      setEditField(null);
-    }
-  };
-
-  useEffect(() => {
-    if (editField) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [editField]);
-
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (data: any) => {
+    console.log("Dữ liệu form gửi lên BE:", data);
     try {
-      // Gọi hàm updateProfileImage từ ref trước khi lưu các thay đổi khác
+      const formData = new FormData();
+      Object.keys(data).forEach((key) => {
+        if (data[key] !== "" && data[key] !== null && data[key] !== undefined) {
+          formData.append(key, data[key]);
+        }
+      });
+
+      console.log("FormData sau khi thêm dữ liệu:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
       if (imageUserRef.current) {
         await imageUserRef.current.updateProfileImage();
       }
 
-      const updateData: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        phone: string;
-        gender: string;
-        birthdate: string;
-      } = {
-        firstName,
-        lastName,
-        email,
-        phone,
-        gender,
-        birthdate,
-      };
-
-      const formData = new FormData();
-      (Object.keys(updateData) as Array<keyof typeof updateData>).forEach(
-        (key) => {
-          formData.append(key, updateData[key]);
-        }
-      );
-      const clerkId = user?.id;
-      const response = await axios.put(
-        `${apiUrl}/users/${clerkId}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
+      const response = await axios.put(`${apiUrl}/users/${user?.id}`, data, {
+        headers: { "Content-Type": "application/json" },
+      });
       if (response.status === 200) {
-        toast({
-          title: "Thành công",
-          description: "Thông tin người dùng đã được cập nhật thành công!",
-        });
+        toast({ title: "Thành công", description: "Cập nhật thành công!" });
+        await user?.reload(); 
       } else {
         toast({
           variant: "destructive",
           title: "Thất bại",
-          description: "Có lỗi sảy ra khi cập nhật thông tin người dùng!",
+          description: "Có lỗi xảy ra!",
         });
       }
     } catch (error) {
-      console.error("Error updating user info:", error);
+      console.error("Error updating profile:", error);
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "Đã có lỗi xảy ra khi lưu dữ liệu.",
+      });
     }
   };
 
@@ -156,7 +107,10 @@ const ProfilePageModern: React.FC = () => {
         Cập nhật thông tin hồ sơ để bảo mật tài khoản!
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2">
+      <form
+        onSubmit={handleSubmit(handleSaveChanges)}
+        className="grid grid-cols-1 lg:grid-cols-2"
+      >
         <div>
           {/* First Name and Last Name Fields */}
           <div className="mb-8">
@@ -167,11 +121,17 @@ const ProfilePageModern: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  {...register("firstName", {
+                    required: "Họ không được để trống",
+                  })}
                   placeholder="Họ"
                   className="border border-gray-300 rounded-lg px-3 py-2 w-full"
                 />
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm">
+                    {errors.firstName.message}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block font-semibold text-gray-700 mb-2">
@@ -179,11 +139,17 @@ const ProfilePageModern: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  {...register("lastName", {
+                    required: "Tên không được để trống",
+                  })}
                   placeholder="Tên"
                   className="border border-gray-300 rounded-lg px-3 py-2 w-full"
                 />
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm">
+                    {errors.lastName.message}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -193,26 +159,35 @@ const ProfilePageModern: React.FC = () => {
             <label className="block font-semibold text-gray-700 mb-2">
               Email
             </label>
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <input
-                ref={emailInputRef}
                 type="text"
-                value={email}
+                {...register("email", {
+                  required: "Email không được để trống",
+                  pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: "Email không hợp lệ",
+                  },
+                })}
+                placeholder="Email"
                 readOnly={editField !== "email"}
-                onChange={(e) => setEmail(e.target.value)}
                 className={`border border-gray-300 rounded-lg px-3 py-2 w-full ${
                   editField === "email" ? "bg-white" : "bg-gray-100"
                 }`}
               />
-              {editField !== "email" && (
-                <button
-                  onClick={() => setEditField("email")}
-                  className="ml-2 w-48 text-center text-blue-500 hover:text-blue-700 transition duration-150"
-                >
-                  Thay đổi
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setEditField("email")}
+                className=" w-20 text-blue-500 hover:text-blue-700"
+              >
+                Thay đổi
+              </button>
             </div>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           {/* Phone Field */}
@@ -220,26 +195,34 @@ const ProfilePageModern: React.FC = () => {
             <label className="block font-semibold text-gray-700 mb-2">
               Số điện thoại
             </label>
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <input
-                ref={phoneInputRef}
                 type="text"
-                value={phone}
+                {...register("phone", {
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Số điện thoại phải có 10 chữ số",
+                  },
+                })}
+                placeholder="Số điện thoại"
                 readOnly={editField !== "phone"}
-                onChange={(e) => setPhone(e.target.value)}
                 className={`border border-gray-300 rounded-lg px-3 py-2 w-full ${
                   editField === "phone" ? "bg-white" : "bg-gray-100"
                 }`}
               />
-              {editField !== "phone" && (
-                <button
-                  onClick={() => setEditField("phone")}
-                  className="ml-2 w-48 text-center text-blue-500 hover:text-blue-700 transition duration-150"
-                >
-                  Thay đổi
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setEditField("phone")}
+                className="w-20 text-blue-500 hover:text-blue-700"
+              >
+                Thay đổi
+              </button>
             </div>
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.phone.message}
+              </p>
+            )}
           </div>
 
           {/* Gender Selection */}
@@ -247,21 +230,17 @@ const ProfilePageModern: React.FC = () => {
             <label className="block font-semibold text-gray-700 mb-2">
               Giới tính
             </label>
-            <div className="flex items-center space-x-4">
-              {["Nam", "Nữ", "Khác"].map((genderOption) => (
-                <label className="cursor-pointer" key={genderOption}>
-                  <input
-                    type="radio"
-                    name="gender"
-                    value={genderOption}
-                    checked={gender === genderOption}
-                    onChange={(e) => setGender(e.target.value)}
-                    className="mr-2 cursor-pointer"
-                  />
-                  {genderOption}
-                </label>
-              ))}
-            </div>
+            {["Nam", "Nữ", "Khác"].map((gender) => (
+              <label key={gender} className="mr-4">
+                <input
+                  type="radio"
+                  value={gender}
+                  {...register("gender")}
+                  className="mr-1"
+                />
+                {gender}
+              </label>
+            ))}
           </div>
 
           {/* Birthdate Field */}
@@ -271,8 +250,7 @@ const ProfilePageModern: React.FC = () => {
             </label>
             <input
               type="date"
-              value={birthdate}
-              onChange={(e) => setBirthdate(e.target.value)}
+              {...register("birthdate")}
               className="border border-gray-300 rounded-lg px-3 py-2 w-full"
             />
           </div>
@@ -286,17 +264,16 @@ const ProfilePageModern: React.FC = () => {
             form={{ register, setValue, getValues }}
           />
         </div>
-      </div>
-
-      {/* Save Changes Button */}
-      <div className="flex justify-center mt-8">
-        <button
-          onClick={handleSaveChanges}
-          className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150"
-        >
-          Lưu thay đổi
-        </button>
-      </div>
+        {/* Save Changes Button */}
+        <div className="flex justify-center mt-8">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150"
+          >
+            Lưu thay đổi
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

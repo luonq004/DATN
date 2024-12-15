@@ -4,6 +4,7 @@ import {
   createOrderVnpay,
   deleteCart,
   deleteOrder,
+  deleteOrderAdmin,
   getAllOrders,
   getAllOrdersByUserId,
   getOrderCode,
@@ -26,5 +27,6 @@ routerOrder.get("/get-ordersCode/:orderCode", getOrderCode);
 routerOrder.put("/update-order/:id", updateOrderStatus);
 routerOrder.put("/update-status/:id", UpdateStatusVnpay);
 routerOrder.put("/delete-order/:id", deleteOrder);
+routerOrder.put("/delete-orderAdmin/:id", deleteOrderAdmin);
 routerOrder.post("/delete-cart", deleteCart);
 export default routerOrder;

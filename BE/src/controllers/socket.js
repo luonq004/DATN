@@ -175,7 +175,7 @@ export const setupSocketIO = (server, app) => {
         console.log("đã phát thông báo cho", userIdStr);
 
         // Lưu thông báo cho admin
-        const adminMessage = `Đơn hàng với mã <strong>${orderCode}</strong> của user <strong>${userIdStr}</strong> đã chuyển sang trạng thái <strong>${newStatus}</strong>.`;
+        const adminMessage = `Đơn hàng với mã <strong>${orderCode}</strong> đã được cập nhật và chuyển sang trạng thái <strong>${newStatus}</strong>.`;
 
         const adminIds = await Users.find({ role: "Admin" }).select("_id");
         adminIds.forEach((admin) => {

@@ -56,28 +56,44 @@ const OrderDetail = () => {
   } = data;
 
   // Hàm xử lý xuất PDF
-  const handleExportPDF = () => {
+  const handleExportPDF = async() => {
     setIsExported(true); // Cập nhật state khi đã xuất PDF
     const element = document.getElementById("order-detail"); // Lấy phần tử cần xuất ra PDF
 
     if (element) {
+      // const options = {
+      //   margin: 10,
+      //   filename: `order_${orderCode}.pdf`, // Tên file PDF
+      //   image: { type: "jpeg", quality: 0.98 },
+      //   html2canvas: {
+      //     scale: 2,
+      //     useCORS: true, // Cho phép tải ảnh từ nguồn ngoài
+      //     logging: true, // Hiển thị log để kiểm tra việc tải ảnh
+      //     allowTaint: true, // Cho phép vẽ ảnh từ các nguồn không phải cùng domain
+      //     letterRendering: true, // Hiển thị các ký tự chính xác hơn
+      //   },
+      //   jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      // };
       const options = {
         margin: 10,
-        filename: `order_${orderCode}.pdf`, // Tên file PDF
+        filename: `order_${orderCode}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true, // Cho phép tải ảnh từ nguồn ngoài
           logging: true, // Hiển thị log để kiểm tra việc tải ảnh
-          allowTaint: true, // Cho phép vẽ ảnh từ các nguồn không phải cùng domain
+          allowTaint: false, // Không cho phép vẽ ảnh từ các nguồn không phải cùng domain
           letterRendering: true, // Hiển thị các ký tự chính xác hơn
         },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
-      html2pdf(element, options).then(() => {
-        // Sau khi xuất PDF xong, cập nhật lại trạng thái
-        setIsExported(false); // Đặt lại thành false khi xuất PDF xong
-      }); // Sử dụng html2pdf.js để xuất PDF
+      
+      try {
+        await html2pdf().from(element).set(options).save();
+        setIsExported(false) // Sử dụng đúng phương thức của html2pdf.js
+      } catch (error) {
+        console.error("Lỗi khi xuất PDF:", error);
+      } 
     }
   };
 
@@ -195,6 +211,7 @@ const OrderDetail = () => {
                     <img
                       src={item.productItem.image}
                       alt={item.productItem.name}
+                      crossOrigin="anonymous"
                       className="w-16 h-16 object-cover rounded border"
                     />
                   </TableCell>

@@ -103,7 +103,7 @@ export const createUser = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
       // Tạo người dùng trên Clerk
@@ -123,7 +123,7 @@ export const createUser = async (req, res) => {
         email: emailAddress,
         firstName,
         lastName,
-        password: hashedPassword, 
+        password: hashedPassword,
         role: role || "User",
         imageUrl: imageUrl || clerkUser.imageUrl,
       });
@@ -335,8 +335,7 @@ export const updateUser = async (req, res) => {
   try {
     const { clerkId } = req.params;
     const updateData = req.body;
-    console.log("Received updateData from FE:", updateData);
-
+    // console.log("Received updateData from FE:", updateData);
 
     // Kiểm tra nếu không có clerkId
     if (!clerkId) {
@@ -355,10 +354,9 @@ export const updateUser = async (req, res) => {
 
     let hashedPassword = updateData.password; // Mật khẩu chưa mã hóa
     if (updateData.password) {
-      // Nếu có mật khẩu mới thì mã hóa 
+      // Nếu có mật khẩu mới thì mã hóa
       hashedPassword = await bcrypt.hash(updateData.password, 10);
     }
-
 
     // Cập nhật thông tin người dùng trên Clerk
     try {
@@ -387,13 +385,13 @@ export const updateUser = async (req, res) => {
     }
 
     // Cập nhật thông tin người dùng trong MongoDB
-    const updatedUser = await Users.updateOne(
+    const updatedUser = await Users.findOneAndUpdate(
       { clerkId },
       { ...updateData, password: hashedPassword, imageUrl },
       { new: true }
     );
 
-    console.log("Updated user in MongoDB: ", updatedUser);
+    // console.log("Updated user in MongoDB: ", updatedUser);
 
     return res.status(200).json({
       message: "Cập nhật người dùng thành công",

@@ -21,10 +21,13 @@ const ListBlog = () => {
   const totalPages = Math.ceil(blogs.length / itemsPerPage);
   const { toast } = useToast();
 
-  const currentBlogs = filteredBlogs.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const currentBlogs = Array.isArray(filteredBlogs)
+  ? filteredBlogs.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    )
+  : [];
+
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -48,8 +51,14 @@ useEffect(() => {
     fetch("http://localhost:8080/api/blogs")
       .then((response) => response.json())
       .then((data) => {
-        setBlogs(data);
-        setFilteredBlogs(data);
+        if (Array.isArray(data)) {
+          setBlogs(data);
+          setFilteredBlogs(data);
+        } else {
+          // console.error("API không trả về mảng hợp lệ:", data);
+          setBlogs([]);
+          setFilteredBlogs([]);
+        }
         setLoading(false);
       })
       .catch(() => {
@@ -171,7 +180,7 @@ useEffect(() => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentBlogs.length === 0 ? (
           <div className="col-span-full text-center text-lg mt-10 text-gray-500">
-            Không tìm thấy bài viết nào phù hợp
+            Hiện tại chưa có bài viết nào. Hãy thêm bài viết mới!
           </div>
         ) : (
           currentBlogs.map((blog) => (

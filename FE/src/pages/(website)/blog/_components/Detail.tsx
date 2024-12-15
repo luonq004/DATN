@@ -127,7 +127,7 @@ const Detail = () => {
         />
       </div>
 
-      {/* Hiển thị sản phẩm liên quan */}
+      {/* Hiển thị baif viết liên quan */}
       {relatedPosts.length > 0 && (
         <div className="space-y-8 mt-10">
           <header className=" mb-10 mt-20">

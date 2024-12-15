@@ -66,12 +66,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
           title: "Cập nhật thành công",
           description: "Thông tin người dùng đã được cập nhật!",
         });
-
-        reset(); // Reset form
-        onClose(); // Đóng form
+        // console.log("Cập nhật thành công:", response.data); 
         onSuccess(response.data);
+        onClose(); // Đóng form
       } else {
-        throw new Error("Cập nhật thất bại"); // Xử lý lỗi nếu status không phải 200
+        throw new Error("Cập nhật thất bại");
       }
     } catch (error: any) {
       // Kiểm tra lỗi từ backend
