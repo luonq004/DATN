@@ -55,7 +55,7 @@ function ListUser() {
 
   const handlePageSizeChange = (size: number) => {
     setItemsPerPage(size);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const navigate = useNavigate();
@@ -254,18 +254,24 @@ function ListUser() {
     setModalOpen(true); // Mở modal
   };
 
-  const handleSuccessUpdate = (updatedUser: User) => {
-    // Cập nhật thông tin người dùng trong danh sách
+  const handleSuccessUpdate = (updatedUser: any) => {
+    // console.log("Dữ liệu cập nhật:", updatedUser);
+
     setAllUsers((prevUsers) =>
       prevUsers.map((user) =>
-        user.clerkId === updatedUser.clerkId ? updatedUser : user
+        user.clerkId === updatedUser.data.clerkId
+          ? { ...user, ...updatedUser.data }
+          : user
       )
     );
-    fetchUsers();
+    
+    setSelectedUser(null);
     setModalOpen(false); // Đóng modal
+    toast({
+      title: "Cập nhật thành công",
+      description: "Danh sách đã được cập nhật.",
+    });
   };
-
-  
 
   return (
     <div className="">
@@ -490,7 +496,10 @@ function ListUser() {
               <DialogTitle></DialogTitle>
               <DialogContent>
                 <EditUserForm
-                  onClose={() => setModalOpen(false)}
+                  onClose={() => {
+                    setModalOpen(false);
+                    setSelectedUser(null);
+                  }}
                   onSuccess={handleSuccessUpdate}
                   userData={selectedUser}
                 />
@@ -502,7 +511,7 @@ function ListUser() {
 
       {/*phân trang  */}
       <div className="mt-4">
-      <PaginationComponent
+        <PaginationComponent
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
