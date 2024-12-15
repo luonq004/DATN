@@ -16,7 +16,7 @@ export const createOrder = async (req, res) => {
     if (!addressId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "addressId là bắt buộc" });
+        .json({ message: "Địa chỉ là bắt buộc" });
     }
     if (!payment) {
       return res
@@ -126,7 +126,7 @@ export const createOrderVnpay = async (req, res) => {
     if (!addressId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "addressId là bắt buộc" });
+        .json({ message: "Địa chỉ bắt buộc" });
     }
     if (!payment) {
       return res

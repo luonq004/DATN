@@ -363,16 +363,16 @@ const OrderHistory = () => {
                 )}
               </div>
               <div className="mt-4  text-lg text-right">
-                <p>
+                <p className="text-[rgba(0,0,0,.8)] text-[16px]">
                   Giảm giá:{" "}
-                  <span className="font-semibold">
-                    {formatCurrencyVND(order.discount || 0)}
+                  <span className="text-[rgba(0,0,0,.8)]">
+                  -  {formatCurrencyVND(order.discount || 0)}
                   </span>
                 </p>
               </div>
-              <div className="mt-4  text-lg text-right">
+              <div className="mt-4 text-[rgba(0,0,0,.8)] text-[16px] text-right">
                 <p>
-                  Phí ship: <span className="font-semibold">30.000 ₫</span>
+                  Phí ship: <span className="text-[rgba(0,0,0,.8)]">30.000 ₫</span>
                 </p>
               </div>
               <div className="mt-4 text-lg text-right">
