@@ -11,6 +11,8 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import io from "socket.io-client";
 
+import Logo from "@/assets/SHOPING.jpg";
+
 const socket = io("http://localhost:3000");
 import { useClerk, useUser } from "@clerk/clerk-react";
 import {
@@ -431,11 +433,10 @@ const Header = () => {
                           {notifications.map((notification) => (
                             <li
                               key={notification._id}
-                              className={`flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-all duration-200 ${
-                                !notification.isRead
-                                  ? "bg-[#f5ffcc]"
-                                  : "bg-gray-50"
-                              }`}
+                              className={`flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-all duration-200 ${!notification.isRead
+                                ? "bg-[#f5ffcc]"
+                                : "bg-gray-50"
+                                }`}
                               onClick={() =>
                                 handleNotificationClick(notification._id)
                               }
@@ -541,7 +542,7 @@ const Header = () => {
               <Link to="/" className="w-4/12 md:w-2/12 px-[15px]">
                 <img
                   className="w-20 md:w-36"
-                  src={logoUrl || "fallback_logo.jpg"}
+                  src={logoUrl || Logo}
                   alt="Logo"
                 />
               </Link>
@@ -552,11 +553,10 @@ const Header = () => {
                     {menuItems.map((item) => (
                       <li className="!list-none" key={item.to}>
                         <Link
-                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${
-                            pathname === item.to
-                              ? "bg-[#b8cd06] text-white"
-                              : ""
-                          }`}
+                          className={`text-[11px] leading-4 uppercase text-[#343434] font-bold rounded-2xl px-5 py-[9px] hover:bg-[#b8cd06] hover:text-white hover:shadow-custom transition-all ${pathname === item.to
+                            ? "bg-[#b8cd06] text-white"
+                            : ""
+                            }`}
                           to={item.to}
                         >
                           {item.label}
@@ -656,11 +656,10 @@ const Header = () => {
                             {notifications.map((notification) => (
                               <li
                                 key={notification._id}
-                                className={`flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-all duration-200 ${
-                                  !notification.isRead
-                                    ? "bg-[#f5ffcc]"
-                                    : "bg-gray-50"
-                                }`}
+                                className={`flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-all duration-200 ${!notification.isRead
+                                  ? "bg-[#f5ffcc]"
+                                  : "bg-gray-50"
+                                  }`}
                                 onClick={() =>
                                   handleNotificationClick(notification._id)
                                 }
@@ -751,11 +750,10 @@ const Header = () => {
 
             <div className={`relative -z-10 mx-[15px]`}>
               <div
-                className={`py-10 pb-[15px] md:pb-10 absolute w-full top-0 left-0 shadow-custom_input transition-all duration-300 bg-white ${
-                  isOpen
-                    ? "translate-y-0 opacity-100"
-                    : "-translate-y-full opacity-0"
-                }`}
+                className={`py-10 pb-[15px] md:pb-10 absolute w-full top-0 left-0 shadow-custom_input transition-all duration-300 bg-white ${isOpen
+                  ? "translate-y-0 opacity-100"
+                  : "-translate-y-full opacity-0"
+                  }`}
               >
                 <div className="px-[15px] flex justify-center">
                   <IoIosClose

@@ -251,7 +251,7 @@ const SizeColorSelector = ({
                   {item.values.map((itemOther: any) => (
                     <div
                       key={itemOther._id}
-                      className={`relative border-2 px-5 py-4 rounded-md 
+                      className={`border-2 px-2 py-1 rounded-md 
                                             ${!compatibleAttributeValues[
                           item._id
                         ]?.includes(itemOther._id)
@@ -274,7 +274,7 @@ const SizeColorSelector = ({
                         }
                       }}
                     >
-                      <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14px] font-medium">
+                      <p className=" text-[14px] font-medium">
                         {itemOther.name}
                       </p>
                     </div>

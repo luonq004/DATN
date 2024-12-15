@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 //other
 import useCart from "@/common/hooks/useCart";
 import { toast } from "@/components/ui/use-toast";
@@ -6,6 +6,12 @@ import SkeletonCart from "./SkeletonCart";
 import CartRight from "./CartRight";
 import CartLeft from "./CartLeft";
 import { useUserContext } from "@/common/context/UserProvider";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000");
+
+
+// order
 
 const ShopCart = () => {
   const [attribute, setAttribute] = useState<string | 1>("1");
@@ -13,6 +19,12 @@ const ShopCart = () => {
   const { _id }: any = useUserContext();
 
   // console.log('id: ', _id);
+
+  useEffect(() => {
+    socket.on("order", (data) => {
+      console.log(data);
+    });
+  }, [])
 
   const {
     cart,

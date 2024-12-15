@@ -39,7 +39,7 @@ const StatusCard = () => {
                                 }
                             </div>
                         </div>
-                        <p className={`whitespace-nowrap max-sm:text-[14px] ${cartStatus === 1 ? 'transition-all duration-200 max-sm:opacity-100' : cartStatus === 2 ? 'transition-all duration-200 max-sm:opacity-0' : cartStatus === 3 ? 'max-sm:opacity-0' : 'max-sm:opacity-0'} `}>Shopping cart</p>
+                        <p className={`whitespace-nowrap max-sm:text-[14px] ${cartStatus === 1 ? 'transition-all duration-200 max-sm:opacity-100' : cartStatus === 2 ? 'transition-all duration-200 max-sm:opacity-0' : cartStatus === 3 ? 'max-sm:opacity-0' : 'max-sm:opacity-0'} `}>Giỏ hàng</p>
                     </div>
 
                     <div className="relative transition-all duration-500 w-[165px] max-[1408px]:w-[10%]">
@@ -61,7 +61,7 @@ const StatusCard = () => {
 
                             </div>
                         </div>
-                        <p className={`whitespace-nowrap max-sm:text-[14px] transition-all duration-200 ${cartStatus === 2 ? 'max-sm:block' : 'max-sm:hidden'} `}>Checkout</p>
+                        <p className={`whitespace-nowrap max-sm:text-[14px] transition-all duration-200 ${cartStatus === 2 ? 'max-sm:block' : 'max-sm:hidden'} `}>Thanh toán</p>
                     </div>
 
                     <div className="relative transition-all duration-500 w-[165px] max-[1408px]:w-[10%]">
@@ -82,7 +82,7 @@ const StatusCard = () => {
                                 }
                             </div>
                         </div>
-                        <p className={`whitespace-nowrap max-sm:text-[14px] transition-all duration-200 ${cartStatus === 3 ? 'max-sm:block' : 'max-sm:hidden'} `}>Order Complete</p>
+                        <p className={`whitespace-nowrap max-sm:text-[14px] transition-all duration-200 ${cartStatus === 3 ? 'max-sm:block' : 'max-sm:hidden'} `}>Đặt hàng</p>
                     </div>
                 </div >
             </section>
