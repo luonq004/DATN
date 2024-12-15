@@ -274,7 +274,7 @@ const SizeColorSelector = ({
                         }
                       }}
                     >
-                      <p className=" text-[14px] font-medium">
+                      <p className=" text-[14px] font-medium text-nowrap">
                         {itemOther.name}
                       </p>
                     </div>
