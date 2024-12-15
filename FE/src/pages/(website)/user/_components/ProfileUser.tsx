@@ -71,6 +71,10 @@ const ProfilePageModern: React.FC = () => {
         console.log(key, value);
       }
 
+      if (imageUserRef.current) {
+        await imageUserRef.current.updateProfileImage();
+      }
+
       const response = await axios.put(`${apiUrl}/users/${user?.id}`, data, {
         headers: { "Content-Type": "application/json" },
       });

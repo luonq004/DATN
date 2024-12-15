@@ -1,19 +1,17 @@
 import {
   Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+  AccordionItem
 } from "@/components/ui/accordion";
 import { useUser } from "@clerk/clerk-react";
 import {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
-  useEffect,
 } from "react";
-import { FaCloudUploadAlt } from "react-icons/fa";
 import AvatarEditor from "react-avatar-editor";
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 const ImageUser = forwardRef(({ form }: any, ref) => {
   // State lưu ảnh hiện tại (URL hoặc file)
@@ -32,6 +30,7 @@ const ImageUser = forwardRef(({ form }: any, ref) => {
   }, [user?.imageUrl]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const file = e.target.files?.[0];
     if (file) {
       setSelectedImage(file); // Lưu ảnh vào state
@@ -40,7 +39,7 @@ const ImageUser = forwardRef(({ form }: any, ref) => {
         setPreviewImagesMain(reader.result as string); // Hiển thị ảnh mới
       };
       reader.readAsDataURL(file);
-      form.setValue("image", file); // Cập nhật giá trị vào form
+      form.setValue("image", file, { shouldValidate: false }); // Cập nhật giá trị vào form
     }
   };
 
@@ -109,6 +108,7 @@ const ImageUser = forwardRef(({ form }: any, ref) => {
           {/* Nút chọn ảnh */}
           <div className="flex justify-center mt-4">
             <button
+            type="button"
               className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
               onClick={() => {
                 const inputElement =
