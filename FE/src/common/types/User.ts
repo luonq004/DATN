@@ -9,7 +9,8 @@ export interface User {
   role: string;
   phone: string;
   gender: string;
-  isActive: string;
+  password?: string;
+  isActive?: string;
   paymentInfo: string;
   orders: string;
   isBanned: boolean;

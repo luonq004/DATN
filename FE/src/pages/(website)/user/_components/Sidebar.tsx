@@ -1,4 +1,5 @@
-import { SignOutButton, UserButton, useUser } from "@clerk/clerk-react";
+import { SignOutButton, useUser } from "@clerk/clerk-react";
+import { LayoutGrid } from "lucide-react";
 import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import SidebarMobile from "./SidebarMobile";
@@ -9,6 +10,7 @@ const SidebarAccount: React.FC = () => {
   );
   const { user } = useUser();
 
+  const userRole = localStorage.getItem("userRole");
   const toggleAccountMenu = () => {
     setActiveMenu((prev) => (prev === "account" ? null : "account"));
   };
@@ -130,11 +132,28 @@ const SidebarAccount: React.FC = () => {
             Kho Voucher
           </Link>
         </div>
+        {/* Kiểm tra role để hiển thị nút Trang Quản Trị */}
+        {userRole === "Admin" && (
+          <div className="mb-4 flex items-center gap-3">
+            <LayoutGrid className="size-5 text-green-600" />
+            <Link
+              to="/admin"
+              className="text-base font-medium cursor-pointer hover:text-cyan-500"
+            >
+              Trang Quản Trị
+            </Link>
+          </div>
+        )}
 
         {/* Đăng xuất */}
 
         <SignOutButton redirectUrl="/">
-          <button className="mt-10 flex items-center gap-3 ">
+          <button
+            className="mt-10 flex items-center gap-3 "
+            onClick={() => {
+              localStorage.removeItem("userRole");
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"

@@ -122,7 +122,7 @@ const Router = () => {
         </Route>
 
         <Route path="admin" element={<LayoutAdmin />}>
-          <Route index path="dashboard" element={<DashBoardPage />} />
+          <Route index element={<DashBoardPage />} />
           <Route path="products" element={<ProductPage />} />
           <Route path="products/add" element={<ProductAddPage />} />
           <Route path="products/edit/:id" element={<ProductAddPage />} />

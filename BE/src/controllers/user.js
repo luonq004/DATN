@@ -331,80 +331,62 @@ export const restoreUser = async (req, res) => {
   }
 };
 
+
 export const updateUser = async (req, res) => {
   try {
     const { clerkId } = req.params;
     const updateData = req.body;
-    // console.log("Received updateData from FE:", updateData);
 
-    // Kiểm tra nếu không có clerkId
     if (!clerkId) {
       return res.status(400).json({ message: "ID người dùng không hợp lệ." });
     }
 
-    // Kiểm tra người dùng tồn tại trong MongoDB
+    // Kiểm tra người dùng tồn tại
     const user = await Users.findOne({ clerkId });
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "Người dùng không tồn tại trong cơ sở dữ liệu" });
+      return res.status(404).json({ message: "Người dùng không tồn tại." });
     }
 
-    let imageUrl = updateData.imageUrl;
+    // Chuẩn bị dữ liệu cho Clerk và MongoDB
+    const clerkUpdateData = {
+      firstName: updateData.firstName,
+      lastName: updateData.lastName,
+      emailAddress: updateData.email,
+      imageUrl: updateData.imageUrl,
+      publicMetadata: {
+        phone: updateData.phone,
+        gender: updateData.gender,
+        birthdate: updateData.birthdate,
+      },
+    };
 
-    let hashedPassword = updateData.password; // Mật khẩu chưa mã hóa
+    // Xử lý mật khẩu
     if (updateData.password) {
-      // Nếu có mật khẩu mới thì mã hóa
-      hashedPassword = await bcrypt.hash(updateData.password, 10);
+      const hashedPassword = await bcrypt.hash(updateData.password, 10); // Hash mật khẩu
+      updateData.password = hashedPassword; // Lưu vào MongoDB
+      clerkUpdateData.password = updateData.passwordPlaintext; // Gửi plaintext cho Clerk API
     }
 
-    // Cập nhật thông tin người dùng trên Clerk
-    try {
-      const clerkResponse = await clerkClient.users.updateUser(clerkId, {
-        imageUrl: imageUrl,
-        firstName: updateData.firstName,
-        lastName: updateData.lastName,
-        emailAddress: updateData.email,
-        password: updateData.password,
-        publicMetadata: {
-          phone: updateData.phone,
-          gender: updateData.gender,
-          birthdate: updateData.birthdate,
-        },
-      });
+    // Cập nhật dữ liệu cho Clerk
+    await clerkClient.users.updateUser(clerkId, clerkUpdateData);
 
-      // console.log("Clerk update response: ", clerkResponse);
-    } catch (clerkError) {
-      console.error(
-        "Lỗi khi cập nhật thông tin người dùng trên Clerk:",
-        clerkError
-      );
-      return res.status(500).json({
-        message: "Đã xảy ra lỗi khi cập nhật thông tin người dùng trên Clerk.",
-      });
-    }
-
-    // Cập nhật thông tin người dùng trong MongoDB
+    // Cập nhật MongoDB
     const updatedUser = await Users.findOneAndUpdate(
       { clerkId },
-      { ...updateData, password: hashedPassword, imageUrl },
+      updateData,
       { new: true }
     );
 
-    // console.log("Updated user in MongoDB: ", updatedUser);
-
-    return res.status(200).json({
+    res.status(200).json({
       message: "Cập nhật người dùng thành công",
       data: updatedUser,
     });
   } catch (error) {
     console.error("Lỗi khi cập nhật người dùng:", error);
-    return res.status(500).json({
-      message: "Đã xảy ra lỗi khi cập nhật người dùng",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Lỗi cập nhật người dùng" });
   }
 };
+
 
 export const banUser = async (req, res) => {
   const { clerkId } = req.params;

@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -31,42 +32,45 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
     setError,
     reset,
     formState: { errors },
-    watch,
   } = useForm<any>({
     defaultValues: userData, // Đặt giá trị mặc định là dữ liệu người dùng hiện tại
   });
 
   const { toast } = useToast();
-  const watchPassword = watch("password");
+  const { user } = useUser();
 
   useEffect(() => {
     if (userData) {
-      reset(userData); // Cập nhật form khi userData thay đổi
+      const sanitizedUserData = { ...userData, password: "" };
+      reset(sanitizedUserData);
     }
   }, [userData, reset]); // Phụ thuộc vào userData
 
   const onSubmit = async (updatedUser: any) => {
-    // console.log("Dữ liệu gửi đi:", data);
-
-    // Kiểm tra xem có thay đổi mật khẩu không
-    if (!watchPassword) {
-      // Nếu không thay đổi mật khẩu, loại bỏ trường mật khẩu khỏi dữ liệu gửi lên server
-      delete updatedUser.password;
+    // Gửi mật khẩu gốc cho backend nếu có nhập
+    if (updatedUser.password) {
+      updatedUser.passwordPlaintext = updatedUser.password; // Gửi mật khẩu gốc
+    } else {
+      delete updatedUser.password; // Xóa nếu không thay đổi
     }
+    console.log("Dữ liệu gửi đi:", updatedUser);
+
     try {
       // Gửi yêu cầu cập nhật thông tin người dùng
       const response = await axios.put(
         `http://localhost:8080/api/users/${updatedUser.clerkId}`,
         updatedUser
       );
+
       //   console.log(response.data);
 
       if (response.status === 200) {
+        await user?.reload();
         toast({
           title: "Cập nhật thành công",
           description: "Thông tin người dùng đã được cập nhật!",
         });
-        // console.log("Cập nhật thành công:", response.data); 
+        // console.log("Cập nhật thành công:", response.data);
         onSuccess(response.data);
         onClose(); // Đóng form
       } else {
@@ -196,15 +200,17 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               </label>
               <input
                 type="password"
+                autoComplete="new-password"
                 {...register("password", {
                   minLength: {
                     value: 8,
                     message: "Mật khẩu phải có ít nhất 8 ký tự",
                   },
                 })}
-                placeholder="Mật khẩu"
+                placeholder="Nhập mật khẩu mới nếu muốn thay đổi"
                 className="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
               />
+
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">
                   {String(errors.password.message)}
@@ -220,6 +226,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               <select
                 {...register("role")}
                 className="w-full border rounded px-4 py-2 "
+                disabled={userData.clerkId === user?.id}
               >
                 <option value="Admin">Quản trị</option>
                 <option value="User">Người dùng</option>
