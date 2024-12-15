@@ -486,7 +486,7 @@ export const addVoucher = async (req, res) => {
     // console.log(voucher)
 
     // giảm số lượng của voucher
-    // await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
+    await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
 
     // thêm vào danh sách đã sử dụng voucher
     await VoucherUsage.create({ userId: userId, voucherId: voucher._id });

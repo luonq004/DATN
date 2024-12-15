@@ -74,7 +74,7 @@ const AttributeTab = ({
   }
 
   // console.log("valueOptions: ", stateAttribute.attributesChoose);
-  // console.log("selectedValues: ", Object.values(selectedValues));
+  // console.log("selectedValues: ", selectedValues);
 
   return (
     <>

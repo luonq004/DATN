@@ -24,6 +24,10 @@ export async function updateAttributeByID(id: string, data: { name: string }) {
     const response = await axios.put(`${apiUrl}/attributes/${id}`, data);
     return response?.data;
   } catch (error) {
-    console.log(error);
+    throw (
+      error.response?.data ||
+      error.message ||
+      "Có lỗi xảy ra khi cập nhật thuộc tính"
+    );
   }
 }

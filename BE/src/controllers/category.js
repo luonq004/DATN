@@ -199,9 +199,9 @@ export const deleteCategory = async (req, res) => {
       if (
         Array.isArray(product.category) &&
         product.category.length <= 1 &&
-        !product.category.includes("674f3deca63479f361d8f499")
+        !product.category.includes("675dadfde9a2c0d93f9ba531")
       ) {
-        product.category.push("674f3deca63479f361d8f499");
+        product.category.push("675dadfde9a2c0d93f9ba531");
         await product.save(); // Lưu thay đổi vào cơ sở dữ liệu
       }
     }

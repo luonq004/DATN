@@ -14,14 +14,14 @@ export const useUpdateProduct = (idP: string) => {
         );
         return response.data; // Trả về dữ liệu phản hồi
       } catch (error) {
-        console.error("Error updating product:", error);
+        console.error("Lỗi cập nhật sản phẩm:", error);
         throw error; // Ném lỗi để xử lý ở nơi khác nếu cần
       }
     },
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["Product", idP],
+        queryKey: ["Products"],
       });
 
       toast({

@@ -1,6 +1,7 @@
 import Attribute from "../models/attribute";
+import AttributeValue from "../models/attributeValue";
 
-async function checkAttributeExist(name) {
+async function checkAttributeExist(name, id) {
   const slugCheck = name
     .replace(/\s+/g, " ")
     .trim()
@@ -8,7 +9,7 @@ async function checkAttributeExist(name) {
     .toLowerCase();
 
   // Tìm một tài liệu phù hợp
-  const exists = await Attribute.findOne({ slug: slugCheck });
+  const exists = await Attribute.findOne({ slug: slugCheck, _id: { $ne: id } });
 
   // Trả về true nếu tài liệu tồn tại, ngược lại false
   return !!exists;
@@ -85,11 +86,13 @@ export const updateAttribute = async (req, res) => {
   try {
     const { name } = req.body;
 
-    const existAttribute = await checkAttributeExist(name);
+    const existAttribute = await checkAttributeExist(name, req.params.id);
 
     if (existAttribute) {
       return res.status(400).json({ message: "Tên thuộc tính đã tồn tại" });
     }
+
+    console.log("CONTINUE");
 
     const attribute = await Attribute.findOneAndUpdate(
       { _id: req.params.id },
@@ -98,6 +101,20 @@ export const updateAttribute = async (req, res) => {
         slug: name.replace(/\s+/g, " ").trim().replace(/ /g, "-").toLowerCase(),
       },
       { new: true }
+    );
+
+    const newTypeForAttributeValues = await Promise.all(
+      attribute.values.map(async (value) => {
+        return await AttributeValue.findOneAndUpdate(
+          {
+            _id: value._id,
+          },
+          {
+            type: name,
+          },
+          { new: true }
+        );
+      })
     );
 
     // if (attribute.length < 0) {

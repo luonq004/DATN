@@ -246,7 +246,8 @@ export const createProduct = async (req, res) => {
     const slug = slugify(req.body.name, "-");
 
     if (!category.length) {
-      category = ["674f3deca63479f361d8f499"];
+      // category = ["674f3deca63479f361d8f499"];
+      category = ["675dadfde9a2c0d93f9ba531"];
     } else {
       if (category.length > 1) {
         for (let i = 0; i < category.length; i++) {
@@ -329,16 +330,18 @@ export const updateProduct = async (req, res) => {
     const slug = slugify(req.body.name, "-");
 
     if (!category.length) {
-      category = ["674f3deca63479f361d8f499"];
+      category = ["675dadfde9a2c0d93f9ba531"];
     } else {
+      console.log(category);
       if (category.length > 1) {
-        for (let i = 0; i < category.length; i++) {
-          const existCategory = await Category.findOne({ _id: category[i] });
+        category = category.filter((cat) => cat !== "675dadfde9a2c0d93f9ba531");
+        // for (let i = 0; i < category.length; i++) {
+        //   const existCategory = await Category.findOne({ _id: category[i] });
 
-          if (!existCategory) {
-            return res.status(400).json({ message: "Danh mục không tồn tại" });
-          }
-        }
+        //   if (!existCategory) {
+        //     return res.status(400).json({ message: "Danh mục không tồn tại" });
+        //   }
+        // }
       }
     }
 
