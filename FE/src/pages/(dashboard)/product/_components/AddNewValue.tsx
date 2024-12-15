@@ -63,6 +63,8 @@ export function AddNewValue({
           type,
           value: valueAttribute,
         });
+        setName("");
+        setValueAttribute("");
       } catch (error) {
         console.log(error);
       }
@@ -131,7 +133,7 @@ export function AddNewValue({
         </div>
         <DialogFooter>
           <Button type="button" onClick={handleSubmit} disabled={isCreating}>
-            {isCreating ? "Saving..." : "Save changes"}
+            {isCreating ? "Đang tạo giá trị..." : "Tạo giá trị"}
           </Button>
         </DialogFooter>
       </DialogContent>

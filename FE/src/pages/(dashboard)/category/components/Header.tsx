@@ -32,7 +32,7 @@ const Header = () => {
         </Tabs>
 
         <Link to="add">
-          <Button className="text-lg font-light flex gap-3 px-4 bg-orange-500">
+          <Button className="text-lg font-light flex gap-3 px-4 bg-orange-500 hover:bg-orange-400">
             <BadgePlus /> <span className="hidden lg:block">Thêm danh mục</span>
           </Button>
         </Link>

@@ -2,7 +2,12 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
-const ACCEPTED_FILE_TYPES = ["image/png", "image/jpeg", "image/gif"];
+const ACCEPTED_FILE_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/webp",
+];
 
 // Định nghĩa schema cho một đối tượng variant
 export const variantSchema = z
@@ -48,11 +53,15 @@ export const variantSchema = z
         z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
         z.instanceof(File).refine(
           (file) =>
-            ["image/png", "image/jpeg", "image/jpg", "image/gif"].includes(
-              file.type
-            ), // Kiểm tra định dạng MIME
+            [
+              "image/png",
+              "image/jpeg",
+              "image/jpg",
+              "image/gif",
+              "image/webp",
+            ].includes(file.type), // Kiểm tra định dạng MIME
           {
-            message: "Chỉ được upload file ảnh (PNG, JPEG, JPG, GIF)", // Thông báo lỗi
+            message: "Chỉ được upload file ảnh (PNG, JPEG, JPG, GIF, WEBP)", // Thông báo lỗi
           }
         ),
       ])
@@ -95,7 +104,7 @@ export const productSchema = z.object({
   variants: z
     .array(variantSchema)
     .refine((variantArr) => variantArr.length > 0, {
-      message: "Danh sách biến thể không được để trống",
+      message: "Sản phẩm phải có ít nhất 1 biến thể",
     }),
   _id: z.string().optional(),
 });

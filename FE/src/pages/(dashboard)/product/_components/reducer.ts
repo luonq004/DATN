@@ -37,6 +37,8 @@ export const reducer = (state: State, action: Action): State => {
       };
 
     case "ADD_VALUE": {
+      console.log("action.payload: ", action.payload);
+
       const filteredValues = action.payload.filter(
         (value) => value && Object.keys(value).length > 0
       );

@@ -172,7 +172,7 @@ const Router = () => {
             element={<CreateAttributeValuePage />}
           />
 
-          <Route path="clear" element={<Comment />} />
+          <Route path="testimonial" element={<Comment />} />
 
           <Route path="logos" element={<LogoPage />}>
             <Route index element={<ListLogoPage />} />

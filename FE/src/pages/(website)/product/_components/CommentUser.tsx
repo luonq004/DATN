@@ -15,14 +15,15 @@ interface CommentProps {
     content: string;
     rating: number;
     createdAt: Date;
+    infoProductBuy: string;
   };
 }
 
 const CommentUser: React.FC<CommentProps> = ({ comment }) => {
   return (
     <div className="border-b mt-[25px]">
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-3">
+      <div className="flex justify-between mb-3">
+        <div className="flex gap-3">
           <img
             className="size-12 rounded-full"
             src={comment.userId.imageUrl}
@@ -43,6 +44,15 @@ const CommentUser: React.FC<CommentProps> = ({ comment }) => {
                 />
               ))}
             </div>
+
+            <span className="text-sm">
+              Phân loại hàng: {comment.infoProductBuy}
+            </span>
+
+            <div
+              className="text-[#888] leading-5 detail mt-5"
+              dangerouslySetInnerHTML={{ __html: comment?.content }}
+            />
           </div>
         </div>
 
@@ -50,10 +60,7 @@ const CommentUser: React.FC<CommentProps> = ({ comment }) => {
       </div>
 
       {/* Content Comment */}
-      <div
-        className="text-[#888] text-[14px] leading-5 pb-[25px] detail"
-        dangerouslySetInnerHTML={{ __html: comment?.content }}
-      />
+
       {/* {comment?.content} */}
       {/* </div> */}
     </div>

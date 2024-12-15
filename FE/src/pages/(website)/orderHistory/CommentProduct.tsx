@@ -171,7 +171,7 @@ const CommentProduct = ({
                   .map((value) => `${value.type}: ${value.name}`)
                   .join(", ")}
               />
-              <Button type="submit">Submit</Button>
+              <Button type="submit">Gửi</Button>
             </form>
           </Form>
         </DialogContent>

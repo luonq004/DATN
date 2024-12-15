@@ -14,6 +14,7 @@ import { SlHeart } from "react-icons/sl";
 import { useAddToCart } from "../../shop/actions/useAddToCart";
 import { useUserContext } from "@/common/context/UserProvider";
 import { toast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
 
 interface ProductInfoProps {
   product: IProduct;
@@ -22,7 +23,6 @@ interface ProductInfoProps {
 const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
   const { addCart, isAdding } = useAddToCart();
   const { _id } = useUserContext();
-  console.log(product);
 
   const [attributesChoose, setAttributesChoose] = useState<
     Record<string, string[]>
@@ -36,8 +36,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
   const attributesProduct = Object.entries(
     extractAttributes(product.variants || [])
   ) as [string, string[]][];
-
-  console.log(attributesProduct)
 
   const handleAttributeSelect = (type: string, value: string) => {
     setSelectedAttributes((prev) => {
@@ -130,10 +128,33 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
   const totalRating = activeData.reduce((sum, item) => sum + item.rating, 0); // Tính tổng rating
   const averageRating = totalRating / activeData.length; // Tính trung bình rating
 
-  console.log("variantChoose:", product);
+  const targetId = "675dadfde9a2c0d93f9ba531";
+
+  const exists = product?.category.find((category) => category._id == targetId)
+    ? true
+    : false;
+
+  const categories =
+    product?.category.length >= 2 && exists
+      ? product?.category.filter((category) => category._id !== targetId)
+      : product?.category;
+
+  console.log(categories);
 
   return (
     <div>
+      <div className="uppercase text-[#555] text-sm leading-5 flex gap-4 mb-2">
+        {product &&
+          categories.map((category) => (
+            <Link
+              to={`/shopping?category=${category._id}`}
+              className=" hover:text-blue-900 hover:underline "
+            >
+              {category.name}
+            </Link>
+          ))}
+      </div>
+
       <h2 className="text-3xl leading-8 uppercase font-black font-raleway text-[#343434] mb-[25px]">
         {product.name}
       </h2>

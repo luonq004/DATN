@@ -29,7 +29,7 @@ export const columnProducts: ColumnDef<IProduct>[] = [
     header: "Danh mục",
     cell: ({ row }) => {
       const attribute = row.original;
-      const targetId = "674f3deca63479f361d8f499";
+      const targetId = "675dadfde9a2c0d93f9ba531";
 
       const exists = attribute.category.find(
         (category) => category._id == targetId

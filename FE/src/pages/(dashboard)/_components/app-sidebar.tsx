@@ -110,7 +110,7 @@ const data = {
     },
     {
       title: "Đánh giá",
-      url: "/admin/clear",
+      url: "/admin/testimonial",
       icon: TbFileDescription,
     },
     // {

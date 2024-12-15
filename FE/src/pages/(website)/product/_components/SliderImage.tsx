@@ -19,7 +19,12 @@ const SliderImage: React.FC<ProductCarouselProps> = ({
   const [apiImage, setApiImage] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
-  const images = [imageMain, ...variants.map((variant) => variant.image)];
+  const images = [
+    imageMain,
+    ...variants.filter((variant) => {
+      return variant.image !== "";
+    }),
+  ];
 
   useEffect(() => {
     if (!apiImage) {
@@ -38,15 +43,11 @@ const SliderImage: React.FC<ProductCarouselProps> = ({
       {/* Main Carousel */}
       <Carousel className="w-full max-w-xs" setApi={setApiImage}>
         <CarouselContent>
-          {images.map((variant: string, index: number) => (
+          {images.map((variant: string | Variant, index: number) => (
             <CarouselItem key={index}>
               <img
                 className="w-full"
-                src={
-                  variant
-                  //  ||
-                  // "http://unionagency.one/exzo/img/product-preview-4.jpg"
-                }
+                src={typeof variant === "string" ? variant : variant.image}
                 alt="Anh san pham"
                 loading="lazy"
               />
@@ -57,7 +58,7 @@ const SliderImage: React.FC<ProductCarouselProps> = ({
 
       {/* Thumbnails */}
       <div className="flex items-center mt-12 gap-2">
-        {images.map((variant: string, index: number) => (
+        {images.map((variant: string | Variant, index: number) => (
           <div
             key={index}
             className={`${
@@ -66,7 +67,7 @@ const SliderImage: React.FC<ProductCarouselProps> = ({
           >
             <img
               className="size-14"
-              src={variant}
+              src={typeof variant === "string" ? variant : variant.image}
               alt="Ảnh sản phẩm"
               onClick={() => apiImage?.scrollTo(index)}
             />

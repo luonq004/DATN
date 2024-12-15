@@ -121,7 +121,7 @@ const InfoGeneralProduct: React.FC<{
 
   const typeFields: string[] = getUniqueTypesFromFields(fields) as string[];
 
-  // console.log(selectedValues);
+  // console.log("fields", form.formState.errors.variants?.root?.message);
 
   return (
     <div className="w-full xl:w-3/4">
@@ -133,7 +133,7 @@ const InfoGeneralProduct: React.FC<{
             <FormControl>
               <Input
                 className="border rounded-sm h-8 px-2 mb-4"
-                placeholder="Name Product"
+                placeholder="Nhập tên sản phẩm"
                 {...field}
               />
             </FormControl>
@@ -149,7 +149,11 @@ const InfoGeneralProduct: React.FC<{
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <Textarea placeholder="shadcn" {...field} rows={10} />
+              <Textarea
+                placeholder="Nhập mô tả sản phẩm"
+                {...field}
+                rows={10}
+              />
             </FormControl>
 
             <FormMessage />
@@ -221,23 +225,25 @@ const InfoGeneralProduct: React.FC<{
                     setPreviewImages={setPreviewImages}
                   />
                 </TabsContent>
-                <TabsContent className="px-3 pt-2" value="advanced">
-                  Advanced product settings go here.
-                </TabsContent>
               </Tabs>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
       </div>
-      <span className="block mt-5 text-red-700">
-        {form.formState.errors.variants?.message}
+      <span className="block mt-3 text-red-700">
+        {form.formState.errors.variants?.message ||
+          form.formState.errors.variants?.root?.message}
       </span>
 
       <div>
         <ReactQuill
           placeholder="Viết mô tả chi tiết sản phẩm"
           className="bg-white mt-9"
-          style={{ height: "200px", marginBottom: "50px" }}
+          style={{
+            minHeight: "200px",
+            marginBottom: "50px",
+            background: "white",
+          }}
           theme="snow"
           value={value}
           onChange={handleChange} // Sử dụng handleChange
