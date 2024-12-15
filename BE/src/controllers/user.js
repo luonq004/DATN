@@ -6,6 +6,7 @@ import cloudinary from "../config/cloudinary";
 import fs from "fs";
 import bcrypt from "bcryptjs";
 import Product from "../models/product";
+import Conversation from "../models/conversation";
 
 dotenv.config();
 
@@ -79,6 +80,15 @@ export const saveUser = async (req, res) => {
       },
       { upsert: true, new: true }
     );
+
+    const conversation = await Conversation.findOne({ user: user._id });
+
+    if (!conversation && user.role === "User") {
+      await Conversation.create({
+        user: user._id,
+        admins: [],
+      });
+    }
 
     res.status(200).send({
       message: "Người dùng đã được lưu hoặc cập nhật thành công",

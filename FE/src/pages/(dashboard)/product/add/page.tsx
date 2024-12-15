@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Container from "../_components/Container";
 
 // Form Components
@@ -30,6 +30,7 @@ import { toast } from "@/components/ui/use-toast";
 
 const ProductAddPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [duplicate, setDuplicate] = useState<number[]>([]);
   const { createProduct, isCreatting } = useCreateProduct();
   const { updateProduct, isUpdating } = useUpdateProduct(id!);
@@ -43,7 +44,7 @@ const ProductAddPage = () => {
   }, [id]);
 
   const { data: product, isLoading } = useQuery({
-    queryKey: id ? ["Product", id] : ["Product"],
+    queryKey: id ? ["Products", id] : ["Products"],
     queryFn: async () => {
       if (id) {
         const data = await getProductEdit(id);
@@ -85,7 +86,8 @@ const ProductAddPage = () => {
           deleted: false,
           price: 0,
           priceSale: 0,
-          category: ["675dadfde9a2c0d93f9ba531"],
+          // category: ["675dadfde9a2c0d93f9ba531"],
+          category: [],
           image: "",
           type: "variable",
         },
@@ -101,6 +103,7 @@ const ProductAddPage = () => {
       if (!duplicateValues.length) {
         const result = await UploadFiles(values);
         updateProduct({ data: result, id });
+        navigate("/admin/products");
       } else {
         toast({
           variant: "destructive",
@@ -113,6 +116,7 @@ const ProductAddPage = () => {
       if (!duplicateValues.length) {
         const result = await UploadFiles(values);
         createProduct(result);
+        navigate("/admin/products");
       } else {
         toast({
           variant: "destructive",

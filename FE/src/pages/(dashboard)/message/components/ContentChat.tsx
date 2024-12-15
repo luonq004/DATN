@@ -106,7 +106,7 @@ const ContentChat = ({ socket }: { socket: Socket }) => {
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (event.key === "Enter" && newMessage) {
-      console.log("OK");
+      // console.log("OK");
       // await sendMessage(_id);
     }
   };
@@ -148,7 +148,6 @@ const ContentChat = ({ socket }: { socket: Socket }) => {
       <div className=" border-b pb-4">
         <div className="w-full max-h-[70vh] min-h-[70vh]">
           <ScrollableFeed>
-            asdasd
             {listMessage?.length > 0 ? (
               listMessage.map((message) => (
                 <div key={message._id}>

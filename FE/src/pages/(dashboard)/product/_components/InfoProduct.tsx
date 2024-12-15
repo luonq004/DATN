@@ -21,13 +21,18 @@ import AttributeTab from "./AttributeTab";
 import { reducer } from "./reducer";
 
 import { Attribute, Data, State } from "@/common/types/Product";
-import { getSelectedValues, getUniqueTypesFromFields } from "@/lib/utils";
+import {
+  formatDataLikeFields,
+  getSelectedValues,
+  getUniqueTypesFromFields,
+} from "@/lib/utils";
 import { useFieldArray } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useGetAtributes } from "../actions/useGetAttributes";
 import VariationTab from "./VariationTab";
 import { FormTypeProductVariation } from "@/common/types/validate";
+import { Label } from "@/components/ui/label";
 
 const formats = [
   "header",
@@ -121,7 +126,7 @@ const InfoGeneralProduct: React.FC<{
 
   const typeFields: string[] = getUniqueTypesFromFields(fields) as string[];
 
-  // console.log("fields", form.formState.errors.variants?.root?.message);
+  console.log("attributeValue", getSelectedValues(attributeValue, attributes));
 
   return (
     <div className="w-full xl:w-3/4">
@@ -183,6 +188,25 @@ const InfoGeneralProduct: React.FC<{
                 <TabsList className="flex flex-col justify-start gap-2 h-auto bg-white border-b md:border-r border-black md:border-inherit rounded-none pb-3 md:p-0">
                   {tabProductData.map((tab) => (
                     <TabsTrigger
+                      onClick={() => {
+                        if (tab.value === "variations") {
+                          if (stateAttribute.valuesMix.length !== 0) {
+                            const newFields = formatDataLikeFields(
+                              stateAttribute.valuesMix
+                            );
+
+                            replace(newFields);
+                            newFields.forEach((field, index) => {
+                              field.values.forEach((value, indx) => {
+                                form.setValue(
+                                  `variants.${index}.values.${indx}._id`,
+                                  value._id
+                                );
+                              });
+                            });
+                          }
+                        }
+                      }}
                       key={tab.value}
                       className="py-3 w-full data-[state=active]:bg-slate-200 hover:bg-slate-100 data-[state=active]:rounded-none"
                       value={tab.value}
@@ -195,7 +219,7 @@ const InfoGeneralProduct: React.FC<{
                 {/* Tab Content */}
 
                 <TabsContent
-                  className="px-3 pt-2 flex-1 min-h-[400px]"
+                  className="px-3 pt-2 flex-1 min-h-[500px]"
                   value="attributes"
                 >
                   <AttributeTab
@@ -235,12 +259,15 @@ const InfoGeneralProduct: React.FC<{
           form.formState.errors.variants?.root?.message}
       </span>
 
-      <div>
+      <div className="mt-9">
+        <Label className="text-lg font-medium-">Mô tả chi tiết</Label>
+
         <ReactQuill
+          className="bg-white mt-4"
           placeholder="Viết mô tả chi tiết sản phẩm"
-          className="bg-white mt-9"
           style={{
             minHeight: "200px",
+            height: "200px",
             marginBottom: "50px",
             background: "white",
           }}
