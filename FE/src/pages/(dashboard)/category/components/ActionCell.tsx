@@ -64,14 +64,19 @@ const ActionCell: React.FC<ActionCellProps> = ({ row }) => {
         <DropdownMenuItem>
           <Link to={`/admin/categories/edit/${row.original._id}`}>Sửa</Link>
         </DropdownMenuItem>
-        {row.original.deleted === false ? (
-          <DropdownMenuItem onClick={handleDelete}>
-            {isDeleting ? "Đang ẩn..." : "Ẩn"}
-          </DropdownMenuItem>
+
+        {row.original.defaultCategory == false ? (
+          row.original.deleted === false ? (
+            <DropdownMenuItem onClick={handleDelete}>
+              {isDeleting ? "Đang ẩn..." : "Ẩn"}
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem onClick={handleDisplay}>
+              {isUpdating ? "Đang hiện..." : "Hiện"}
+            </DropdownMenuItem>
+          )
         ) : (
-          <DropdownMenuItem onClick={handleDisplay}>
-            {isUpdating ? "Đang hiện..." : "Hiện"}
-          </DropdownMenuItem>
+          ""
         )}
       </DropdownMenuContent>
     </DropdownMenu>

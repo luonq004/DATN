@@ -211,6 +211,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         </div>
       </div>
 
+      {/* Số lượng đc bán */}
+      <span className="mb-[25px] block">Số lượng đã bán: {product.count}</span>
+
       {/* Description */}
       <p className="text-sm text-[#888] leading-[22px] mb-[30px]">
         {product.description}

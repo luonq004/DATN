@@ -14,7 +14,11 @@ const OurSeries = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/products");
-        setProducts(response.data.data.slice(3, 10));
+        const sortedProducts = response.data.data
+        .sort((a: any, b: any) => b.count - a.count)// Sắp xếp giảm dần dựa vào count
+        .slice(0, 6);
+
+      setProducts(sortedProducts);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu sản phẩm:", error);
       }

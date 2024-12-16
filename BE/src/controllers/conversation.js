@@ -11,7 +11,7 @@ export const getAllConversations = async (req, res) => {
       .sort({ updatedAt: -1 });
 
     if (!conversations) {
-      return res.status(401).json({ error: "Không tìm thấy cuộc trò chuyện" });
+      return res.status(400).json({ error: "Không tìm thấy cuộc trò chuyện" });
     }
 
     res.status(200).json(conversations);

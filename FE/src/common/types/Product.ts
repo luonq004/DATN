@@ -18,6 +18,7 @@ export interface IProduct {
   type: string;
   category: string[];
   countOnStock: number;
+  count: number;
   price: number;
   priceSale: number;
   description: string;
@@ -56,9 +57,7 @@ export interface Category {
   title: string;
   description: string;
   name: string;
-  title: string;
-  image: string;
-  description: string;
+  defaultCategory: boolean;
   slug: string;
   deleted: boolean;
   __v: number;

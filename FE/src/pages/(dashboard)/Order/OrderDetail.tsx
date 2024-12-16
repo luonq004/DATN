@@ -14,8 +14,7 @@ import { formatCurrencyVND } from "@/pages/(website)/orderHistory/OrderHistory";
 
 const OrderDetail = () => {
   const { id } = useParams();
-  const { data } = useOrder(undefined, id);
-
+  const { data , isLoading, isError} = useOrder(undefined, id);
   // State để theo dõi việc xuất PDF
   const [isExported, setIsExported] = useState(false);
 
@@ -31,14 +30,21 @@ const OrderDetail = () => {
       second: "numeric",
     }).format(date);
   };
-
-  if (!data)
-    return (
-      <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
-        <div className="spinner"></div>
-      </div>
-    );
-
+    if (isLoading) {
+      return (
+        <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
+          <div className="spinner"></div>
+        </div>
+      );
+    }
+  
+    if (isError) {
+      return (
+        <div className="text-center text-red-500">
+          Có lỗi xảy ra khi tải dữ liệu!
+        </div>
+      );
+    }
   const {
     addressId,
     note,
@@ -96,7 +102,6 @@ const OrderDetail = () => {
       } 
     }
   };
-
   return (
     <div className="p-6 bg-gray-100">
       <button
@@ -239,13 +244,13 @@ const OrderDetail = () => {
           <div className="text-right space-y-2 bg-white p-4 rounded shadow-sm">
             <p className="flex items-center justify-between">
               <span className="text-gray-500">Giảm giá:</span>
-              <span className="font-semibold text-gray-800">
-                {formatCurrencyVND(discount)}
+              <span className="text-gray-800">
+                - {formatCurrencyVND(discount)}
               </span>
             </p>
             <p className="flex items-center justify-between">
               <span className="text-gray-500">Phí ship:</span>
-              <span className="font-semibold text-gray-800">30.000 ₫</span>
+              <span className="text-gray-800">30.000 ₫</span>
             </p>
             <div className="flex items-center justify-between border-t pt-2 mt-2">
               <h3 className="text-gray-700 font-medium">Tổng giá trị:</h3>

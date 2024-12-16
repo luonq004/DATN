@@ -14,7 +14,7 @@ import NotificationList from "./notifications/_components/ListNotifications";
 const LayoutAdmin = () => {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
-  const [isAuthorized, setIsAuthorized] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const { _id } = useUserContext();
   const isUserSaved = useRef(false);
   const { login } = useUserContext();
@@ -27,11 +27,13 @@ const LayoutAdmin = () => {
       return;
     }
 
+    const userRole = localStorage.getItem("userRole");
     // Kiểm tra quyền truy cập
-    if (user && user.publicMetadata.role === "Admin") {
+    if (userRole && userRole === "Admin") {
       // Xác nhận quyền truy cập
       setIsAuthorized(true);
     } else {
+      setIsAuthorized(false);
       navigate("*", { replace: true });
     }
   }, [user, isLoaded, navigate]);
@@ -59,7 +61,11 @@ const LayoutAdmin = () => {
 
   // Trì hoãn render giao diện khi đang kiểm tra quyền truy cập
   if (!isLoaded || !isAuthorized) {
-    return null;
+    return (
+      <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
+        <div className="spinner"></div>
+      </div>
+    );
   }
 
   // console.log("user", user);
