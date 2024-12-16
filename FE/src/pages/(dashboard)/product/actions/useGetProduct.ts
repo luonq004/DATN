@@ -7,7 +7,7 @@ export function useGetProduct(id: string) {
     data: product,
     error,
   } = useQuery({
-    queryKey: ["Product", id],
+    queryKey: ["Products", id],
     queryFn: () => getProductEdit(id),
   });
 

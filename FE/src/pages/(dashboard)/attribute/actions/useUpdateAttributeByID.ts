@@ -22,7 +22,7 @@ export const useUpdateAttributeByID = (id: string) => {
     onError: (error: Error) => {
       toast({
         variant: "destructive",
-        title: "Cập nhật thuộc tính thất bại",
+        title: error.message,
       });
     },
   });

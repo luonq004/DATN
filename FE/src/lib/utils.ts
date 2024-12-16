@@ -93,9 +93,13 @@ export function getSelectedValues(
 ) {
   return attributes.reduce((acc, attribute, index) => {
     // console.log("valueAttributeProduct: ", valueAttributeProduct);
+    // console.log("attributes: ", attributes);
 
     valueAttributeProduct.filter((item) => {
+      console.log("item: ", item);
       if (attribute.name == item[0].type) {
+        // console.log("item: ", item);
+        // console.log("attribute.name: ", attribute.name);
         acc[attribute._id] = item;
       }
     });

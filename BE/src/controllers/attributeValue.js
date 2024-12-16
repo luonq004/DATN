@@ -68,7 +68,7 @@ export const createAttributeValue = async (req, res) => {
 
     const { name, value, type } = req.body;
 
-    const checkName = await checkNameExist(name);
+    const checkName = await checkNameExist(name, id);
 
     if (checkName) {
       return res.status(400).json({
@@ -128,8 +128,16 @@ export const updateAttributeValue = async (req, res) => {
 
     if (!attributeValue) {
       return res
-        .status(401)
+        .status(400)
         .json({ message: "Không tìm thấy giá trị attribute" });
+    }
+
+    const checkName = await checkNameExist(name, _id);
+
+    if (checkName) {
+      return res.status(400).json({
+        message: "Tên giá trị thuộc tính đã tồn tại",
+      });
     }
 
     const response = await AttributeValue.findOneAndUpdate(
@@ -148,7 +156,7 @@ export const updateAttributeValue = async (req, res) => {
     );
 
     if (response.length < 0) {
-      return res.status(401).json({
+      return res.status(400).json({
         message: "Không tìm thấy giá trị attribute. Cập nhật thất bại",
       });
     }
@@ -202,7 +210,7 @@ export const displayAttributeValue = async (req, res) => {
 };
 
 // Utils
-async function checkNameExist(name) {
+async function checkNameExist(name, id) {
   const slugCheck = name
     .replace(/\s+/g, " ")
     .trim()
@@ -210,7 +218,10 @@ async function checkNameExist(name) {
     .toLowerCase();
 
   // Tìm một tài liệu phù hợp
-  const exists = await AttributeValue.findOne({ slugName: slugCheck });
+  const exists = await AttributeValue.findOne({
+    slugName: slugCheck,
+    _id: { $ne: id },
+  });
 
   // Trả về true nếu tài liệu tồn tại, ngược lại false
   return !!exists;
