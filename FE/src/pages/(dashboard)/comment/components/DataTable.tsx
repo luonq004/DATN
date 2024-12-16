@@ -149,7 +149,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Không có danh mục nào
+                  Không có đánh giá nào
                 </TableCell>
               </TableRow>
             )}

@@ -9,7 +9,9 @@ export function useGetAllProduct() {
   const statusDisplay = searchParams.get("status");
 
   const filterStatus =
-    !statusDisplay || statusDisplay === "" ? "status" : statusDisplay;
+    !statusDisplay || statusDisplay === "" || statusDisplay == null
+      ? "display"
+      : statusDisplay;
 
   const {
     isLoading,
