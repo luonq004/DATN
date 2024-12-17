@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 const SizeColorSelector = ({
   idProduct,
@@ -208,7 +209,12 @@ const SizeColorSelector = ({
   if (isLoading) return <div>Is Loading</div>;
   if (isError) return <div>Is Error</div>;
   if (AttriLoading) return <div>Is Loading Attribute</div>;
-  if (AttriError) return <div>Is Error Attribute</div>;
+  if (AttriError) return (
+    <div className="flex items-center justify-center p-[10rem] my-10   ">
+      <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+      <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+    </div>
+  );;
   return (
     <>
       <div

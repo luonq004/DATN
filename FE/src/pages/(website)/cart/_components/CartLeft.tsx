@@ -10,6 +10,7 @@ import SizeColorSelector from "./SizeColorSelect";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useUserContext } from "@/common/context/UserProvider";
 
 const CartLeft = ({
   cart,
@@ -26,6 +27,7 @@ const CartLeft = ({
   isLoading: Boolean;
   isError: Boolean;
 }) => {
+  const { _id }: any = useUserContext();
   const hanldeOnChangeAttribute = (idCart: string) => {
     // console.log(number)
     setAttribute(idCart);
@@ -46,44 +48,46 @@ const CartLeft = ({
       {/* End Top  */}
 
       {/* Selected All */}
-      <div className="w-full grid grid-cols-[auto_37%] justify-between items-center gap-x-4 bg-gray-100 py-1.5">
-        <div className="flex gap-x-5 items-center">
-          {(cart?.products?.filter((item: any) => item.selected === true).length === cart?.products.length && cart?.products.length !== 0)
-            ?
-            <div className="flex items-center">
-              <div
-                className="inline-flex justify-center p-0.5 items-center rounded-sm bg-[#b8cd06] cursor-pointer"
-                onClick={() => userAction(
-                  { type: "selectedAll" }, {}
-                )}
-              >
-                <Check strokeWidth={'3px'} size={16} color="white" />
+      {_id &&
+        <div className="w-full grid grid-cols-[auto_37%] justify-between items-center gap-x-4 bg-gray-100 py-1.5">
+          <div className="flex gap-x-5 items-center">
+            {(cart?.products?.filter((item: any) => item.selected === true).length === cart?.products.length && cart?.products.length !== 0)
+              ?
+              <div className="flex items-center">
+                <div
+                  className="inline-flex justify-center p-0.5 items-center rounded-sm bg-[#b8cd06] cursor-pointer"
+                  onClick={() => userAction(
+                    { type: "selectedAll" }, {}
+                  )}
+                >
+                  <Check strokeWidth={'3px'} size={16} color="white" />
+                </div>
               </div>
-            </div>
-            :
-            <div className="flex items-center">
-              <div
-                className="inline-flex p-[9px] rounded-sm border border-[#0000008a] cursor-pointer"
-                onClick={() => userAction(
-                  { type: "selectedAll" }, {}
-                )}
-              >
+              :
+              <div className="flex items-center">
+                <div
+                  className="inline-flex p-[9px] rounded-sm border border-[#0000008a] cursor-pointer"
+                  onClick={() => userAction(
+                    { type: "selectedAll" }, {}
+                  )}
+                >
+                </div>
               </div>
+            }
+            <div>
+              <span>Sản phẩm</span>
             </div>
-          }
-          <div>
-            <span>Sản phẩm</span>
+          </div>
+          <div className="flex justify-end">
+            <span
+              onClick={() => userAction(
+                { type: "removeAllSelected" }, {}
+              )}
+              className="cursor-pointer"
+            >Xóa ({cart?.products?.filter((product: any) => product.selected === true).length ?? 0})</span>
           </div>
         </div>
-        <div className="flex justify-end">
-          <span
-            onClick={() => userAction(
-              { type: "removeAllSelected" }, {}
-            )}
-            className="cursor-pointer"
-          >Xóa ({cart?.products?.filter((product: any) => product.selected === true).length ?? 0})</span>
-        </div>
-      </div>
+      }
 
       {/* Mid  */}
       <div className="Mid flex flex-col gap-6">

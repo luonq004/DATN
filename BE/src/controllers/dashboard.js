@@ -61,47 +61,43 @@ export const getDataCard = async (req, res) => {
         const totalProfit = result.length > 0 ? result[0].totalProfit : 0;
 
         // Vốn nhập hàng
-        const result2 = await Product.aggregate([
+        const result2 = await Order.aggregate([
             {
-                // Lookup để join collection variants theo product
-                $lookup: {
-                    from: "variants",            // Tên collection variants
-                    localField: "variants",      // Trường liên kết trong products
-                    foreignField: "_id",         // Trường liên kết trong variants
-                    as: "productVariants"        // Output array chứa variants
-                }
+                // Lọc các đơn hàng có status: "đã hoàn thành"
+                $match: { status: "đã hoàn thành" },
             },
             {
-                // Unwind để tách từng variant trong mảng productVariants
-                $unwind: "$productVariants"
-            },
-            // lọc sản phẩm chưa bị xóa
-            // {
-            //     $match: {
-            //         "productVariants.deleted": false
-            //     }
-            // },
-            {
-                // Project: Chọn và tính giá trị cần thiết
-                $project: {
-                    _id: 0, // Loại bỏ ID nếu không cần thiết
-                    name: 1, // Tên sản phẩm
-                    countOnStock: "$productVariants.countOnStock",
-                    originalPrice: "$productVariants.originalPrice",
-                    totalValue: {
-                        $multiply: ["$productVariants.originalPrice", "$productVariants.countOnStock"]
-                    }
-                }
+                // Bước 1: Unwind mảng products để tách từng phần tử
+                $unwind: "$products",
             },
             {
-                // Group: Tính tổng tất cả totalValue
+                // Bước 2: Tính toán giá trị cho từng sản phẩm
+                $addFields: {
+                    productTotal: {
+                        $multiply: [
+                            "$products.variantItem.originalPrice",
+                            "$products.quantity"
+                        ],
+                    },
+                },
+            },
+            {
+                // Bước 3: Tính tổng giá trị productTotal
                 $group: {
-                    _id: null,
-                    totalResult: { $sum: "$totalValue" }
-                }
-            }
+                    _id: null, // Không nhóm theo trường nào cả
+                    totalProductValue: { $sum: "$productTotal" },
+                },
+            },
+            {
+                // Bước 4: Chỉ giữ trường tổng product value trong kết quả trả về
+                $project: {
+                    _id: 0,
+                    totalProductValue: 1,
+                },
+            },
         ]);
-        const totalImport = result2.length > 0 ? result2[0].totalResult : 0;
+
+        const totalImport = result2.length > 0 ? result2[0].totalProductValue : 0;
 
         const data = { total: total, order: order.length, product: product.length, user: user.length, totalProfit: totalProfit, totalImport: totalImport };
         return res.status(StatusCodes.OK).json(data)

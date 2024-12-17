@@ -140,7 +140,8 @@ const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
                                 </div>
                             </div>
                         );
-                    } else if (item.voucher.status !== 'active') {
+                    }
+                    else if (item.voucher.status !== 'active') {
                         return (
                             <div key={item.voucher._id} className={`voucher-item p-3 w-full z-0 relative grid grid-cols-[15%_auto_5.5%] gap-x-3 transition-all duration-200 border rounded-md ${matchedVoucher ? 'border-black' : 'border-gray-300'}`}>
                                 <div className='bg-slate-300 flex justify-center items-center p-1'>

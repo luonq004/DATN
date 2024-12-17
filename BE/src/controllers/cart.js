@@ -25,14 +25,14 @@ const updateTotal = async (cart) => {
       let status = voucher.status;
 
       //nếu trạng thái inactive sẽ bị xóa khỏi giỏ hàng
-      if (status === "inactive") {
-        cart.voucher = cart.voucher.filter((item) => item._id !== voucher._id);
-      }
+      // if (status === "inactive") {
+      //   cart.voucher = cart.voucher.filter((item) => item._id !== voucher._id);
+      // }
 
       //nếu voucher hết hạn sẽ bị xóa khỏi giỏ hàng
-      if (presentTime <= startDate || presentTime >= endDate) {
-        cart.voucher = cart.voucher.filter((item) => item._id !== voucher._id);
-      }
+      // if (presentTime <= startDate || presentTime >= endDate) {
+      //   cart.voucher = cart.voucher.filter((item) => item._id !== voucher._id);
+      // }
 
       if (
         presentTime >= startDate &&
@@ -46,19 +46,19 @@ const updateTotal = async (cart) => {
         }
       }
 
-      if (
-        presentTime >= startDate &&
-        presentTime <= endDate &&
-        voucher.category === "ship"
-      ) {
-        if (voucher.type === "fixed") {
-          totalShip = totalShip - voucher.discount;
-          if (totalShip < 0) totalShip = 0;
-        } else if (voucher.type === "percent") {
-          totalShip = totalShip - (totalShip * voucher.discount) / 100;
-          if (totalShip < 0) totalShip = 0;
-        }
-      }
+      // if (
+      //   presentTime >= startDate &&
+      //   presentTime <= endDate &&
+      //   voucher.category === "ship"
+      // ) {
+      //   if (voucher.type === "fixed") {
+      //     totalShip = totalShip - voucher.discount;
+      //     if (totalShip < 0) totalShip = 0;
+      //   } else if (voucher.type === "percent") {
+      //     totalShip = totalShip - (totalShip * voucher.discount) / 100;
+      //     if (totalShip < 0) totalShip = 0;
+      //   }
+      // }
     });
   }
 

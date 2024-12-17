@@ -6,6 +6,8 @@ import { useEffect, useRef } from "react";
 import { CirclePlus } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import VoucherAddForm from "./_components/VoucherAddForm";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 export type Payment = {
     _id?: string;
@@ -83,8 +85,17 @@ const Demopage = () => {
 
     };
 
-    if (isLoading) return <div>Loading...</div>;
-    if (isError) return <div>Error</div>;
+    if (isLoading) return (
+        <div className="flex flex-col space-y-3">
+            <Skeleton className="h-[325px] w-full rounded-xl bg-white" />
+        </div>
+    );
+    if (isError) return (
+        <div className="flex items-center justify-center p-[10rem] my-10   ">
+            <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+            <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+        </div>
+    );
     return (
         <div className="w-full mx-auto py-10">
             <div className="flex justify-between items-center">

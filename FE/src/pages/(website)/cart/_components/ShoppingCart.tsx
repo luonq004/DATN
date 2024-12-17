@@ -7,6 +7,7 @@ import CartRight from "./CartRight";
 import CartLeft from "./CartLeft";
 import { useUserContext } from "@/common/context/UserProvider";
 import { io } from "socket.io-client";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 const socket = io("http://localhost:3000");
 
@@ -138,7 +139,12 @@ const ShopCart = () => {
   }
 
   if (isLoading) return <SkeletonCart />;
-  if (isError) return <div>Is Error</div>;
+  if (isError) return (
+    <div className="flex items-center justify-center p-[10rem] my-10   ">
+      <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+      <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+    </div>
+  );;
   // console.log('cart', cart);
 
   return (
