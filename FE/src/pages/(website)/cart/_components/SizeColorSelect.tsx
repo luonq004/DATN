@@ -113,8 +113,9 @@ const SizeColorSelector = ({
       const valueSelected = prev[attributeId] === valueId;
 
       if (valueSelected) {
-        const { [attributeId]: removed, ...rest } = prev;
-        return rest;
+        // const { [attributeId]: removed, ...rest } = prev;
+        // return rest;
+        return prev
       }
 
       return {
@@ -251,27 +252,31 @@ const SizeColorSelector = ({
                   {item.values.map((itemOther: any) => (
                     <div
                       key={itemOther._id}
-                      className={`border-2 px-2 py-1 rounded-md 
-                                            ${!compatibleAttributeValues[
-                          item._id
-                        ]?.includes(itemOther._id)
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:border-background1 cursor-pointer transition-all"
-                        } 
-                                            ${selectedValue && selectedValue[item._id]?.includes(
-                          itemOther._id
-                        )
-                          ? "border-background1"
+                      // className={`border-2 px-2 py-1 rounded-md 
+                      //   ${!compatibleAttributeValues[item._id]?.includes(itemOther._id)
+                      //     ? "opacity-50 cursor-not-allowed"
+                      //     : "hover:border-background1 cursor-pointer transition-all"
+                      //   } 
+                      //   ${selectedValue && selectedValue[item._id]?.includes(itemOther._id)
+                      //     ? "border-background1"
+                      //     : ""
+                      //   }
+                      //   `}
+                      className={`border-2 px-2 py-1 rounded-md cursor-pointer
+                        ${selectedValue && selectedValue[item._id]?.includes(itemOther._id)
+                          ? "border-background1 cursor-pointer"
                           : ""
-                        }`}
+                        } 
+                        `}
                       onClick={() => {
-                        if (
-                          compatibleAttributeValues[item._id]?.includes(
-                            itemOther._id
-                          )
-                        ) {
-                          handleAttributeChange(item._id, itemOther._id);
-                        }
+                        console.log('click')
+                        // if (
+                        //   compatibleAttributeValues[item._id]?.includes(
+                        //     itemOther._id
+                        //   )
+                        // ) {
+                        handleAttributeChange(item._id, itemOther._id);
+                        // }
                       }}
                     >
                       <p className=" text-[14px] font-medium text-nowrap">
@@ -300,7 +305,7 @@ const SizeColorSelector = ({
             Lưu
           </button>
         </div>
-      </div>
+      </div >
     </>
   );
 };

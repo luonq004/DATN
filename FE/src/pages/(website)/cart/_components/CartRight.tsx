@@ -24,6 +24,7 @@ import { z } from "zod"
 import { Link } from 'react-router-dom';
 import Icart from '@/common/types/cart';
 import { formatCurrency } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 const formSchema = z.object({
     voucherCode: z.string().min(2, {
@@ -32,6 +33,7 @@ const formSchema = z.object({
 })
 
 const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { type: string }, payload: any) => void }) => {
+    const [priceShip, setPriceShip] = useState(30000)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -54,6 +56,19 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
         userAction({ type: 'removeVoucher' }, { voucherCode: item })
     }
     // console.log("selectedOne", cart)
+    useEffect(() => {
+        if (cart?.voucher?.length > 0) {
+            const voucher = cart?.voucher?.find((item: any) => item.category == "ship")
+            if (voucher.type == "percent") {
+                const result = 30000 - (30000 * voucher.discount / 100)
+                return setPriceShip(result)
+            }
+            if (voucher.type == "fixed") {
+                const result = 30000 - voucher.discount
+                return setPriceShip(result)
+            }
+        }
+    }, [cart?.voucher])
 
     return (
         <div className='Cart__Right'>
@@ -68,7 +83,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                             Phí giao hàng
                         </p>
                         <div>
-                            <span>{formatCurrency(30000)}VNĐ</span>
+                            <span>{formatCurrency(priceShip)}VNĐ</span>
                         </div>
                     </div>
                     <div className='flex justify-between'>

@@ -111,6 +111,10 @@ export const getDataUserList = async (req, res) => {
     try {
         const topUsers = await Order.aggregate([
             {
+                // Lọc các đơn hàng có status: "đã hoàn thành"
+                $match: { status: "đã hoàn thành" },
+            },
+            {
                 $addFields: {
                     adjustedTotalPrice: { $subtract: ["$totalPrice", 30000] }, // Trừ đi 30000 cho mỗi totalPrice
                 },

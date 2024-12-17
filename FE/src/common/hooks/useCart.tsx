@@ -52,9 +52,9 @@ const useCart = (userId: string) => {
         // console.log(error.response.data.message)
         toast({
           variant: "destructive",
-          title: "Error",
+          title: "Lỗi",
           description: `${error.response.data.message}`,
-          action: <ToastAction altText="Try again">Try again</ToastAction>,
+          // action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
       },
     });

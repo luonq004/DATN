@@ -78,7 +78,7 @@ const OrderHistory = () => {
 
     // Lấy orderCode từ orderIdToCancel
     const orderToCancel = (data || []).find(
-      (order:any) => order._id === orderIdToCancel
+      (order: any) => order._id === orderIdToCancel
     );
     const orderCode = orderToCancel?.orderCode;
 
@@ -120,7 +120,7 @@ const OrderHistory = () => {
           productImage: firstProductImage,
           productName: orderToCancel?.products[0]?.productItem?.name
         });
-        
+
       }
     } catch (error) {
       console.error(error);
@@ -303,7 +303,7 @@ const OrderHistory = () => {
                                     <div key={value._id}>
                                       {value.type}: {value.name}
                                       {index <
-                                      item.variantItem.values.length - 1
+                                        item.variantItem.values.length - 1
                                         ? ","
                                         : ""}
                                     </div>
@@ -318,7 +318,7 @@ const OrderHistory = () => {
                             Giá:{" "}
                             {formatCurrencyVND(
                               item.variantItem?.priceSale ||
-                                item.variantItem?.price
+                              item.variantItem?.price
                             )}
                           </span>
 
@@ -366,7 +366,7 @@ const OrderHistory = () => {
                 <p className="text-[rgba(0,0,0,.8)] text-[16px]">
                   Giảm giá:{" "}
                   <span className="text-[rgba(0,0,0,.8)]">
-                  -  {formatCurrencyVND(order.discount || 0)}
+                    -  {formatCurrencyVND(order.discount || 0)}
                   </span>
                 </p>
               </div>
@@ -382,13 +382,13 @@ const OrderHistory = () => {
                 </span>
                 {(order.status === "chờ xác nhận" ||
                   order.status === "đã xác nhận") && (
-                  <button
-                    className="px-4 ml-[2%] py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                    onClick={() => openModal(order._id)}
-                  >
-                    Hủy đơn hàng
-                  </button>
-                )}
+                    <button
+                      className="px-4 ml-[2%] py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                      onClick={() => openModal(order._id)}
+                    >
+                      Hủy đơn hàng
+                    </button>
+                  )}
                 {isOpen && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg w-96">
@@ -446,7 +446,7 @@ const OrderHistory = () => {
             <PaginationPrevious
               className="cursor-pointer"
               onClick={() => handlePageChange(currentPage - 1)}
-              // disabled={currentPage === 1}
+            // disabled={currentPage === 1}
             />
           </PaginationItem>
 
@@ -491,7 +491,7 @@ const OrderHistory = () => {
             <PaginationNext
               className="cursor-pointer"
               onClick={() => handlePageChange(currentPage + 1)}
-              // disabled={currentPage === totalPages}
+            // disabled={currentPage === totalPages}
             />
           </PaginationItem>
         </PaginationContent>

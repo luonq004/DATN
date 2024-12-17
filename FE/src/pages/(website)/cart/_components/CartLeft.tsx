@@ -81,7 +81,7 @@ const CartLeft = ({
               { type: "removeAllSelected" }, {}
             )}
             className="cursor-pointer"
-          >Xóa</span>
+          >Xóa ({cart?.products?.filter((product: any) => product.selected === true).length ?? 0})</span>
         </div>
       </div>
 

@@ -81,7 +81,7 @@ const Demopage = () => {
     if (isLoading) return <div>Loading...</div>;
     if (isError) return <div>Error</div>;
     return (
-        <div className="container mx-auto py-10">
+        <div className="w-full mx-auto py-10">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-semibold">Vouchers</h1>
                 <Dialog>

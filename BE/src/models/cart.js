@@ -53,6 +53,12 @@ const cartSchema = new mongoose.Schema(
     discount: {
       type: Number,
     },
+
+    // ship: {
+    //   type: Number,
+    //   default: 30000,
+    // },
+
     total: {
       type: Number,
       required: true,

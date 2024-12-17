@@ -89,7 +89,7 @@ const ShopCart = () => {
           onSuccess: () => {
             // console.log(`Thêm mã giảm giá ${value.voucherCode} thành công`)
             toast({
-              title: "Sucsess",
+              title: "Thành công",
               description: `Thêm mã giảm giá ${value.voucherCode} thành công`,
             });
           },
@@ -104,7 +104,7 @@ const ShopCart = () => {
         changeVariant.mutate(item, {
           onSuccess: () => {
             toast({
-              title: "Sucsess",
+              title: "Thành công",
               description: "Đổi thành công!",
             });
             setAttribute("1");

@@ -13,6 +13,7 @@ const updateTotal = async (cart) => {
   cart.subTotal = total;
   // console.log(cart.voucher)
   let totalDiscount = 0;
+  let totalShip = 30000;
 
   if (cart.voucher && cart.voucher.length > 0) {
     const date = new Date();
@@ -44,6 +45,20 @@ const updateTotal = async (cart) => {
           totalDiscount += (total * voucher.discount) / 100;
         }
       }
+
+      if (
+        presentTime >= startDate &&
+        presentTime <= endDate &&
+        voucher.category === "ship"
+      ) {
+        if (voucher.type === "fixed") {
+          totalShip = totalShip - voucher.discount;
+          if (totalShip < 0) totalShip = 0;
+        } else if (voucher.type === "percent") {
+          totalShip = totalShip - (totalShip * voucher.discount) / 100;
+          if (totalShip < 0) totalShip = 0;
+        }
+      }
     });
   }
 
@@ -57,8 +72,9 @@ const updateTotal = async (cart) => {
     total -= totalDiscount;
   }
 
+  cart.ship = totalShip;
   cart.discount = totalDiscount;
-  cart.total = total;
+  cart.total = total + totalShip;
   await cart.save();
   return cart;
 };
@@ -98,7 +114,7 @@ export const getCartByUserId = async (req, res) => {
     await cart.save();
     cart = await updateTotal(cart);
     // console.log("cart", cart)
-    cart.total += 30000;
+    // cart.total += 30000;
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
   } catch (error) {
@@ -529,11 +545,11 @@ export const revomeVoucherCart = async (req, res) => {
     }
 
     // tăng số lượng của voucher
-    await Voucher.findOneAndUpdate(
-      { _id: voucher._id },
-      { countOnStock: voucher.countOnStock + 1 },
-      { new: true }
-    );
+    // await Voucher.findOneAndUpdate(
+    //   { _id: voucher._id },
+    //   { countOnStock: voucher.countOnStock + 1 },
+    //   { new: true }
+    // );
 
     // loại khỏi danh sách đã sử dụng voucher
     await VoucherUsage.findOneAndDelete({

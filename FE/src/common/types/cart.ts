@@ -4,5 +4,6 @@ export default interface ICart {
   voucher?: any;
   subTotal?: number;
   discount?: number;
+  ship?: number;
   total?: number;
 }
