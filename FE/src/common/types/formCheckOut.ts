@@ -65,6 +65,7 @@ interface CartProduct {
 // Định nghĩa kiểu cho giỏ hàng (cart)
 export interface Cart {
   _id: string;
+  selected?:string;
   userId: string;
   products: CartProduct[];
   voucher: unknown[]; // Nếu có thông tin về voucher, có thể thay đổi kiểu này

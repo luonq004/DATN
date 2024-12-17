@@ -262,7 +262,7 @@ const OrderHistory = () => {
                     <span className="font-semibold">{order.orderCode}</span>
                   </div>
                   <div className="text-sm">
-                    Ngày tạo: {new Date(order.createdAt).toLocaleDateString()}
+                    Ngày mua hàng: {new Date(order.createdAt).toLocaleDateString()}
                   </div>
                 </div>
                 <div className="text-green-500 font-semibold text-lg">
@@ -366,7 +366,7 @@ const OrderHistory = () => {
                 <p className="text-[rgba(0,0,0,.8)] text-[16px]">
                   Giảm giá:{" "}
                   <span className="text-[rgba(0,0,0,.8)]">
-                  -  {formatCurrencyVND(order.discount || 0)}
+                  {order.discount > 0 ? `- ${formatCurrencyVND(order.discount)}` : formatCurrencyVND(0)}
                   </span>
                 </p>
               </div>

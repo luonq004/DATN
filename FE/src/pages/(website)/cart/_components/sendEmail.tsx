@@ -77,6 +77,7 @@ const sendOrderConfirmationEmail = async (to: string, orderCode: string) => {
       to,
       subject: `mã đơn hàng ${order.orderCode}`,
       htmlContent: emailContent,
+      orderCode: order.orderCode ,
     });
 
     console.log("Email đã được gửi thành công.");

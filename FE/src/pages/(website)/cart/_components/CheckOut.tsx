@@ -112,6 +112,9 @@ const CheckOut = () => {
         );
         const paymentUrl = response.data.redirectUrl;
         window.location.href = paymentUrl;
+       if(Gmail){
+        await sendOrderConfirmationEmail(Gmail, orderCode);
+       }
       }
 
       if (data.paymentMethod === "COD") {
@@ -150,7 +153,9 @@ const CheckOut = () => {
           // queryClient.invalidateQueries(["CART", _id]);
           navigate("/cart/order"); // Điều hướng đến trang đơn hàng
           // Gửi email xác nhận đơn hàng
-          await sendOrderConfirmationEmail(Gmail, orderCode);
+          if(Gmail){
+            await sendOrderConfirmationEmail(Gmail, orderCode);
+           }
         }
       }
     } catch (error: unknown) {
@@ -461,7 +466,7 @@ const CheckOut = () => {
                         className="w-[22px] h-[22px]"
                       />
                       <span className="text-[#717378] text-[14px]">
-                        Đăng ký để nhận email cập nhật và tin tức (tùy chọn)
+                        Đăng ký để nhận email đơn hàng
                       </span>
                     </div>
                     {errors.emailUpdates && (
