@@ -38,7 +38,6 @@ const sendOrderConfirmationEmail = async (to: string, orderCode: string) => {
       <h1>FabricFocus Cảm ơn bạn đã đặt hàng!</h1>
       <p>Mã đơn hàng: <strong>${order.orderCode}</strong></p>
       <p>Vui lòng đăng nhập để xem lịch sử đơn hàng: <strong>http://localhost:5173/users/order-history</strong></p>
-      <p>Phí giao hàng: <strong>30.000 VNĐ</strong></p>
       <p>Trạng thái đơn hàng: <strong>${order.status}</strong></p>
       <p>Danh sách sản phẩm:</p>
       <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
@@ -69,6 +68,7 @@ const sendOrderConfirmationEmail = async (to: string, orderCode: string) => {
             .join("")}
         </tbody>
       </table>
+      <p>Phí giao hàng: <strong>30.000 VNĐ</strong></p>
       <p>Tổng cộng: <strong>${order.totalPrice.toLocaleString()} VNĐ</strong></p>
     `;
 
