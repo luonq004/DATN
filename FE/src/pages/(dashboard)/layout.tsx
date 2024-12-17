@@ -29,7 +29,7 @@ const LayoutAdmin = () => {
 
     const userRole = localStorage.getItem("userRole");
     // Kiểm tra quyền truy cập
-    if (userRole && userRole === "Admin") {
+    if (userRole === "Admin") {
       // Xác nhận quyền truy cập
       setIsAuthorized(true);
     } else {
