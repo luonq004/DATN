@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { formatCurrency } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { DollarSign, Package, Truck, Users } from "lucide-react";
+import { DollarSign, Package, Truck, Users, Activity, BadgeDollarSign } from "lucide-react";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 export function CardTabsList() {
     const { data, isLoading, isError } = useQuery({
@@ -13,8 +15,34 @@ export function CardTabsList() {
             return data
         }
     })
-    if (isLoading) return <div>Loading...</div>
-    if (isError) return <div>Error</div>
+    if (isLoading) return (
+        <div className='grid gap-4 sm:grid-cols-2 1408px:grid-cols-6 *:transition-all *:duration-300'>
+            <div className="flex flex-col space-y-3">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-white" />
+            </div>
+            <div className="flex flex-col space-y-3">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-white" />
+            </div>
+            <div className="flex flex-col space-y-3">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-white" />
+            </div>
+            <div className="flex flex-col space-y-3">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-white" />
+            </div>
+            <div className="flex flex-col space-y-3">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-white" />
+            </div>
+            <div className="flex flex-col space-y-3">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-white" />
+            </div>
+        </div>
+    )
+    if (isError) return (
+        <div className="flex items-center justify-center p-[10rem] my-10   ">
+            <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+            <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+        </div>
+    );
     return (
         <Tabs
             orientation='vertical'
@@ -22,7 +50,7 @@ export function CardTabsList() {
             className='space-y-4'
         >
             <TabsContent value='overview' className='space-y-4'>
-                <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4 *:transition-all *:duration-300'>
+                <div className='grid gap-4 sm:grid-cols-2 1408px:grid-cols-6 *:transition-all *:duration-300'>
                     <Card className="hover:-translate-y-1 hover:shadow-md">
                         <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                             <CardTitle className='text-sm font-medium'>
@@ -32,6 +60,28 @@ export function CardTabsList() {
                         </CardHeader>
                         <CardContent>
                             <div className='text-2xl font-bold'>{formatCurrency(data?.total) || NaN} VNĐ</div>
+                        </CardContent>
+                    </Card>
+                    <Card className="hover:-translate-y-1 hover:shadow-md">
+                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                            <CardTitle className='text-sm font-medium'>
+                                Lợi nhuận
+                            </CardTitle>
+                            <Activity />
+                        </CardHeader>
+                        <CardContent>
+                            <div className='text-2xl font-bold'>{formatCurrency(data?.totalProfit) || NaN} VNĐ</div>
+                        </CardContent>
+                    </Card>
+                    <Card className="hover:-translate-y-1 hover:shadow-md">
+                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                            <CardTitle className='text-sm font-medium'>
+                                Giá nhập
+                            </CardTitle>
+                            <BadgeDollarSign />
+                        </CardHeader>
+                        <CardContent>
+                            <div className='text-2xl font-bold'>{formatCurrency(data?.totalImport) || NaN} VNĐ</div>
                         </CardContent>
                     </Card>
                     <Card className="hover:-translate-y-1 hover:shadow-md">

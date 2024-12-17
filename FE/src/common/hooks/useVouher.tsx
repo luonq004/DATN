@@ -26,9 +26,8 @@ const fetchVoucher = async (action: string, id?: string) => {
     } catch (error: any) {
         toast({
             variant: "destructive",
-            title: "Error",
+            title: "Lỗi voucher",
             description: `${error.response.data.message}`,
-            action: <ToastAction altText="Try again">Try again</ToastAction>,
         })
     }
 }
@@ -63,9 +62,8 @@ const useVoucher = () => {
             onError: (error: any) => {
                 toast({
                     variant: "destructive",
-                    title: "Error",
+                    title: "Lỗi voucher",
                     description: `${error.response.data.message}`,
-                    action: <ToastAction altText="Try again">Try again</ToastAction>,
                 })
             }
         })

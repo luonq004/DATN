@@ -7,6 +7,7 @@ import CartRight from "./CartRight";
 import CartLeft from "./CartLeft";
 import { useUserContext } from "@/common/context/UserProvider";
 import { io } from "socket.io-client";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 const socket = io("http://localhost:3000");
 
@@ -25,6 +26,10 @@ const ShopCart = () => {
       console.log(data);
     });
   }, [])
+
+  useEffect(() => {
+    document.title = "Giỏ hàng";
+  }, []);
 
   const {
     cart,
@@ -89,7 +94,7 @@ const ShopCart = () => {
           onSuccess: () => {
             // console.log(`Thêm mã giảm giá ${value.voucherCode} thành công`)
             toast({
-              title: "Sucsess",
+              title: "Thành công",
               description: `Thêm mã giảm giá ${value.voucherCode} thành công`,
             });
           },
@@ -97,14 +102,21 @@ const ShopCart = () => {
         break;
 
       case "removeVoucher":
-        removeVoucher.mutate(item);
+        removeVoucher.mutate(item, {
+          onSuccess: () => {
+            toast({
+              title: "Thành công",
+              description: `Gỡ mã giảm giá thành công`,
+            });
+          },
+        });
         break;
 
       case "changeVariant":
         changeVariant.mutate(item, {
           onSuccess: () => {
             toast({
-              title: "Sucsess",
+              title: "Thành công",
               description: "Đổi thành công!",
             });
             setAttribute("1");
@@ -127,8 +139,12 @@ const ShopCart = () => {
   }
 
   if (isLoading) return <SkeletonCart />;
-  if (isError) return <div>Is Error</div>;
-
+  if (isError) return (
+    <div className="flex items-center justify-center p-[10rem] my-10   ">
+      <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+      <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+    </div>
+  );;
   // console.log('cart', cart);
 
   return (

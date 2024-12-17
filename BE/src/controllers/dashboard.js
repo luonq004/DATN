@@ -9,7 +9,97 @@ export const getDataCard = async (req, res) => {
         const total = order.reduce((acc, item) => item.status === "đã hoàn thành" ? acc + (item.totalPrice - 30000) : acc, 0);
         const product = await Product.find();
         const user = await Users.find();
-        const data = { total: total, order: order.length, product: product.length, user: user.length };
+        //Lợi nhuận
+        const result = await Order.aggregate([
+            {
+                // Lọc các đơn hàng có status: "đã hoàn thành"
+                $match: { status: "đã hoàn thành" },
+            },
+            {
+                // Tính toán giá trị lợi nhuận cho từng đơn hàng
+                $addFields: {
+                    profit: {
+                        $subtract: [
+                            {
+                                $subtract: [
+                                    "$totalPrice",
+                                    {
+                                        $sum: {
+                                            $map: {
+                                                input: "$products",
+                                                as: "product",
+                                                in: {
+                                                    $multiply: ["$$product.variantItem.originalPrice", "$$product.quantity"],
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                            30000,
+                        ],
+                    },
+                },
+            },
+            {
+                // Tính tổng giá trị lợi nhuận
+                $group: {
+                    _id: null, // Không nhóm theo trường nào cả
+                    totalProfit: { $sum: "$profit" },
+                },
+            },
+            {
+                // Chỉ giữ trường totalProfit trong kết quả trả về
+                $project: {
+                    _id: 0,
+                    totalProfit: 1,
+                },
+            },
+        ]);
+
+        // Nếu result không có kết quả trả về mặc định là 0
+        const totalProfit = result.length > 0 ? result[0].totalProfit : 0;
+
+        // Vốn nhập hàng
+        const result2 = await Order.aggregate([
+            {
+                // Lọc các đơn hàng có status: "đã hoàn thành"
+                $match: { status: "đã hoàn thành" },
+            },
+            {
+                // Bước 1: Unwind mảng products để tách từng phần tử
+                $unwind: "$products",
+            },
+            {
+                // Bước 2: Tính toán giá trị cho từng sản phẩm
+                $addFields: {
+                    productTotal: {
+                        $multiply: [
+                            "$products.variantItem.originalPrice",
+                            "$products.quantity"
+                        ],
+                    },
+                },
+            },
+            {
+                // Bước 3: Tính tổng giá trị productTotal
+                $group: {
+                    _id: null, // Không nhóm theo trường nào cả
+                    totalProductValue: { $sum: "$productTotal" },
+                },
+            },
+            {
+                // Bước 4: Chỉ giữ trường tổng product value trong kết quả trả về
+                $project: {
+                    _id: 0,
+                    totalProductValue: 1,
+                },
+            },
+        ]);
+
+        const totalImport = result2.length > 0 ? result2[0].totalProductValue : 0;
+
+        const data = { total: total, order: order.length, product: product.length, user: user.length, totalProfit: totalProfit, totalImport: totalImport };
         return res.status(StatusCodes.OK).json(data)
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
@@ -110,6 +200,10 @@ export const getDataAreaChart = async (req, res) => {
 export const getDataUserList = async (req, res) => {
     try {
         const topUsers = await Order.aggregate([
+            {
+                // Lọc các đơn hàng có status: "đã hoàn thành"
+                $match: { status: "đã hoàn thành" },
+            },
             {
                 $addFields: {
                     adjustedTotalPrice: { $subtract: ["$totalPrice", 30000] }, // Trừ đi 30000 cho mỗi totalPrice

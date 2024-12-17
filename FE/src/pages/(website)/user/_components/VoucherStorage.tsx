@@ -1,12 +1,19 @@
+import { useUserContext } from '@/common/context/UserProvider';
 import useVoucher from '@/common/hooks/useVouher';
 import { TicketPercent, Truck } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 const VoucherStorage = () => {
+    const { _id }: any = useUserContext();
     const { getVoucher, } = useVoucher()
     const { data, isLoading, isError } = getVoucher('get-all-countdown')
+    const { data: voucherUsage, isLoading: isLoading2, isError: isError2 } = getVoucher('get-all-usage', _id)
 
     // console.log(data)
+    useEffect(() => {
+        document.title = "Kho voucher";
+    }, []);
 
     const intervals = useRef<{ [key: string]: NodeJS.Timeout }>({}); // Lưu trữ các interval
 
@@ -75,8 +82,21 @@ const VoucherStorage = () => {
         }, 1000);
     }
 
+    if (_id === null) return <div className='max-w-[1000px] h-screen py-10 px-16 flex flex-col gap-8 mx-auto text-center'>Bạn cần đăng nhập để xem kho voucher</div>
     if (isLoading) return <div>Loading...</div>;
-    if (isError) return <div>Error</div>;
+    if (isError) return (
+        <div className="flex items-center justify-center p-[10rem] my-10   ">
+            <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+            <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+        </div>
+    );
+    if (isLoading2) return <div>Loading...</div>;
+    if (isError2) return (
+        <div className="flex items-center justify-center p-[10rem] my-10   ">
+            <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+            <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+        </div>
+    );;
     return (
         <div className='max-w-[1000px] h-screen py-10 px-16 flex flex-col gap-8 mx-auto'>
             <div className='text-2xl font-bold border-b border-zinc-400 pb-3'>
@@ -85,9 +105,10 @@ const VoucherStorage = () => {
             <div className='flex flex-col h-screen overflow-y-auto gap-4'>
                 {data?.map((item: any) => {
                     // console.log(matchedVoucher)
+                    const matchedVoucherUsage = voucherUsage?.find((voucher: any) => voucher.voucherId === item.voucher._id);
                     if (item.voucher.status === 'active' && item.countdown > 0) {
                         return (
-                            <div key={item.voucher._id} className={`voucher-item p-3 w-full grid grid-cols-[68px_auto] gap-x-3 transition-all duration-200 border rounded-md border-gray-300`}>
+                            <div key={item.voucher._id} className={`voucher-item p-3 w-full grid grid-cols-[68px_auto] gap-x-3 transition-all duration-200 border rounded-md border-gray-300 ${matchedVoucherUsage ? 'pointer-events-none relative' : ''}`}>
                                 <div className='bg-slate-300 flex justify-center items-center p-1'>
                                     {item.voucher.category === 'product'
                                         ? <TicketPercent size={42} />
@@ -110,9 +131,10 @@ const VoucherStorage = () => {
                                         <div className='' id={`countdown-${item.voucher._id}`}></div>
                                     </div>
                                 </div>
-                                {/* <div className='flex items-center select-none'>
-
-                                </div> */}
+                                {/* //kiểm tra voucher đã sử dụng */}
+                                <div className={`${matchedVoucherUsage ? 'absolute' : 'hidden'} w-full h-full bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold`}>
+                                    <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Voucher đã được sử dụng</span>
+                                </div>
                             </div>
                         );
                     } else return null;

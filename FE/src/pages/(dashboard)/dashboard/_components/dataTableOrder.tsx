@@ -80,7 +80,7 @@ export function DataTableOrder<TData, TValue>({
                         }
                         className="max-w-sm m-0"
                     />
-                    <DropdownMenu>
+                    {/* <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto">
                                 <MixerHorizontalIcon className='h-4 w-4' />
@@ -108,7 +108,7 @@ export function DataTableOrder<TData, TValue>({
                                     )
                                 })}
                         </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
                 </div>
                 <Table className="border">
                     <TableHeader className="bg-slate-50 rounded-md">

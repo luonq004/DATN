@@ -16,21 +16,28 @@ import { DialogClose } from '@/components/ui/dialog';
 
 
 const voucherSchema = Joi.object({
-    code: Joi.string().min(2).max(255).required(),
-    category: Joi.string().valid('product', 'ship').required(),
-    discount: Joi.number().min(1).required(),
-    countOnStock: Joi.number().min(1).required(),
+    code: Joi.string().min(1).max(255).required().messages({
+        'any.required': 'Mã Voucher là bắt buộc',
+        'string.min': 'Mã Voucher phải có ít nhất 1 ký tự',
+        'string.max': 'Mã Voucher tối đa 255 ký tự',
+        'string.empty': 'Mã Voucher không được để trống'
+    }),
+    category: Joi.string().valid('product', 'ship').default('product'),
+    discount: Joi.number().min(1).required().messages({
+        'any.required': 'Giảm giá là bắt buộc',
+        'number.base': 'Giảm giá phải là số',
+    }),
+    countOnStock: Joi.number().min(1).required().messages({
+        'any.required': 'Số lượng là bắt buộc',
+        'number.base': 'Số lượng phải là số',
+    }),
     dob: Joi.object({
         from: Joi.date()
-            .min(subMonths(new Date(), 1))
-            .max(addMonths(new Date(), 1))
             .required().messages({
                 'any.required': 'Ngày bắt đầu là bắt buộc',
                 'date.base': 'Ngày bắt đầu phải là ngày hợp lệ',
             }),
         to: Joi.date()
-            .min(subMonths(new Date(), 1))
-            .max(addMonths(new Date(), 1))
             .required().messages({
                 'any.required': 'Ngày kết thúc là bắt buộc',
                 'date.base': 'Ngày kết thúc phải là ngày hợp lệ',
@@ -38,7 +45,11 @@ const voucherSchema = Joi.object({
     }).required().messages({
         'any.required': 'Ngày hết hạn là bắt buộc',
     }),
-    type: Joi.string().valid("percent", "fixed").required(),
+    type: Joi.string().valid("percent", "fixed").required().empty('').messages({
+        'any.required': 'Kiểu là bắt buộc',
+        'string.valid': 'Kiểu không hợp lệ',
+        'string.empty': 'Kiểu không được để trống'
+    }),
 })
 
 const VoucherAddForm = () => {
@@ -55,7 +66,7 @@ const VoucherAddForm = () => {
     useEffect(() => {
         reset({
             code: '',
-            category: '',
+            category: 'product',
             discount: '',
             countOnStock: '',
             dob: {
@@ -87,6 +98,7 @@ const VoucherAddForm = () => {
     function onSubmit(data: any) {
         const info = {
             ...data,
+            category: 'product',
             status: status,
             startDate: new Date(new Date(data.dob.from).getTime() + 7 * 60 * 60 * 1000),
             endDate: new Date(new Date(data.dob.to).getTime() + 7 * 60 * 60 * 1000)
@@ -117,12 +129,12 @@ const VoucherAddForm = () => {
                     {errors?.code?.message && <span className='text-red-500'>{errors?.code?.message.toString()}</span>}
                 </div>
 
-                <div className='flex flex-col gap-2 *:w-full'>
+                {/* <div className='flex flex-col gap-2 *:w-full'>
                     {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Loại</Label> : <Label htmlFor="category" >Loại</Label>}
                     <Controller
                         control={control}
                         name="category"
-                        defaultValue=""
+                        defaultValue="product"
                         render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
                                 <SelectTrigger className="w-[180px] mt-0">
@@ -138,7 +150,7 @@ const VoucherAddForm = () => {
                         )}
                     />
                     {errors?.category?.message && <span className='text-red-500'>{errors?.category?.message.toString()}</span>}
-                </div>
+                </div> */}
 
                 <div className='flex flex-col gap-2'>
                     {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Giảm giá</Label> : <Label htmlFor="discount" >Giảm giá</Label>}

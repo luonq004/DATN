@@ -1,5 +1,17 @@
 import { StatusCodes } from "http-status-codes";
 import Voucher from "../models/voucher"
+import VoucherUsage from "../models/voucherUsage";
+
+export const getAllVoucherUsageByUserId = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const voucherUsage = await VoucherUsage.find();
+        const result = voucherUsage.filter((data) => data.userId.toString() === id);
+        return res.status(StatusCodes.OK).json(result);
+    } catch (error) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+    }
+}
 
 export const getAllVoucher = async (req, res) => {
     try {

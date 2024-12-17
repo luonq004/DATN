@@ -37,7 +37,7 @@ import sendOrderConfirmationEmail from "./sendEmail";
 import { useQueryClient } from "@tanstack/react-query";
 import io from "socket.io-client";
 import CheckOutCart from "./CheckOutCart";
-
+import { AiOutlineExclamationCircle } from 'react-icons/ai';
 const socket = io("http://localhost:3000");
 
 interface ErrorResponse {
@@ -79,6 +79,36 @@ const CheckOut = () => {
   const { cart: carts, isLoading: isLoadingCart, isError } = useCart(_id ?? "");
   const fullName = user?.fullName;
   const onSubmit = async (data: FormOut) => {
+
+    if (carts?.voucher?.length > 0) {
+      const voucherChecks = carts.voucher.map(async (item: any) => {
+        const { data: voucherData } = await axios.get(`http://localhost:8080/api/voucher/get-one/${item._id}`);
+
+        if (voucherData?.status === 'inactive') {
+          throw new Error(`Voucher "${item.code}" đã ngưng hoạt động. Vui lòng chọn voucher khác hoặc gỡ bỏ voucher này`);
+        }
+
+        if (new Date().getTime() >= new Date(new Date(voucherData?.endDate).getTime() - 7 * 60 * 60 * 1000).getTime()) {
+          throw new Error(`Voucher "${item.code}" đã hết hạn. Vui lòng chọn voucher khác hoặc gỡ bỏ voucher này.`);
+        }
+
+        if (voucherData?.countOnStock === 0) {
+          throw new Error(`Voucher "${item.code}" đã hết số lượng. Vui lòng chọn voucher khác hoặc gỡ bỏ voucher này.`);
+        }
+      });
+
+      try {
+        await Promise.all(voucherChecks); // Chạy song song tất cả API kiểm tra voucher
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Lỗi voucher",
+          description: error.message,
+        });
+        return; // Dừng hàm onSubmit
+      }
+    }
+
     const selectedProducts =
       carts?.products?.filter((product: Cart) => product.selected) || [];
     const orderData = {
@@ -88,6 +118,7 @@ const CheckOut = () => {
       note: data.note,
       email: Gmail,
       fullName,
+      voucher: carts?.voucher,
       discount: carts.discount,
       payment: data.paymentMethod,
       totalPrice: carts?.total ?? 0,
@@ -112,9 +143,9 @@ const CheckOut = () => {
         );
         const paymentUrl = response.data.redirectUrl;
         window.location.href = paymentUrl;
-       if(Gmail){
-        await sendOrderConfirmationEmail(Gmail, orderCode);
-       }
+        if (Gmail) {
+          await sendOrderConfirmationEmail(Gmail, orderCode);
+        }
       }
 
       if (data.paymentMethod === "COD") {
@@ -130,7 +161,7 @@ const CheckOut = () => {
           queryClient.invalidateQueries(["CART"]);
           // Đơn hàng đã được tạo thành công
           toast({
-        className: "bg-green-400 text-white h-auto",
+            className: "bg-green-400 text-white h-auto",
             title: "Thành công!",
             description: "Đặt hàng thành công.",
             variant: "default",
@@ -152,9 +183,9 @@ const CheckOut = () => {
           // queryClient.invalidateQueries(["CART", _id]);
           navigate("/cart/order"); // Điều hướng đến trang đơn hàng
           // Gửi email xác nhận đơn hàng
-          if(Gmail){
+          if (Gmail) {
             await sendOrderConfirmationEmail(Gmail, orderCode);
-           }
+          }
         }
       }
     } catch (error: unknown) {
@@ -182,10 +213,16 @@ const CheckOut = () => {
     }
   };
   if (adressError) {
-    return <div className="text-red-500">Lỗi khi tải địa chỉ.</div>;
+    return  <div className="flex items-center justify-center p-[10rem] my-10   ">
+    <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+    <span className="text-red-600 font-semibold">Lỗi khi tải địa chỉ. Vui lòng thử lại sau.</span>
+  </div>;
   }
   if (isError) {
-    return <div className="text-red-500">Lỗi khi tải giỏ hàng.</div>;
+    return <div className="flex items-center justify-center p-[10rem] my-10   ">
+    <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+    <span className="text-red-600 font-semibold">Lỗi khi tải giỏ hàng. Vui lòng thử lại sau.</span>
+  </div>;
   }
 
   const defaultAddress = addresses?.find(
@@ -363,7 +400,7 @@ const CheckOut = () => {
                                 <span>
                                   {formatCurrency(
                                     item.variantItem.priceSale ||
-                                      item.variantItem.price
+                                    item.variantItem.price
                                   )}{" "}
                                   VNĐ
                                 </span>
@@ -383,7 +420,7 @@ const CheckOut = () => {
                                     <div key={value._id}>
                                       {value.type}: {value.name}
                                       {index <
-                                      item.variantItem.values.length - 1
+                                        item.variantItem.values.length - 1
                                         ? ","
                                         : ""}
                                     </div>

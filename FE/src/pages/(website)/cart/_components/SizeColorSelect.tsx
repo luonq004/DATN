@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 const SizeColorSelector = ({
   idProduct,
@@ -113,8 +114,9 @@ const SizeColorSelector = ({
       const valueSelected = prev[attributeId] === valueId;
 
       if (valueSelected) {
-        const { [attributeId]: removed, ...rest } = prev;
-        return rest;
+        // const { [attributeId]: removed, ...rest } = prev;
+        // return rest;
+        return prev
       }
 
       return {
@@ -207,7 +209,12 @@ const SizeColorSelector = ({
   if (isLoading) return <div>Is Loading</div>;
   if (isError) return <div>Is Error</div>;
   if (AttriLoading) return <div>Is Loading Attribute</div>;
-  if (AttriError) return <div>Is Error Attribute</div>;
+  if (AttriError) return (
+    <div className="flex items-center justify-center p-[10rem] my-10   ">
+      <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+      <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+    </div>
+  );;
   return (
     <>
       <div
@@ -251,30 +258,34 @@ const SizeColorSelector = ({
                   {item.values.map((itemOther: any) => (
                     <div
                       key={itemOther._id}
-                      className={`border-2 px-2 py-1 rounded-md 
-                                            ${!compatibleAttributeValues[
-                          item._id
-                        ]?.includes(itemOther._id)
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:border-background1 cursor-pointer transition-all"
-                        } 
-                                            ${selectedValue && selectedValue[item._id]?.includes(
-                          itemOther._id
-                        )
-                          ? "border-background1"
+                      // className={`border-2 px-2 py-1 rounded-md 
+                      //   ${!compatibleAttributeValues[item._id]?.includes(itemOther._id)
+                      //     ? "opacity-50 cursor-not-allowed"
+                      //     : "hover:border-background1 cursor-pointer transition-all"
+                      //   } 
+                      //   ${selectedValue && selectedValue[item._id]?.includes(itemOther._id)
+                      //     ? "border-background1"
+                      //     : ""
+                      //   }
+                      //   `}
+                      className={`border-2 px-2 py-1 rounded-md cursor-pointer
+                        ${selectedValue && selectedValue[item._id]?.includes(itemOther._id)
+                          ? "border-background1 cursor-pointer"
                           : ""
-                        }`}
+                        } 
+                        `}
                       onClick={() => {
-                        if (
-                          compatibleAttributeValues[item._id]?.includes(
-                            itemOther._id
-                          )
-                        ) {
-                          handleAttributeChange(item._id, itemOther._id);
-                        }
+                        console.log('click')
+                        // if (
+                        //   compatibleAttributeValues[item._id]?.includes(
+                        //     itemOther._id
+                        //   )
+                        // ) {
+                        handleAttributeChange(item._id, itemOther._id);
+                        // }
                       }}
                     >
-                      <p className=" text-[14px] font-medium">
+                      <p className=" text-[14px] font-medium text-nowrap">
                         {itemOther.name}
                       </p>
                     </div>
@@ -300,7 +311,7 @@ const SizeColorSelector = ({
             Lưu
           </button>
         </div>
-      </div>
+      </div >
     </>
   );
 };

@@ -220,8 +220,8 @@ export function AreaChartList() {
     if (isError) return <div>Error</div>
 
     return (
-        <Card className="col-span-7">
-            <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+        <Card className="col-span-1 lg:col-span-4">
+            <CardHeader className="flex items-center sm:items-start gap-2 space-y-0 border-b py-5 2xl:flex-row">
                 <div className="grid flex-1 gap-1 text-center sm:text-left">
                     <CardTitle>Biểu đồ doanh thu và lợi nhuận</CardTitle>
                     <CardDescription>
@@ -230,44 +230,53 @@ export function AreaChartList() {
                 </div>
 
                 {/* Chọn kiểu lọc */}
-                <label htmlFor="start">Biểu đồ theo</label>
-                <Select value={filterType} onValueChange={setFilterType}>
-                    <SelectTrigger className="w-[150px] rounded-lg">
-                        <SelectValue placeholder="Chọn kiểu lọc" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                        <SelectItem value="day">Ngày</SelectItem>
-                        <SelectItem value="month">Tháng</SelectItem>
-                        <SelectItem value="year">Năm</SelectItem>
-                    </SelectContent>
-                </Select>
+                <div className="flex flex-col xl:flex-row items-start gap-2">
+                    <div className="flex flex-col lg:flex-row items-center gap-2">
+                        {/* Chọn ngày bắt đầu và ngày kết thúc */}
+                        <div className="flex flex-col sm:flex-row items-center gap-2">
+                            <label htmlFor="start">Ngày bắt đầu:</label>
+                            <input
+                                type="date"
+                                id="start"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                min={chartData[0].date}
+                                max={chartData[chartData.length - 1].date}
+                                className="border rounded-lg px-2 py-1"
+                            />
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-center gap-2">
+                            <label htmlFor="end">Ngày kết thúc:</label>
+                            <input
+                                type="date"
+                                id="end"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                min={chartData[0].date}
+                                max={chartData[chartData.length - 1].date}
+                                className="border rounded-lg px-2 py-1"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                        <label htmlFor="start">Biểu đồ theo</label>
+                        <Select value={filterType} onValueChange={setFilterType}>
+                            <SelectTrigger className="w-[150px] rounded-lg mt-0">
+                                <SelectValue placeholder="Chọn kiểu lọc" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                                <SelectItem value="day">Ngày</SelectItem>
+                                <SelectItem value="month">Tháng</SelectItem>
+                                <SelectItem value="year">Năm</SelectItem>
+                            </SelectContent>
+                        </Select>
 
-                {/* Chọn ngày bắt đầu và ngày kết thúc */}
-                <label htmlFor="start">Ngày bắt đầu:</label>
-                <input
-                    type="date"
-                    id="start"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    min={chartData[0].date}
-                    max={chartData[chartData.length - 1].date}
-                    className="border rounded-lg px-2 py-1"
-                />
-                <label htmlFor="end">Ngày kết thúc:</label>
-                <input
-                    type="date"
-                    id="end"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    min={chartData[0].date}
-                    max={chartData[chartData.length - 1].date}
-                    className="border rounded-lg px-2 py-1"
-                />
-
-                {/* Nút lọc */}
-                <Button onClick={filterData} className="ml-4">
-                    Lọc dữ liệu
-                </Button>
+                        {/* Nút lọc */}
+                        <Button onClick={filterData} className="1408px:ml-4">
+                            Lọc dữ liệu
+                        </Button>
+                    </div>
+                </div>
             </CardHeader>
 
             {/* Hiển thị biểu đồ */}

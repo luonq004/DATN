@@ -10,6 +10,7 @@ import React from "react";
 import useAllOrders from "@/common/hooks/order/useAllOrders";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function OrderList() {
     const { data, isLoading, isError } = useQuery({
@@ -37,7 +38,11 @@ export function OrderList() {
     }, [data]);
 
     // console.log(newData);
-    if (isLoading) return <div>Loading...</div>
+    if (isLoading) return (
+        <div className="flex flex-col space-y-3">
+            <Skeleton className="h-[325px] w-full rounded-xl bg-white" />
+        </div>
+    )
     if (isError) return <div>Error</div>
     return (
         <Card className='col-span-1 lg:col-span-4'>
