@@ -36,7 +36,7 @@ const ContentChat = ({ socket }: { socket: Socket }) => {
   const [listMessage, setListMessage] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log(_id);
+  // console.log(_id);
 
   const {
     selectedUser,

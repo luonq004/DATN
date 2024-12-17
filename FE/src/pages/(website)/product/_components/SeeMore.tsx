@@ -44,10 +44,12 @@ const SeeMore = ({
           </div>
         </TabsList>
         <TabsContent value="description">
-          <div
-            className="detail mt-[30px] md:mt-[60px] bg-slate-100 p-4"
-            dangerouslySetInnerHTML={{ __html: descriptionDetail }}
-          />
+          {descriptionDetail !== "<p><br></p>" && (
+            <div
+              className="detail mt-[30px] md:mt-[60px] bg-slate-100 p-4"
+              dangerouslySetInnerHTML={{ __html: descriptionDetail }}
+            />
+          )}
         </TabsContent>
         <TabsContent value="comment">
           <div className="h-[30px] md:h-[60px]"></div>

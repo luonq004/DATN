@@ -30,11 +30,11 @@ const SideBarUser = () => {
     // if (_id) {
 
     // }
-  }, [getConversations, _id]);
+  }, [getConversations]);
 
   // if (isConversationsLoading || isCheckingAuth) return <SidebarSkeleton />;
 
-  // console.log(selectedConversation);
+  // console.log(conversations);
 
   return (
     <div className="cursor-pointer w-[120px] lg:w-[340px] max-h-[78vh] min-h-[78vh] overflow-y-auto border-r pt-4">

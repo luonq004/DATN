@@ -9,6 +9,8 @@ export function useGetProduct(id: string) {
   } = useQuery({
     queryKey: ["Products", id],
     queryFn: () => getProductEdit(id),
+    staleTime: 0, // Luôn đánh dấu là stale
+    refetchOnWindowFocus: true, // Refetch khi chuyển lại tab
   });
 
   return { isLoading, product, error };

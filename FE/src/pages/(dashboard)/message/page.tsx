@@ -9,6 +9,8 @@ const socket = io("http://localhost:3000");
 const MessagePage = () => {
   const { _id } = useUserContext();
 
+  console.log(_id);
+
   useEffect(() => {
     if (!_id) return;
 

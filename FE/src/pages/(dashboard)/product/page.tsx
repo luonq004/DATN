@@ -2,21 +2,20 @@ import { columnProducts } from "@/components/Column";
 import { DataTable } from "@/components/DataTable";
 import Header from "./_components/Header";
 
-import { useUserContext } from "@/common/context/UserProvider";
 import { useGetAllProduct } from "./actions/useGetAllProduct";
 
 const ProductPage = () => {
-  const { _id } = useUserContext();
-
   const { isLoading, listProduct, error } = useGetAllProduct();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center">
+        <div className="spinner"></div>;
+      </div>
+    );
   }
 
   // console.log(listProduct);
-
-  console.log(_id);
 
   return (
     // <Container>

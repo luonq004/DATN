@@ -9,7 +9,7 @@ export function useGetAllCategory() {
   const statusDisplay = searchParams.get("status");
 
   const filterStatus =
-    !statusDisplay || statusDisplay === "" ? "status" : statusDisplay;
+    !statusDisplay || statusDisplay === "" ? "display" : statusDisplay;
 
   const {
     isLoading,

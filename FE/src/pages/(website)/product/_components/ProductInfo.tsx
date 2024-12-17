@@ -139,7 +139,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
       ? product?.category.filter((category) => category._id !== targetId)
       : product?.category;
 
-  console.log(categories);
+  // console.log(categories);
 
   return (
     <div>
@@ -148,7 +148,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
           categories.map((category) => (
             <Link
               to={`/shopping?category=${category._id}`}
-              className=" hover:text-blue-900 hover:underline "
+              className=" hover:text-blue-900 hover:underline"
+              key={category._id}
             >
               {category.name}
             </Link>

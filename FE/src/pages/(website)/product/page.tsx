@@ -4,12 +4,37 @@ import SeeMore from "./_components/SeeMore";
 import SkeletonProduct from "./_components/SkeletonProduct";
 import SliderImage from "./_components/SliderImage";
 import { useGetProductById } from "./actions/useGetProductById";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import ListProductFavorite from "./_components/ListProductFavorite";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const [data, setData] = useState([]);
+  const [isGetting, setIsGetting] = useState(false);
   const { isLoading, product, error } = useGetProductById(id!);
 
-  if (isLoading) {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsGetting(true);
+        const response = await axios.get(
+          `${apiUrl}/listProductFavorite?categoryId=${product.category[0]._id}&productId=${product._id}`
+        ); // URL API
+        setIsGetting(false);
+        setData(response.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsGetting(false);
+      }
+    };
+
+    if (product) fetchProducts();
+  }, [product]);
+
+  if (isLoading || isGetting) {
     return (
       <div className="container mb-4">
         <SkeletonProduct />
@@ -57,6 +82,8 @@ const ProductDetail = () => {
         descriptionDetail={product.descriptionDetail}
         comments={product?.comments}
       />
+      <div className="h-[35px] md:h-[70px]"></div>
+      <ListProductFavorite data={data} />
     </div>
   );
 };

@@ -15,7 +15,12 @@ export const useUpdateAttributeByID = (id: string) => {
         title: "Cập nhật thuộc tính thành công",
       });
       queryClient.invalidateQueries({
-        queryKey: ["Attributes"],
+        queryKey: ["Attributes", { status: "display" }],
+      });
+      queryClient.removeQueries({
+        predicate: (query) => {
+          return query.queryKey[0] === "Products";
+        },
       });
     },
 

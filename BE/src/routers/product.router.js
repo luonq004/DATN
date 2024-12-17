@@ -8,6 +8,7 @@ import {
   getProductForEdit,
   updateProduct,
   getProductByIdForEdit,
+  getListRelatedProducts,
 } from "../controllers/products";
 import { checkAuthClerk } from "../middlewares/CheckAuthClerk";
 // import { checkAuth } from "../middlewares/checkAuth";
@@ -30,5 +31,7 @@ router.put("/products/:id", updateProduct);
 router.post("/products/:id", deleteProduct);
 
 router.post("/products/:id/display", displayProduct);
+
+router.get("/listProductFavorite", getListRelatedProducts);
 
 export default router;

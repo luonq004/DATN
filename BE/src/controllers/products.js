@@ -468,6 +468,119 @@ export const displayProduct = async (req, res) => {
   }
 };
 
+export const getListRelatedProducts = async (req, res) => {
+  try {
+    const { categoryId, productId } = req.query;
+
+    const bestSellerProducts = await Product.find({
+      deleted: false,
+      _id: { $ne: productId },
+      deleted: false, // Bỏ qua sản phẩm đã xóa
+    })
+      .sort({ count: -1 })
+      .limit(3)
+      .select("name price priceSale image");
+
+    const bestFavoriteProducts = await Product.aggregate([
+      {
+        $lookup: {
+          from: "comments", // Tên collection chứa các bình luận
+          localField: "_id", // Trường _id trong Product
+          foreignField: "productId", // Trường productId trong Comment
+          as: "productComments", // Alias của kết quả nối
+        },
+      },
+      {
+        $addFields: {
+          // Tính trung bình rating của sản phẩm, chỉ lấy những bình luận có rating và không bị xóa
+          averageRating: {
+            $cond: {
+              if: {
+                $gt: [
+                  {
+                    $size: {
+                      $filter: {
+                        input: "$productComments", // Lọc các bình luận
+                        as: "comment",
+                        cond: { $eq: ["$$comment.deleted", false] }, // Chỉ lấy bình luận không bị xóa
+                      },
+                    },
+                  },
+                  0, // Kiểm tra nếu có bình luận không bị xóa
+                ],
+              },
+              then: {
+                $avg: {
+                  $map: {
+                    input: {
+                      $filter: {
+                        input: "$productComments", // Chỉ lọc bình luận không bị xóa
+                        as: "comment",
+                        cond: { $eq: ["$$comment.deleted", false] }, // Lọc bình luận không bị xóa
+                      },
+                    },
+                    as: "filteredComment",
+                    in: "$$filteredComment.rating", // Chỉ tính rating của các bình luận hợp lệ
+                  },
+                },
+              },
+              else: null, // Nếu không có bình luận hợp lệ thì trả về null
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          _id: { $ne: productId }, // Bỏ qua sản phẩm hiện tại
+          averageRating: { $ne: null }, // Bỏ qua sản phẩm không có rating
+          deleted: false, // Bỏ qua sản phẩm đã xóa
+        },
+      },
+      {
+        $sort: { averageRating: -1 }, // Sắp xếp giảm dần theo rating
+      },
+      {
+        $limit: 3, // Lấy top 3 sản phẩm có rating cao nhất
+      },
+      {
+        $project: {
+          name: 1,
+          averageRating: 1,
+          price: 1,
+          priceSale: 1,
+          image: 1,
+        },
+      },
+    ]);
+
+    const category = await Category.findOne({ _id: categoryId }); // categoryId là tên của category bạn tìm
+
+    if (!category) {
+      return res.status(200).json({
+        bestSellerProducts,
+        bestFavoriteProducts,
+        listRelatedProducts: [],
+      });
+    }
+
+    const listRelatedProducts = await Product.find({
+      category: { $in: [category._id] },
+      _id: { $ne: productId },
+      deleted: false, // Bỏ qua sản phẩm đã xóa
+    })
+      .select("name price priceSale image")
+      .limit(3);
+
+    return res.status(200).json({
+      bestSellerProducts,
+      bestFavoriteProducts,
+      listRelatedProducts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Hidden variant when delete product or create new variant
 async function hiddenVariant(variantId) {
   await Variant.findOneAndUpdate({ _id: variantId }, { deleted: true });

@@ -210,7 +210,7 @@ const VariationTab = ({
           fields?.[0]?.values[0]?.name != "" &&
           fields.map((field, index) => {
             return (
-              <div className={`pb-4 `} key={field.id}>
+              <div className={`pb-6`} key={field.id}>
                 <Accordion
                   className="w-full border-black"
                   type="multiple"
@@ -230,7 +230,7 @@ const VariationTab = ({
                         {duplicate.includes(index) ? (
                           <span className="text-red-500">Biến thể trùng</span>
                         ) : (
-                          <span># {index + 1}</span>
+                          <span>Thuộc tính {index + 1}</span>
                         )}
                       </AccordionTrigger>
 
@@ -239,7 +239,7 @@ const VariationTab = ({
                           return (
                             <div key={attribute._id}>
                               <select
-                                className="w-24 py-1"
+                                className="w-24 md:w-28 py-1"
                                 value={form.watch(
                                   `variants.${index}.values.${indx}._id`
                                 )} // Theo dõi giá trị của trường
@@ -270,7 +270,7 @@ const VariationTab = ({
                       </div>
                     </div>
 
-                    <AccordionContent className="mt-4">
+                    <AccordionContent className="mt-4 bg-gray-100 px-4">
                       <div className="pt-4 border-t border-black">
                         <div className="mt-2 flex flex-col lg:flex-row border-b border-gray-300 pb-4">
                           <input
