@@ -130,6 +130,7 @@ const CheckOut = () => {
           queryClient.invalidateQueries(["CART"]);
           // Đơn hàng đã được tạo thành công
           toast({
+        className: "bg-green-400 text-white h-auto",
             title: "Thành công!",
             description: "Đặt hàng thành công.",
             variant: "default",

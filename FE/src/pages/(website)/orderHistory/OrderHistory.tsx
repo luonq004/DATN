@@ -104,6 +104,8 @@ const OrderHistory = () => {
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
         toast({
+        className: "bg-green-400 text-white h-auto",
+
           title: "Thành công",
           description: "Đơn hàng đã được hủy thành công.",
           variant: "default",
@@ -190,6 +192,7 @@ const OrderHistory = () => {
       const err = error as ErrorResponse;
       if (err.response && err.response.data) {
         toast({
+
           title: "Lỗi",
           description:
             err.response.data.message || "Cập nhật trạng thái thất bại!",
@@ -197,6 +200,7 @@ const OrderHistory = () => {
         });
       } else {
         toast({
+
           title: "Lỗi kết nối",
           description: "Lỗi kết nối server!",
           variant: "destructive",
