@@ -27,6 +27,7 @@ const BlogCard = () => {
   // Fetch dữ liệu từ API
   useEffect(() => {
     const fetchBlogs = async () => {
+      setLoading(true); 
       try {
         // Tạo query string nếu có danh mục
         const categoryParam = currentCategory
@@ -45,6 +46,8 @@ const BlogCard = () => {
         console.error("Lỗi khi lấy bài viết:", err);
         setError("Có lỗi xảy ra khi tải dữ liệu.");
         setLoading(false);
+      }finally {
+        setLoading(false); 
       }
     };
 

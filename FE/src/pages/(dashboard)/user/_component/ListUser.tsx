@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { SignedIn, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import RegisterForm from "./RegisterForm";
 import EditUserForm from "./UpdateUser";
 import PaginationComponent from "./Paginations";
@@ -31,10 +31,14 @@ function ListUser() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [roleFilter, setRoleFilter] = useState<"All" | "User" | "Admin">("All");
-
+  const [roleFilter, setRoleFilter] = useState<"User" | "Admin">("User");
+  const { id } = useParams();
   const totalUsers = allUsers.length;
   const totalPages = Math.ceil(totalUsers / itemsPerPage);
+
+  useEffect(() => {
+    if (!id) document.title = "Danh Sách Người Dùng";
+  }, [id]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -71,7 +75,7 @@ function ListUser() {
   const filteredUsers = allUsers.filter(
     (u) =>
       u.clerkId !== user?.id && // Bỏ tài khoản hiện tại
-      (roleFilter === "All" || u.role === roleFilter) && // Lọc theo vai trò
+      u.role === roleFilter && // Lọc theo vai trò
       (u.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         u.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         u.email.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -118,8 +122,8 @@ function ListUser() {
         }
       );
       toast({
-        title: "Xóa mềm thành công",
-        description:
+        className: "bg-green-400 text-white h-auto",
+        title:
           "Tài khoản đã được xóa thành công, có thể khôi phục được tài khoản!",
       });
       setAllUsers((prevUsers) =>
@@ -158,8 +162,8 @@ function ListUser() {
         }
       );
       toast({
-        title: "Khôi phục thành công",
-        description: "Tài khoản đã được khôi phục thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Tài khoản đã được khôi phục thành công!",
       });
 
       fetchUsers();
@@ -204,14 +208,14 @@ function ListUser() {
       if (isBanned) {
         await axios.post(`http://localhost:8080/api/users/unban/${clerkId}`);
         toast({
-          title: "Mở khóa tài khoản thành công",
-          description: "Tài khoản đã được mở khóa thành công!",
+          className: "bg-green-400 text-white h-auto",
+          title: "Tài khoản đã được mở khóa thành công!",
         });
       } else {
         await axios.post(`http://localhost:8080/api/users/ban/${clerkId}`);
         toast({
-          title: "Khóa tài khoản thành công",
-          description: "Tài khoản đã được khóa thành công!",
+          className: "bg-green-400 text-white h-auto",
+          title: "Tài khoản đã được khóa thành công!",
         });
       }
       // Cập nhật lại trạng thái của người dùng trong danh sách allUsers
@@ -262,8 +266,8 @@ function ListUser() {
     setSelectedUser(null);
     setModalOpen(false); // Đóng modal
     toast({
-      title: "Cập nhật thành công",
-      description: "Danh sách đã được cập nhật.",
+      className: "bg-green-400 text-white h-auto",
+      title: "Danh sách đã được cập nhật.",
     });
   };
 
@@ -271,8 +275,8 @@ function ListUser() {
     <div className="">
       <SignedIn>
         <div className="">
-          <h1 className="text-2xl sm:text-3xl pb-10 text-center font-semibold text-gray-900">
-            Danh Sách Khách Hàng
+          <h1 className="text-2xl sm:text-3xl pb-10 text-center font-semibold text-gray-900 uppercase">
+            Danh Sách người dùng
           </h1>
 
           <div className="flex flex-col xl:flex-row gap-4 xl:items-center justify-center xl:justify-between">
@@ -288,15 +292,14 @@ function ListUser() {
               <select
                 value={roleFilter}
                 onChange={(e) =>
-                  setRoleFilter(e.target.value as "All" | "User" | "Admin")
+                  setRoleFilter(e.target.value as "User" | "Admin")
                 }
                 className="border px-4 py-2 rounded-md cursor-pointer"
               >
-                <option value="All">Tất cả</option>
                 <option value="User">Người dùng</option>
                 <option value="Admin">Quản trị</option>
               </select>
-              
+
               <select
                 value={includeDeleted ? "deleted" : "active"}
                 onChange={(e) =>
@@ -374,9 +377,11 @@ function ListUser() {
                 <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Trạng thái
                 </th>
-                <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Hành động
-                </th>
+                {roleFilter !== "Admin" && (
+                  <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Hành động
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -425,61 +430,66 @@ function ListUser() {
                         </span>
                       )}
                     </td>
-
-                    <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm items-center flex mt-[15px]">
-                      {user.isDeleted ? (
-                        <button
-                          onClick={() => handleRestoreClick(user)}
-                          className="mr-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                          Khôi phục
-                        </button>
-                      ) : (
+                    {roleFilter !== "Admin" && (
+                      <td className="px-6 py-5 border-b border-gray-200 bg-white text-sm items-center flex mt-[15px]">
                         <>
-                          <button
-                            onClick={() => handleBanClick(user)}
-                            className={`mr-4 ${
-                              user.isBanned ? "bg-green-500" : "bg-amber-500"
-                            } hover:bg-opacity-75 text-white font-bold py-2 px-4 rounded`}
-                          >
-                            {user.isBanned ? "Mở khóa" : "Khóa"}
-                          </button>
-
-                          <button
-                            onClick={() => handleDeleteClick(user)}
-                            className="text-red-600 font-bold py-2 px-4 rounded mr-3"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              className="size-5"
+                          {user.isDeleted ? (
+                            <button
+                              onClick={() => handleRestoreClick(user)}
+                              className="mr-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                             >
-                              <path
-                                fillRule="evenodd"
-                                d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </button>
+                              Khôi phục
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => handleBanClick(user)}
+                                className={`mr-4 ${
+                                  user.isBanned
+                                    ? "bg-green-500"
+                                    : "bg-amber-500"
+                                } hover:bg-opacity-75 text-white font-bold py-2 px-4 rounded`}
+                              >
+                                {user.isBanned ? "Mở khóa" : "Khóa"}
+                              </button>
 
-                          <button
-                            onClick={() => handleEditUser(user)}
-                            className=" font-bold py-2 px-4 rounded"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 16 16"
-                              fill="currentColor"
-                              className="size-5"
-                            >
-                              <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
-                              <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
-                            </svg>
-                          </button>
+                              <button
+                                onClick={() => handleDeleteClick(user)}
+                                className="text-red-600 font-bold py-2 px-4 rounded mr-3"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  className="size-5"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+
+                              <button
+                                onClick={() => handleEditUser(user)}
+                                className=" font-bold py-2 px-4 rounded"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 16 16"
+                                  fill="currentColor"
+                                  className="size-5"
+                                >
+                                  <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
+                                  <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
+                                </svg>
+                              </button>
+                            </>
+                          )}
                         </>
-                      )}
-                    </td>
+                      </td>
+                    )}
                   </tr>
                 ))
               ) : (

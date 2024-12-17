@@ -40,7 +40,7 @@ const ProductAddPage = () => {
   const { isLoadingAtributes, attributes } = useGetAtributes();
 
   useEffect(() => {
-    if (!id) document.title = "Page: Create Product";
+    if (!id) document.title = "Create Product";
   }, [id]);
 
   const { data: product, isLoading } = useQuery({

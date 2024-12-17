@@ -44,7 +44,7 @@ const data = {
   navMain: [
     {
       title: "Thống kê",
-      url: "/admin/dashboard",
+      url: "/admin",
       icon: LayoutDashboard,
       isActive: false,
     },

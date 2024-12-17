@@ -212,7 +212,7 @@ export function AreaChartList() {
             newData = Object.values(groupedByYear);
         }
 
-        console.log('newData', newData);
+        // console.log('newData', newData);
         setFilteredData(newData);
     };
 

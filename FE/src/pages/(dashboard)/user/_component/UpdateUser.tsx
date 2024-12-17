@@ -13,6 +13,7 @@ import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 
 interface EditUserFormProps {
   onClose: () => void;
@@ -38,6 +39,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 
   const { toast } = useToast();
   const { user } = useUser();
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) document.title = "Cập Nhật Thông Tin Người Dùng";
+  }, [id]);
 
   useEffect(() => {
     if (userData) {
@@ -67,8 +73,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
       if (response.status === 200) {
         await user?.reload();
         toast({
-          title: "Cập nhật thành công",
-          description: "Thông tin người dùng đã được cập nhật!",
+          className: "bg-green-400 text-white h-auto",
+          title: "Thông tin người dùng đã được cập nhật!",
         });
         // console.log("Cập nhật thành công:", response.data);
         onSuccess(response.data);
@@ -226,7 +232,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               <select
                 {...register("role")}
                 className="w-full border rounded px-4 py-2 "
-                disabled={userData.clerkId === user?.id}
+                // disabled={userData.clerkId === user?.id}
               >
                 <option value="Admin">Quản trị</option>
                 <option value="User">Người dùng</option>

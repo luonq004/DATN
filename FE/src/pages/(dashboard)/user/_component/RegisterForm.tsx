@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 
 interface RegisterFormProps {
   onClose: () => void;
@@ -26,13 +28,18 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onClose, onSuccess }) => {
   } = useForm();
 
   const { toast } = useToast();
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) document.title = "Thêm Tài Khoản";
+  }, [id]);
 
   const onSubmit = async (data: any) => {
     try {
       await axios.post("http://localhost:8080/api/users/create-user", data);
       toast({
-        title: "Đăng ký thành công",
-        description: "Tài khoản đã được tạo thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Tài khoản đã được tạo thành công!",
       });
       reset(); // Reset form
       onClose(); // Đóng form

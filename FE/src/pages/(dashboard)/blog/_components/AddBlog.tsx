@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddBlog = () => {
   const { user } = useUser();
@@ -29,6 +29,11 @@ const AddBlog = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) document.title = "Thêm Mới Bài Viết";
+  }, [id]);
 
   useEffect(() => {
     // Hàm lấy danh mục từ API
@@ -88,9 +93,9 @@ const AddBlog = () => {
       alert("Vui lòng chọn một ảnh!");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       // Upload ảnh lên Cloudinary
       const imageUrl = await uploadFile(imageFile); // Lấy URL ảnh từ Cloudinary
@@ -102,7 +107,7 @@ const AddBlog = () => {
         });
         return;
       }
-  
+
       // Tạo FormData để gửi yêu cầu POST
       const formData = new FormData();
       formData.append("title", data.title);
@@ -111,7 +116,7 @@ const AddBlog = () => {
       formData.append("description", data.description);
       formData.append("content", data.content);
       formData.append("image", imageUrl); // Gửi URL ảnh đã upload từ frontend
-  
+
       // Gửi yêu cầu POST lên BE
       const response = await axios.post(
         "http://localhost:8080/api/blogs",
@@ -119,8 +124,8 @@ const AddBlog = () => {
       );
       console.log("Bài viết đã được tạo:", response.data);
       toast({
-        title: "Thành công",
-        description: "Bài viết đã được tạo thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Bài viết đã được tạo thành công!",
       });
       navigate("/admin/blogs");
     } catch (error) {

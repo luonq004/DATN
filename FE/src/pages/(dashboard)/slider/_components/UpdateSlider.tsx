@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateSlider = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [currentBgImage, setCurrentBgImage] = useState<string | null>(null);
@@ -34,6 +34,10 @@ const UpdateSlider = () => {
   const features = watch("features") || [];
   const imageFile = watch("image");
   const bgImageFile = watch("backgroundImage");
+  
+  useEffect(() => {
+    document.title =  "Cập Nhật Slider" ;
+  }, [id]);
 
   // Lấy dữ liệu từ server
   useEffect(() => {
@@ -130,8 +134,8 @@ const UpdateSlider = () => {
       });
 
       toast({
-        title: "Thành công",
-        description: "SLide đã được cập nhật thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Slide đã được cập nhật thành công!",
       });
       navigate("/admin/sliders");
     } catch (err) {
@@ -168,7 +172,7 @@ const UpdateSlider = () => {
   return (
     <div className="px-10 md:px-20 mx-auto p-4 sm:p-6">
       <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-800 text-center">
-        Cập Nhật Slide
+        Cập Nhật Slider
       </h2>
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
