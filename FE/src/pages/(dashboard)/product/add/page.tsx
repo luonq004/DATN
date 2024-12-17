@@ -40,7 +40,7 @@ const ProductAddPage = () => {
   const { isLoadingAtributes, attributes } = useGetAtributes();
 
   useEffect(() => {
-    if (!id) document.title = "Page: Create Product";
+    if (!id) document.title = "Create Product";
   }, [id]);
 
   const { data: product, isLoading } = useQuery({
@@ -95,7 +95,7 @@ const ProductAddPage = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof productSchema>) {
-    console.log(values);
+    // console.log(values);
     setIsDoing(true);
     if (id) {
       const duplicateValues = checkForDuplicateVariants(values);

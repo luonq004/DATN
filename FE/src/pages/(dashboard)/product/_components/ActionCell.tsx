@@ -23,7 +23,7 @@ const ActionCell: React.FC<ActionCellProps> = ({ row }) => {
   const { deleteProduct, isDeleting } = useDeleteProduct(row.original._id);
   const { displayProduct, isUpdating } = useDisplayProduct(row.original._id);
 
-  console.log("id", row);
+  // console.log("id", row);
 
   const handleDelete = async () => {
     if (confirm("Bạn có chắc ẩn sản phẩm này?")) {

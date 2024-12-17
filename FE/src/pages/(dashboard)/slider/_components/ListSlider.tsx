@@ -3,7 +3,7 @@ import Confirm from "@/components/Confirm/Confirm";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import PaginationComponent from "../../user/_component/Paginations";
 
 const ListSlider = () => {
@@ -24,6 +24,11 @@ const ListSlider = () => {
       slider.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       slider.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) document.title = "Danh Sách Slider";
+  }, [id]);
 
   const indexOfLastSlider = currentPage * itemsPerPage;
   const indexOfFirstSlider = indexOfLastSlider - itemsPerPage;
@@ -66,8 +71,8 @@ const ListSlider = () => {
       await axios.delete(`${apiUrl}/sliders/${id}`);
       setSliders(sliders.filter((slider: any) => slider._id !== id));
       toast({
-        title: "Thành công",
-        description: "Slide đã được xóa thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Slide đã được xóa thành công!",
       });
     } catch (err) {
       toast({

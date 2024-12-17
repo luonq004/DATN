@@ -540,10 +540,10 @@ export const updateOrderStatus = async (req, res) => {
     if (newStatus === "đã hoàn thành") {
       for (const product of order.products) {
         const productId = new mongoose.Types.ObjectId(product.productItem._id); // Đảm bảo khởi tạo đúng kiểu ObjectId
-        console.log("Product ID: ", productId);
+        // console.log("Product ID: ", productId);
         product.statusComment = true;
         const productData = await Product.findById(productId); // Dùng mô hình Product để tìm sản phẩm
-        console.log("PDATA: ", productData);
+        // console.log("PDATA: ", productData);
         if (productData) {
           productData.count += Number(product.quantity);
           await productData.save();

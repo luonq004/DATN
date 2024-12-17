@@ -63,7 +63,7 @@ const LayoutAdmin = () => {
   if (!isLoaded || !isAuthorized) {
     return (
       <div className="min-h-[50vh] flex justify-center items-center text-gray-500">
-        <div className="spinner"></div>
+        {/* <div className="spinner"></div> */}
       </div>
     );
   }

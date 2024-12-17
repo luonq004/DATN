@@ -1,13 +1,12 @@
+import { Blog } from "@/common/types/Blog";
+import { useToast } from "@/components/ui/use-toast";
+import { uploadFile } from "@/lib/upload";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { Blog } from "@/common/types/Blog";
 import { useNavigate, useParams } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
-import { categories } from "./Categories";
-import { uploadFile } from "@/lib/upload";
 
 const EditBlog = () => {
   const { id } = useParams<{ id: string }>(); // Lấy ID từ URL
@@ -25,13 +24,40 @@ const EditBlog = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const categoryValue = watch("category");
 
   useEffect(() => {
-    // Lấy danh mục từ backend
+     document.title = "Cập Nhật Bài Viết";
+  }, [id]);
+
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        const blogRes = await axios.get(`http://localhost:8080/api/blogs/${id}`);
+        const blog = blogRes.data;
+  
+        // Hiển thị dữ liệu blog trước
+        setValue("title", blog.title);
+        setValue("category", blog.category);
+        setValue("author", blog.author);
+        setValue("description", blog.description);
+        setValue("content", blog.content);
+        setPreviewImage(blog.image);
+        setValueEditor(blog.content);
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin bài viết:", error);
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: "Không thể tải thông tin bài viết.",
+        });
+      }
+    };
+  
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/category");
-        setCategories(response.data); // Lưu danh mục vào state
+        const categoriesRes = await axios.get("http://localhost:8080/api/category");
+        setCategories(categoriesRes.data);
       } catch (error) {
         console.error("Lỗi khi lấy danh mục:", error);
         toast({
@@ -41,35 +67,12 @@ const EditBlog = () => {
         });
       }
     };
-    // Lấy thông tin bài viết từ backend khi trang load
-    const fetchBlog = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/blogs/${id}`
-        );
-        const blog = response.data;
-        console.log(blog);
-
-        // Cập nhật giá trị vào form
-        setValue("title", blog.title);
-        setValue("category", blog.category);
-        setValue("author", blog.author);
-        setValue("description", blog.description);
-        setValue("content", blog.content);
-        setPreviewImage(blog.image);
-        setValueEditor(blog.content);
-      } catch (error) {
-        console.error("Lỗi khi lấy bài viết:", error);
-        toast({
-          variant: "destructive",
-          title: "Lỗi",
-          description: "Không thể tải thông tin bài viết.",
-        });
-      }
-    };
+  
+    // Gọi API cho blog trước
     fetchBlog();
     fetchCategories();
-  }, [id, setValue, categories,toast]);
+  }, [id, setValue, toast]);
+  
 
   // Hàm xử lý thay đổi nội dung của React Quill
   const handleChange = (content: string) => {
@@ -123,8 +126,8 @@ const EditBlog = () => {
 
       console.log("Bài viết đã được cập nhật:", response.data);
       toast({
-        title: "Thành công",
-        description: "Bài viết đã được cập nhật thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Bài viết đã được cập nhật thành công!",
       });
       navigate("/admin/blogs"); // Quay lại trang danh sách
     } catch (error) {
@@ -175,8 +178,16 @@ const EditBlog = () => {
             {...register("category", { required: "Danh mục là bắt buộc" })}
             id="category"
             className="w-full p-2 border border-gray-300 rounded-md"
-            value={categories.length > 0 ? categories.find(cat => cat._id === watch('category'))?._id : ""} 
-            onChange={(e) => setValue("category", e.target.value)}
+            value={
+              categories.length > 0
+                ? categories.find((cat) => cat._id === watch("category"))?._id
+                : ""
+            }
+            onChange={(e) => {
+              if (e.target.value !== categoryValue) {
+                setValue("category", e.target.value);
+              }
+            }}
           >
             <option value="" disabled>
               Chọn danh mục

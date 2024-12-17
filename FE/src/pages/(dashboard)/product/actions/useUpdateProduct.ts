@@ -21,7 +21,11 @@ export const useUpdateProduct = (idP: string) => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["Products"],
+        queryKey: ["Products", idP],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["Products", { status: "display" }],
       });
 
       toast({

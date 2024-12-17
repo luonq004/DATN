@@ -1,8 +1,10 @@
 import { toast } from "@/components/ui/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 export const useCreateProduct = () => {
+  const queryClient = useQueryClient();
+
   const { mutate: createProduct, isPending: isCreatting } = useMutation({
     mutationFn: (data: unknown) =>
       axios.post("http://localhost:8080/api/products", data),
@@ -11,6 +13,9 @@ export const useCreateProduct = () => {
       toast({
         variant: "success",
         title: "Tạo sản phẩm thành công",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["Products"],
       });
     },
 

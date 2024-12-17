@@ -96,7 +96,7 @@ export function getSelectedValues(
     // console.log("attributes: ", attributes);
 
     valueAttributeProduct.filter((item) => {
-      console.log("item: ", item);
+      // console.log("item: ", item);
       if (attribute.name == item[0].type) {
         // console.log("item: ", item);
         // console.log("attribute.name: ", attribute.name);

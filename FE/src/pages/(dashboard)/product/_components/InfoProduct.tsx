@@ -126,7 +126,7 @@ const InfoGeneralProduct: React.FC<{
 
   const typeFields: string[] = getUniqueTypesFromFields(fields) as string[];
 
-  console.log("attributeValue", getSelectedValues(attributeValue, attributes));
+  // console.log("attributeValue", getSelectedValues(attributeValue, attributes));
 
   return (
     <div className="w-full xl:w-3/4">

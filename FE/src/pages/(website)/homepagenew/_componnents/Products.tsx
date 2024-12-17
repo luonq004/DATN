@@ -124,12 +124,21 @@ const Products = () => {
               <div className="flex items-center justify-between mt-3">
                 {/* Giá */}
                 <div className="flex items-center justify-center space-x-2">
-                  <span className=" text-[18px] text-red-600 font-bold">
-                    {product.price.toLocaleString("vi-VN")} VNĐ
-                  </span>
-                  {product.priceSale > 0 && (
-                    <span className="text-md text-gray-400 line-through">
-                      {product.priceSale.toLocaleString("vi-VN")} VNĐ
+                  {product.priceSale > 0 ? (
+                    <>
+                      {/* Giá sale */}
+                      <span className="text-[18px] text-red-600 font-bold">
+                        {product.priceSale.toLocaleString("vi-VN")} VNĐ
+                      </span>
+                      {/* Giá gốc gạch ngang */}
+                      <span className="text-md text-gray-400 line-through">
+                        {product.price.toLocaleString("vi-VN")} VNĐ
+                      </span>
+                    </>
+                  ) : (
+                    /* Chỉ hiển thị giá gốc nếu không có giá sale */
+                    <span className="text-[18px] text-red-600 font-bold">
+                      {product.price.toLocaleString("vi-VN")} VNĐ
                     </span>
                   )}
                 </div>
