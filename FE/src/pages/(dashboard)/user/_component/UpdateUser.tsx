@@ -11,7 +11,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 
@@ -27,6 +27,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   userData,
 }) => {
   // const { clerkId } = useParams<{ clerkId: string }>();
+  const [canChangeRole, setCanChangeRole] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
   const {
     register,
     handleSubmit,
@@ -41,8 +43,37 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   const { user } = useUser();
   const { id } = useParams();
 
+  // Kiểm tra số lượng admin còn lại trong hệ thống
+  const checkAdminCount = async () => {
+    setIsChecking(true);
+    try {
+      const response = await axios.get("http://localhost:8080/api/users");
+      // console.log("Dữ liệu nhận được từ server:", response.data);
+      // Truy cập vào mảng nằm trong response.data.data
+      const users = Array.isArray(response.data?.data)
+        ? response.data.data
+        : [];
+      const adminCount = users.filter(
+        (user: User) => user.role === "Admin"
+      ).length;
+      // console.log("Số lượng admin:", adminCount);
+      return adminCount > 2;
+    } catch (error) {
+      console.error("Error checking admin count", error);
+      return false;
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
   useEffect(() => {
     if (!id) document.title = "Cập Nhật Thông Tin Người Dùng";
+    const fetchAdminPermission = async () => {
+      const canChange = await checkAdminCount();
+      setCanChangeRole(canChange); // Cập nhật trạng thái có thể thay đổi vai trò hay không
+    };
+
+    fetchAdminPermission();
   }, [id]);
 
   useEffect(() => {
@@ -50,7 +81,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
       const sanitizedUserData = { ...userData, password: "" };
       reset(sanitizedUserData);
     }
-  }, [userData, reset]); // Phụ thuộc vào userData
+  }, [userData, reset]);
 
   const onSubmit = async (updatedUser: any) => {
     // Gửi mật khẩu gốc cho backend nếu có nhập
@@ -71,6 +102,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
       //   console.log(response.data);
 
       if (response.status === 200) {
+        if (user?.id === updatedUser.clerkId) {
+          // Nếu role thay đổi, cập nhật lại trong localStorage
+          localStorage.setItem("userRole", updatedUser.role);
+        }
+        // Reload lại session hoặc điều hướng đến trang login
         await user?.reload();
         toast({
           className: "bg-green-400 text-white h-auto",
@@ -231,12 +267,27 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               </label>
               <select
                 {...register("role")}
-                className="w-full border rounded px-4 py-2 "
-                // disabled={userData.clerkId === user?.id}
+                className={`w-full border rounded px-4 py-2 ${
+                  !canChangeRole || isChecking
+                    ? "cursor-not-allowed bg-gray-200"
+                    : ""
+                }`}
+                disabled={!canChangeRole || isChecking} // Disable khi đang kiểm tra hoặc không đủ điều kiện
               >
                 <option value="Admin">Quản trị</option>
                 <option value="User">Người dùng</option>
               </select>
+              {isChecking && (
+                <p className="text-blue-500 text-sm mt-1">
+                  Đang kiểm tra điều kiện...
+                </p>
+              )}
+              {!isChecking && !canChangeRole && (
+                <p className="text-red-500 text-sm mt-1">
+                  Không thể thay đổi vai trò người dùng. Hệ thống yêu cầu phải
+                  có ít nhất 2 Admin.
+                </p>
+              )}
             </div>
           </form>
         </CardContent>

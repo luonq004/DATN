@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -104,17 +104,23 @@ const OrderDetail = () => {
   };
   return (
     <div className="p-6 bg-gray-100">
-      <button
+    <div className="flex justify-between items-center">
+      <Link 
+        className="mb-6 px-4 py-2 bg-black text-white rounded hover:bg-[rgb(37_36_36)]"
+      
+      to={`/admin/orders`}>Trờ lại</Link>
+    <button
         onClick={handleExportPDF}
-        className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="mb-6 px-4 py-2 bg-black text-white rounded hover:bg-[rgb(37_36_36)]"
       >
-        Xuất đơn hàng
+        Xuất hóa đơn
       </button>
+    </div>
 
       <div id="order-detail">
         {" "}
         {/* Phần tử bao bọc nội dung cần xuất */}
-        <h2 className="text-2xl font-bold mb-6">Chi tiết đơn hàng</h2>
+        <h2 className="text-2xl text-center font-bold mb-6">Chi tiết đơn hàng</h2>
         {/* Thông tin tổng quan */}
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
           <div className="grid grid-cols-2 gap-4">
@@ -245,7 +251,8 @@ const OrderDetail = () => {
             <p className="flex items-center justify-between">
               <span className="text-gray-500">Giảm giá:</span>
               <span className="text-gray-800">
-                - {formatCurrencyVND(discount)}
+                {discount > 0 ? `- ${formatCurrencyVND(discount)}` : formatCurrencyVND(0)}
+
               </span>
             </p>
             <p className="flex items-center justify-between">

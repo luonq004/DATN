@@ -104,6 +104,8 @@ const OrderHistory = () => {
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
         toast({
+          className: "bg-green-400 text-white h-auto",
+
           title: "Thành công",
           description: "Đơn hàng đã được hủy thành công.",
           variant: "default",
@@ -190,6 +192,7 @@ const OrderHistory = () => {
       const err = error as ErrorResponse;
       if (err.response && err.response.data) {
         toast({
+
           title: "Lỗi",
           description:
             err.response.data.message || "Cập nhật trạng thái thất bại!",
@@ -197,6 +200,7 @@ const OrderHistory = () => {
         });
       } else {
         toast({
+
           title: "Lỗi kết nối",
           description: "Lỗi kết nối server!",
           variant: "destructive",
@@ -262,7 +266,7 @@ const OrderHistory = () => {
                     <span className="font-semibold">{order.orderCode}</span>
                   </div>
                   <div className="text-sm">
-                    Ngày tạo: {new Date(order.createdAt).toLocaleDateString()}
+                    Ngày mua hàng: {new Date(order.createdAt).toLocaleDateString()}
                   </div>
                 </div>
                 <div className="text-green-500 font-semibold text-lg">
@@ -366,7 +370,7 @@ const OrderHistory = () => {
                 <p className="text-[rgba(0,0,0,.8)] text-[16px]">
                   Giảm giá:{" "}
                   <span className="text-[rgba(0,0,0,.8)]">
-                    -  {formatCurrencyVND(order.discount || 0)}
+                    {order.discount > 0 ? `- ${formatCurrencyVND(order.discount)}` : formatCurrencyVND(0)}
                   </span>
                 </p>
               </div>

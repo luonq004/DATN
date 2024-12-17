@@ -66,6 +66,9 @@ const formatDate = (dateString: string) => {
 };
 
 const AdminOrder = () => {
+  React.useEffect(() => {
+    document.title = "Đơn hàng"; // Đặt tiêu đề cho trang
+  }, []);
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useAllOrders();
@@ -152,6 +155,8 @@ const AdminOrder = () => {
       if (response.status === 200) {
         queryClient.invalidateQueries(["ORDER_HISTORY"]);
         toast({
+        className: "bg-green-400 text-white h-auto",
+
           title: "Thành công!",
           description: "Cập nhật trạng thái thành công!",
           variant: "default",
