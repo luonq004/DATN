@@ -2,6 +2,8 @@ import { StatusCodes } from "http-status-codes";
 import Address from "../models/Address";
 import Order from "../models/order";
 import Variant from "../models/variant";
+import Voucher from "../models/voucher";
+import VoucherUsage from "../models/voucherUsage";
 import cart from "../models/cart";
 import Product from "../models/product";
 import mongoose from "mongoose";
@@ -9,7 +11,8 @@ import { getIO } from "./socket";
 
 //=========================tạo đơn hàng mới===============
 export const createOrder = async (req, res) => {
-  const { userId, addressId, products, payment, totalPrice, discount, note, fullName, email } = req.body;
+  const { userId, addressId, products, payment, totalPrice, discount, voucher, note, fullName, email } = req.body;
+  console.log("voucher", voucher);
   try {
     let finalAddress = {};
     // Kiểm tra xem addressId có được cung cấp không
@@ -85,6 +88,14 @@ export const createOrder = async (req, res) => {
       }
     }
 
+    if (voucher.length > 0) {
+      // giảm số lượng của voucher
+      await Voucher.findOneAndUpdate({ _id: voucher[0]._id }, { countOnStock: voucher[0].countOnStock - 1 }, { new: true })
+      // console.log('giam so luonh')
+      // thêm vào danh sách đã sử dụng voucher
+      await VoucherUsage.create({ userId: userId, voucherId: voucher[0]._id });
+      // console.log('them vao danh sach da su dung voucher')
+    }
     // Tạo đơn hàng
     const newOrder = new Order({
       userId,
@@ -102,7 +113,10 @@ export const createOrder = async (req, res) => {
     // Xóa tất cả các sản phẩm được chọn từ giỏ hàng của người dùng cụ thể
     await cart.updateOne(
       { userId },
-      { $pull: { products: { selected: true } } }
+      {
+        $pull: { products: { selected: true } }, // Xóa các mục được chọn trong products
+        $set: { voucher: [] }                   // Làm rỗng mảng voucher
+      }
     );
 
     return res
@@ -119,7 +133,7 @@ export const createOrder = async (req, res) => {
 
 // tạo orderVnpay
 export const createOrderVnpay = async (req, res) => {
-  const { userId, addressId, products, payment, totalPrice, discount, note, fullName, email } = req.body;
+  const { userId, addressId, products, payment, totalPrice, discount, voucher, note, fullName, email } = req.body;
   try {
     let finalAddress = {};
     // Kiểm tra xem addressId có được cung cấp không
@@ -203,6 +217,15 @@ export const createOrderVnpay = async (req, res) => {
       // }
     }
 
+    if (voucher.length > 0) {
+      // giảm số lượng của voucher
+      await Voucher.findOneAndUpdate({ _id: voucher[0]._id }, { countOnStock: voucher[0].countOnStock - 1 }, { new: true })
+      // console.log('giam so luonh')
+      // thêm vào danh sách đã sử dụng voucher
+      await VoucherUsage.create({ userId: userId, voucherId: voucher[0]._id });
+      // console.log('them vao danh sach da su dung voucher')
+    }
+
     // Tạo đơn hàng
     const newOrder = new Order({
       userId,
@@ -223,6 +246,12 @@ export const createOrderVnpay = async (req, res) => {
     //   { $pull: { products: { selected: true } } }
     // );
 
+    await cart.updateOne(
+      { userId },
+      {
+        $set: { voucher: [] }   // Làm rỗng mảng voucher
+      }
+    );
     return res
       .status(StatusCodes.CREATED)
       .json({ message: "Đơn hàng đã được tạo thành công", order: savedOrder });

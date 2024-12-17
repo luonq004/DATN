@@ -88,6 +88,7 @@ const CheckOut = () => {
       note: data.note,
       email: Gmail,
       fullName,
+      voucher: carts?.voucher,
       discount: carts.discount,
       payment: data.paymentMethod,
       totalPrice: carts?.total ?? 0,
@@ -357,7 +358,7 @@ const CheckOut = () => {
                                 <span>
                                   {formatCurrency(
                                     item.variantItem.priceSale ||
-                                      item.variantItem.price
+                                    item.variantItem.price
                                   )}{" "}
                                   VNĐ
                                 </span>
@@ -377,7 +378,7 @@ const CheckOut = () => {
                                     <div key={value._id}>
                                       {value.type}: {value.name}
                                       {index <
-                                      item.variantItem.values.length - 1
+                                        item.variantItem.values.length - 1
                                         ? ","
                                         : ""}
                                     </div>

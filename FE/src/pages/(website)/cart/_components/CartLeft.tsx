@@ -246,7 +246,7 @@ const CartLeft = ({
                 </p>
                 <div className="relative">
                   {/* Attribute__Table  */}
-                  <SizeColorSelector
+                  {/* <SizeColorSelector
                     idProduct={item.productItem._id}
                     idVariant={item.variantItem._id}
                     attribute={attribute}
@@ -255,7 +255,20 @@ const CartLeft = ({
                     onChangeVariant={(value: any) =>
                       userAction({ type: "changeVariant" }, value)
                     }
-                  />
+                  /> */}
+                  <div className="flex items-center gap-1 px-2 py-1 border rounded-md cursor-pointer max-sm:text-[14px] select-none">
+                    {item.variantItem.values.map(
+                      (value: any, index: number) => (
+                        <div key={value._id}>
+                          {value.type}: {value.name}
+                          {index <
+                            item.variantItem.values.length - 1
+                            ? ","
+                            : ""}
+                        </div>
+                      )
+                    )}
+                  </div>
                   {/* End Attribute__Table  */}
                 </div>
               </div>

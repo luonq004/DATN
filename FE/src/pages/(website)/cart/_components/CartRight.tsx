@@ -21,20 +21,21 @@ import CountdownVoucher from './CountdownVoucher';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Icart from '@/common/types/cart';
 import { formatCurrency } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import useVoucher from '@/common/hooks/useVouher';
+import axios from 'axios';
+import { toast } from '@/components/ui/use-toast';
 
 const formSchema = z.object({
-    voucherCode: z.string().min(2, {
+    voucherCode: z.string().min(0, {
         message: "Không hợp lệ",
     }),
 })
 
 const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { type: string }, payload: any) => void }) => {
-    const [priceShip, setPriceShip] = useState(30000)
-
+    const navigate = useNavigate()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -56,19 +57,44 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
         userAction({ type: 'removeVoucher' }, { voucherCode: item })
     }
     // console.log("selectedOne", cart)
-    useEffect(() => {
+
+    function lastCheck() {
         if (cart?.voucher?.length > 0) {
-            const voucher = cart?.voucher?.find((item: any) => item.category == "ship")
-            if (voucher.type == "percent") {
-                const result = 30000 - (30000 * voucher.discount / 100)
-                return setPriceShip(result)
-            }
-            if (voucher.type == "fixed") {
-                const result = 30000 - voucher.discount
-                return setPriceShip(result)
-            }
+            cart?.voucher?.forEach(async (item: any) => {
+                const { data } = await axios.get(`http://localhost:8080/api/voucher/get-one/${item._id}`);
+                if (data?.status === 'inactive') {
+                    console.log('remove', item.code)
+                    // userAction({ type: 'removeVoucher' }, { voucherCode: item.code })
+                    toast({
+                        variant: "destructive",
+                        title: "Lỗi voucher",
+                        description: `Voucher "${item.code}" đã ngưng hoạt động. Vui lòng chọn voucher khác hoặc gỡ bỏ voucher này.`,
+                    })
+                }
+                if (new Date().getTime() >= new Date(new Date(data?.endDate).getTime() - 7 * 60 * 60 * 1000).getTime()) {
+                    console.log('remove', item.code)
+                    // userAction({ type: 'removeVoucher' }, { voucherCode: item.code })
+                    toast({
+                        variant: "destructive",
+                        title: "Lỗi voucher",
+                        description: `Voucher "${item.code}" đã hết hạn. Vui lòng chọn voucher khác hoặc gỡ bỏ voucher này.`,
+                    })
+                }
+                if (data?.countOnStock === 0) {
+                    console.log('remove', item.code)
+                    // userAction({ type: 'removeVoucher' }, { voucherCode: item.code })
+                    toast({
+                        variant: "destructive",
+                        title: "Lỗi voucher",
+                        description: `Voucher "${item.code}" đã hết số lượng. Vui lòng chọn voucher khác hoặc gỡ bỏ voucher này.`,
+                    })
+                }
+                navigate('/cart/checkout')
+            })
+        } else {
+            navigate('/cart/checkout')
         }
-    }, [cart?.voucher])
+    }
 
     return (
         <div className='Cart__Right'>
@@ -83,7 +109,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                             Phí giao hàng
                         </p>
                         <div>
-                            <span>{formatCurrency(priceShip)}VNĐ</span>
+                            <span>{formatCurrency(30000)}VNĐ</span>
                         </div>
                     </div>
                     <div className='flex justify-between'>
@@ -118,7 +144,7 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                                                     <FormControl>
                                                         <Input placeholder='Mã giảm giá...' className='w-full' {...field} />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    {/* <FormMessage /> */}
                                                 </FormItem>
                                             )}
                                         />
@@ -150,13 +176,15 @@ const CartRight = ({ cart, userAction }: { cart: Icart, userAction: (action: { t
                         </div> */}
                 <hr />
                 {/* ${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'} */}
-                <Link to={`${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'}`}>
+                <div onClick={() => lastCheck()} className='Checkout cursor-pointer'>
+                    {/* <Link to={`${cart?.products?.every((item: any) => item.selected === false) ? '' : 'checkout'}`}> */}
                     <div className={`bg-[#C8C9CB] ${cart?.products?.every((item: any) => item.selected === false) ? 'cursor-not-allowed' : 'bg-light-400 hover:bg-light-500'} transition-all duration-300 flex justify-center items-center w-full py-4 gap-4 rounded-full text-white font-medium select-none`}>
                         <div>Thanh toán</div>
                         <div className=''>|</div>
                         <div><span>{formatCurrency(cart?.total ?? 0)} VNĐ</span></div>
                     </div>
-                </Link>
+                    {/* </Link> */}
+                </div>
                 <hr />
                 <div className='Payments flex flex-col gap-4'>
                     <p className='text-[#717378] uppercase text-[14px] tracking-[2px] max-sm:tracking-[1px]'>THANH TOÁN AN TOÀN ĐƯỢC CUNG CẤP BỞI</p>

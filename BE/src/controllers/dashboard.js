@@ -9,7 +9,101 @@ export const getDataCard = async (req, res) => {
         const total = order.reduce((acc, item) => item.status === "đã hoàn thành" ? acc + (item.totalPrice - 30000) : acc, 0);
         const product = await Product.find();
         const user = await Users.find();
-        const data = { total: total, order: order.length, product: product.length, user: user.length };
+        //Lợi nhuận
+        const result = await Order.aggregate([
+            {
+                // Lọc các đơn hàng có status: "đã hoàn thành"
+                $match: { status: "đã hoàn thành" },
+            },
+            {
+                // Tính toán giá trị lợi nhuận cho từng đơn hàng
+                $addFields: {
+                    profit: {
+                        $subtract: [
+                            {
+                                $subtract: [
+                                    "$totalPrice",
+                                    {
+                                        $sum: {
+                                            $map: {
+                                                input: "$products",
+                                                as: "product",
+                                                in: {
+                                                    $multiply: ["$$product.variantItem.originalPrice", "$$product.quantity"],
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                            30000,
+                        ],
+                    },
+                },
+            },
+            {
+                // Tính tổng giá trị lợi nhuận
+                $group: {
+                    _id: null, // Không nhóm theo trường nào cả
+                    totalProfit: { $sum: "$profit" },
+                },
+            },
+            {
+                // Chỉ giữ trường totalProfit trong kết quả trả về
+                $project: {
+                    _id: 0,
+                    totalProfit: 1,
+                },
+            },
+        ]);
+
+        // Nếu result không có kết quả trả về mặc định là 0
+        const totalProfit = result.length > 0 ? result[0].totalProfit : 0;
+
+        // Vốn nhập hàng
+        const result2 = await Product.aggregate([
+            {
+                // Lookup để join collection variants theo product
+                $lookup: {
+                    from: "variants",            // Tên collection variants
+                    localField: "variants",      // Trường liên kết trong products
+                    foreignField: "_id",         // Trường liên kết trong variants
+                    as: "productVariants"        // Output array chứa variants
+                }
+            },
+            {
+                // Unwind để tách từng variant trong mảng productVariants
+                $unwind: "$productVariants"
+            },
+            // lọc sản phẩm chưa bị xóa
+            // {
+            //     $match: {
+            //         "productVariants.deleted": false
+            //     }
+            // },
+            {
+                // Project: Chọn và tính giá trị cần thiết
+                $project: {
+                    _id: 0, // Loại bỏ ID nếu không cần thiết
+                    name: 1, // Tên sản phẩm
+                    countOnStock: "$productVariants.countOnStock",
+                    originalPrice: "$productVariants.originalPrice",
+                    totalValue: {
+                        $multiply: ["$productVariants.originalPrice", "$productVariants.countOnStock"]
+                    }
+                }
+            },
+            {
+                // Group: Tính tổng tất cả totalValue
+                $group: {
+                    _id: null,
+                    totalResult: { $sum: "$totalValue" }
+                }
+            }
+        ]);
+        const totalImport = result2.length > 0 ? result2[0].totalResult : 0;
+
+        const data = { total: total, order: order.length, product: product.length, user: user.length, totalProfit: totalProfit, totalImport: totalImport };
         return res.status(StatusCodes.OK).json(data)
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });

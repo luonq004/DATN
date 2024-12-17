@@ -502,10 +502,10 @@ export const addVoucher = async (req, res) => {
     // console.log(voucher)
 
     // giảm số lượng của voucher
-    await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
+    // await Voucher.findOneAndUpdate({ _id: voucher._id }, { countOnStock: voucher.countOnStock - 1 }, { new: true })
 
     // thêm vào danh sách đã sử dụng voucher
-    await VoucherUsage.create({ userId: userId, voucherId: voucher._id });
+    // await VoucherUsage.create({ userId: userId, voucherId: voucher._id });
 
     cart.voucher.push(voucher._id);
     // console.log(cart)
@@ -552,10 +552,10 @@ export const revomeVoucherCart = async (req, res) => {
     // );
 
     // loại khỏi danh sách đã sử dụng voucher
-    await VoucherUsage.findOneAndDelete({
-      userId: userId,
-      voucherId: voucher._id,
-    });
+    // await VoucherUsage.findOneAndDelete({
+    //   userId: userId,
+    //   voucherId: voucher._id,
+    // });
 
     // loại khỏi giỏ hàng
     cart.voucher = cart.voucher.filter(

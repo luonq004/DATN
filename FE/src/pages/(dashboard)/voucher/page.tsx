@@ -20,9 +20,11 @@ export type Payment = {
 }
 
 const Demopage = () => {
+    useEffect(() => {
+        document.title = "Vouchers";
+    }, []);
     const { getVoucher, changeStatusVoucher } = useVoucher();
     const { data, isLoading, isError } = getVoucher('get-all-countdown');
-    // console.log(data)
     const item = data?.map((item: any) => {
         const localDate = new Date(new Date(item.voucher.endDate).getTime() - 7 * 60 * 60 * 1000);
         return {
@@ -38,9 +40,9 @@ const Demopage = () => {
     useEffect(() => {
         if (data) {
             data.forEach((item: any) => {
-                if (item.countdown && item.countdown > 0) {
-                    startCountDown(item.countdown, item.voucher._id)
-                }
+                // if (item.countdown && item.countdown > 0) {
+                startCountDown(item.countdown, item.voucher)
+                // }
             });
         }
 
@@ -59,18 +61,21 @@ const Demopage = () => {
         } else if (data) {
             data.forEach((item: any) => {
                 if (item.countdown && item.countdown > 0) {
-                    startCountDown(item.countdown, item.voucher._id);
+                    startCountDown(item.countdown, item.voucher);
                 }
             });
         }
     };
 
-    const startCountDown = (timeCountDown: any, id: any) => {
+    const startCountDown = (timeCountDown: any, voucher: any) => {
 
-        interval.current[id] = setInterval(() => {
+        interval.current[voucher._id] = setInterval(() => {
+            // console.log(timeCountDown)
             if (timeCountDown <= 0) {
-                clearInterval(interval.current[id]);
-                changeStatusVoucher.mutate({ status: 'inactive', id });
+                if (voucher.status === 'active') {
+                    changeStatusVoucher.mutate({ status: 'inactive', id: voucher._id });
+                    clearInterval(interval.current[voucher._id]);
+                }
                 return;
             }
             timeCountDown -= 1000;

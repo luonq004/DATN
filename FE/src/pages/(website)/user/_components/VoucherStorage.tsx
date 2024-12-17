@@ -7,6 +7,9 @@ const VoucherStorage = () => {
     const { data, isLoading, isError } = getVoucher('get-all-countdown')
 
     // console.log(data)
+    useEffect(() => {
+        document.title = "Kho voucher";
+    }, []);
 
     const intervals = useRef<{ [key: string]: NodeJS.Timeout }>({}); // Lưu trữ các interval
 

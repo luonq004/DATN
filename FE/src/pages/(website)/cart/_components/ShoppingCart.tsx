@@ -26,6 +26,10 @@ const ShopCart = () => {
     });
   }, [])
 
+  useEffect(() => {
+    document.title = "Giỏ hàng";
+  }, []);
+
   const {
     cart,
     isLoading,
@@ -97,7 +101,14 @@ const ShopCart = () => {
         break;
 
       case "removeVoucher":
-        removeVoucher.mutate(item);
+        removeVoucher.mutate(item, {
+          onSuccess: () => {
+            toast({
+              title: "Thành công",
+              description: `Gỡ mã giảm giá thành công`,
+            });
+          },
+        });
         break;
 
       case "changeVariant":
@@ -128,7 +139,6 @@ const ShopCart = () => {
 
   if (isLoading) return <SkeletonCart />;
   if (isError) return <div>Is Error</div>;
-
   // console.log('cart', cart);
 
   return (
