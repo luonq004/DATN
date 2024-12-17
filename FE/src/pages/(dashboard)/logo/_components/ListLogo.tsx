@@ -2,7 +2,7 @@ import Confirm from "@/components/Confirm/Confirm";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const ListLogoPage = () => {
   const [logos, setLogos] = useState<any[]>([]);
@@ -12,6 +12,12 @@ const ListLogoPage = () => {
     id: string;
     title: string;
   } | null>(null);
+
+  const { id } = useParams();
+  
+    useEffect(() => {
+      if (!id) document.title = "Danh Sách Logo";
+    }, [id]);
 
   useEffect(() => {
     const fetchLogos = async () => {
@@ -32,8 +38,8 @@ const ListLogoPage = () => {
       const response = await axios.get("http://localhost:8080/api/logo");
       setLogos(response.data);
       toast({
-        title: "Thành công",
-        description: "Logo đã được đặt làm logo chính thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Logo đã được đặt làm logo chính thành công!",
       });
     } catch (error) {
       console.error("Lỗi khi đặt làm logo chính.", error);
@@ -60,8 +66,8 @@ const ListLogoPage = () => {
       await axios.delete(`http://localhost:8080/api/logo/${id}`);
       setLogos(logos.filter((logo) => logo._id !== id));
       toast({
-        title: "Thành công",
-        description: "Logo đã được xóa thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Logo đã được xóa thành công!",
       });
     } catch (error) {
       console.error("Lỗi khi xóa logo.", error);

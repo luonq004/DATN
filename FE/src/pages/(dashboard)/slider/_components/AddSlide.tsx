@@ -1,9 +1,9 @@
 import { FormValuesSlide } from "@/common/types/Slide";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddSlider = () => {
   const navigate = useNavigate();
@@ -20,6 +20,11 @@ const AddSlider = () => {
 
   const type = watch("type"); // Theo dõi loại slide
   const features = watch("features") || [];
+  const { id } = useParams();
+  
+    useEffect(() => {
+      if (!id) document.title = "Thêm Mới Slider";
+    }, [id]);
 
   const onSubmit = async (data: FormValuesSlide) => {
     console.log(data);
@@ -54,8 +59,8 @@ const AddSlider = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast({
-        title: "Thành công",
-        description: "Slide đã được tạo thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Slide đã được tạo thành công!",
       });
       navigate("/admin/sliders");
     } catch (err) {

@@ -17,9 +17,7 @@ const NewArrivals = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8080/api/category"
-        );
+        const response = await axios.get("http://localhost:8080/api/category");
         const categoryNames = [
           "TẤT CẢ",
           ...response.data.map((cat: any) => cat.name),
@@ -37,7 +35,7 @@ const NewArrivals = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/products");
-        setProducts(response.data.data); 
+        setProducts(response.data.data);
       } catch (error) {
         console.error("Lỗi khi lấy sản phẩm:", error);
       }
@@ -50,18 +48,17 @@ const NewArrivals = () => {
       swiperRef.current.slideTo(0); // Đặt Swiper về slide đầu tiên
     }
   }, [products]);
-  
 
   const filteredProducts = products.filter((product) => {
     // Nếu chọn "TẤT CẢ", hiển thị tất cả sản phẩm
     if (activeCategory === 0) return true;
-  
+
     // Kiểm tra nếu danh mục của sản phẩm chứa danh mục đang chọn
     return product.category.some(
       (cat: any) => cat.name === categories[activeCategory]
     );
   });
-  
+
   // Đóng menu khi nhấp ra bên ngoài
   useEffect(() => {
     const handleClickOutside = (event: any) => {
@@ -88,7 +85,6 @@ const NewArrivals = () => {
     swiperRef.current?.slideTo(index);
     setActiveProductIndex(index);
   };
-  
 
   return (
     <div className="mx-auto pt-32 pb-10 md:pb-0">
@@ -207,7 +203,7 @@ const NewArrivals = () => {
           loop={true}
           touchRatio={1}
           // resistance={true}
-          // direction="horizontal" 
+          // direction="horizontal"
           centerInsufficientSlides={true}
           breakpoints={{
             320: {
@@ -237,7 +233,7 @@ const NewArrivals = () => {
               )}
 
               <div className="mt-10 mb-5">
-                <Link to={`/product/${product._id}`} >
+                <Link to={`/product/${product._id}`}>
                   <img
                     src={product.image}
                     alt={product.name}
@@ -248,7 +244,7 @@ const NewArrivals = () => {
 
               {/* Phần nút hiển thị khi hover */}
 
-              <div >
+              <div>
                 {/* <h5 className="text-xs uppercase font-questrial text-[#b8cd06] mb-1 text-wrap relative transition-all duration-300 top-0 group-hover:top-[-8px]">
                   {product.edition}
                 </h5> */}
@@ -259,15 +255,22 @@ const NewArrivals = () => {
                   {product.description}
                 </p>
 
-                {/* Các biểu tượng hover */}
-
                 <div className="flex items-center justify-center duration-300 gap-2">
-                  <span className="font-bold text-red-600">
-                    {product.price.toLocaleString()} VNĐ
-                  </span>
-                  {product.priceSale > 0 && (
-                    <span className="text-xs text-gray-400 line-through">
-                      {product.priceSale.toLocaleString()} VNĐ
+                  {product.priceSale > 0 ? (
+                    <>
+                      {/* Giá khuyến mãi */}
+                      <span className="font-bold text-red-600">
+                        {product.priceSale.toLocaleString()} VNĐ
+                      </span>
+                      {/* Gạch ngang giá gốc */}
+                      <span className="text-sm text-gray-400 line-through">
+                        {product.price.toLocaleString()} VNĐ
+                      </span>
+                    </>
+                  ) : (
+                    /* Chỉ hiển thị giá gốc nếu không có giá khuyến mãi */
+                    <span className="font-bold text-red-600">
+                      {product.price.toLocaleString()} VNĐ
                     </span>
                   )}
                 </div>

@@ -2,7 +2,7 @@ import { Blog } from "@/common/types/Blog";
 import Confirm from "@/components/Confirm/Confirm";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import PaginationComponent from "../../user/_component/Paginations";
 
 const ListBlog = () => {
@@ -20,14 +20,18 @@ const ListBlog = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const totalPages = Math.ceil(blogs.length / itemsPerPage);
   const { toast } = useToast();
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) document.title = "Danh Sách Bài Viết";
+  }, [id]);
 
   const currentBlogs = Array.isArray(filteredBlogs)
-  ? filteredBlogs.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    )
-  : [];
-
+    ? filteredBlogs.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
+    : [];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -39,13 +43,12 @@ const ListBlog = () => {
   };
   const [categories, setCategories] = useState<any[]>([]);
 
-useEffect(() => {
-  fetch("http://localhost:8080/api/category")
-    .then((response) => response.json())
-    .then((data) => setCategories(data))
-    .catch((err) => console.error("Lỗi khi lấy danh mục:", err));
-}, []);
-
+  useEffect(() => {
+    fetch("http://localhost:8080/api/category")
+      .then((response) => response.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error("Lỗi khi lấy danh mục:", err));
+  }, []);
 
   useEffect(() => {
     fetch("http://localhost:8080/api/blogs")
@@ -106,8 +109,8 @@ useEffect(() => {
       // Xử lý dữ liệu thành công
       await response.json();
       toast({
-        title: "Xóa thành công",
-        description: "Bài viết đã được xóa thành công",
+        className: "bg-green-400 text-white h-auto",
+        title: "Bài viết đã được xóa thành công",
       });
       setBlogs(blogs.filter((blog) => blog._id !== blogId));
       setFilteredBlogs(filteredBlogs.filter((blog) => blog._id !== blogId)); // Cập nhật lại filteredBlogs
@@ -128,10 +131,9 @@ useEffect(() => {
 
   const getCategoryLabel = (categoryId: string) => {
     const category = categories.find((cat) => cat._id === categoryId);
-    return category ? category.name  : categoryId;
+    return category ? category.name : categoryId;
   };
 
-  
   if (loading)
     return (
       <div className="text-center text-xl text-gray-600">

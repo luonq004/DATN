@@ -17,6 +17,11 @@ const UserDetailPage = () => {
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
   const [itemsPerPage, setItemsPerPage] = useState(5); // Số mục mỗi trang
   const apiUrl = import.meta.env.VITE_API_URL;
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) document.title = "Chi Tiết Người Dùng";
+  }, [id]);
 
   useEffect(() => {
     if (clerkId) {

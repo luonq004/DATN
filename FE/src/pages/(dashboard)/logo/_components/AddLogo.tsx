@@ -1,7 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 interface FormData {
@@ -15,6 +15,11 @@ const AddLogoPage = () => {
   const [isSubmitted, setIsSubmitted] = useState(false); // State kiểm tra form đã được submit chưa
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { id } = useParams();
+  
+    useEffect(() => {
+      if (!id) document.title = "Thêm Mới Logo";
+    }, [id]);
 
   const {
     register,
@@ -59,8 +64,8 @@ const AddLogoPage = () => {
         },
       });
       toast({
-        title: "Thành công",
-        description: "Logo đã được tạo thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Logo đã được tạo thành công!",
       });
       navigate("/admin/logos");
     } catch (error) {

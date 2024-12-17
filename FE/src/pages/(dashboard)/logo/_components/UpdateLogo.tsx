@@ -15,6 +15,10 @@ const UpdateLogoPage = () => {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  
+    useEffect(() => {
+       document.title = "Cập Nhật Logo";
+    }, [id]);
 
   const {
     register,
@@ -74,8 +78,8 @@ const UpdateLogoPage = () => {
         },
       });
       toast({
-        title: "Thành công",
-        description: "Logo đã được cập nhật thành công!",
+        className: "bg-green-400 text-white h-auto",
+        title: "Logo đã được cập nhật thành công!",
       });
       navigate("/admin/logos");
     } catch (error) {

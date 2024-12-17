@@ -15,10 +15,10 @@ const OurSeries = () => {
       try {
         const response = await axios.get("http://localhost:8080/api/products");
         const sortedProducts = response.data.data
-        .sort((a: any, b: any) => b.count - a.count)// Sắp xếp giảm dần dựa vào count
-        .slice(0, 6);
+          .sort((a: any, b: any) => b.count - a.count) // Sắp xếp giảm dần dựa vào count
+          .slice(0, 6);
 
-      setProducts(sortedProducts);
+        setProducts(sortedProducts);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu sản phẩm:", error);
       }
@@ -43,10 +43,10 @@ const OurSeries = () => {
       {/* Tiêu đề phần */}
       <div className="text-center mb-8">
         <h5 className="text-sm uppercase font-questrial text-gray-500 tracking-wider mb-3">
-          SẢN PHẨM CỦA CHÚNG TÔI
+          SẢN PHẨM bán chạy
         </h5>
-        <h2 className="text-3xl sm:text-4xl font-raleway text-[#343434] font-extrabold">
-          CHỌN MỘT PHONG CÁCH
+        <h2 className="text-3xl sm:text-4xl font-raleway text-[#343434] font-extrabold uppercase">
+          lựa chọn dành cho bạn
         </h2>
         <div className="flex items-center gap-1 justify-center my-6">
           <span className="h-[1px] w-2 bg-[#b8cd06] mb-2"></span>
@@ -88,13 +88,27 @@ const OurSeries = () => {
                       />
 
                       <div className="absolute md:h-[480px] inset-0 bg-black bg-opacity-30 rounded-xl flex flex-col justify-center p-8 text-white">
-                        <p className="text-left text-[#fff] text-lg font-questrial mb-2">
-                          BẮT ĐẦU TỪ{" "}
-                          {product.priceSale > 0
-                            ? product.priceSale.toLocaleString()
-                            : product.price.toLocaleString()}{" "}
-                          VNĐ
-                        </p>
+                        <div className="text-left  text-lg font-questrial mb-2">
+                          BẮT ĐẦU TỪ {" "}
+                          {product.priceSale > 0 ? (
+                            <>
+                              {/* Giá khuyến mãi */}
+                              <span className="text-[#fff] font-bold">
+                                {product.priceSale.toLocaleString()} VNĐ
+                              </span>
+                              {/* Giá gốc gạch ngang */}
+                              <span className="text-gray-400 line-through ml-2">
+                                {product.price.toLocaleString()} VNĐ
+                              </span>
+                            </>
+                          ) : (
+                            /* Giá gốc khi không có khuyến mãi */
+                            <span className="text-[#fff] font-bold">
+                              {product.price.toLocaleString()} VNĐ
+                            </span>
+                          )}
+                        </div>
+
                         <h2 className="text-3xl text-left font-extrabold font-raleway mb-4">
                           {product.name.split(" ")[0]}{" "}
                           <span className="text-[#b8cd06]">
@@ -148,9 +162,26 @@ const OurSeries = () => {
                         <p className="text-gray-500 text-xs px-16 md:px-6 line-clamp-2">
                           {product.description}
                         </p>
-                        <p className="text-sm text-gray-900 my-5">
-                          {product.price.toLocaleString()} VNĐ
-                        </p>
+                        <div className="flex items-center justify-center gap-2 my-5">
+                          {product.priceSale > 0 ? (
+                            <>
+                              {/* Hiển thị giá khuyến mãi */}
+                              <span className="text-red-600 font-bold text-lg">
+                                {product.priceSale.toLocaleString()} VNĐ
+                              </span>
+                              {/* Hiển thị giá gốc với gạch ngang */}
+                              <span className="text-gray-500 text-sm line-through">
+                                {product.price.toLocaleString()} VNĐ
+                              </span>
+                            </>
+                          ) : (
+                            /* Hiển thị giá gốc khi không có giá khuyến mãi */
+                            <span className="text-red-600 font-bold text-lg">
+                              {product.price.toLocaleString()} VNĐ
+                            </span>
+                          )}
+                        </div>
+
                         <button className="group relative px-20 md:px-16 py-5 md:py-5 text-sm bg-[#b8cd06] text-white rounded-full font-semibold overflow-hidden">
                           <Link to={`/product/${product._id}`}>
                             <span className="absolute inset-0 flex items-center justify-center text-xs transition-all duration-200 ease-in-out transform group-hover:translate-x-full group-hover:opacity-0">

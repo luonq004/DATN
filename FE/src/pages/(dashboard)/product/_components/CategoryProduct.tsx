@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Category = {
   _id: string;
@@ -32,6 +32,15 @@ const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
   const [accordionValue, setAccordionValue] = useState<string | undefined>(
     "item-3"
   );
+
+  useEffect(() => {
+    const selectedCategories = form.getValues("category") || [];
+
+    // Nếu không có danh mục nào được chọn, thêm `defaultCategory`
+    if (selectedCategories.length === 0) {
+      form.setValue("category", [defaultCategory], { shouldValidate: true });
+    }
+  }, [form]);
 
   if (isLoadingCategory) return <div>Loading...</div>;
 
@@ -67,19 +76,34 @@ const CategoryProduct = ({ form }: { form: FormTypeProductVariation }) => {
                         >
                           <FormControl>
                             <Checkbox
-                              // disabled={item._id === defaultCategory}
-                              checked={field.value?.includes(item._id)}
+                              checked={field.value?.includes(item._id)} // Tích khi item thuộc mảng category
                               onCheckedChange={(checked) => {
-                                return checked
-                                  ? field.onChange([
-                                      ...(field.value || []),
-                                      item._id,
-                                    ])
-                                  : field.onChange(
-                                      field.value?.filter(
-                                        (value) => value !== item._id
-                                      )
-                                    );
+                                let updatedValues = checked
+                                  ? [...(field.value || []), item._id] // Thêm danh mục
+                                  : field.value?.filter(
+                                      (value) => value !== item._id
+                                    ); // Loại bỏ danh mục
+
+                                // Nếu danh mục được chọn không phải `defaultCategory`, loại bỏ `defaultCategory`
+                                if (
+                                  item._id !== defaultCategory &&
+                                  updatedValues?.includes(defaultCategory)
+                                ) {
+                                  updatedValues = updatedValues.filter(
+                                    (value) => value !== defaultCategory
+                                  );
+                                }
+
+                                // Nếu không có danh mục nào được chọn, thêm `defaultCategory`
+                                if (
+                                  !updatedValues ||
+                                  updatedValues.length === 0
+                                ) {
+                                  updatedValues = [defaultCategory];
+                                }
+
+                                // Cập nhật giá trị
+                                field.onChange(updatedValues);
                               }}
                             />
                           </FormControl>

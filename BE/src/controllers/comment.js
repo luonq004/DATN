@@ -69,17 +69,17 @@ export const createComment = async (req, res) => {
 
 export const deleteComment = async (req, res) => {
   try {
-    const { id, userId } = req.body;
+    const { id } = req.params;
 
     const comment = await Comment.findOne({ _id: id });
 
     if (!comment) {
-      return res.status(400).json({ message: "Không tìm thấy comment" });
+      return res.status(400).json({ message: "Không ẩn được comment này" });
     }
 
-    if (comment.userId.toString() !== userId) {
-      return res.status(400).json({ message: "Không có quyền xóa comment" });
-    }
+    // if (comment.userId.toString() !== userId) {
+    //   return res.status(400).json({ message: "Không có quyền xóa comment" });
+    // }
 
     comment.deleted = true;
 
@@ -91,10 +91,39 @@ export const deleteComment = async (req, res) => {
   }
 };
 
-export const getAllComment = async (req, res) => {
+export const displayComment = async (req, res) => {
   try {
-    const comments = await Comment.find()
-      .populate("userId", "firstName lastName imageUrl") // Populate userId, chỉ lấy các trường `name` và `email`
+    const { id } = req.params;
+
+    const comment = await Comment.findOne({ _id: id });
+
+    if (!comment) {
+      return res.status(400).json({ message: "Không tìm thấy comment" });
+    }
+
+    comment.deleted = false;
+
+    await comment.save();
+
+    res.json({ message: "Hiển thị comment thành công", comment });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllComment = async (req, res) => {
+  const { _status = "display" } = req.query;
+
+  let flag;
+  if (_status === "hidden") {
+    flag = true;
+  } else {
+    flag = false;
+  }
+
+  try {
+    const comments = await Comment.find({ deleted: flag })
+      .populate("userId", "firstName lastName imageUrl") // Populate userId,
       .populate("productId", "name image")
       .sort({
         createdAt: -1,
