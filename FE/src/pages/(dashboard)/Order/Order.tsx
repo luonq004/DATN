@@ -34,6 +34,7 @@ import { Link } from "react-router-dom";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:3000");
 import { PaginationProducts } from "../dashboard/_components/PaginationProducts";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 export type Order = {
   id: string;
@@ -415,9 +416,10 @@ const AdminOrder = () => {
 
   if (isError) {
     return (
-      <div className="text-center text-red-500">
-        Có lỗi xảy ra khi tải dữ liệu!
-      </div>
+      <div className="flex items-center justify-center p-[10rem] my-10   ">
+          <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+          <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+        </div>
     );
   }
 

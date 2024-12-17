@@ -37,7 +37,7 @@ import sendOrderConfirmationEmail from "./sendEmail";
 import { useQueryClient } from "@tanstack/react-query";
 import io from "socket.io-client";
 import CheckOutCart from "./CheckOutCart";
-
+import { AiOutlineExclamationCircle } from 'react-icons/ai';
 const socket = io("http://localhost:3000");
 
 interface ErrorResponse {
@@ -182,10 +182,16 @@ const CheckOut = () => {
     }
   };
   if (adressError) {
-    return <div className="text-red-500">Lỗi khi tải địa chỉ.</div>;
+    return  <div className="flex items-center justify-center p-[10rem] my-10   ">
+    <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+    <span className="text-red-600 font-semibold">Lỗi khi tải địa chỉ. Vui lòng thử lại sau.</span>
+  </div>;
   }
   if (isError) {
-    return <div className="text-red-500">Lỗi khi tải giỏ hàng.</div>;
+    return <div className="flex items-center justify-center p-[10rem] my-10   ">
+    <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+    <span className="text-red-600 font-semibold">Lỗi khi tải giỏ hàng. Vui lòng thử lại sau.</span>
+  </div>;
   }
 
   const defaultAddress = addresses?.find(

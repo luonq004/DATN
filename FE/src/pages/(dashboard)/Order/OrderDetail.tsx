@@ -11,6 +11,7 @@ import {
 import html2pdf from "html2pdf.js"; // Import html2pdf.js
 import useOrder from "@/common/hooks/order/UseOrder";
 import { formatCurrencyVND } from "@/pages/(website)/orderHistory/OrderHistory";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -40,9 +41,10 @@ const OrderDetail = () => {
   
     if (isError) {
       return (
-        <div className="text-center text-red-500">
-          Có lỗi xảy ra khi tải dữ liệu!
-        </div>
+       <div className="flex items-center justify-center p-[10rem] my-10   ">
+           <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+           <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+         </div>
       );
     }
   const {
