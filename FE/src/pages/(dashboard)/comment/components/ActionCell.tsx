@@ -10,6 +10,8 @@ import { Row } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
+import { useDeleteComment } from "../actions/useDeleteComment";
+import { useDisplayComment } from "../actions/useDisplayComment";
 // import { useDeleteCategory } from "../actions/useDeleteCategory";
 // import { useDisplayCategory } from "../actions/useDisplayCategory";
 // import { useGettAllProductWithCategory } from "../actions/useGettAllProductWithCategory";
@@ -19,37 +21,29 @@ interface ActionCellProps {
 }
 
 const ActionCell: React.FC<ActionCellProps> = ({ row }) => {
-  // const { deleteCategories, isDeleting } = useDeleteCategory(row.original._id);
-  // const { displayCategory, isUpdating } = useDisplayCategory(row.original._id);
-  // const { isGetting, countProduct, errorGetting } =
-  //   useGettAllProductWithCategory(row.original._id);
-
-  // console.log("countProduct", countProduct);
+  const { deleteComment, isDeleting } = useDeleteComment(row.original._id);
+  const { displayComment, isUpdating } = useDisplayComment(row.original._id);
 
   const handleDelete = async () => {
-    // if (
-    //   confirm(
-    //     `Bạn có chắc ẩn danh mục này? Hiện tại có ${countProduct.count} sản phẩm đang sử dụng danh mục này.`
-    //   )
-    // ) {
-    //   try {
-    //     await deleteCategories(row.original._id);
-    //   } catch (error) {
-    //     console.error("Lỗi khi ẩn danh mục:", error);
-    //     alert("Ẩn thất bại, vui lòng thử lại.");
-    //   }
-    // }
+    if (confirm(`Bạn có chắc ẩn đánh giá này? `)) {
+      try {
+        await deleteComment(row.original._id);
+      } catch (error) {
+        console.error("Lỗi khi ẩn đánh giá:", error);
+        alert("Ẩn thất bại, vui lòng thử lại.");
+      }
+    }
   };
 
   const handleDisplay = async () => {
-    // if (confirm("Bạn có chắc hiển thị danh mục này?")) {
-    //   try {
-    //     await displayCategory(row.original._id);
-    //   } catch (error) {
-    //     console.error("Lỗi khi hiển thị danh mục:", error);
-    //     alert("Hiển thị thất bại, vui lòng thử lại.");
-    //   }
-    // }
+    if (confirm("Bạn có chắc hiển đánh giá này?")) {
+      try {
+        await displayComment(row.original._id);
+      } catch (error) {
+        console.error("Lỗi khi hiển thị đánh giá:", error);
+        alert("Hiển thị thất bại, vui lòng thử lại.");
+      }
+    }
   };
 
   return (
@@ -61,18 +55,16 @@ const ActionCell: React.FC<ActionCellProps> = ({ row }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {/* <DropdownMenuItem>
-          <Link to={`/admin/categories/edit/${row.original._id}`}>Sửa</Link>
-        </DropdownMenuItem> */}
-        <DropdownMenuItem onClick={handleDelete}>
-          {/* {isDeleting ? "Đang ẩn..." : "Ẩn"} */}
-          Ẩn
-        </DropdownMenuItem>
-        {/* {row.original.deleted === false ? (
-          <DropdownMenuItem onClick={handleDelete}>Ẩn</DropdownMenuItem>
+        {row.original.deleted === false ? (
+          <DropdownMenuItem onClick={handleDelete}>
+            {" "}
+            {isDeleting ? "Đang ẩn..." : "Ẩn"}
+          </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem onClick={handleDisplay}>Hiện</DropdownMenuItem>
-        )} */}
+          <DropdownMenuItem onClick={handleDisplay}>
+            {isUpdating ? "Đang hiển thị..." : "Hiển thị"}
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

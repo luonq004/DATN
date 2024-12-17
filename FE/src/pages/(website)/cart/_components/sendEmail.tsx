@@ -2,6 +2,8 @@ import axios from "axios";
 
 const sendOrderConfirmationEmail = async (to: string, orderCode: string) => {
   try {
+    const logoResponse = await axios.get("http://localhost:8080/api/logo");
+    const logoUrl = logoResponse.data?.[0]?.image ?? "";
     // Gọi API để lấy thông tin đơn hàng dựa vào orderCode
     const response = await axios.get(
       `http://localhost:8080/api/get-ordersCode/${orderCode}`
@@ -26,7 +28,14 @@ const sendOrderConfirmationEmail = async (to: string, orderCode: string) => {
 
     // Nội dung email với bảng
     const emailContent = `
-      <h1>Cảm ơn bạn đã đặt hàng!</h1>
+        <div className="w-4/12 flex justify-center md:w-2/12 px-[15px]">
+                <img
+                  className="w-20 flex justify-center md:w-36"
+                  src="${logoUrl}"
+                  alt="Logo"
+                />
+              </div>
+      <h1>FabricFocus Cảm ơn bạn đã đặt hàng!</h1>
       <p>Mã đơn hàng: <strong>${order.orderCode}</strong></p>
       <p>Vui lòng đăng nhập để xem lịch sử đơn hàng: <strong>http://localhost:5173/users/order-history</strong></p>
       <p>Phí giao hàng: <strong>30.000 VNĐ</strong></p>
