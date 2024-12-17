@@ -112,6 +112,9 @@ const CheckOut = () => {
         );
         const paymentUrl = response.data.redirectUrl;
         window.location.href = paymentUrl;
+       if(Gmail){
+        await sendOrderConfirmationEmail(Gmail, orderCode);
+       }
       }
 
       if (data.paymentMethod === "COD") {
@@ -148,7 +151,9 @@ const CheckOut = () => {
           // queryClient.invalidateQueries(["CART", _id]);
           navigate("/cart/order"); // Điều hướng đến trang đơn hàng
           // Gửi email xác nhận đơn hàng
-          await sendOrderConfirmationEmail(Gmail, orderCode);
+          if(Gmail){
+            await sendOrderConfirmationEmail(Gmail, orderCode);
+           }
         }
       }
     } catch (error: unknown) {

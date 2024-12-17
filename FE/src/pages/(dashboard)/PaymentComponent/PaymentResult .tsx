@@ -8,7 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/common/context/UserProvider";
 import { useUser } from "@clerk/clerk-react";
-import sendOrderConfirmationEmail from "@/pages/(website)/cart/_components/sendEmail";
+// import sendOrderConfirmationEmail from "@/pages/(website)/cart/_components/sendEmail";
 import useCart from "@/common/hooks/useCart";
 import { Cart } from "@/common/types/formCheckOut";
 import io from "socket.io-client";
@@ -32,6 +32,8 @@ const PaymentResult = () => {
   const Gmail = user?.primaryEmailAddress?.emailAddress;
   const { _id } = useUserContext() ?? {}; // Lấy _id từ UserContext
   const { cart: carts } = useCart(_id ?? "");
+  const emailSentRef = useRef(false);
+
   // Lấy mã đơn hàng từ URL
 
   const orderId = searchParams.get("vnp_TxnRef");
@@ -149,18 +151,21 @@ const PaymentResult = () => {
               isPaid: true,
             }
           );
-          if (Gmail) {
-            await sendOrderConfirmationEmail(Gmail, orderId);
-          }
+        
           if (response.status === 200) {
             queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
-            clearCart();
+            // clearCart();
+            if (result?.code === "00" && Gmail && !emailSentRef.current && orderId) {
+              // await sendOrderConfirmationEmail(Gmail, orderId);
+              emailSentRef.current = true; // Đánh dấu đã gửi
+              return;
+            }
             // Hiển thị thông báo thành công
           }
         }
         if (result?.code === "24") {
           const response = await axios.put(
-            `${apiUrl}/delete-order/${orderDetails._id}`
+            `${apiUrl}/delete-orderAdmin/${orderDetails._id}`
           );
           if (response.status === 200) {
             queryClient.invalidateQueries(["ORDER_HISTORY", _id]);
@@ -179,7 +184,7 @@ const PaymentResult = () => {
     if ((result?.code === "00" || result?.code !== "00") && Gmail) {
       cancelOrder(); // Chỉ gọi hàm khi có giá trị `result` và `Gmail`.
     }
-  }, [result, orderDetails, _id, apiUrl, Gmail, orderCart]); // Đảm bảo có các phụ thuộc đúng
+  }, [result, orderDetails, _id, apiUrl, orderCart]); // Đảm bảo có các phụ thuộc đúng
 
   if (loading)
     return (
