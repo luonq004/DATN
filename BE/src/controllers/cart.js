@@ -6,10 +6,15 @@ import Variant from "../models/variant";
 import VoucherUsage from "../models/voucherUsage";
 
 const updateTotal = async (cart) => {
-  let total = cart.products.reduce(
-    (acc, item) => { return item.selected ? acc + (item.variantItem.priceSale > 0 ? item.variantItem.priceSale : item.variantItem.price) * item.quantity : acc },
-    0
-  );
+  let total = cart.products.reduce((acc, item) => {
+    return item.selected
+      ? acc +
+          (item.variantItem.priceSale > 0
+            ? item.variantItem.priceSale
+            : item.variantItem.price) *
+            item.quantity
+      : acc;
+  }, 0);
   cart.subTotal = total;
   // console.log(cart.voucher)
   let totalDiscount = 0;
@@ -141,10 +146,18 @@ export const addToCart = async (req, res) => {
     // console.log("PR: ", product._id);
     // console.log(variantValue);
 
+    if (!userId) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Không tìm thấy người dùng" });
+    }
+
     if (!product || !variantValue) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Không tìm thấy sản phẩm hoặc Biến thể của sản phẩm" });
+        .json({
+          message: "Không tìm thấy sản phẩm hoặc Biến thể của sản phẩm",
+        });
     }
 
     // kiểm tra xem sản phẩm hoặc biến thể có bị xóa mềm hay không
@@ -721,11 +734,10 @@ export const removeAllItemSelected = async (req, res) => {
     cart.products = newProducts;
     await cart.save();
     return res.status(StatusCodes.OK).json(cart);
-
   } catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
-}
+};
 
 // test
 export const updateCart = async (req, res) => {
