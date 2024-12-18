@@ -425,6 +425,7 @@ const AdminOrder = () => {
 
   return (
     <div className="w-full p-4 bg-white rounded-sm">
+      <h3 className="text-xl font-semibold mb-4">Danh sánh đơn hàng</h3>
       <div className="mb-4 w-[18%]">
         <input
           type="text"

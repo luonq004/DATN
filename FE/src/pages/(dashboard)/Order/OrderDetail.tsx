@@ -251,7 +251,7 @@ const OrderDetail = () => {
 
           <div className="text-right space-y-2 bg-white p-4 rounded shadow-sm">
             <p className="flex items-center justify-between">
-              <span className="text-gray-500">Giảm giá:</span>
+              <span className="text-gray-500">Giảm giá sản phẩm:</span>
               <span className="text-gray-800">
                 {discount > 0 ? `- ${formatCurrencyVND(discount)}` : formatCurrencyVND(0)}
 

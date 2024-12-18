@@ -330,7 +330,7 @@ const CheckOut = () => {
                 <Skeleton className="h-12 w-12 rounded-full" />
               ) : (
                 <p className="text-[#9D9EA2] max-sm:text-[14px] transition-all duration-500">
-                  ({carts?.products.length})
+                  {/* ({carts?.products.length}) */}
                 </p>
               )}
             </div>
