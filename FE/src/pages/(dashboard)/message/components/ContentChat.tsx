@@ -67,15 +67,22 @@ const ContentChat = ({ socket }: { socket: Socket }) => {
   }, [selectedUser]);
 
   useEffect(() => {
-    socket.on("messageRecieved", (message: Message) => {
-      // console.log("message", message);
-
-      if (message.sender.listUsers.includes(_id)) {
+    const handleMessage = (message: Message) => {
+      // Kiểm tra nếu user hiện tại nằm trong danh sách user liên quan
+      if (message.sender.listUsers?.includes(_id)) {
+        // Chỉ xử lý khi tin nhắn đến từ `selectedUser`
         if (message.sender._id === selectedUser) {
           setListMessage((prev: any) => [...prev, message]);
         }
       }
-    });
+    };
+
+    socket.on("messageRecieved", handleMessage);
+
+    // Cleanup khi component bị unmount
+    return () => {
+      socket.off("messageRecieved", handleMessage);
+    };
   }, [_id, selectedUser]);
 
   // const { isCheckingAuth, authUser } = useAuthStore();
