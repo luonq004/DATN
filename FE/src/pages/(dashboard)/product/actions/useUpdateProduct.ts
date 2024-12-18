@@ -7,6 +7,7 @@ export const useUpdateProduct = (idP: string) => {
 
   const { mutate: updateProduct, isPending: isUpdating } = useMutation({
     mutationFn: async ({ data, id }: { data: unknown; id: string }) => {
+      console.log("id", id);
       try {
         const response = await axios.put(
           `http://localhost:8080/api/products/${id}`,

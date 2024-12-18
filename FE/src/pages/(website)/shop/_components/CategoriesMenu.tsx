@@ -6,6 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { formatCurrency } from "@/lib/utils";
 import { useGetAttributeByIDClient } from "@/pages/(dashboard)/attribute/actions/useGetAttributeByIDClient";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button } from "@/components/ui/button";
 
 interface ICategory {
   _id: string;
@@ -119,16 +120,25 @@ const CategoriesMenu = () => {
       </h4>
 
       <ToggleGroup
-        className="justify-start gap-2 w-full  flex-wrap px-[15px]"
+        className="justify-start gap-2 w-full  flex-wrap lg:px-[15px]"
         type="single"
         // disabled={deleted}
       >
         {atribute?.values.map((item: IValues, idx: number) => {
           return (
             <ToggleGroupItem
-              // onClick={() => onAttributeSelect(key, itemValue)}
+              onClick={() => {
+                searchParams.set("color", item._id);
+
+                if (searchParams.get("page")) searchParams.set("page", "1");
+                setSearchParams(searchParams);
+              }}
               key={item._id}
-              className="rounded-none border data-[state=on]:border-4 size-6 p-0 cursor-pointer transition-all"
+              className={`rounded-none border size-6 p-0 cursor-pointer transition-all ${
+                searchParams.get("color") === item._id
+                  ? "data-[state=on]:border-4"
+                  : ""
+              }`}
               value={item.value}
               style={{
                 backgroundColor: item.value,
@@ -137,6 +147,17 @@ const CategoriesMenu = () => {
           );
         })}
       </ToggleGroup>
+      <Button
+        className="mt-4 lg:ml-4"
+        onClick={() => {
+          searchParams.set("color", "all");
+
+          if (searchParams.get("page")) searchParams.set("page", "1");
+          setSearchParams(searchParams);
+        }}
+      >
+        Tất cả
+      </Button>
     </div>
   );
 };
