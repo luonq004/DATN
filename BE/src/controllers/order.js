@@ -418,7 +418,7 @@ export const updateOrderStatus = async (req, res) => {
       "đã xác nhận",
       "đang giao hàng",
       "đã hoàn thành",
-      "đã hủy",
+      "hủy đơn",
     ];
     if (!newStatus || !validStatuses.includes(newStatus)) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -446,7 +446,7 @@ export const updateOrderStatus = async (req, res) => {
             message: "Trạng thái chờ xác nhận không thể quay lại.",
           });
         }
-        if (newStatus !== "đã xác nhận" && newStatus !== "đã hủy") {
+        if (newStatus !== "đã xác nhận" && newStatus !== "hủy đơn") {
           return res.status(StatusCodes.BAD_REQUEST).json({
             message: "Trạng thái hợp lệ tiếp theo là 'đã xác nhận'.",
           });
@@ -460,7 +460,7 @@ export const updateOrderStatus = async (req, res) => {
               "Không thể quay lại trạng thái chờ xác nhận từ đã xác nhận.",
           });
         }
-        if (newStatus !== "đang giao hàng" && newStatus !== "đã hủy") {
+        if (newStatus !== "đang giao hàng" && newStatus !== "hủy đơn") {
           return res.status(StatusCodes.BAD_REQUEST).json({
             message: "Trạng thái hợp lệ tiếp theo là 'đang giao hàng'.",
           });
@@ -473,7 +473,7 @@ export const updateOrderStatus = async (req, res) => {
             message: "Không thể quay lại trạng thái trước từ đang giao hàng.",
           });
         }
-        if (newStatus === "đã hủy") {
+        if (newStatus === "hủy đơn") {
           return res.status(StatusCodes.BAD_REQUEST).json({
             message: "Không thể hủy đơn khi đang giao hàng.",
           });
@@ -490,7 +490,7 @@ export const updateOrderStatus = async (req, res) => {
           message: "Không thể thay đổi trạng thái khi đơn hàng đã hoàn thành.",
         });
 
-      case "đã hủy":
+      case "hủy đơn":
         return res.status(StatusCodes.BAD_REQUEST).json({
           message: "Không thể thay đổi trạng thái khi đơn hàng đã hủy.",
         });
@@ -502,7 +502,7 @@ export const updateOrderStatus = async (req, res) => {
 
 
     // Xử lý thêm thông tin khi chuyển trạng thái sang 'đã hủy'
-    if (newStatus === "đã hủy") {
+    if (newStatus === "hủy đơn") {
       if (!reason) {
         return res.status(StatusCodes.BAD_REQUEST).json({
           message: "Vui lòng cung cấp lý do hủy đơn hàng.",
@@ -523,12 +523,12 @@ export const updateOrderStatus = async (req, res) => {
     // Cập nhật trạng thái thanh toán
     if (newStatus === "đã hoàn thành") {
       order.isPaid = true; // Đánh dấu là đã thanh toán khi đơn hàng hoàn thành
-    } else if (newStatus === "đã hủy") {
+    } else if (newStatus === "hủy đơn") {
       order.isPaid = false; // Đánh dấu là chưa thanh toán khi đơn hàng bị hủy
     }
     // Hoàn lại số lượng sản phẩm nếu trạng thái chuyển thành "đã hủy"
     if (
-      newStatus === "đã hủy" &&
+      newStatus === "hủy đơn" &&
       ["chờ xác nhận", "đã xác nhận"].includes(currentStatus)
     ) {
       // for (let outerItem of order.products) {

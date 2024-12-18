@@ -285,7 +285,7 @@ const statusColor = (status: string) => {
       return "font-bold text-green-800";
     case "đã hoàn thành":
       return "text-[#26aa99] font-bold";
-    case "đã hủy":
+    case "hủy đơn":
       return "text-[red] font-bold";
     default:
       return "bg-gray-100 text-gray-800";

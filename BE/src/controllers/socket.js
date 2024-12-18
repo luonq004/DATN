@@ -150,7 +150,7 @@ export const setupSocketIO = (server, app) => {
           message,
           type: "info", // Loại thông báo
           status:
-            newStatus === "đã hoàn thành" || newStatus === "đã hủy"
+            newStatus === "đã hoàn thành" || newStatus === "hủy đơn"
               ? "success"
               : "pending", // Trạng thái thông báo
           isRead: false, // Chưa đọc

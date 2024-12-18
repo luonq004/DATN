@@ -8,7 +8,7 @@ export const getDataCard = async (req, res) => {
         const order = await Order.find();
         const total = order.reduce((acc, item) => item.status === "đã hoàn thành" ? acc + (item.totalPrice - 30000) : acc, 0);
         const product = await Product.find({ deleted: false });
-        const user = await Users.find();
+        const user = await Users.find({ role: "User" }, { isDeleted: false }, { isBanned: false });
         //Lợi nhuận
         const result = await Order.aggregate([
             {
@@ -290,47 +290,6 @@ export const getDataTopProducts = async (req, res) => {
     }
 }
 
-export const getDataCategory = async (req, res) => {
-    try {
-        const result = await Order.aggregate([
-            // Bóc tách danh sách sản phẩm từ mỗi đơn hàng
-            { $unwind: "$products" },
-            { $unwind: "$products.products" },
-
-            // Bóc tách danh mục (category) từ mỗi sản phẩm
-            { $unwind: "$products.products.productItem.category" },
-
-            // Gom nhóm dữ liệu theo danh mục
-            {
-                $group: {
-                    _id: "$products.products.productItem.category", // Gom nhóm theo danh mục
-                    name: { $first: "$products.products.productItem.category.name" }, // Lấy tên danh mục
-                    slug: { $first: "$products.products.productItem.category.slug" }, // Lấy slug danh mục
-                    totalQuantity: { $sum: "$products.products.quantity" }, // Tổng số lượng bán
-                    totalRevenue: {
-                        $sum: {
-                            $multiply: [
-                                { $ifNull: ["$products.products.quantity", 0] },
-                                { $ifNull: ["$products.products.variantItem.price", 0] },
-                            ],
-                        },
-                    }, // Tổng doanh thu
-                },
-            },
-
-            // Sắp xếp theo tổng số lượng bán giảm dần
-            { $sort: { totalQuantity: -1 } },
-
-            // Lấy top 5 danh mục
-            { $limit: 5 },
-        ]);
-
-        return res.status(StatusCodes.OK).json(result);
-    } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
-    }
-}
-
 export const getDataOrderList = async (req, res) => {
     try {
         // Tìm tất cả đơn hàng và populate thông tin userId và addressId
@@ -339,7 +298,7 @@ export const getDataOrderList = async (req, res) => {
         if (orders.length === 0) {
             return res.status(404).json({ message: "Không có đơn hàng nào" });
         }
-        const newOrders = orders.filter((order) => order.status !== "đã hoàn thành" && order.status !== "đã hủy");
+        const newOrders = orders.filter((order) => order.status !== "đã hoàn thành" && order.status !== "hủy đơn");
         // console.log(newOrders);
         // Trả về danh sách đơn hàng
         return res.status(StatusCodes.OK).json(newOrders);

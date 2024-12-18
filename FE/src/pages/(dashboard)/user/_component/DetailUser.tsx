@@ -66,7 +66,6 @@ const UserDetailPage = () => {
     currentPage * itemsPerPage
   );
 
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -196,7 +195,13 @@ const UserDetailPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentOrders && currentOrders.length > 0 ? (
+                {!orders ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-6 text-gray-600">
+                      Đang tải dữ liệu...
+                    </td>
+                  </tr>
+                ) : currentOrders && currentOrders.length > 0 ? (
                   currentOrders.map((order: any) => (
                     <tr
                       onClick={() =>

@@ -66,7 +66,7 @@ const OrderHistory = () => {
   const closeModal = () => setIsOpen(false);
   const ordersPerPage = 2; // Số đơn hàng hiển thị mỗi trang
   const handleCancelOrder = async () => {
-    const newStatus = "đã hủy";
+    const newStatus = "hủy đơn";
     if (!orderIdToCancel) {
       alert("Không lấy được OrderId");
       return;

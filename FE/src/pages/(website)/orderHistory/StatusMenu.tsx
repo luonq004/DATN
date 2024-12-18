@@ -7,7 +7,7 @@ interface StatusMenuProps {
 const StatusMenu = ({ selectedStatus, onStatusChange }: StatusMenuProps) => {
   // Danh sách các trạng thái
   const statuses = [
-   "chờ xác nhận", "đã xác nhận", "đang giao hàng", "đã hoàn thành", "đã hủy"
+   "chờ xác nhận", "đã xác nhận", "đang giao hàng", "đã hoàn thành", "hủy đơn"
   ];
 
   return (

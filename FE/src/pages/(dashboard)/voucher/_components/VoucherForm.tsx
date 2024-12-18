@@ -34,10 +34,22 @@ const voucherSchema = Joi.object({
         'string.empty': 'Mã Voucher không được để trống'
     }),
     category: Joi.string().valid('product', 'ship').default('product'),
-    discount: Joi.number().min(1).required().messages({
-        'any.required': 'Giảm giá là bắt buộc',
-        'number.base': 'Giảm giá phải là số',
-    }),
+    discount: Joi.number()
+        .required()
+        .when('type', {
+            is: 'percent',
+            then: Joi.number().min(1).max(100).messages({
+                'number.min': 'Giảm giá phải lớn hơn 0 khi kiểu là phần trăm (%)',
+                'number.max': 'Giảm giá phải nhỏ hơn hoặc bằng 100 khi kiểu là phần trăm (%)'
+            }),
+            otherwise: Joi.number().min(1).messages({
+                'number.min': 'Giảm giá phải lớn hơn 0 khi kiểu là cố định'
+            })
+        })
+        .messages({
+            'any.required': 'Giảm giá là bắt buộc',
+            'number.base': 'Giảm giá phải là số',
+        }),
     countOnStock: Joi.number().min(1).required().messages({
         'any.required': 'Số lượng là bắt buộc',
         'number.base': 'Số lượng phải là số',
