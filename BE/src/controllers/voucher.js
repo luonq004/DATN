@@ -58,7 +58,7 @@ export const getOneVoucher = async (req, res) => {
 }
 
 export const createVoucher = async (req, res) => {
-    const { startDate, endDate, status } = req.body;
+    const { startDate, endDate, status, type, discount } = req.body;
 
     try {
         const exitVoucher = await Voucher.findOne({ code: req.body.code });
@@ -80,6 +80,11 @@ export const createVoucher = async (req, res) => {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: "Ngày kết thúc không hợp lệ" })
             }
         }
+        if (type === 'percent') {
+            if (discount < 0 || discount > 100) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Giảm giá theo phần trăm (%) không hợp lệ" })
+            }
+        }
         const voucher = await Voucher.create(req.body)
         return res.status(StatusCodes.CREATED).json(voucher)
     } catch (error) {
@@ -89,7 +94,7 @@ export const createVoucher = async (req, res) => {
 
 export const updateVoucher = async (req, res) => {
     const id = req.body._id;
-    const { startDate, endDate, status } = req.body;
+    const { startDate, endDate, status, type, discount } = req.body;
     const { _id, ...data } = req.body;
     try {
         const voucher = await Voucher.findOneAndUpdate({ _id: id }, data, { new: true });
@@ -104,6 +109,11 @@ export const updateVoucher = async (req, res) => {
             }
             if (new Date(date.getTime() + 7 * 60 * 60 * 1000) > new Date(new Date(endDate).getTime() + 7 * 60 * 60 * 1000)) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: "Ngày kết thúc không hợp lệ" })
+            }
+        }
+        if (type === 'percent') {
+            if (discount < 0 || discount > 100) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Giảm giá theo phần trăm (%) không hợp lệ" })
             }
         }
         return res.status(StatusCodes.OK).json(voucher)
