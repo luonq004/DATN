@@ -358,7 +358,7 @@ export const createProduct = async (req, res) => {
 
     const variantsId = [];
     let priceFinal = Infinity;
-    let priceSaleFinal = -Infinity;
+    let priceSaleFinal = Infinity;
     let count = 0;
     let totalOriginalPrice = 0;
 
@@ -373,7 +373,7 @@ export const createProduct = async (req, res) => {
         priceFinal = variants[i].price;
       }
 
-      if (priceSaleFinal < variants[i].priceSale) {
+      if (priceSaleFinal > variants[i].priceSale) {
         priceSaleFinal = variants[i].priceSale;
       }
 
@@ -443,7 +443,7 @@ export const updateProduct = async (req, res) => {
 
     const variantsId = [];
     let priceFinal = Infinity;
-    let priceSaleFinal = -Infinity;
+    let priceSaleFinal = Infinity;
     let count = 0;
     let totalOriginalPrice = 0;
 
@@ -464,6 +464,8 @@ export const updateProduct = async (req, res) => {
       if (priceSaleFinal > variants[i].priceSale) {
         priceSaleFinal = variants[i].priceSale;
       }
+
+      console.log(priceSaleFinal);
 
       // Nếu không có _id cũ thì xóa mềm variant cũ
 
