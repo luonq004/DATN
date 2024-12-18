@@ -234,7 +234,7 @@ const AdminOrder = () => {
     // Lặp qua các đơn hàng để kiểm tra
     orders.forEach(async (order) => {
       // Chỉ xử lý các đơn hàng có trạng thái "chờ xác nhận" và payment là "Vnpay"
-      if (order.isPaid === false && order.payment === "Vnpay") {
+      if (order.isPaid === false && order.payment === "Vnpay" && order.status !== "đã hủy") {
         await axios.put(
           `${apiUrl}/delete-orderAdmin/${order.id}`
         );

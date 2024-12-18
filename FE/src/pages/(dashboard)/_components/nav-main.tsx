@@ -14,8 +14,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export function NavMain({
   items,
@@ -32,10 +32,13 @@ export function NavMain({
   }[];
 }) {
   // State để theo dõi mục đang được chọn
-  const [activeItem, setActiveItem] = useState<string>("/admin");
 
+  const location = useLocation();
+  const [activeItem, setActiveItem] = useState<string>(location.pathname);
+  useEffect(() => {
+    setActiveItem(location.pathname);
+  }, [location.pathname]);
   const handleMenuItemClick = (url: string) => {
-    console.log("activeItem", url)
     setActiveItem(url); // Cập nhật mục đang được chọn
   };
   return (

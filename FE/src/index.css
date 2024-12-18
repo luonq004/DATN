@@ -543,3 +543,7 @@ input[type="date"] {
   background-color: #1e40af; /* Màu nền khi chọn */
   color: white; /* Màu chữ khi chọn */
 }
+.hover\:bg-sidebar-accent:hover {
+  background-color: black !important;
+  color: white !important;
+}
