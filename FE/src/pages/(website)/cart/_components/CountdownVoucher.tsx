@@ -90,19 +90,70 @@ const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
             </div>
             <div className='flex flex-col max-h-[400px] overflow-y-auto gap-4'>
                 {data?.map((item: any) => {
-                    //kiểm tra voucher được sử dụng trong giỏ hàng
+                    // kiểm tra xem voucher có trong giỏ hàng không
                     const matchedVoucher = cart?.voucher.find((voucher: any) => voucher._id === item.voucher._id);
-                    //kiểm tra voucher được sử dụng trong danh sách voucher đã sử dụng
+                    // kiểm tra xem voucher đã được sử dụng chưa
                     const matchedVoucherUsage = voucherUsage?.find((voucher: any) => voucher.voucherId === item.voucher._id);
-                    // console.log(matchedVoucherUsage)
-                    if (item.voucher.status === 'active' && item.countdown > 0 && item.voucher.countOnStock > 0) {
+                    // kiểm tra xem voucher có trong giỏ hàng không
+                    const matchedVoucherCart = cart?.voucher.find((voucher: any) => voucher._id === item.voucher._id);
+
+                    const isVoucherActive =
+                        item.voucher.status === 'active' &&
+                        item.countdown > 0 &&
+                        item.voucher.countOnStock > 0 &&
+                        !matchedVoucherUsage;
+
+                    const isVoucherDisabled =
+                        matchedVoucherUsage ||
+                        item.voucher.status !== 'active' ||
+                        item.countdown <= 0 ||
+                        item.voucher.countOnStock <= 0;
+
+
+                    if (!isVoucherActive && matchedVoucherCart) {
+                        // Voucher không khả dụng nhưng có trong giỏ hàng
                         return (
-                            <div key={item.voucher._id} className={`voucher-item p-3 w-full grid grid-cols-[15%_auto_5.5%] gap-x-3 transition-all duration-200 border rounded-md ${matchedVoucher ? 'border-black' : 'border-gray-300'} ${matchedVoucherUsage ? 'pointer-events-none relative' : ''}`}>
+                            <div
+                                key={item.voucher._id}
+                                className={`voucher-item p-3 w-full z-0 relative grid grid-cols-[15%_auto_5.5%] gap-x-3 transition-all duration-200 border rounded-md bg-gray-100 bg-opacity-60`}
+                            >
                                 <div className='bg-slate-300 flex justify-center items-center p-1'>
-                                    {item.voucher.category === 'product'
-                                        ? <TicketPercent size={42} />
-                                        : <Truck size={42} />
-                                    }
+                                    {item.voucher.category === 'product' ? <TicketPercent size={42} /> : <Truck size={42} />}
+                                </div>
+                                <div className='flex flex-col justify-between gap-5 text-[13px] sm:text-[16px]'>
+                                    <div className='flex gap-3 items-center'>
+                                        <div className='border-2 p-1 rounded-md border-light-400 text-light-400 text-xs'>
+                                            <p>{item.voucher.code}</p>
+                                        </div>
+                                        <div>
+                                            <p>Giảm {item.voucher.discount.toLocaleString()}{item.voucher.type === 'fixed' ? 'đ' : '%'}</p>
+                                        </div>
+                                    </div>
+                                    <div className='text-gray-400 flex gap-2'>
+                                        <div>HSD:</div>
+                                        <div className='text-red-500'>Voucher không khả dụng</div>
+                                    </div>
+                                </div>
+                                <div
+                                    onClick={() => onRemoveVoucher(item.voucher.code)}
+                                    className='absolute w-full h-full cursor-pointer z-20 bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold'
+                                >
+                                    <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>
+                                        Voucher không khả dụng, chạm vào để gỡ
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    } else if (isVoucherActive) {
+                        // Voucher khả dụng
+                        return (
+                            <div
+                                key={item.voucher._id}
+                                className={`voucher-item p-3 w-full grid grid-cols-[15%_auto_5.5%] gap-x-3 transition-all duration-200 border rounded-md ${matchedVoucher ? 'border-black' : 'border-gray-300'
+                                    }`}
+                            >
+                                <div className='bg-slate-300 flex justify-center items-center p-1'>
+                                    {item.voucher.category === 'product' ? <TicketPercent size={42} /> : <Truck size={42} />}
                                 </div>
                                 <div className='flex flex-col justify-between gap-5 text-[13px] sm:text-[16px]'>
                                     <div className='flex gap-3 items-center'>
@@ -119,138 +170,22 @@ const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
                                     </div>
                                 </div>
                                 <div className={`${matchedVoucherUsage ? 'hidden' : 'flex'} items-center select-none`}>
-                                    {matchedVoucher
-                                        ? (
-                                            <div
-                                                onMouseEnter={() => setIsHover(matchedVoucher._id)}
-                                                onMouseLeave={() => setIsHover(false)}
-                                                className='cursor-pointer'
-                                                onClick={() => onRemoveVoucher(matchedVoucher.code)}
-                                            >
-                                                {isHover === matchedVoucher._id ? <CircleX color='red' /> : <CircleCheck />}
-                                            </div>
-                                        )
-                                        : <CirclePlus onClick={() => onApplyVoucher(item.voucher.code)} className='text-gray-300 hover:text-black cursor-pointer' />
-                                    }
-                                </div>
-
-                                {/* //kiểm tra voucher đã sử dụng */}
-                                <div className={`${matchedVoucherUsage ? 'absolute' : 'hidden'} w-full h-full bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold`}>
-                                    <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Voucher đã được sử dụng</span>
-                                </div>
-                            </div>
-                        );
-                    }
-                    else if (item.voucher.status !== 'active') {
-                        return (
-                            <div key={item.voucher._id} className={`voucher-item p-3 w-full z-0 relative grid grid-cols-[15%_auto_5.5%] gap-x-3 transition-all duration-200 border rounded-md ${matchedVoucher ? 'border-black' : 'border-gray-300'}`}>
-                                <div className='bg-slate-300 flex justify-center items-center p-1'>
-                                    {item.voucher.category === 'product'
-                                        ? <TicketPercent size={42} />
-                                        : <Truck size={42} />
-                                    }
-                                </div>
-                                <div className='flex flex-col justify-between gap-5 text-[13px] sm:text-[16px]'>
-                                    <div className='flex gap-3 items-center'>
-                                        <div className='border-2 p-1 rounded-md border-light-400 text-light-400 text-xs'>
-                                            <p>{item.voucher.code}</p>
+                                    {matchedVoucher ? (
+                                        <div
+                                            onMouseEnter={() => setIsHover(matchedVoucher._id)}
+                                            onMouseLeave={() => setIsHover(false)}
+                                            className='cursor-pointer'
+                                            onClick={() => onRemoveVoucher(matchedVoucher.code)}
+                                        >
+                                            {isHover === matchedVoucher._id ? <CircleX color='red' /> : <CircleCheck />}
                                         </div>
-                                        <div>
-                                            <p>Giảm {item.voucher.discount.toLocaleString()}{item.voucher.type === 'fixed' ? 'đ' : '%'}</p>
-                                        </div>
-                                    </div>
-                                    <div className='text-gray-400 flex gap-2'>
-                                        <div>HSD:</div>
-                                        {/* <div className='' id={`countdown-${item.voucher._id}`}></div> */}
-                                    </div>
+                                    ) : (
+                                        <CirclePlus
+                                            onClick={() => onApplyVoucher(item.voucher.code)}
+                                            className='text-gray-300 hover:text-black cursor-pointer'
+                                        />
+                                    )}
                                 </div>
-
-                                {cart?.voucher?.find((voucher: any) => voucher._id === item.voucher._id)
-                                    ?
-                                    <div
-                                        onClick={() => onRemoveVoucher(item.voucher.code)}
-                                        className='absolute w-full h-full cursor-pointer z-20 bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold'>
-                                        <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Voucher ngưng hoạt động, chạm vào để xóa</span>
-                                    </div>
-                                    :
-                                    <div className='absolute w-full h-full bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold'>
-                                        <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Voucher ngừng hoạt động</span>
-                                    </div>
-                                }
-                            </div>
-                        );
-                    } else if (item.countdown < 0) {
-                        return (
-                            <div key={item.voucher._id} className={`voucher-item p-3 w-full z-0 relative grid grid-cols-[15%_auto_5.5%] gap-x-3 transition-all duration-200 border rounded-md ${matchedVoucher ? 'border-black' : 'border-gray-300'}`}>
-                                <div className='bg-slate-300 flex justify-center items-center p-1'>
-                                    {item.voucher.category === 'product'
-                                        ? <TicketPercent size={42} />
-                                        : <Truck size={42} />
-                                    }
-                                </div>
-                                <div className='flex flex-col justify-between gap-5 text-[13px] sm:text-[16px]'>
-                                    <div className='flex gap-3 items-center'>
-                                        <div className='border-2 p-1 rounded-md border-light-400 text-light-400 text-xs'>
-                                            <p>{item.voucher.code}</p>
-                                        </div>
-                                        <div>
-                                            <p>Giảm {item.voucher.discount.toLocaleString()}{item.voucher.type === 'fixed' ? 'đ' : '%'}</p>
-                                        </div>
-                                    </div>
-                                    <div className='text-gray-400 flex gap-2'>
-                                        <div>HSD:</div>
-                                        <div className='text-red-500'>Hết hạn sử dụng</div>
-                                    </div>
-                                </div>
-                                {cart?.voucher?.find((voucher: any) => voucher._id === item.voucher._id)
-                                    ?
-                                    <div
-                                        onClick={() => onRemoveVoucher(item.voucher.code)}
-                                        className='absolute w-full h-full cursor-pointer z-20 bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold'>
-                                        <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Voucher hết hạn, chạm vào để xóa</span>
-                                    </div>
-                                    :
-                                    <div className='absolute w-full h-full bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold'>
-                                        <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Voucher hết hạn</span>
-                                    </div>
-                                }
-                            </div>
-                        );
-                    } else if (item.voucher.countOnStock <= 0) {
-                        return (
-                            <div key={item.voucher._id} className={`voucher-item p-3 w-full z-0 relative grid grid-cols-[15%_auto_5.5%] gap-x-3 transition-all duration-200 border rounded-md ${matchedVoucher ? 'border-black' : 'border-gray-300'}`}>
-                                <div className='bg-slate-300 flex justify-center items-center p-1'>
-                                    {item.voucher.category === 'product'
-                                        ? <TicketPercent size={42} />
-                                        : <Truck size={42} />
-                                    }
-                                </div>
-                                <div className='flex flex-col justify-between gap-5 text-[13px] sm:text-[16px]'>
-                                    <div className='flex gap-3 items-center'>
-                                        <div className='border-2 p-1 rounded-md border-light-400 text-light-400 text-xs'>
-                                            <p>{item.voucher.code}</p>
-                                        </div>
-                                        <div>
-                                            <p>Giảm {item.voucher.discount.toLocaleString()}{item.voucher.type === 'fixed' ? 'đ' : '%'}</p>
-                                        </div>
-                                    </div>
-                                    <div className='text-gray-400 flex gap-2'>
-                                        <div>HSD:</div>
-                                        {/* <div className='text-red-500'>Hết hạn sử dụng</div> */}
-                                    </div>
-                                </div>
-                                {cart?.voucher?.find((voucher: any) => voucher._id === item.voucher._id)
-                                    ?
-                                    <div
-                                        onClick={() => onRemoveVoucher(item.voucher.code)}
-                                        className='absolute w-full h-full cursor-pointer z-20 bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold'>
-                                        <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Số lượng voucher đã hết, chạm vào để xóa</span>
-                                    </div>
-                                    :
-                                    <div className='absolute w-full h-full bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold'>
-                                        <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Số lượng voucher đã hết</span>
-                                    </div>
-                                }
                             </div>
                         );
                     }

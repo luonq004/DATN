@@ -106,7 +106,7 @@ const VoucherStorage = () => {
                 {data?.map((item: any) => {
                     // console.log(matchedVoucher)
                     const matchedVoucherUsage = voucherUsage?.find((voucher: any) => voucher.voucherId === item.voucher._id);
-                    if (item.voucher.status === 'active' && item.countdown > 0) {
+                    if (item.voucher.status === 'active' && item.countdown > 0 && !matchedVoucherUsage) {
                         return (
                             <div key={item.voucher._id} className={`voucher-item p-3 w-full grid grid-cols-[68px_auto] gap-x-3 transition-all duration-200 border rounded-md border-gray-300 ${matchedVoucherUsage ? 'pointer-events-none relative' : ''}`}>
                                 <div className='bg-slate-300 flex justify-center items-center p-1'>
@@ -132,9 +132,9 @@ const VoucherStorage = () => {
                                     </div>
                                 </div>
                                 {/* //kiểm tra voucher đã sử dụng */}
-                                <div className={`${matchedVoucherUsage ? 'absolute' : 'hidden'} w-full h-full bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold`}>
+                                {/* <div className={`${matchedVoucherUsage ? 'absolute' : 'hidden'} w-full h-full bg-white bg-opacity-70 flex flex-col justify-center items-center text-red-500 font-semibold`}>
                                     <span className='bg-red-500 z-20 text-white text-[14px] p-2 rounded-md'>Voucher đã được sử dụng</span>
-                                </div>
+                                </div> */}
                             </div>
                         );
                     } else return null;
