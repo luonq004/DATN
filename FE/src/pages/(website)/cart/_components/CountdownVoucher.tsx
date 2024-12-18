@@ -103,11 +103,11 @@ const CountdownVoucher = ({ onApplyVoucher, onRemoveVoucher, cart }: any) => {
                         item.voucher.countOnStock > 0 &&
                         !matchedVoucherUsage;
 
-                    const isVoucherDisabled =
-                        matchedVoucherUsage ||
-                        item.voucher.status !== 'active' ||
-                        item.countdown <= 0 ||
-                        item.voucher.countOnStock <= 0;
+                    // const isVoucherDisabled =
+                    //     matchedVoucherUsage ||
+                    //     item.voucher.status !== 'active' ||
+                    //     item.countdown <= 0 ||
+                    //     item.voucher.countOnStock <= 0;
 
 
                     if (!isVoucherActive && matchedVoucherCart) {

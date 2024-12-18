@@ -235,6 +235,7 @@ export const getDataUserList = async (req, res) => {
             {
                 $project: {
                     userId: "$_id",
+                    clerkId: "$userDetails.clerkId",
                     totalSpent: 1,
                     userName: { $concat: ["$userDetails.firstName", " ", "$userDetails.lastName"] }, // Lấy tên người dùng
                     userEmail: "$userDetails.email", // Lấy email người dùng
@@ -271,7 +272,7 @@ export const getDataTopProducts = async (req, res) => {
         //     // Sắp xếp theo tổng số lượng giảm dần
         //     { $sort: { quantity: -1 } },
         // ]);
-        const result = await Product.find().populate("category").sort({ count: - 1 });
+        const result = await Product.find({ deleted: false }).populate("category").sort({ count: - 1 });
         const newResult = result.map((item) => {
             return {
                 _id: item._id,
