@@ -19,6 +19,15 @@ export async function getAttributeByID(id: string) {
   }
 }
 
+export async function getAttributeByIDClient(id: string) {
+  try {
+    const response = await axios.get(`${apiUrl}/attributes/${id}/client`);
+    return response?.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function updateAttributeByID(id: string, data: { name: string }) {
   try {
     const response = await axios.put(`${apiUrl}/attributes/${id}`, data);

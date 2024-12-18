@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useGetAllAttribute } from "../actions/useGetAllAttribute";
+import { useGetCategory } from "../actions/useGetCategory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchParams } from "react-router-dom";
 import { Slider } from "@/components/ui/slider";
 import { formatCurrency } from "@/lib/utils";
+import { useGetAttributeByIDClient } from "@/pages/(dashboard)/attribute/actions/useGetAttributeByIDClient";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ICategory {
   _id: string;
@@ -12,37 +14,65 @@ interface ICategory {
   __v: number;
 }
 
+interface IValues {
+  value: string;
+  _id: string;
+  type: string;
+  slugName: string;
+  name: string;
+}
+
 const CategoriesMenu = () => {
   // State để theo dõi phần tử toggle nào đang được chọn
   // const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const idColor = "675e387b5cccfd8536c5f0e3";
 
   const [searchParams, setSearchParams] = useSearchParams();
   const filterTypeCategory = searchParams.get("category");
 
   const [valuePrice, setValuePrice] = useState<number[]>([0, 10000000]);
 
-  const { isLoading, data } = useGetAllAttribute();
+  const { isLoading, data } = useGetCategory();
+  const { isLoadingAtribute, atribute, error } =
+    useGetAttributeByIDClient(idColor);
 
   // const handleToggle = (index: number) => {
   //   // Nếu index đã được chọn thì đặt thành null để bỏ chọn
   //   setActiveIndex(activeIndex === index ? null : index);
   // };
 
+  console.log("atribute", atribute);
+
   return (
     <div className="lg:w-[25%] mt-[35px] mb-10 lg:mt-0 order-0 uppercase font-raleway pr-[15px]">
       <h4 className="font-black text-[#343434] text-lg leading-6 mb-[10px]">
         danh mục
       </h4>
-      {isLoading && (
-        <div className="">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div className="mb-6" key={index}>
-              <Skeleton className="h-6 custom-pulse mb-4" />
-            </div>
-          ))}
-        </div>
-      )}
+      {isLoading ||
+        (isLoadingAtribute && (
+          <div className="">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div className="mb-6" key={index}>
+                <Skeleton className="h-6 custom-pulse mb-4" />
+              </div>
+            ))}
+          </div>
+        ))}
       <ul className="categories-menu">
+        <li className="relative group !list-none">
+          <span
+            className={`text-[11px] text-[#888] hover:text-[#b8cd06] leading-4 border-b border-b-[#efefef] py-[15px] font-bold w-full block transition-all duration-300 cursor-pointer 
+            `}
+            onClick={() => {
+              searchParams.set("category", "all");
+
+              if (searchParams.get("page")) searchParams.set("page", "1");
+              setSearchParams(searchParams);
+            }}
+          >
+            Tất cả
+          </span>
+        </li>
         {data?.map((category: ICategory) => (
           <li className="relative group !list-none" key={category._id}>
             <span
@@ -58,46 +88,6 @@ const CategoriesMenu = () => {
             >
               {category.name}
             </span>
-            {/* <div
-              className={`size-8 absolute top-[15%] lg:top-2 transform  right-0 bg-change cursor-pointer toggle ${
-                activeIndex === index ? "active" : ""
-              }`}
-              onClick={() => handleToggle(index)}
-            ></div> */}
-            {/* <ul className={` ${activeIndex === i ? "block" : "hidden"}`}>
-              <li>
-                <a
-                  className="text-[#ffffff80] border-[#3f3f3f] bg-[#343434] text-[11px] leading-4 py-[15px] pr-[46px] pl-5 font-bold w-full block transition-all duration-300 hover:bg-[#b8cd06] hover:text-white"
-                  href="#"
-                >
-                  ASDSA
-                </a>
-              </li>
-              <li>
-                <a
-                  className="text-[#ffffff80] border-[#3f3f3f] bg-[#343434] text-[11px] leading-4 py-[15px] pr-[46px] pl-5 font-bold w-full block transition-all duration-300 hover:bg-[#b8cd06] hover:text-white"
-                  href="#"
-                >
-                  ASDSA
-                </a>
-              </li>
-              <li>
-                <a
-                  className="text-[#ffffff80] border-[#3f3f3f] bg-[#343434] text-[11px] leading-4 py-[15px] pr-[46px] pl-5 font-bold w-full block transition-all duration-300 hover:bg-[#b8cd06] hover:text-white"
-                  href="#"
-                >
-                  ASDSA
-                </a>
-              </li>
-              <li>
-                <a
-                  className="text-[#ffffff80] border-[#3f3f3f] bg-[#343434] text-[11px] leading-4 py-[15px] pr-[46px] pl-5 font-bold w-full block transition-all duration-300 hover:bg-[#b8cd06] hover:text-white"
-                  href="#"
-                >
-                  ASDSA
-                </a>
-              </li>
-            </ul> */}
           </li>
         ))}
       </ul>
@@ -122,6 +112,31 @@ const CategoriesMenu = () => {
         &nbsp;&nbsp;
         <span>{formatCurrency(valuePrice[1])} VNĐ</span>
       </p>
+
+      <div className="h-[25px] md:h-[50px]"></div>
+      <h4 className="font-black text-[#343434] text-lg leading-6 mb-[10px]">
+        {atribute?.name}
+      </h4>
+
+      <ToggleGroup
+        className="justify-start gap-2 w-full  flex-wrap px-[15px]"
+        type="single"
+        // disabled={deleted}
+      >
+        {atribute?.values.map((item: IValues, idx: number) => {
+          return (
+            <ToggleGroupItem
+              // onClick={() => onAttributeSelect(key, itemValue)}
+              key={item._id}
+              className="rounded-none border data-[state=on]:border-4 size-6 p-0 cursor-pointer transition-all"
+              value={item.value}
+              style={{
+                backgroundColor: item.value,
+              }}
+            ></ToggleGroupItem>
+          );
+        })}
+      </ToggleGroup>
     </div>
   );
 };

@@ -8,20 +8,11 @@ export const getWishListByUserId = async (req, res) => {
   const id = req.params.id;
 
   try {
-    let wishList = await WishList.findOne({ userId: id })
-      .populate({
-        path: "products.productItem",
-        match: { deleted: false },
-        populate: [
-          { path: "attribute", options: { strictPopulate: false } }, // Bỏ qua kiểm tra schema
-          { path: "category", options: { strictPopulate: false } },
-        ],
-      })
-      .populate({
-        path: "products.variantItem",
-        match: { deleted: false },
-        populate: { path: "values", match: { deleted: false } },
-      });
+    let wishList = await WishList.findOne({ userId: id }).populate({
+      path: "products.productItem",
+      match: { deleted: false },
+      populate: [{ path: "category", options: { strictPopulate: false } }],
+    });
 
     if (!wishList) {
       wishList = await WishList.create({
@@ -56,33 +47,16 @@ export const addToWishList = async (req, res) => {
         .json({ message: "Vui lòng chọn sản phẩm" });
     }
 
-    if (!variantId) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Vui lòng chọn biến thể" });
-    }
-
-    let wishList = await WishList.findOne({ userId: userId })
-      .populate("products.productItem")
-      .populate("products.variantItem");
+    let wishList = await WishList.findOne({ userId: userId }).populate(
+      "products.productItem"
+    );
 
     const product = await Product.findOne({ _id: productId });
-    const variantValue = await Variant.findOne({ _id: variantId });
 
-    if (!product || !variantValue) {
+    if (!product) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Không tìm thấy Product hoặc Biến thể của Product" });
-    }
-
-    //Check variantId có trong SP đó hay ko
-    const exitVariantProduct = product.variants.findIndex(
-      (item) => item.toString() === variantId
-    );
-    if (exitVariantProduct === -1) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Không tìm thấy Biến thể" });
+        .json({ message: "Không tìm thấy sản phẩm" });
     }
 
     if (!wishList) {
@@ -90,7 +64,6 @@ export const addToWishList = async (req, res) => {
         userId: userId,
         products: [],
       });
-      console.log("CREATE WISHLIST");
     }
 
     //ktra sp trùng lặp trong giỏ hàng
@@ -114,17 +87,9 @@ export const addToWishList = async (req, res) => {
         message: "Sản phẩm đã được xóa khỏi danh sách yêu thích",
       });
     } else {
-      if (quantity <= variantValue.countOnStock) {
-        wishList.products.push({
-          productItem: productId,
-          variantItem: variantId,
-          quantity: +quantity,
-        });
-      } else {
-        return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Không thể vượt quá tồn kho" });
-      }
+      wishList.products.push({
+        productItem: productId,
+      });
 
       await wishList.save();
     }
@@ -293,9 +258,9 @@ export const updateQuantity = async (req, res) => {
 export const removeItem = async (req, res) => {
   const { userId, productId, variantId } = req.body;
   try {
-    let wishList = await WishList.findOne({ userId: userId })
-      .populate("products.productItem")
-      .populate("products.variantItem");
+    let wishList = await WishList.findOne({ userId: userId }).populate(
+      "products.productItem"
+    );
 
     if (!wishList) {
       return res
@@ -306,8 +271,7 @@ export const removeItem = async (req, res) => {
     //tìm sp và lọc ra khỏi giỏ hàng
     wishList.products = wishList.products.filter(
       (item) =>
-        (item.productItem && item.productItem._id.toString() !== productId) ||
-        (item.variantItem && item.variantItem._id.toString() !== variantId)
+        item.productItem && item.productItem._id.toString() !== productId
     );
 
     await wishList.save();

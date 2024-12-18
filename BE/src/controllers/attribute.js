@@ -82,6 +82,43 @@ export const getAttributeById = async (req, res) => {
   }
 };
 
+export const getAttributeByIdClient = async (req, res) => {
+  try {
+    // Tìm thuộc tính với điều kiện `_id` và `deleted`
+    const attribute = await Attribute.findOne({
+      _id: req.params.id,
+      deleted: false,
+    });
+
+    // Kiểm tra nếu không tìm thấy thuộc tính
+    if (!attribute) {
+      return res.status(404).json({ message: "Không tìm thấy thuộc tính" });
+    }
+
+    // Sử dụng Promise.all để xử lý song song các giá trị
+    const arrayValues = await Promise.all(
+      attribute.values.map(async (value) => {
+        return await AttributeValue.findOne({
+          _id: value,
+          deleted: false,
+        });
+      })
+    );
+
+    // Tạo kết quả cuối cùng
+    const results = {
+      ...attribute._doc,
+      values: arrayValues,
+    };
+
+    // Trả về dữ liệu
+    res.status(200).json(results);
+  } catch (error) {
+    // Xử lý lỗi
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const updateAttribute = async (req, res) => {
   try {
     const { name } = req.body;
@@ -156,5 +193,26 @@ export const displayAttribute = async (req, res) => {
     return res.json({ message: "Hiển thị thuộc tính thành công", data });
   } catch (error) {
     res.status(500).json({ message: "Lỗi không hiển thị được thuộc tính" });
+  }
+};
+
+export const deleteAttributeReal = async (req, res) => {
+  try {
+    const attribute = await Attribute.findOne({ _id: req.params.id });
+    if (!attribute) {
+      return res.status(404).json({ message: "Không tìm thấy thuộc tính" });
+    }
+
+    for (let i = 0; i < attribute.values.length; i++) {
+      await AttributeValue.findByIdAndRemove({
+        _id: attribute.values[i],
+      });
+    }
+
+    await Attribute.findByIdAndRemove({ _id: req.params.id });
+
+    res.status(200).json();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

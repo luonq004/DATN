@@ -365,7 +365,7 @@ export const updateProduct = async (req, res) => {
         priceFinal = variants[i].price;
       }
 
-      if (priceSaleFinal < variants[i].priceSale) {
+      if (priceSaleFinal > variants[i].priceSale) {
         priceSaleFinal = variants[i].priceSale;
       }
 

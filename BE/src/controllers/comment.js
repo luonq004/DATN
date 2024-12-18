@@ -59,7 +59,7 @@ export const createComment = async (req, res) => {
     await order.save();
 
     res.status(201).json({
-      message: "Comment thành công",
+      message: "Đánh giá thành công",
       comment,
     });
   } catch (error) {
@@ -74,7 +74,7 @@ export const deleteComment = async (req, res) => {
     const comment = await Comment.findOne({ _id: id });
 
     if (!comment) {
-      return res.status(400).json({ message: "Không ẩn được comment này" });
+      return res.status(400).json({ message: "Không ẩn được đánh giá này" });
     }
 
     // if (comment.userId.toString() !== userId) {
@@ -85,7 +85,7 @@ export const deleteComment = async (req, res) => {
 
     await comment.save();
 
-    res.json({ message: "Xóa comment thành công", comment });
+    res.json({ message: "Xóa đánh giá thành công", comment });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -98,14 +98,14 @@ export const displayComment = async (req, res) => {
     const comment = await Comment.findOne({ _id: id });
 
     if (!comment) {
-      return res.status(400).json({ message: "Không tìm thấy comment" });
+      return res.status(400).json({ message: "Không tìm thấy đánh giá" });
     }
 
     comment.deleted = false;
 
     await comment.save();
 
-    res.json({ message: "Hiển thị comment thành công", comment });
+    res.json({ message: "Hiển thị đánh giá thành công", comment });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -130,7 +130,7 @@ export const getAllComment = async (req, res) => {
       }); // Populate productId, chỉ lấy các trường `name` và `price`
 
     if (!comments) {
-      return res.status(400).json({ message: "Không tìm thấy comment" });
+      return res.status(400).json({ message: "Không tìm thấy đánh giá" });
     }
 
     res.json(comments);

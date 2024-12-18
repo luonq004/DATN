@@ -25,7 +25,7 @@ export const useDisplayComment = (idP: string) => {
 
       toast({
         variant: "success",
-        title: "Cập nhật đánh giá thành công",
+        title: "Hiển thị đánh giá thành công",
       });
     },
 

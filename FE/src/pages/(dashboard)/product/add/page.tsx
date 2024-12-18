@@ -127,7 +127,12 @@ const ProductAddPage = () => {
     if (!isCreatting || !isUpdating) setIsDoing(false);
   }
 
-  if (isLoading || isLoadingAtributes) return <Container>Loading...</Container>;
+  if (isLoading || isLoadingAtributes)
+    return (
+      <Container>
+        <div className="spinner mx-auto"></div>
+      </Container>
+    );
   // console.log(form.formState.errors);
 
   const types = id ? getUniqueTypes(product) : [];

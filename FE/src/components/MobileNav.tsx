@@ -38,7 +38,7 @@ const MobileNav = () => {
         <SheetContent className="w-[300px] pt-3">
           <SheetHeader>
             <SheetTitle className="border-b pb-4 uppercase font-black text-[#343434] leading-[30px] text-[18px] font-raleway text-left">
-              navigation
+              Menu
             </SheetTitle>
             <SheetDescription className="hidden"></SheetDescription>
             <SheetClose asChild></SheetClose>

@@ -32,7 +32,7 @@ const SideBarUser = () => {
     // }
   }, [getConversations]);
 
-  // if (isConversationsLoading || isCheckingAuth) return <SidebarSkeleton />;
+  if (isConversationsLoading) return <SidebarSkeleton />;
 
   // console.log(conversations);
 

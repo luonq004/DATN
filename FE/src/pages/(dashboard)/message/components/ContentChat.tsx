@@ -140,7 +140,11 @@ const ContentChat = ({ socket }: { socket: Socket }) => {
   // }
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="w-full">
+        <div className="spinner mx-auto mt-20"></div>
+      </div>
+    );
   }
 
   return (
@@ -178,7 +182,7 @@ const ContentChat = ({ socket }: { socket: Socket }) => {
                 </div>
               ))
             ) : (
-              <p className="text-center text-gray-500"></p>
+              <p className="text-center text-gray-500">Cuộc hội thoại trống</p>
             )}
           </ScrollableFeed>
         </div>

@@ -6,8 +6,8 @@ import React from "react";
 
 const ProductShopPage = () => {
   React.useEffect(() => {
-      document.title = "Sản Phẩm"; // Đặt tiêu đề cho trang
-    }, []);
+    document.title = "Sản Phẩm"; // Đặt tiêu đề cho trang
+  }, []);
   return (
     <>
       <div className="container">
@@ -19,7 +19,7 @@ const ProductShopPage = () => {
             Trang chủ
           </Link>
           <Link className="bread" to="/shopping">
-            Shopping
+            Sản phẩm
           </Link>
         </div>
         {/* BREADCRUM */}

@@ -21,6 +21,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import { useGetWishList } from "@/pages/(website)/wishlist/action/useGetWishList";
 
 const menuItems = [
   { label: "Trang chủ", to: "/" },
@@ -68,6 +69,7 @@ const Header = () => {
   }
 
   const { cart, isLoading } = useCart(_id);
+  const { wishList, isError } = useGetWishList(_id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -350,12 +352,15 @@ const Header = () => {
                   )}
                 </div>
 
-                <div className="border-l border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase hidden lg:inline">
+                <div className="border-l border-[#eee] py-[10px] lg:px-[10px] lg:py-[20px] xl:px-[25px] xl:py-5 text-[10px] leading-5 text-[#555] uppercase hidden lg:inline relative">
                   <Link
                     to="/wishlist"
                     className="cursor-pointer hover:text-[#b8cd06] transition-all"
                   >
                     <SlHeart className="text-xl" />
+                    <span className="absolute top-3 right-4 flex items-center justify-center w-[19px] h-[19px] rounded-full text-[11px] text-white bg-red-500">
+                      {wishList?.products?.length || 0}
+                    </span>
                   </Link>
                 </div>
 
@@ -580,8 +585,14 @@ const Header = () => {
                     className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all"
                     onClick={() => setIsOpen(!isOpen)}
                   />
-                  <Link to="/wishlist">
+                  <Link to="/wishlist" className="relative">
                     <SlHeart className="text-3xl ml-2 hover:cursor-pointer hover:text-[#b8cd06] transition-all" />
+                    <span
+                      className="absolute -top-3 left-7 flex items-center justify-center w-[19px] h-[19px] rounded-full text-[11px] text-white bg-red-500"
+                      key="dfg;fdvbncvbdgj"
+                    >
+                      {wishList?.products?.length || 0}
+                    </span>
                   </Link>
 
                   {/* Thông báo */}

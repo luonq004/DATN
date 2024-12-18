@@ -259,18 +259,12 @@ const InfoGeneralProduct: React.FC<{
           form.formState.errors.variants?.root?.message}
       </span>
 
-      <div className="mt-9">
+      <div className="mt-9 w-full">
         <Label className="text-lg font-medium-">Mô tả chi tiết</Label>
 
         <ReactQuill
           className="bg-white mt-4"
           placeholder="Viết mô tả chi tiết sản phẩm"
-          style={{
-            minHeight: "200px",
-            height: "200px",
-            marginBottom: "50px",
-            background: "white",
-          }}
           theme="snow"
           value={value}
           onChange={handleChange} // Sử dụng handleChange
