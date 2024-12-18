@@ -5,7 +5,7 @@ import VoucherUsage from "../models/voucherUsage";
 export const getAllVoucherUsageByUserId = async (req, res) => {
     try {
         const id = req.params.id;
-        const voucherUsage = await VoucherUsage.find();
+        const voucherUsage = await VoucherUsage.find().sort({ createdAt: -1 });;
         const result = voucherUsage.filter((data) => data.userId.toString() === id);
         return res.status(StatusCodes.OK).json(result);
     } catch (error) {
@@ -15,7 +15,7 @@ export const getAllVoucherUsageByUserId = async (req, res) => {
 
 export const getAllVoucher = async (req, res) => {
     try {
-        let voucher = await Voucher.find();
+        let voucher = await Voucher.find().sort({ createdAt: -1 });;
         if (voucher.length < 0) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" })
         }
@@ -45,7 +45,7 @@ export const getAllVoucher = async (req, res) => {
 
 export const getOneVoucher = async (req, res) => {
     try {
-        const voucher = await Voucher.findOne({ _id: req.params.id });
+        const voucher = await Voucher.findOne({ _id: req.params.id }).sort({ createdAt: -1 });;
         if (!voucher) {
             // return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" })
             return

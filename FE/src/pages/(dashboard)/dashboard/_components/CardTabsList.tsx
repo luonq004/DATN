@@ -109,7 +109,7 @@ export function CardTabsList() {
                     <Card className="hover:-translate-y-1 hover:shadow-md">
                         <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                             <CardTitle className='text-sm font-medium'>
-                                Khách hàng
+                                Người dùng
                             </CardTitle>
                             <Users />
                         </CardHeader>

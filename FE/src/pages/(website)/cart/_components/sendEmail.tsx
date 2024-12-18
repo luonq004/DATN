@@ -1,4 +1,5 @@
 import axios from "axios";
+import { formatCurrencyVND } from "../../orderHistory/OrderHistory";
 
 const sendOrderConfirmationEmail = async (to: string, orderCode: string) => {
   try {
@@ -68,8 +69,11 @@ const sendOrderConfirmationEmail = async (to: string, orderCode: string) => {
             .join("")}
         </tbody>
       </table>
-      <p>Phí giao hàng: <strong>30.000 VNĐ</strong></p>
-      <p>Tổng cộng: <strong>${order.totalPrice.toLocaleString()} VNĐ</strong></p>
+      <div className="float-right" style="float: inline-end; margin-right: 3%;">
+      <p>Giảm giá sản phẩm: ${order.discount > 0 ? `- ${formatCurrencyVND(order.discount)}` : formatCurrencyVND(0)}</p>
+      <p>Phí giao hàng: 30.000 VNĐ</p>
+      <p>Tổng cộng: <strong style="color: red">${order.totalPrice.toLocaleString()} VNĐ</strong></p>
+      </div>
     `;
 
     // Gửi email

@@ -27,21 +27,28 @@ import { SheetClose } from '@/components/ui/sheet';
 
 
 const voucherSchema = Joi.object({
-    code: Joi.string().min(2).max(255).required(),
-    category: Joi.string().valid('product', 'ship').required(),
-    discount: Joi.number().min(1).required(),
-    countOnStock: Joi.number().min(1).required(),
+    code: Joi.string().min(1).max(255).required().messages({
+        'any.required': 'Mã Voucher là bắt buộc',
+        'string.min': 'Mã Voucher phải có ít nhất 1 ký tự',
+        'string.max': 'Mã Voucher tối đa 255 ký tự',
+        'string.empty': 'Mã Voucher không được để trống'
+    }),
+    category: Joi.string().valid('product', 'ship').default('product'),
+    discount: Joi.number().min(1).required().messages({
+        'any.required': 'Giảm giá là bắt buộc',
+        'number.base': 'Giảm giá phải là số',
+    }),
+    countOnStock: Joi.number().min(1).required().messages({
+        'any.required': 'Số lượng là bắt buộc',
+        'number.base': 'Số lượng phải là số',
+    }),
     dob: Joi.object({
         from: Joi.date()
-            .min(subMonths(new Date(), 1))
-            .max(addMonths(new Date(), 1))
             .required().messages({
                 'any.required': 'Ngày bắt đầu là bắt buộc',
                 'date.base': 'Ngày bắt đầu phải là ngày hợp lệ',
             }),
         to: Joi.date()
-            .min(subMonths(new Date(), 1))
-            .max(addMonths(new Date(), 1))
             .required().messages({
                 'any.required': 'Ngày kết thúc là bắt buộc',
                 'date.base': 'Ngày kết thúc phải là ngày hợp lệ',
@@ -49,7 +56,11 @@ const voucherSchema = Joi.object({
     }).required().messages({
         'any.required': 'Ngày hết hạn là bắt buộc',
     }),
-    type: Joi.string().valid("percent", "fixed").required(),
+    type: Joi.string().valid("percent", "fixed").required().empty('').messages({
+        'any.required': 'Kiểu là bắt buộc',
+        'string.valid': 'Kiểu không hợp lệ',
+        'string.empty': 'Kiểu không được để trống'
+    }),
 })
 
 const VoucherForm = ({ id }: any) => {
@@ -66,7 +77,7 @@ const VoucherForm = ({ id }: any) => {
         if (data) {
             reset({
                 code: data.code,
-                category: data.category,
+                category: 'product',
                 discount: data.discount,
                 countOnStock: data.countOnStock,
                 type: data.type
@@ -111,7 +122,7 @@ const VoucherForm = ({ id }: any) => {
         deleteVoucher.mutate(item, {
             onSuccess: () => {
                 toast({
-                    title: 'Success',
+                    title: 'Thành công',
                     description: 'Xóa thành công'
                 })
             }
@@ -137,7 +148,7 @@ const VoucherForm = ({ id }: any) => {
         updateVoucher.mutate(data2, {
             onSuccess: () => {
                 toast({
-                    title: 'Sucsess',
+                    title: 'Thành công',
                     description: 'Cập nhật thành công'
                 })
             }
@@ -162,7 +173,7 @@ const VoucherForm = ({ id }: any) => {
                     {errors?.code?.message && <span className='text-red-500'>{errors?.code?.message.toString()}</span>}
                 </div>
 
-                <div className='flex flex-col gap-2 *:w-full'>
+                {/* <div className='flex flex-col gap-2 *:w-full'>
                     {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Loại</Label> : <Label htmlFor="category" >Loại</Label>}
                     <Controller
                         control={control}
@@ -183,7 +194,7 @@ const VoucherForm = ({ id }: any) => {
                         )}
                     />
                     {errors?.category?.message && <span className='text-red-500'>{errors?.category?.message.toString()}</span>}
-                </div>
+                </div> */}
 
                 <div className='flex flex-col gap-2'>
                     {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Giảm giá</Label> : <Label htmlFor="discount" >Giảm giá</Label>}
@@ -216,7 +227,7 @@ const VoucherForm = ({ id }: any) => {
                         render={({ field }) => (
                             <Select disabled={openEdit === id ? false : true} onValueChange={field.onChange} value={field.value}>
                                 <SelectTrigger className="w-[180px] m-0">
-                                    <SelectValue placeholder="Select a type" />
+                                    <SelectValue placeholder="Chọn kiểu" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>

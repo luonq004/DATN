@@ -45,10 +45,10 @@ export const columns: ColumnDef<Payment>[] = [
         accessorKey: "code",
         header: "Mã Voucher",
     },
-    {
-        accessorKey: "category",
-        header: "Loại",
-    },
+    // {
+    //     accessorKey: "category",
+    //     header: "Loại",
+    // },
     {
         accessorKey: "discount",
         header: "Giảm giá",
