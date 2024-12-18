@@ -44,77 +44,61 @@ export function CardTabsList() {
         </div>
     );
     return (
-        <Tabs
-            orientation='vertical'
-            defaultValue='overview'
-            className='space-y-4'
-        >
-            <TabsContent value='overview' className='space-y-4'>
-                <div className='grid gap-4 sm:grid-cols-2 1408px:grid-cols-6 *:transition-all *:duration-300'>
-                    <Card className="hover:-translate-y-1 hover:shadow-md">
-                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                            <CardTitle className='text-sm font-medium'>
-                                Doanh thu
-                            </CardTitle>
+        <Tabs orientation="vertical" defaultValue="overview" className="space-y-4">
+            <TabsContent value="overview" className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2 1408px:grid-cols-6 *:transition-all *:duration-300">
+                    <Card className="hover:-translate-y-1 hover:shadow-md bg-gradient-to-r from-[#FFEDD5] to-[#FDBA74] text-black">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Doanh thu</CardTitle>
                             <DollarSign />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>{formatCurrency(data?.total) || NaN} VNĐ</div>
+                            <div className="text-2xl font-bold">{formatCurrency(data?.total) || NaN} VNĐ</div>
                         </CardContent>
                     </Card>
-                    <Card className="hover:-translate-y-1 hover:shadow-md">
-                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                            <CardTitle className='text-sm font-medium'>
-                                Lợi nhuận
-                            </CardTitle>
+                    <Card className="hover:-translate-y-1 hover:shadow-md bg-gradient-to-r from-[#FDE68A] to-[#F59E0B] text-black">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Lợi nhuận</CardTitle>
                             <Activity />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>{formatCurrency(data?.totalProfit) || NaN} VNĐ</div>
+                            <div className="text-2xl font-bold">{formatCurrency(data?.totalProfit) || NaN} VNĐ</div>
                         </CardContent>
                     </Card>
-                    <Card className="hover:-translate-y-1 hover:shadow-md">
-                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                            <CardTitle className='text-sm font-medium'>
-                                Giá nhập
-                            </CardTitle>
+                    <Card className="hover:-translate-y-1 hover:shadow-md bg-gradient-to-r from-[#D9F99D] to-[#84CC16] text-black">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Giá nhập</CardTitle>
                             <BadgeDollarSign />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>{formatCurrency(data?.totalImport) || NaN} VNĐ</div>
+                            <div className="text-2xl font-bold">{formatCurrency(data?.totalImport) || NaN} VNĐ</div>
                         </CardContent>
                     </Card>
-                    <Card className="hover:-translate-y-1 hover:shadow-md">
-                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                            <CardTitle className='text-sm font-medium'>
-                                Đơn hàng
-                            </CardTitle>
+                    <Card className="hover:-translate-y-1 hover:shadow-md bg-gradient-to-r from-[#BBF7D0] to-[#22C55E] text-black">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Đơn hàng</CardTitle>
                             <Truck />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>+{data?.order || NaN}</div>
+                            <div className="text-2xl font-bold">+{data?.order || NaN}</div>
                         </CardContent>
                     </Card>
-                    <Card className="hover:-translate-y-1 hover:shadow-md">
-                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                            <CardTitle className='text-sm font-medium'>
-                                Sản phẩm
-                            </CardTitle>
+                    <Card className="hover:-translate-y-1 hover:shadow-md bg-gradient-to-r from-[#CCFBF1] to-[#14B8A6] text-black">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Sản phẩm</CardTitle>
                             <Package />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>+{data.product || NaN}</div>
+                            <div className="text-2xl font-bold">+{data.product || NaN}</div>
                         </CardContent>
                     </Card>
-                    <Card className="hover:-translate-y-1 hover:shadow-md">
-                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                            <CardTitle className='text-sm font-medium'>
-                                Người dùng
-                            </CardTitle>
+                    <Card className="hover:-translate-y-1 hover:shadow-md bg-gradient-to-r from-[#E0F2FE] to-[#3B82F6] text-black">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Người dùng</CardTitle>
                             <Users />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>+{data.user || NaN}</div>
+                            <div className="text-2xl font-bold">+{data.user || NaN}</div>
                         </CardContent>
                     </Card>
                 </div>
