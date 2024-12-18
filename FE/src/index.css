@@ -528,14 +528,18 @@ body {
   background: white;
 }
 
-input[type="date"]{
-  font-family: "Roboto Mono",monospace;
+input[type="date"] {
+  font-family: "Roboto Mono", monospace;
   border: 1px solid #d1d1d1;
   border-radius: 5px;
 }
-::-webkit-calendar-picker-indicator{
+::-webkit-calendar-picker-indicator {
   background-color: #ffffff;
   padding: 5px;
   cursor: pointer;
   border-radius: 3px;
+}
+.sidebar-menu-item.active {
+  background-color: #1e40af; /* Màu nền khi chọn */
+  color: white; /* Màu chữ khi chọn */
 }

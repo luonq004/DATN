@@ -15,6 +15,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export function NavMain({
   items,
@@ -30,6 +31,13 @@ export function NavMain({
     }[];
   }[];
 }) {
+  // State để theo dõi mục đang được chọn
+  const [activeItem, setActiveItem] = useState<string>("/admin");
+
+  const handleMenuItemClick = (url: string) => {
+    console.log("activeItem", url)
+    setActiveItem(url); // Cập nhật mục đang được chọn
+  };
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -43,7 +51,10 @@ export function NavMain({
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton tooltip={item.title}
+                  onClick={() => handleMenuItemClick(item.url)} // Cập nhật khi click vào mục
+                  className={activeItem === item.url ? "bg-black text-white" : ""}
+                  >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -66,7 +77,11 @@ export function NavMain({
             </Collapsible>
           ) : (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton asChild
+              
+              onClick={() => handleMenuItemClick(item.url)} // Cập nhật khi click vào mục
+              className={activeItem === item.url ? "bg-black text-white" : ""} 
+              >
                 <Link to={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
