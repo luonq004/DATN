@@ -108,7 +108,7 @@ const VoucherAddForm = () => {
         createVoucher.mutate(item, {
             onSuccess: () => {
                 toast({
-                    title: "Success",
+                    title: "Thành công",
                     description: "Tạo thành công",
                 })
                 reset()
@@ -214,7 +214,7 @@ const VoucherAddForm = () => {
                         render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
                                 <SelectTrigger className="w-[180px] mt-0">
-                                    <SelectValue placeholder="Select a type" />
+                                    <SelectValue placeholder="Chọn kiểu" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
