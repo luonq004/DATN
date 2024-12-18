@@ -13,7 +13,7 @@ const OurSeries = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/products");
+        const response = await axios.get("http://localhost:8080/api/products/all");
         const sortedProducts = response.data.data
           .sort((a: any, b: any) => b.count - a.count) // Sắp xếp giảm dần dựa vào count
           .slice(0, 6);
@@ -87,8 +87,8 @@ const OurSeries = () => {
                         className="rounded-xl md:w-[600px] md:h-[480px] object-cover transition-transform duration-300 ease-in-out"
                       />
 
-                      <div className="absolute md:h-[480px] inset-0 bg-black bg-opacity-30 rounded-xl flex flex-col justify-center p-8 text-white">
-                        <div className="text-left  text-lg font-questrial mb-2">
+                      <div className="absolute md:h-[480px] inset-0 bg-black bg-opacity-20 rounded-xl flex flex-col justify-center p-8 text-white">
+                        <div className="text-left  text-lg font-questrial mb-5">
                           BẮT ĐẦU TỪ {" "}
                           {product.priceSale > 0 ? (
                             <>
@@ -109,14 +109,14 @@ const OurSeries = () => {
                           )}
                         </div>
 
-                        <h2 className="text-3xl text-left font-extrabold font-raleway mb-4">
+                        <h2 className="text-3xl text-left font-extrabold font-raleway mb-6 line-clamp-2">
                           {product.name.split(" ")[0]}{" "}
                           <span className="text-[#b8cd06]">
                             {product.name.split(" ")[1]}
                           </span>{" "}
                           {product.name.split(" ").slice(2).join(" ")}
                         </h2>
-                        <p className="text-sm text-left mb-6 leading-relaxed line-clamp-3">
+                        <p className="text-sm text-left mb-6 leading-relaxed line-clamp-2">
                           {product.description}
                         </p>
                         <button className="group relative md:w-10 px-10 md:px-16 text-left py-6 md:py-6 text-sm bg-[#fff] text-[#555] rounded-full font-semibold overflow-hidden">
