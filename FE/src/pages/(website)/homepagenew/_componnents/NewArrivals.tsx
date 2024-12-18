@@ -20,7 +20,9 @@ const NewArrivals = () => {
         const response = await axios.get("http://localhost:8080/api/category");
         const categoryNames = [
           "TẤT CẢ",
-          ...response.data.map((cat: any) => cat.name),
+          ...response.data
+          .filter((cat: any) => cat.name !== "Chưa phân loại") 
+          .map((cat: any) => cat.name),
         ];
         setCategories(categoryNames);
       } catch (error) {

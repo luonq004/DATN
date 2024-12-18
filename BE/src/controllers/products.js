@@ -113,6 +113,75 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+export const getAllProductsNoLimit = async (req, res) => {
+  const {
+    _sort = "createAt",
+    _order = "desc",
+    _expand = true,
+    _price,
+    _category,
+    _status = "display",
+    _search,
+  } = req.query;
+
+  const options = {
+    sort: { [_sort]: _order === "desc" ? -1 : 1 },
+  };
+
+  // Chỉ thêm các trường hợp populate hợp lệ
+  const populateOptions = _expand
+    ? [
+        { path: "category", select: "name deleted", match: { deleted: false } },
+        { path: "comments", match: { deleted: false } },
+        { path: "variants", match: { deleted: false } },
+      ]
+    : [];
+
+  const query = {};
+
+  if (_price) {
+    const [minPrice, maxPrice] = _price.split(",");
+    query.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+  } else {
+    query.price = { $gte: 0 };
+  }
+
+  if (_category) {
+    const categories = Array.isArray(_category) ? _category : [_category];
+    query.category = { $in: categories };
+  }
+
+  if (_status === "hidden") {
+    query.deleted = { $ne: false };
+  } else {
+    query.deleted = { $ne: true };
+  }
+
+  if (_search && _search !== "") {
+    query.$or = [
+      { name: { $regex: _search, $options: "i" } },
+      { slug: { $regex: _search, $options: "i" } },
+    ];
+  }
+
+  try {
+    const products = await Product.find(query)
+      .sort({ [_sort]: _order === "desc" ? -1 : 1 })
+      .populate(populateOptions);
+
+    const data = {
+      data: products, // Tất cả sản phẩm
+      totalItems: products.length, // Tổng số sản phẩm
+    };
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Error in getAllProductsNoLimit:", error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+
 export const getProductById = async (req, res) => {
   try {
     const data = await Product.findOne({ _id: req.params.id })

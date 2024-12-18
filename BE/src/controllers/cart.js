@@ -9,10 +9,10 @@ const updateTotal = async (cart) => {
   let total = cart.products.reduce((acc, item) => {
     return item.selected
       ? acc +
-          (item.variantItem.priceSale > 0
-            ? item.variantItem.priceSale
-            : item.variantItem.price) *
-            item.quantity
+      (item.variantItem.priceSale > 0
+        ? item.variantItem.priceSale
+        : item.variantItem.price) *
+      item.quantity
       : acc;
   }, 0);
   cart.subTotal = total;

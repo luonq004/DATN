@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             title: "Lỗi!",
             description: "Phiên làm việc không tồn tại, đăng xuất...",
           });
+          localStorage.removeItem("userRole")
           return signOut(); // Đăng xuất nếu không có token
         }
 
@@ -38,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             title: "Lỗi!",
             description: "Phiên làm việc đã hết hạn, đăng xuất...",
           });
+          localStorage.removeItem("userRole")
           return signOut(); // Đăng xuất nếu token hết hạn
         }
       } catch (error) {
@@ -47,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           title: "Lỗi!",
           description: "Lỗi xảy ra khi kiểm tra phiên, đăng xuất...",
         });
+        localStorage.removeItem("userRole")
         signOut(); // Đăng xuất khi gặp lỗi
       }
     };

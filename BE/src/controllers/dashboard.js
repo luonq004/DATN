@@ -7,7 +7,7 @@ export const getDataCard = async (req, res) => {
     try {
         const order = await Order.find();
         const total = order.reduce((acc, item) => item.status === "đã hoàn thành" ? acc + (item.totalPrice - 30000) : acc, 0);
-        const product = await Product.find();
+        const product = await Product.find({ deleted: false });
         const user = await Users.find();
         //Lợi nhuận
         const result = await Order.aggregate([
@@ -251,28 +251,39 @@ export const getDataUserList = async (req, res) => {
 
 export const getDataTopProducts = async (req, res) => {
     try {
-        const result = await Order.aggregate([
-            // Bóc tách danh sách sản phẩm từ mỗi đơn hàng
-            { $unwind: "$products" },
-            { $unwind: "$products.productItem" }, // Bóc tách 'productItem'
+        // const result = await Order.aggregate([
+        //     // Bóc tách danh sách sản phẩm từ mỗi đơn hàng
+        //     { $unwind: "$products" },
+        //     { $unwind: "$products.productItem" }, // Bóc tách 'productItem'
 
-            // Gom nhóm dữ liệu theo sản phẩm (dựa trên productItem._id)
-            {
-                $group: {
-                    _id: "$products.productItem._id", // Gom nhóm theo productItem._id
-                    productName: { $first: "$products.productItem.name" }, // Lấy tên sản phẩm
-                    slug: { $first: "$products.productItem.slug" }, // Lấy tên sản phẩm
-                    category: { $first: "$products.productItem.category" }, // Lấy danh mục sản phẩm
-                    image: { $first: "$products.productItem.image" }, // Lấy hình ảnh sản phẩm
-                    quantity: { $sum: "$products.quantity" }, // Tổng số lượng bán
-                },
-            },
+        //     // Gom nhóm dữ liệu theo sản phẩm (dựa trên productItem._id)
+        //     {
+        //         $group: {
+        //             _id: "$products.productItem._id", // Gom nhóm theo productItem._id
+        //             productName: { $first: "$products.productItem.name" }, // Lấy tên sản phẩm
+        //             slug: { $first: "$products.productItem.slug" }, // Lấy tên sản phẩm
+        //             category: { $first: "$products.productItem.category" }, // Lấy danh mục sản phẩm
+        //             image: { $first: "$products.productItem.image" }, // Lấy hình ảnh sản phẩm
+        //             quantity: { $sum: "$products.quantity" }, // Tổng số lượng bán
+        //         },
+        //     },
 
-            // Sắp xếp theo tổng số lượng giảm dần
-            { $sort: { quantity: -1 } },
-        ]);
+        //     // Sắp xếp theo tổng số lượng giảm dần
+        //     { $sort: { quantity: -1 } },
+        // ]);
+        const result = await Product.find().populate("category").sort({ count: - 1 });
+        const newResult = result.map((item) => {
+            return {
+                _id: item._id,
+                productName: item.name,
+                slug: item.slug,
+                category: item.category,
+                image: item.image,
+                quantity: item.count
+            }
+        })
 
-        return res.status(StatusCodes.OK).json(result);
+        return res.status(StatusCodes.OK).json(newResult);
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
