@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema({
       "đã xác nhận",
       "đang giao hàng",
       "đã hoàn thành",
-      "đã hủy",
+      "hủy đơn",
     ],
     default: "chờ xác nhận",
   },

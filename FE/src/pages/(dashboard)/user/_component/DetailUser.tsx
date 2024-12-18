@@ -231,7 +231,7 @@ const UserDetailPage = () => {
                               ? "text-green-700 bg-green-100" // Vàng nhạt
                               : order.status === "đã hoàn thành"
                               ? "text-green-800 bg-green-200 font-bold" // Xanh lá nhạt
-                              : order.status === "đã hủy"
+                              : order.status === "hủy đơn"
                               ? "text-red-700 bg-red-100" // Đỏ nhạt
                               : order.status === "đã xác nhận"
                               ? "text-blue-700 bg-blue-100" // Xanh biển nhạt
