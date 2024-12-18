@@ -7,6 +7,7 @@ export function useGetAllProduct() {
 
   // Filter
   const filterValueCategory = searchParams.get("category");
+  const filterValueColor = searchParams.get("color");
   const filterValuePriceJson = searchParams.get("price");
   const filterValuePrice = filterValuePriceJson
     ? JSON.parse(filterValuePriceJson)
@@ -18,6 +19,9 @@ export function useGetAllProduct() {
     !filterValueCategory || filterValueCategory === "all"
       ? ""
       : filterValueCategory;
+
+  const filterColor =
+    !filterValueColor || filterValueColor === "all" ? "" : filterValueColor;
 
   const filterPrice =
     !filterValuePrice || filterValuePrice === "" ? "" : filterValuePrice;
@@ -41,6 +45,7 @@ export function useGetAllProduct() {
       limit,
       filterCategory,
       filterPrice,
+      filterColor,
       searchProduct,
     ],
     queryFn: () =>
@@ -50,6 +55,7 @@ export function useGetAllProduct() {
         category: filterCategory,
         price: filterPrice,
         search: valueSearch || "",
+        color: filterColor || "",
       }),
   });
 

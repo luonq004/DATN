@@ -10,7 +10,7 @@ const ProductPage = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center">
-        <div className="spinner"></div>;
+        <div className="spinner"></div>
       </div>
     );
   }

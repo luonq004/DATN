@@ -7,16 +7,19 @@ export async function getAllProduct({
   category,
   price,
   search,
+  color,
 }: {
   page: number;
   limit: number;
   price: number | string;
   category: string | null;
   search: string | "";
+  color: string | "";
 }) {
   try {
+    console.log(color);
     const response = await axios.get(
-      `${apiUrl}/products?_page=${page}&_limit=${limit}&_category=${category}&_price=${price}&_search=${search}`
+      `${apiUrl}/products?_page=${page}&_limit=${limit}&_category=${category}&_price=${price}&_search=${search}&_color=${color}`
     );
     return response?.data;
   } catch (error) {

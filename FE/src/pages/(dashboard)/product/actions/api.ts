@@ -16,7 +16,7 @@ export async function getProductEdit(id: string) {
 export async function getAllProduct({ status }: { status: string | "" }) {
   try {
     const response = await axios.get(
-      `${apiUrl}/products?_status=${status}&_limit=50`
+      `${apiUrl}/products?_status=${status}&_limit=100`
     );
     return response?.data;
   } catch (error) {

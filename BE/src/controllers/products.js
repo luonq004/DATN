@@ -14,6 +14,7 @@ export const getAllProducts = async (req, res) => {
     _category,
     _status = "display",
     _search,
+    _color,
   } = req.query;
 
   const options = {
@@ -92,6 +93,33 @@ export const getAllProducts = async (req, res) => {
       };
     } else {
       listProduct = result; // Nếu không lọc, sử dụng toàn bộ `result`
+    }
+
+    if (_color) {
+      // Nếu _color có giá trị và không phải là "all", thực hiện lọc
+      const filteredProducts = populatedDocs.filter((product) => {
+        return product.variants.some((variant) => {
+          return variant.values.some((value) => {
+            console.log(value.toString());
+            return value.toString() === _color.toString();
+          });
+        });
+      });
+
+      // Tính toán lại totalDocs và totalPages
+      const totalItems = filteredProducts.length; // Tổng số sản phẩm sau khi lọc
+      const totalPages = Math.ceil(totalItems / _limit); // _limit là số sản phẩm trên mỗi trang
+
+      // Cập nhật listProduct với dữ liệu đã lọc
+      listProduct = {
+        ...result,
+        docs: filteredProducts,
+        totalDocs: totalItems, // Cập nhật totalDocs
+        totalPages: totalPages, // Cập nhật totalPages
+      };
+    } else {
+      // Nếu _color là "all" hoặc không có giá trị, giữ nguyên dữ liệu gốc
+      listProduct = result;
     }
 
     const data = {
@@ -180,7 +208,6 @@ export const getAllProductsNoLimit = async (req, res) => {
     return res.status(400).json({ message: error.message });
   }
 };
-
 
 export const getProductById = async (req, res) => {
   try {
@@ -438,34 +465,18 @@ export const updateProduct = async (req, res) => {
         priceSaleFinal = variants[i].priceSale;
       }
 
-      if (variants[i]._id) {
-        const variant = await Variant.findOneAndUpdate(
-          { _id: variants[i]._id },
-          {
-            price: variants[i].price,
-            priceSale: variants[i].priceSale,
-            // values,
-            originalPrice: variants[i].originalPrice,
-            countOnStock: variants[i].countOnStock,
-            image: variants[i].image,
-          },
-          { new: true }
-        );
-        variantsId.push(variant._id);
-      } else {
-        // Nếu không có _id cũ thì xóa mềm variant cũ
+      // Nếu không có _id cũ thì xóa mềm variant cũ
 
-        const values = variants[i].values.map((obj) => Object.values(obj)[0]);
-        const variant = await Variant({
-          price: variants[i].price,
-          priceSale: variants[i].priceSale,
-          originalPrice: variants[i].originalPrice,
-          values,
-          countOnStock: variants[i].countOnStock,
-          image: variants[i].image,
-        }).save();
-        variantsId.push(variant._id);
-      }
+      const values = variants[i].values.map((obj) => Object.values(obj)[0]);
+      const variant = await Variant({
+        price: variants[i].price,
+        priceSale: variants[i].priceSale,
+        originalPrice: variants[i].originalPrice,
+        values,
+        countOnStock: variants[i].countOnStock,
+        image: variants[i].image,
+      }).save();
+      variantsId.push(variant._id);
     }
 
     const variantsIdSet = new Set(variantsId.map((id) => id.toString()));
