@@ -2,8 +2,12 @@ import { Link } from "react-router-dom";
 
 import CategoriesMenu from "./_components/CategoriesMenu";
 import { MainContent } from "./_components/MainContent";
+import React from "react";
 
 const ProductShopPage = () => {
+  React.useEffect(() => {
+      document.title = "Sản Phẩm"; // Đặt tiêu đề cho trang
+    }, []);
   return (
     <>
       <div className="container">

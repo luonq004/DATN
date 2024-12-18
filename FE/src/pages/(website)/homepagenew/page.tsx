@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import ChatPopup from "../chatpopup/page";
 import Collections from "./_componnents/Collections";
 import FeatureCards from "./_componnents/FeatureCards";
@@ -8,6 +8,7 @@ import Products from "./_componnents/Products";
 import Slider from "./_componnents/Slider";
 import SubscribeSection from "./_componnents/SubscribeSection";
 import { io } from "socket.io-client";
+import { useParams } from "react-router-dom";
 
 const socket = io("http://localhost:3000");
 
@@ -16,6 +17,9 @@ const HomePageNew = () => {
   //   socket.on("messageRecieved", (newMessageRecieved) => {
   //     console.log("message Recieved", newMessageRecieved);
   //   });
+  React.useEffect(() => {
+    document.title = "FABRICFOCUS"; // Đặt tiêu đề cho trang
+  }, []);
 
   //   // return () => {
   //   //   socket.off("newMessage");

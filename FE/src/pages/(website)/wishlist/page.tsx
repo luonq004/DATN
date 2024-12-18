@@ -1,6 +1,6 @@
 import { useUserContext } from "@/common/context/UserProvider";
 import { useGetWishList } from "./action/useGetWishList";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import useWishList from "./action/useWishList";
@@ -13,6 +13,9 @@ import SizeColorSelector from "./components/SizeColorSelect";
 import { useAddToCart } from "../shop/actions/useAddToCart";
 
 const WishListPage = () => {
+  React.useEffect(() => {
+    document.title = "Yêu Thích";
+  }, []);
   const { _id } = useUserContext();
   const [attribute, setAttribute] = useState<string | 1>("1");
 

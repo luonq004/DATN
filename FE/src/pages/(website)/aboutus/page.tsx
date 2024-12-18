@@ -9,8 +9,12 @@ import About_Us_Bg from '@/assets/images/about-us-bg.jpg'
 import SlideShow from './_components/SlideShow'
 import SlideOurTeam from './_components/SlideOurTeam'
 import { Link } from 'react-router-dom'
+import React from 'react';
 
 const AboutUsPage = () => {
+    React.useEffect(() => {
+        document.title = "Giới Thiệu"; 
+      }, []);
     return (
         <>
             <section style={{ backgroundImage: `url(${About_Us_Bg})` }} className='min-h-[600px] bg-cover bg-fixed bg-center bg-no-repeat text-white grid place-items-center'>

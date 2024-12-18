@@ -1,7 +1,11 @@
 import { Link, Outlet } from "react-router-dom";
 import Sidebar from "./_components/Sidebar";
+import React from "react";
 
 const BlogPage = () => {
+  React.useEffect(() => {
+        document.title = "Tin Tức"; // Đặt tiêu đề cho trang
+      }, []);
   // Kiểm tra URL hiện tại có chứa '/detail' không
   const isDetailPage = location.pathname.includes("/detail");
   return (
