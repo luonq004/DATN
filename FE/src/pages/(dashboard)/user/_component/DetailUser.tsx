@@ -66,7 +66,6 @@ const UserDetailPage = () => {
     currentPage * itemsPerPage
   );
 
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -196,7 +195,13 @@ const UserDetailPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentOrders && currentOrders.length > 0 ? (
+                {!orders ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-6 text-gray-600">
+                      Đang tải dữ liệu...
+                    </td>
+                  </tr>
+                ) : currentOrders && currentOrders.length > 0 ? (
                   currentOrders.map((order: any) => (
                     <tr
                       onClick={() =>
@@ -231,7 +236,7 @@ const UserDetailPage = () => {
                               ? "text-green-700 bg-green-100" // Vàng nhạt
                               : order.status === "đã hoàn thành"
                               ? "text-green-800 bg-green-200 font-bold" // Xanh lá nhạt
-                              : order.status === "hủy đơn"
+                              : order.status === "đã hủy"
                               ? "text-red-700 bg-red-100" // Đỏ nhạt
                               : order.status === "đã xác nhận"
                               ? "text-blue-700 bg-blue-100" // Xanh biển nhạt
