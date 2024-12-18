@@ -15,7 +15,7 @@ export const useCreateProduct = () => {
         title: "Tạo sản phẩm thành công",
       });
       queryClient.invalidateQueries({
-        queryKey: ["Products"],
+        queryKey: ["Products", { status: "display" }],
       });
     },
 

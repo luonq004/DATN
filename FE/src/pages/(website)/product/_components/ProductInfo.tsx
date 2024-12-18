@@ -14,7 +14,9 @@ import { SlHeart } from "react-icons/sl";
 import { useAddToCart } from "../../shop/actions/useAddToCart";
 import { useUserContext } from "@/common/context/UserProvider";
 import { toast } from "@/components/ui/use-toast";
-import { Link } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useGetWishList } from "../../wishlist/action/useGetWishList";
+import { useAddToWishList } from "../../wishlist/action/useAddToWishList";
 
 interface ProductInfoProps {
   product: IProduct;
@@ -23,6 +25,9 @@ interface ProductInfoProps {
 const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
   const { addCart, isAdding } = useAddToCart();
   const { _id } = useUserContext();
+  const { wishList, isError } = useGetWishList(_id);
+  const { id } = useParams();
+  const { addWishList } = useAddToWishList();
 
   const [attributesChoose, setAttributesChoose] = useState<
     Record<string, string[]>
@@ -139,8 +144,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
       ? product?.category.filter((category) => category._id !== targetId)
       : product?.category;
 
-  // console.log(categories);
-
   return (
     <div>
       <div className="uppercase text-[#555] text-sm leading-5 flex gap-4 mb-2">
@@ -256,12 +259,38 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
           className={`btn-add text-white uppercase flex-1 ${
             product.deleted ? "opacity-30 pointer-events-none" : ""
           }`}
+          onClick={() =>
+            addWishList({
+              userId: _id,
+              productId: product._id,
+              variantId: "",
+              quantity: 0,
+            })
+          }
         >
           <span className="btn-add__wrapper text-[11px] px-[30px] border rounded-full text-[#343434] pt-[17px] pb-[15px] font-raleway">
             <span className="icon">
-              <SlHeart />
+              <SlHeart
+                className={`text ${
+                  wishList?.products.some(
+                    (product) => product.productItem._id === id
+                  )
+                    ? "text-red-700"
+                    : ""
+                }`}
+              />
             </span>
-            <span className="text">thêm yêu thích</span>
+            <span
+              className={`text ${
+                wishList?.products.some(
+                  (product) => product.productItem._id === id
+                )
+                  ? "text-red-700"
+                  : ""
+              }`}
+            >
+              thêm yêu thích
+            </span>
           </span>
         </button>
       </div>

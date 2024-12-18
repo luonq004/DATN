@@ -25,6 +25,8 @@ import { useUserContext } from "@/common/context/UserProvider";
 import { useAddToCart } from "../actions/useAddToCart";
 import { toast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
+import { useAddToWishList } from "../../wishlist/action/useAddToWishList";
+import { useGetWishList } from "../../wishlist/action/useGetWishList";
 
 const PreviewProduct = ({
   isOpen,
@@ -35,6 +37,7 @@ const PreviewProduct = ({
   onClose: () => void;
   selectedIndex: string | null;
 }) => {
+  const { _id } = useUserContext();
   const [apiImage, setApiImage] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -42,6 +45,9 @@ const PreviewProduct = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { addCart, isAdding } = useAddToCart();
+  const { addWishList } = useAddToWishList();
+
+  const { wishList } = useGetWishList(_id);
 
   const [attributesChoose, setAttributesChoose] = useState<
     Record<string, string>
@@ -50,8 +56,6 @@ const PreviewProduct = ({
   const [selectedAttributes, setSelectedAttributes] = useState<
     Record<string, string>
   >({});
-
-  const { _id } = useUserContext();
 
   useEffect(() => {
     if (!selectedIndex || productPopup?._id === selectedIndex) return;
@@ -290,6 +294,7 @@ const PreviewProduct = ({
               {productPopup &&
                 categories.map((category) => (
                   <Link
+                    key={category._id}
                     onClick={onClose}
                     to={`/shopping?category=${category._id}`}
                     className=" hover:text-blue-900 hover:underline"
@@ -507,12 +512,40 @@ const PreviewProduct = ({
                 className={`btn-add text-white uppercase flex-1 ${
                   productPopup?.deleted ? "opacity-30 pointer-events-none" : ""
                 }`}
+                onClick={() =>
+                  addWishList({
+                    userId: _id,
+                    productId: productPopup?._id,
+                    variantId: "",
+                    quantity: 0,
+                  })
+                }
               >
                 <span className="btn-add__wrapper text-[11px] px-[30px] border rounded-full text-[#343434] pt-[17px] pb-[15px] font-raleway">
                   <span className="icon">
-                    <SlHeart />
+                    <SlHeart
+                      className={`text ${
+                        wishList?.products.some(
+                          (product) =>
+                            product.productItem._id === productPopup?._id
+                        )
+                          ? "text-red-700"
+                          : ""
+                      }`}
+                    />
                   </span>
-                  <span className="text">thêm yêu thích</span>
+                  <span
+                    className={`text ${
+                      wishList?.products.some(
+                        (product) =>
+                          product.productItem._id === productPopup?._id
+                      )
+                        ? "text-red-700"
+                        : ""
+                    }`}
+                  >
+                    thêm yêu thích
+                  </span>
                 </span>
               </button>
             </div>

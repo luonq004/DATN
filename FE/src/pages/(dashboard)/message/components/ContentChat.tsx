@@ -71,10 +71,12 @@ const ContentChat = ({ socket }: { socket: Socket }) => {
       // console.log("message", message);
 
       if (message.sender.listUsers.includes(_id)) {
-        setListMessage((prev: any) => [...prev, message]);
+        if (message.sender._id === selectedUser) {
+          setListMessage((prev: any) => [...prev, message]);
+        }
       }
     });
-  }, [_id]);
+  }, [_id, selectedUser]);
 
   // const { isCheckingAuth, authUser } = useAuthStore();
   const messageEndRef = useRef(null);

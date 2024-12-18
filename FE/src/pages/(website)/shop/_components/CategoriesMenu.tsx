@@ -66,7 +66,7 @@ const CategoriesMenu = () => {
             `}
             onClick={() => {
               searchParams.set("category", "all");
-
+              searchParams.delete("search");
               if (searchParams.get("page")) searchParams.set("page", "1");
               setSearchParams(searchParams);
             }}
@@ -82,7 +82,7 @@ const CategoriesMenu = () => {
               }`}
               onClick={() => {
                 searchParams.set("category", category._id);
-
+                searchParams.delete("search");
                 if (searchParams.get("page")) searchParams.set("page", "1");
                 setSearchParams(searchParams);
               }}
@@ -99,6 +99,7 @@ const CategoriesMenu = () => {
       <Slider
         className="mt-[25px]"
         onValueCommit={(value) => {
+          searchParams.delete("search");
           searchParams.set("price", JSON.stringify(value));
           setSearchParams(searchParams);
         }}
@@ -128,10 +129,18 @@ const CategoriesMenu = () => {
           return (
             <ToggleGroupItem
               onClick={() => {
-                searchParams.set("color", item._id);
+                searchParams.delete("search");
+                if (searchParams.get("color") === item._id) {
+                  console.log("item");
+                  searchParams.set("color", "all");
+                  if (searchParams.get("page")) searchParams.set("page", "1");
+                  setSearchParams(searchParams);
+                } else {
+                  searchParams.set("color", item._id);
 
-                if (searchParams.get("page")) searchParams.set("page", "1");
-                setSearchParams(searchParams);
+                  if (searchParams.get("page")) searchParams.set("page", "1");
+                  setSearchParams(searchParams);
+                }
               }}
               key={item._id}
               className={`rounded-none border size-6 p-0 cursor-pointer transition-all ${

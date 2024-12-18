@@ -60,7 +60,7 @@ const SideBarUser = () => {
             <span className="line-clamp-1 hidden lg:block">
               {user.user.firstName} {user.user.lastName}
             </span>
-            <span className="hidden lg:block text-gray-400">1 ngày trước</span>
+            {/* <span className="hidden lg:block text-gray-400">1 ngày trước</span> */}
           </div>
         </div>
       ))}
