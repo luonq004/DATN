@@ -373,9 +373,14 @@ export const createProduct = async (req, res) => {
         priceFinal = variants[i].price;
       }
 
-      if (priceSaleFinal > variants[i].priceSale) {
+      if (
+        priceSaleFinal > variants[i].priceSale &&
+        variants[i].priceSale != 0
+      ) {
         priceSaleFinal = variants[i].priceSale;
       }
+
+      console.log(priceSaleFinal);
 
       const variant = await Variant({
         price: variants[i].price,
@@ -461,7 +466,10 @@ export const updateProduct = async (req, res) => {
         priceFinal = variants[i].price;
       }
 
-      if (priceSaleFinal > variants[i].priceSale) {
+      if (
+        priceSaleFinal > variants[i].priceSale &&
+        variants[i].priceSale != 0
+      ) {
         priceSaleFinal = variants[i].priceSale;
       }
 
