@@ -1,8 +1,9 @@
 export default interface ICart {
-    userId?: string;
-    products?: any;
-    voucherId?: string;
-    subTotal?: number;
-    discount?: number;
-    total?: number;
+  userId?: string;
+  products?: any;
+  voucher?: any;
+  subTotal?: number;
+  discount?: number;
+  ship?: number;
+  total?: number;
 }

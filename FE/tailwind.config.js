@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  mode: 'jit',
-  darkMode: ["class"],
+  mode: "jit",
+  darkMode: ["class", "class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -20,14 +20,13 @@ module.exports = {
       "2xl": "1536px",
     },
     container: {
-      center: true,
+      center: "true",
       padding: "2rem",
-      
     },
     extend: {
       fontFamily: {
-        questrial: ['"Questrial"', 'sans-serif'],
-        raleway: ['"Raleway"', 'sans-serif'],
+        questrial: ['Questrial"', "sans-serif"],
+        raleway: ['Raleway"', "sans-serif"],
       },
       colors: {
         light: {
@@ -80,25 +79,31 @@ module.exports = {
           DEFAULT: "hsl(var(--status))",
           foreground: "hsl(var(--status-foreground))",
         },
-        // xám trắng
         border1: {
           DEFAULT: "hsl(var(--border1))",
           foreground: "hsl(var(--border1-foreground))",
         },
-        //xám đen
         border2: {
           DEFAULT: "hsl(var(--border2))",
           foreground: "hsl(var(--border2-foreground))",
         },
-        //bg đen trắng
         background1: {
           DEFAULT: "hsl(var(--foreground))",
           foreground: "hsl(var(--background))",
         },
-        //bg xám đen
         background2: {
           DEFAULT: "hsl(var(--background2))",
           foreground: "hsl(var(--foreground2))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
         },
       },
       borderRadius: {
@@ -108,12 +113,20 @@ module.exports = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
         },
         "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
       },
       animation: {
@@ -122,8 +135,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require("tailwindcss-animate"),
-    require('flowbite/plugin'),
-  ],
+  plugins: [require("tailwindcss-animate"), require("flowbite/plugin")],
 };

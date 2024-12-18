@@ -1,3 +1,4 @@
+import React from "react";
 import BestCustomersSupport from "./_components/BestCustomersSupport";
 import ChooseTheBest from "./_components/ChooseTheBest";
 import OurServices from "./_components/OurServices";
@@ -5,6 +6,9 @@ import Professionals from "./_components/Professionals";
 import WhatWeDo from "./_components/WhatWeDo";
 
 const PageServices = () => {
+  React.useEffect(() => {
+    document.title = "Dịch Vụ";
+  }, []);
   return (
     <div className="w-full">
       {/*our services */}

@@ -1,6 +1,14 @@
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
+const ACCEPTED_FILE_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/webp",
+];
+
 // Định nghĩa schema cho một đối tượng variant
 export const variantSchema = z
   .object({
@@ -12,9 +20,20 @@ export const variantSchema = z
       .gte(1, {
         message: "Giá phải lớn hơn hoặc bằng 1",
       }),
+
+    originalPrice: z.coerce
+      .number({
+        message: "Giá gốc phải là số",
+      })
+      .gte(1, {
+        message: "Giá gốc phải lớn hơn hoặc bằng 1",
+      }),
     priceSale: z.coerce
       .number({
         message: "Giá giảm giá phải là số",
+      })
+      .gte(0, {
+        message: "Giá giảm giá không thể âm",
       })
       .optional(),
     values: z.array(
@@ -25,9 +44,28 @@ export const variantSchema = z
         // value: z.string(),
       })
     ),
-    countOnStock: z.coerce.number().gte(1),
-    image: z.string().optional(),
-    deleted: z.boolean().default(false).optional(),
+    countOnStock: z.coerce.number().gte(1, {
+      message: "Số lượng phải lớn hơn hoặc bằng 1",
+    }),
+    // image: z.string().optional(),
+    image: z
+      .union([
+        z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
+        z.instanceof(File).refine(
+          (file) =>
+            [
+              "image/png",
+              "image/jpeg",
+              "image/jpg",
+              "image/gif",
+              "image/webp",
+            ].includes(file.type), // Kiểm tra định dạng MIME
+          {
+            message: "Chỉ được upload file ảnh (PNG, JPEG, JPG, GIF, WEBP)", // Thông báo lỗi
+          }
+        ),
+      ])
+      .optional(),
   })
   .refine(
     (data) => data.priceSale === undefined || data.priceSale < data.price,
@@ -44,40 +82,30 @@ export const productSchema = z.object({
     .transform((val) => new Date(val))
     .optional(),
   deleted: z.boolean().optional(),
-  description: z.string().min(1),
-  name: z.string().min(1),
+  description: z.string().min(10, {
+    message: "Mô tả sản phẩm phải có ít nhất 10 ký tự",
+  }),
+  descriptionDetail: z.string().optional(),
+  name: z.string().min(1, {
+    message: "Tên sản phẩm không được để trống",
+  }),
   category: z.array(z.string()).optional(),
-  image: z
-    .union([
-      z.string().url().or(z.literal("")), // Chấp nhận URL hợp lệ hoặc chuỗi rỗng
-      z.instanceof(File), // Chấp nhận đối tượng File
-    ])
-    .optional(),
+  image: z.union([
+    z.string().url().or(z.literal("")), // URL hợp lệ hoặc chuỗi rỗng
+    z.instanceof(File).optional(), // File là tùy chọn
+  ]),
   price: z.coerce.number().optional(),
   priceSale: z.coerce.number().optional(),
-  reviews: z.array(z.object({})).optional(), // Cấu trúc cho reviews nếu cần
+  // reviews: z.array(z.object({})).optional(), // Cấu trúc cho reviews nếu cần
   updatedAt: z
     .string()
     .transform((val) => new Date(val))
     .optional(),
-  variants: z.array(variantSchema),
-  // .refine(
-  //   (variants) => {
-  //     // Tạo một mảng chứa tất cả `_id` trong `values` của mỗi variant
-  //     const allValueIds = variants.flatMap((variant) =>
-  //       variant.values.map((value) => value._id)
-  //     );
-  //     // console.log("allValueIds: ", allValueIds);
-  //     // Kiểm tra trùng lặp bằng cách so sánh độ dài mảng với Set
-  //     return new Set(allValueIds).size === allValueIds.length;
-  //   },
-  //   {
-  //     message: "Các values không được trùng _id giữa các variants",
-  //     path: ["variants"],
-  //   }
-  // ), // Mảng các variants tuân theo schema variant
-  // slug: z.string().min(1),
-  // __v: z.number(),
+  variants: z
+    .array(variantSchema)
+    .refine((variantArr) => variantArr.length > 0, {
+      message: "Sản phẩm phải có ít nhất 1 biến thể",
+    }),
   _id: z.string().optional(),
 });
 
@@ -93,7 +121,9 @@ export const productSimpleSchema = z
       ])
       .optional(),
     description: z.string().min(1),
+    descriptionDetail: z.string().optional(),
     price: z.coerce.number(),
+    // countOnStock: z.coerce.number(),
     priceSale: z.coerce.number().optional(),
   })
   .refine(

@@ -100,7 +100,6 @@ const SpecialOffers = () => {
         }}
         speed={600}
         spaceBetween={30}
-        pagination={{ clickable: true }}
         breakpoints={{
           320: { slidesPerView: 1 },
           768: { slidesPerView: 1 },
@@ -227,10 +226,10 @@ const SpecialOffers = () => {
         {offers.map((_, index) => (
           <div
             key={index}
-            className={`rounded-full w-3 h-3 bg-white cursor-pointer ${
+            className={`rounded-full duration-300 bg-white cursor-pointer ${
               index === activeIndex
-                ? "border-[3px] w-4 h-4 border-[#b8cd06]"
-                : "border-[1px] border-gray-500"
+                ? "border-[#b8cd06] border-4 size-4"
+                : "border-gray-300 border-2 size-3"
             }`}
             onClick={() => handleDotClick(index)}
           ></div>

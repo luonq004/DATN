@@ -1,11 +1,15 @@
-import { Outlet } from "react-router-dom"
+import React from "react";
+import ProfilePageModern from "./_components/ProfileUser";
 
 const ProfilePage = () => {
+  React.useEffect(() => {
+        document.title = "Thông Tin Cá Nhân"; 
+      }, []);
   return (
     <div className="flex">
-        <Outlet/>
+      <ProfilePageModern />
     </div>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet"
 import VoucherForm from "./VoucherForm"
 import { Button } from "@/components/ui/button"
+import { formatCurrency } from "@/lib/utils"
 
 
 export type Payment = {
@@ -32,44 +33,44 @@ export type Payment = {
 export const columns: ColumnDef<Payment>[] = [
     {
         accessorKey: "status",
-        header: "Status",
+        header: "Trang thái",
         cell: ({ row }) => {
             if (row.getValue('status') === 'inactive') {
-                return <Badge className="capitalize" variant="destructive">{row.getValue('status')}</Badge>
+                return <Badge className="capitalize bg-red-500" variant="destructive">Đóng</Badge>
             }
-            return <Badge className="capitalize">{row.getValue('status')}</Badge>
+            return <Badge className="capitalize bg-green-500">Kích hoạt</Badge>
         }
     },
     {
         accessorKey: "code",
-        header: "Code",
+        header: "Mã Voucher",
     },
-    {
-        accessorKey: "category",
-        header: "Category",
-    },
+    // {
+    //     accessorKey: "category",
+    //     header: "Loại",
+    // },
     {
         accessorKey: "discount",
-        header: "Discount",
+        header: "Giảm giá",
         cell: ({ row }) => {
             if (row.original.type === 'percent') {
                 return <>{row.getValue('discount')}%</>
             } else
-                return <>{row.getValue('discount')}$</>
+                return <>{formatCurrency(row.getValue('discount'))} VNĐ</>
         }
     },
     {
         accessorKey: "countOnStock",
-        header: "Count On Stock",
+        header: "Số lượng",
     },
 
     {
         accessorKey: "endDate",
-        header: "End Date",
+        header: "Ngày kết thúc",
     },
     {
         id: "actions",
-        header: () => <div className="text-center">Actions</div>,
+        header: () => <div className="text-center">Thao tác</div>,
         cell: ({ row }) => {
 
 
@@ -79,9 +80,9 @@ export const columns: ColumnDef<Payment>[] = [
                         <SheetTrigger className="border rounded-md p-1 transition-all duration-300 hover:border-orange-400 hover:text-orange-400"><Eye size={20} /></SheetTrigger>
                         <SheetContent>
                             <SheetHeader>
-                                <SheetTitle>Voucher Infomation</SheetTitle>
+                                <SheetTitle>Thông tin Voucher</SheetTitle>
                                 <SheetDescription>
-                                    Voucher code: {row.original.code}
+                                    Mã Voucher: {row.original.code}
                                 </SheetDescription>
                             </SheetHeader>
                             <VoucherForm id={row.original._id} />

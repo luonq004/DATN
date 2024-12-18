@@ -49,17 +49,17 @@ export function DataTable<TData, TValue>({
 
     return (
         <>
-            <div className="flex items-center py-4">
+            <div className="flex items-center">
                 <Input
-                    placeholder="Filter code..."
+                    placeholder="Lọc theo mã voucher..."
                     value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("code")?.setFilterValue(event.target.value)
                     }
-                    className="max-w-sm"
+                    className="max-w-sm mb-2 mt-5"
                 />
             </div>
-            <div className="rounded-md border">
+            <div className="rounded-md border bg-white">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -96,7 +96,7 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    Không có dữ liệu
                                 </TableCell>
                             </TableRow>
                         )}

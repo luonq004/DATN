@@ -16,29 +16,52 @@ import { DialogClose } from '@/components/ui/dialog';
 
 
 const voucherSchema = Joi.object({
-    code: Joi.string().min(2).max(255).required(),
-    category: Joi.string().valid('product', 'ship').required(),
-    discount: Joi.number().min(1).required(),
-    countOnStock: Joi.number().min(1).required(),
+    code: Joi.string().min(1).max(255).required().messages({
+        'any.required': 'Mã Voucher là bắt buộc',
+        'string.min': 'Mã Voucher phải có ít nhất 1 ký tự',
+        'string.max': 'Mã Voucher tối đa 255 ký tự',
+        'string.empty': 'Mã Voucher không được để trống'
+    }),
+    category: Joi.string().valid('product', 'ship').default('product'),
+    discount: Joi.number()
+        .required()
+        .when('type', {
+            is: 'percent',
+            then: Joi.number().min(1).max(100).messages({
+                'number.min': 'Giảm giá phải lớn hơn 0 khi kiểu là phần trăm (%)',
+                'number.max': 'Giảm giá phải nhỏ hơn hoặc bằng 100 khi kiểu là phần trăm (%)'
+            }),
+            otherwise: Joi.number().min(1).messages({
+                'number.min': 'Giảm giá phải lớn hơn 0 khi kiểu là cố định'
+            })
+        })
+        .messages({
+            'any.required': 'Giảm giá là bắt buộc',
+            'number.base': 'Giảm giá phải là số',
+        }),
+    countOnStock: Joi.number().min(1).required().messages({
+        'any.required': 'Số lượng là bắt buộc',
+        'number.base': 'Số lượng phải là số',
+    }),
     dob: Joi.object({
         from: Joi.date()
-            .min(subMonths(new Date(), 1))
-            .max(addMonths(new Date(), 1))
             .required().messages({
-                'any.required': 'Start date is required',
-                'date.base': 'Start date must be a valid date',
+                'any.required': 'Ngày bắt đầu là bắt buộc',
+                'date.base': 'Ngày bắt đầu phải là ngày hợp lệ',
             }),
         to: Joi.date()
-            .min(subMonths(new Date(), 1))
-            .max(addMonths(new Date(), 1))
             .required().messages({
-                'any.required': 'End date is required',
-                'date.base': 'End date must be a valid date',
+                'any.required': 'Ngày kết thúc là bắt buộc',
+                'date.base': 'Ngày kết thúc phải là ngày hợp lệ',
             }),
     }).required().messages({
-        'any.required': 'Date is required'
+        'any.required': 'Ngày hết hạn là bắt buộc',
     }),
-    type: Joi.string().valid("percent", "fixed").required(),
+    type: Joi.string().valid("percent", "fixed").required().empty('').messages({
+        'any.required': 'Kiểu là bắt buộc',
+        'string.valid': 'Kiểu không hợp lệ',
+        'string.empty': 'Kiểu không được để trống'
+    }),
 })
 
 const VoucherAddForm = () => {
@@ -55,7 +78,7 @@ const VoucherAddForm = () => {
     useEffect(() => {
         reset({
             code: '',
-            category: '',
+            category: 'product',
             discount: '',
             countOnStock: '',
             dob: {
@@ -87,6 +110,7 @@ const VoucherAddForm = () => {
     function onSubmit(data: any) {
         const info = {
             ...data,
+            category: 'product',
             status: status,
             startDate: new Date(new Date(data.dob.from).getTime() + 7 * 60 * 60 * 1000),
             endDate: new Date(new Date(data.dob.to).getTime() + 7 * 60 * 60 * 1000)
@@ -96,7 +120,7 @@ const VoucherAddForm = () => {
         createVoucher.mutate(item, {
             onSuccess: () => {
                 toast({
-                    title: "Success",
+                    title: "Thành công",
                     description: "Tạo thành công",
                 })
                 reset()
@@ -108,58 +132,60 @@ const VoucherAddForm = () => {
         <div className='mt-4'>
             <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
                 <div className='flex flex-col gap-2'>
-                    {errors?.code?.message ? <Label htmlFor="code" className='text-red-500'>Code</Label> : <Label htmlFor="code" >Code</Label>}
+                    {errors?.code?.message ? <Label htmlFor="code" className='text-red-500'>Mã Voucher</Label> : <Label htmlFor="code" >Mã Voucher</Label>}
                     <Input
-                        placeholder='Code...'
+                        placeholder='Mã...'
+                        className='mb-0'
                         {...register('code', { required: true, minLength: 3, maxLength: 255 })}
                     />
                     {errors?.code?.message && <span className='text-red-500'>{errors?.code?.message.toString()}</span>}
                 </div>
 
-                <div className='flex flex-col gap-2 *:w-full'>
-                    {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Category</Label> : <Label htmlFor="category" >Category</Label>}
+                {/* <div className='flex flex-col gap-2 *:w-full'>
+                    {errors?.category?.message ? <Label htmlFor="category" className='text-red-500'>Loại</Label> : <Label htmlFor="category" >Loại</Label>}
                     <Controller
                         control={control}
                         name="category"
-                        defaultValue=""
+                        defaultValue="product"
                         render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Select a category" />
+                                <SelectTrigger className="w-[180px] mt-0">
+                                    <SelectValue placeholder="Chọn loại Voucher" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectItem value="product">Product</SelectItem>
+                                        <SelectItem value="product">Sản phẩm</SelectItem>
                                         <SelectItem value="ship">Ship</SelectItem>
-                                        <SelectItem value="test">Test</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
                         )}
                     />
                     {errors?.category?.message && <span className='text-red-500'>{errors?.category?.message.toString()}</span>}
-                </div>
+                </div> */}
 
                 <div className='flex flex-col gap-2'>
-                    {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Discount</Label> : <Label htmlFor="discount" >Discount</Label>}
+                    {errors?.discount?.message ? <Label htmlFor="discount" className='text-red-500'>Giảm giá</Label> : <Label htmlFor="discount" >Giảm giá</Label>}
                     <Input
-                        placeholder='discount...'
+                        placeholder='Giảm giá...'
+                        className='mb-0'
                         {...register('discount', { required: true })}
                     />
                     {errors?.discount?.message && <span className='text-red-500'>{errors?.discount?.message.toString()}</span>}
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    {errors?.countOnStock?.message ? <Label htmlFor="countOnStock" className='text-red-500'>CountOnStock</Label> : <Label htmlFor="countOnStock" >CountOnStock</Label>}
+                    {errors?.countOnStock?.message ? <Label htmlFor="countOnStock" className='text-red-500'>Số lượng</Label> : <Label htmlFor="countOnStock" >Số lượng</Label>}
                     <Input
-                        placeholder='countOnStock...'
+                        placeholder='Số lượng...'
+                        className='mb-0'
                         {...register('countOnStock', { required: true })}
                     />
                     {errors?.countOnStock?.message && <span className='text-red-500'>{errors?.countOnStock?.message.toString()}</span>}
                 </div>
 
                 <div className='relative select-none z-50'>
-                    {errors?.dob ? <Label htmlFor="dob" className='text-red-500'>Date</Label> : <Label htmlFor="dob" >Date</Label>}
+                    {errors?.dob ? <Label htmlFor="dob" className='text-red-500'>Hạn sử dụng</Label> : <Label htmlFor="dob" >Hạn sử dụng</Label>}
                     <div onClick={() => handleOpenDate(1)} className={`flex items-center border rounded-md px-4 py-2 cursor-pointer`}>
                         <CalendarIcon size={20} className="mr-2 h-4 w-4" />
                         {date?.from ? (
@@ -172,7 +198,7 @@ const VoucherAddForm = () => {
                                 format(date.from, "LLL dd, y")
                             )
                         ) : (
-                            <span>Pick a date</span>
+                            <span>Chọn ngày</span>
                         )}
                     </div >
                     <div className={`flex absolute bg-white top-[70px] transition-all duration-200 ${openDate === 1 ? '' : 'opacity-0 z-[-1] scale-75 hidden'}`}>
@@ -192,20 +218,20 @@ const VoucherAddForm = () => {
                 </div>
 
                 <div className='flex flex-col gap-2 *:w-full'>
-                    {errors?.type?.message ? <Label htmlFor="type" className='text-red-500'>Type</Label> : <Label htmlFor="type" >Type</Label>}
+                    {errors?.type?.message ? <Label htmlFor="type" className='text-red-500'>Kiểu</Label> : <Label htmlFor="type" >Kiểu</Label>}
                     <Controller
                         control={control}
                         name="type"
                         defaultValue=""
                         render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Select a type" />
+                                <SelectTrigger className="w-[180px] mt-0">
+                                    <SelectValue placeholder="Chọn kiểu" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectItem value="percent">Percent</SelectItem>
-                                        <SelectItem value="fixed">Fixed</SelectItem>
+                                        <SelectItem value="percent">Phần trăm (%)</SelectItem>
+                                        <SelectItem value="fixed">Trực tiếp (VNĐ)</SelectItem>
                                         {/* <SelectItem value="test">Test</SelectItem> */}
                                     </SelectGroup>
                                 </SelectContent>
@@ -216,23 +242,23 @@ const VoucherAddForm = () => {
                 </div>
 
                 <div className='flex flex-col gap-2 *:w-full'>
-                    <Label htmlFor="status" >Status</Label>
+                    <Label htmlFor="status" >Trạng thái</Label>
                     <div className={`select-none rounded-md bg-[#F4F4F5] p-1 cursor-pointer`}>
                         <div className='grid grid-cols-[50%_50%] relative w-full rounded-sm *:text-sm *:py-1.5 *:font-medium *:text-center *:rounded-sm'>
                             <div className={`bg-white w-1/2 absolute h-full z-10 transition-all duration-200 ${status === 'active' ? 'left-0' : 'left-1/2'}`}></div>
-                            <div onClick={() => setStatus('active')} className={`z-20 ${status === 'active' ? ' text-black shadow-sm' : 'text-[#71717A]'}`}>Active</div>
-                            <div onClick={() => setStatus('inactive')} className={`z-20 ${status === 'inactive' ? ' text-black shadow-sm' : 'text-[#71717A]'}`}>Inactive</div>
+                            <div onClick={() => setStatus('active')} className={`z-20 ${status === 'active' ? ' text-black shadow-sm' : 'text-[#71717A]'}`}>Kích hoạt</div>
+                            <div onClick={() => setStatus('inactive')} className={`z-20 ${status === 'inactive' ? ' text-black shadow-sm' : 'text-[#71717A]'}`}>Đóng</div>
                         </div>
                     </div>
                 </div>
                 <div className='flex items-center justify-between select-none'>
-                    <Button type='submit'>Save</Button>
+                    <Button type='submit'>Lưu</Button>
                     <DialogClose asChild>
                         <div
                             className='flex text-red-500 transition-all duration-200 hover:bg-red-50 rounded-md px-2 py-1 items-center gap-1 cursor-pointer select-none'
                         >
                             <CircleX size={16} />
-                            <span>Cancel</span>
+                            <span>Hủy</span>
                         </div>
                     </DialogClose>
                 </div>

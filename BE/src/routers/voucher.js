@@ -1,8 +1,9 @@
 import express from "express";
-import { createVoucher, updateVoucher, getAllVoucher, getAllVoucherWithCountDown, getOneVoucher, getVoucherWithCountdown, removeVoucher, statusVoucher } from "../controllers/voucher";
+import { createVoucher, updateVoucher, getAllVoucher, getAllVoucherWithCountDown, getOneVoucher, getVoucherWithCountdown, removeVoucher, statusVoucher, getAllVoucherUsageByUserId } from "../controllers/voucher";
 
 const routerVoucher = express.Router();
 
+routerVoucher.get('/voucher/get-all-usage/:id', getAllVoucherUsageByUserId);
 routerVoucher.get('/voucher/get-all', getAllVoucher);
 routerVoucher.get('/voucher/get-one/:id', getOneVoucher);
 routerVoucher.get('/voucher/get-all-countdown', getAllVoucherWithCountDown);

@@ -7,12 +7,12 @@ export const checkVoucherUsed = async (req, res, next) => {
     try {
         const voucher = await Voucher.findOne({ code: voucherCode });
         if (!voucher) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" });
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy voucher" });
         }
 
         const exitUsage = await VoucherUsage.findOne({ userId: userId, voucherId: voucher._id });
         if (exitUsage) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Voucher đã được sử dụng (middleWare check)" });
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Voucher đã qua sử dụng" });
         }
 
         next();

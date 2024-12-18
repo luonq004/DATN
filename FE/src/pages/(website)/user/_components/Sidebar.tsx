@@ -1,7 +1,8 @@
 import { SignOutButton, useUser } from "@clerk/clerk-react";
+import { LayoutGrid } from "lucide-react";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import ProfilePageModern from "./Profile";
+import { Link, Outlet } from "react-router-dom";
+import SidebarMobile from "./SidebarMobile";
 
 const SidebarAccount: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<"account" | "bank" | null>(
@@ -9,6 +10,7 @@ const SidebarAccount: React.FC = () => {
   );
   const { user } = useUser();
 
+  const userRole = localStorage.getItem("userRole");
   const toggleAccountMenu = () => {
     setActiveMenu((prev) => (prev === "account" ? null : "account"));
   };
@@ -16,7 +18,7 @@ const SidebarAccount: React.FC = () => {
   return (
     <div className="flex">
       {/* Sidebar bên trái */}
-      <div className="w-64 bg-gray-200 p-4 shadow-lg">
+      <div className="w-64 hidden sm:block bg-gray-200 p-4 shadow-lg">
         {/* Ảnh đại diện của người dùng */}
         <h2 className="text-base text-center font-semibold mt-7">
           {user?.firstName} {user?.lastName}
@@ -66,12 +68,12 @@ const SidebarAccount: React.FC = () => {
               </Link>
             </li>
             <li className="py-2 text-sm hover:text-cyan-500 cursor-pointer">
-              <Link to="/ngan-hang" className="block">
-                Ngân Hàng
+              <Link to="/users/password" className="block">
+                Thay Đổi Mật Khẩu
               </Link>
             </li>
             <li className="py-2 text-sm hover:text-cyan-500 cursor-pointer">
-              <Link to="/dia-chi" className="block">
+              <Link to="/users/dia-chi" className="block">
                 Địa Chỉ
               </Link>
             </li>
@@ -80,7 +82,7 @@ const SidebarAccount: React.FC = () => {
 
         {/* Đơn hàng */}
         <div className="mb-4">
-          <div className="flex gap-3 items-center ">
+          <Link to={`order-history`} className="flex gap-3 items-center ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
@@ -104,7 +106,7 @@ const SidebarAccount: React.FC = () => {
             >
               Đơn Mua
             </h3>
-          </div>
+          </Link>
         </div>
 
         {/* Kho voucher */}
@@ -122,25 +124,66 @@ const SidebarAccount: React.FC = () => {
             />
           </svg>
 
-          <h3
+          <Link
+            to="/users/voucher"
             className="text-base font-medium cursor-pointer"
             onClick={() => setActiveMenu(null)}
           >
             Kho Voucher
-          </h3>
+          </Link>
         </div>
+        {/* Kiểm tra role để hiển thị nút Trang Quản Trị */}
+        {userRole === "Admin" && (
+          <div className="mb-4 flex items-center gap-3">
+            <LayoutGrid className="size-5 text-green-600" />
+            <Link
+              to="/admin"
+              className="text-base font-medium cursor-pointer hover:text-cyan-500"
+            >
+              Trang Quản Trị
+            </Link>
+          </div>
+        )}
 
         {/* Đăng xuất */}
 
-        <SignOutButton>
-          <button>Đăng xuất</button>
+        <SignOutButton redirectUrl="/">
+          <button
+            className="mt-10 flex items-center gap-3 "
+            onClick={() => {
+              localStorage.removeItem("userRole");
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="size-5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M17 4.25A2.25 2.25 0 0 0 14.75 2h-5.5A2.25 2.25 0 0 0 7 4.25v2a.75.75 0 0 0 1.5 0v-2a.75.75 0 0 1 .75-.75h5.5a.75.75 0 0 1 .75.75v11.5a.75.75 0 0 1-.75.75h-5.5a.75.75 0 0 1-.75-.75v-2a.75.75 0 0 0-1.5 0v2A2.25 2.25 0 0 0 9.25 18h5.5A2.25 2.25 0 0 0 17 15.75V4.25Z"
+                clipRule="evenodd"
+              />
+              <path
+                fillRule="evenodd"
+                d="M14 10a.75.75 0 0 0-.75-.75H3.704l1.048-.943a.75.75 0 1 0-1.004-1.114l-2.5 2.25a.75.75 0 0 0 0 1.114l2.5 2.25a.75.75 0 1 0 1.004-1.114l-1.048-.943h9.546A.75.75 0 0 0 14 10Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <p className="text-red-500">Đăng xuất</p>
+          </button>
         </SignOutButton>
       </div>
 
       {/* Nội dung bên phải */}
-      <div className="flex-1 bg-white overflow-y-auto min-h-screen">
+      <div className="flex-1 relative bg-white overflow-y-auto min-h-screen">
+        <div className=" absolute top-2 right-4">
+          <SidebarMobile />
+        </div>
+
         <div>
-          <ProfilePageModern />
+          <Outlet />
         </div>
       </div>
     </div>

@@ -1,11 +1,23 @@
 import { StatusCodes } from "http-status-codes";
 import Voucher from "../models/voucher"
+import VoucherUsage from "../models/voucherUsage";
+
+export const getAllVoucherUsageByUserId = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const voucherUsage = await VoucherUsage.find().sort({ createdAt: -1 });
+        const result = voucherUsage.filter((data) => data.userId.toString() === id);
+        return res.status(StatusCodes.OK).json(result);
+    } catch (error) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+    }
+}
 
 export const getAllVoucher = async (req, res) => {
     try {
-        let voucher = await Voucher.find();
+        let voucher = await Voucher.find().sort({ createdAt: -1 });
         if (voucher.length < 0) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" })
         }
 
         // const newVoucher = voucher.map((data) => {
@@ -33,9 +45,9 @@ export const getAllVoucher = async (req, res) => {
 
 export const getOneVoucher = async (req, res) => {
     try {
-        const voucher = await Voucher.findOne({ _id: req.params.id });
+        const voucher = await Voucher.findOne({ _id: req.params.id }).sort({ createdAt: -1 });
         if (!voucher) {
-            // return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
+            // return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" })
             return
         }
 
@@ -46,7 +58,7 @@ export const getOneVoucher = async (req, res) => {
 }
 
 export const createVoucher = async (req, res) => {
-    const { startDate, endDate, status } = req.body;
+    const { startDate, endDate, status, type, discount } = req.body;
 
     try {
         const exitVoucher = await Voucher.findOne({ code: req.body.code });
@@ -68,6 +80,11 @@ export const createVoucher = async (req, res) => {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: "Ngày kết thúc không hợp lệ" })
             }
         }
+        if (type === 'percent') {
+            if (discount < 0 || discount > 100) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Giảm giá theo phần trăm (%) không hợp lệ" })
+            }
+        }
         const voucher = await Voucher.create(req.body)
         return res.status(StatusCodes.CREATED).json(voucher)
     } catch (error) {
@@ -77,12 +94,12 @@ export const createVoucher = async (req, res) => {
 
 export const updateVoucher = async (req, res) => {
     const id = req.body._id;
-    const { startDate, endDate, status } = req.body;
+    const { startDate, endDate, status, type, discount } = req.body;
     const { _id, ...data } = req.body;
     try {
         const voucher = await Voucher.findOneAndUpdate({ _id: id }, data, { new: true });
         if (voucher.length < 0) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" })
         }
 
         const date = new Date();
@@ -92,6 +109,11 @@ export const updateVoucher = async (req, res) => {
             }
             if (new Date(date.getTime() + 7 * 60 * 60 * 1000) > new Date(new Date(endDate).getTime() + 7 * 60 * 60 * 1000)) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: "Ngày kết thúc không hợp lệ" })
+            }
+        }
+        if (type === 'percent') {
+            if (discount < 0 || discount > 100) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Giảm giá theo phần trăm (%) không hợp lệ" })
             }
         }
         return res.status(StatusCodes.OK).json(voucher)
@@ -104,7 +126,7 @@ export const statusVoucher = async (req, res) => {
     try {
         const voucher = await Voucher.findOne({ _id: req.body.id });
         if (voucher.length < 0) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" })
         }
         voucher.status = req.body.status;
         await voucher.save();
@@ -120,7 +142,7 @@ export const removeVoucher = async (req, res) => {
         const voucher = await Voucher.findOneAndDelete({ _id });
 
         if (!voucher) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" });
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" });
         }
 
         return res.status(StatusCodes.OK).json(voucher);
@@ -133,9 +155,9 @@ export const getVoucherWithCountdown = async (req, res) => {
     const { voucherId } = req.params;
 
     try {
-        const voucher = await Voucher.findOne({ _id: voucherId });
+        const voucher = await Voucher.findOne({ _id: voucherId }).sort({ createdAt: -1 });
         if (!voucher) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" });
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" });
         }
 
         const currentTime = new Date();
@@ -157,9 +179,9 @@ export const getVoucherWithCountdown = async (req, res) => {
 
 export const getAllVoucherWithCountDown = async (req, res) => {
     try {
-        let voucher = await Voucher.find();
+        let voucher = await Voucher.find().sort({ createdAt: -1 });
         if (voucher.length < 0) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Voucher not found" })
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy Voucher" })
         }
 
         const newVoucher = voucher.map((data) => {

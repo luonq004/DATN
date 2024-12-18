@@ -33,6 +33,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     imageUrl: {
       type: String,
     },
@@ -77,6 +81,11 @@ const userSchema = new Schema(
         },
       },
     ],
+
+    // chatted: {
+    //   type: Boolean,
+    //   default: false,
+    // },
   },
   {
     collection: "users",
@@ -84,7 +93,6 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-
 
 const Users = mongoose.model("Users", userSchema);
 export default Users;

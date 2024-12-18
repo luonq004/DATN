@@ -31,13 +31,13 @@ const Professionals = () => {
             >
               <div className="px-4">
                 <h2
-                  className="text-[66px] highlight max-[1280px]:text-[46px] max-[1280px]:leading-[46px] max-[767px]:text-[34px] max-[767px]:leading-[40px]  leading-[70px] font-black uppercase text-white "
+                  className="text-[50px] highlight max-[1280px]:text-[46px] max-[1280px]:leading-[46px] max-[767px]:text-[34px] max-[767px]:leading-[40px]  leading-[70px] font-black uppercase text-white "
                   style={{
                     textShadow: "1px 1px 1px rgba(0, 0, 0, .1)",
                     fontFamily: "'Raleway', sans-serif",
                   }}
                 >
-                  choice of the professionals
+                 Lựa chọn của các chuyên gia
                 </h2>
                 <div>
                   <div className="p-[20px_0] light  title-underline h-[21px] ">
@@ -50,9 +50,9 @@ const Professionals = () => {
                     textShadow: "1px 1px 1px rgba(0, 0, 0, .1)",
                   }}
                 >
-                  In feugiat molestie tortor a malesuada. Etiam a venenatis
-                  ipsum. Proin pharetra elit at feugiat commodo vel placerat
-                  tincidunt sapien nec
+                 Chúng tôi cung cấp giải pháp tối ưu với đội ngũ chuyên gia giàu kinh nghiệm.
+                  Từ việc phân tích kỹ lưỡng đến thực thi hoàn hảo, chúng tôi cam kết mang lại kết quả chất lượng cao nhất. 
+                  Dịch vụ của chúng tôi giúp bạn tiết kiệm thời gian và đạt được mục tiêu một cách hiệu quả nhất.
                 </div>
               </div>
               <div className="max-[768px]:hidden">
@@ -85,13 +85,13 @@ const Professionals = () => {
               </div>
               <div className="px-4">
                 <h2
-                  className="text-[66px] highlight  max-[1199px]:text-[46px] max-[1199px]:leading-[46px] max-[767px]:text-[34px] max-[767px]:leading-[40px]  leading-[70px] font-black uppercase text-white "
+                  className="text-[50px] highlight  max-[1199px]:text-[46px] max-[1199px]:leading-[46px] max-[767px]:text-[34px] max-[767px]:leading-[40px]  leading-[70px] font-black uppercase text-white "
                   style={{
                     textShadow: "1px 1px 1px rgba(0, 0, 0, .1)",
                     fontFamily: "'Raleway', sans-serif",
                   }}
                 >
-                  choice of the professionals
+                 Chuyên gia hàng đầu
                 </h2>
                 <div>
                   <div className="p-[20px_0] light  title-underline h-[21px] ">
@@ -104,9 +104,7 @@ const Professionals = () => {
                     textShadow: "1px 1px 1px rgba(0, 0, 0, .1)",
                   }}
                 >
-                  In feugiat molestie tortor a malesuada. Etiam a venenatis
-                  ipsum. Proin pharetra elit at feugiat commodo vel placerat
-                  tincidunt sapien nec
+                Với đội ngũ chuyên gia dày dặn kinh nghiệm, chúng tôi cam kết cung cấp các giải pháp tối ưu để giúp bạn đạt được kết quả như mong muốn, tiết kiệm thời gian và nguồn lực.
                 </div>
               </div>
               

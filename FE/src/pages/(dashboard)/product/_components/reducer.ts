@@ -37,11 +37,11 @@ export const reducer = (state: State, action: Action): State => {
       };
 
     case "ADD_VALUE": {
+      console.log("action.payload: ", action.payload);
+
       const filteredValues = action.payload.filter(
         (value) => value && Object.keys(value).length > 0
       );
-
-      // console.log("FILTERED VALUES: ", filteredValues);
 
       if (!filteredValues.length) return state;
 
@@ -74,6 +74,15 @@ export const reducer = (state: State, action: Action): State => {
         valuesMix: mix,
       };
     }
+
+    case "UPDATE_ATTRIBUTES":
+      return {
+        ...state,
+
+        attributesChoose: state.attributesChoose.map((attr) =>
+          attr._id === action.payload._id ? action.payload : attr
+        ),
+      };
 
     case "DELETE_INDEX_MIX_VALUE":
       return {

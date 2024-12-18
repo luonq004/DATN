@@ -40,7 +40,15 @@ const productSchema = new mongoose.Schema(
       type: Number,
     },
 
+    totalOriginalPrice: {
+      type: Number,
+    },
+
     description: {
+      type: String,
+    },
+
+    descriptionDetail: {
       type: String,
     },
 
@@ -55,9 +63,12 @@ const productSchema = new mongoose.Schema(
       // Ta có thể bỏ qua field khỏi schema khi được select (Trong trg hợp data nhạy cảm,...)
       select: false,
     },
-    reviews: [Object],
-
-    // attribute: [Object],
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
 
     variants: [
       {
@@ -66,6 +77,11 @@ const productSchema = new mongoose.Schema(
         // required: true,
       },
     ],
+
+    count: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

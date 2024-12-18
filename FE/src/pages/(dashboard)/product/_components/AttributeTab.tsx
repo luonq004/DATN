@@ -5,10 +5,6 @@ import {
   State,
   Variant,
 } from "@/common/types/Product";
-import {
-  FormTypeProductCommon,
-  // FormTypeProductVariation,
-} from "@/common/types/validate";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -17,21 +13,18 @@ import {
 } from "@/components/ui/collapsible";
 import { useState } from "react";
 import Select from "react-select";
+import { AddNewValue } from "./AddNewValue";
+import { toast } from "@/components/ui/use-toast";
 
 const AttributeTab = ({
-  id,
-  form,
-  fields,
   attributes,
   stateAttribute,
   dispatch,
   selectedValues,
   setSelectedValues,
   handleAttributeValueChange,
+  replaceFields,
 }: {
-  id: boolean;
-  form: FormTypeProductCommon;
-  fields: Variant[];
   attributes: Attribute[];
   stateAttribute: State;
   dispatch: React.Dispatch<Action>;
@@ -57,6 +50,7 @@ const AttributeTab = ({
       label: string;
     }
   ) => void;
+  replaceFields: (fields: Variant[]) => void;
 }) => {
   // State
   const [valueOptions, setValueOptions] = useState<{
@@ -79,14 +73,18 @@ const AttributeTab = ({
     dispatch({ type: "ADD_ATTRIBUTE", payload: chooseAttribute });
   }
 
+  // console.log("valueOptions: ", stateAttribute.attributesChoose);
+  // console.log("selectedValues: ", selectedValues);
+
   return (
     <>
       <div className="flex gap-10 py-5">
         <Select
-          placeholder="Custom product attribute"
+          placeholder="Chọn thuộc tính"
           value={valueOptions}
           noOptionsMessage={() => "Không có giá trị nào"}
-          className="w-60"
+          className="w-2/3"
+          isDisabled={stateAttribute.attributesChoose.length === 2}
           options={
             attributes
               .map((item) => ({
@@ -118,7 +116,7 @@ const AttributeTab = ({
             setValueOptions(null);
           }}
         >
-          Add
+          Chọn
         </Button>
         {selectError && (
           <span className="text-red-500">Bạn phải chọn một giá trị!</span>
@@ -156,22 +154,30 @@ const AttributeTab = ({
                 }}
               />
 
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => {
-                  dispatch({
-                    type: "DELETE_ONE_VALUE",
-                    payload: value._id as string,
-                  });
-                  setSelectedValues((current) => {
-                    const { [value._id]: _, ...rest } = current;
-                    return rest;
-                  });
-                }}
-              >
-                Delete
-              </Button>
+              <div className="flex gap-2">
+                <AddNewValue
+                  attributeId={value._id}
+                  type={value.name}
+                  dispatch={dispatch}
+                />
+
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => {
+                    dispatch({
+                      type: "DELETE_ONE_VALUE",
+                      payload: value._id as string,
+                    });
+                    setSelectedValues((current) => {
+                      const { [value._id]: _, ...rest } = current;
+                      return rest;
+                    });
+                  }}
+                >
+                  Xóa
+                </Button>
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -182,14 +188,29 @@ const AttributeTab = ({
           type="button"
           onClick={() => {
             dispatch({ type: "CLEAR_VALUES" });
+            replaceFields([]);
             dispatch({
               type: "ADD_VALUE",
               payload: Object.values(selectedValues).flatMap((val) => [val]),
             });
+            if (
+              Object.values(selectedValues).length === 0 ||
+              Object.values(selectedValues)[0].length === 0
+            ) {
+              toast({
+                variant: "destructive",
+                title: "Bạn chưa chọn giá trị cho biến thể",
+              });
+            } else {
+              toast({
+                variant: "success",
+                title: "Đã tạo biến thể thành công",
+              });
+            }
             dispatch({ type: "MIX_VALUES" });
           }}
         >
-          Add
+          Tạo biến thể
         </Button>
       </div>
     </>

@@ -44,19 +44,19 @@ const Sidebar = () => {
           },
           {
             title: "Products",
-            href: "/dashboard/products",
+            href: "/admin/products",
             icon: File,
             variant: "ghost",
           },
           {
             title: "Categories",
-            href: "/dashboard/categories",
+            href: "/admin/categories",
             icon: LayoutPanelLeft,
             variant: "ghost",
           },
           {
             title: "Attributes",
-            href: "/dashboard/attributes",
+            href: "/admin/attributes",
             icon: Grip,
             variant: "ghost",
           },
@@ -68,7 +68,7 @@ const Sidebar = () => {
           },
           {
             title: "Users",
-            href: "/dashboard/users",
+            href: "/admin/users",
             icon: User,
             variant: "ghost",
           },

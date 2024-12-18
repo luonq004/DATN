@@ -56,10 +56,10 @@ const SlideOurTeam = () => {
                                     co-founder
                                 </div>
                                 <div className='text-base font-bold uppercase'>
-                                    monica rajan
+                                    Vi Quốc Lương
                                 </div>
                                 <div className='text-base text-[#888]'>
-                                    Mollis nec consequat at In feugiat molestie tortor a malesuada
+                                    luongvqph33533@fpt.edu.vn
                                 </div>
                             </div>
                             <div className='Info transition-all duration-500 absolute opacity-0 group-hover:opacity-100 top-1/3 group-hover:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center gap-x-4 *:hover:cursor-pointer *:transition-all *:duration-200'>
@@ -93,10 +93,10 @@ const SlideOurTeam = () => {
                                     co-founder
                                 </div>
                                 <div className='text-base font-bold uppercase'>
-                                    monica rajan
+                                    Đoàn Thị Thu Hằng
                                 </div>
                                 <div className='text-base text-[#888]'>
-                                    Mollis nec consequat at In feugiat molestie tortor a malesuada
+                                    hangdttph33534@fpt.edu.vn
                                 </div>
                             </div>
                             <div className='Info transition-all duration-500 absolute opacity-0 group-hover:opacity-100 top-1/3 group-hover:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center gap-x-4 *:hover:cursor-pointer *:transition-all *:duration-200'>
@@ -130,10 +130,10 @@ const SlideOurTeam = () => {
                                     co-founder
                                 </div>
                                 <div className='text-base font-bold uppercase'>
-                                    monica rajan
+                                    Đỗ Trọng Khanh
                                 </div>
                                 <div className='text-base text-[#888]'>
-                                    Mollis nec consequat at In feugiat molestie tortor a malesuada
+                                    khanhdtph33535@fpt.edu.vn
                                 </div>
                             </div>
                             <div className='Info transition-all duration-500 absolute opacity-0 group-hover:opacity-100 top-1/3 group-hover:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center gap-x-4 *:hover:cursor-pointer *:transition-all *:duration-200'>
@@ -167,10 +167,10 @@ const SlideOurTeam = () => {
                                     co-founder
                                 </div>
                                 <div className='text-base font-bold uppercase'>
-                                    monica rajan
+                                    Bùi Văn Hải
                                 </div>
                                 <div className='text-base text-[#888]'>
-                                    Mollis nec consequat at In feugiat molestie tortor a malesuada
+                                    haibvph33536@fpt.edu.vn
                                 </div>
                             </div>
                             <div className='Info transition-all duration-500 absolute opacity-0 group-hover:opacity-100 top-1/3 group-hover:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center gap-x-4 *:hover:cursor-pointer *:transition-all *:duration-200'>
@@ -204,10 +204,10 @@ const SlideOurTeam = () => {
                                     co-founder
                                 </div>
                                 <div className='text-base font-bold uppercase'>
-                                    monica rajan
+                                    Ngô Tân Hoàng Minh
                                 </div>
                                 <div className='text-base text-[#888]'>
-                                    Mollis nec consequat at In feugiat molestie tortor a malesuada
+                                    minhnthph33537@fpt.edu.vn
                                 </div>
                             </div>
                             <div className='Info transition-all duration-500 absolute opacity-0 group-hover:opacity-100 top-1/3 group-hover:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center gap-x-4 *:hover:cursor-pointer *:transition-all *:duration-200'>

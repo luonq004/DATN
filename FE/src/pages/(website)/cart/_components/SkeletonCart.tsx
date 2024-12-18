@@ -1,8 +1,6 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
-type Props = {}
-
-const SkeletonCart = (props: Props) => {
+const SkeletonCart = () => {
     return (
         <div className="Status_Cart transition-all duration-500 space-y-8 px-4 py-8 max-w-[1408px] w-full max-[1408px]:w-[88%] mx-auto grid grid-cols-[57%_auto] max-lg:grid-cols-1 gap-x-16">
             <div className="Your_Cart flex flex-col gap-6">

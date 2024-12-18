@@ -1,29 +1,36 @@
-import { useState } from "react";
-
-//products
-import ImgProduct from "@/assets/products/product-1.svg";
-
-//icons
-import minius from "@/assets/icons/transaction-minus.svg";
-import boxtime from "@/assets/icons/box-time.svg";
-import trucktime from "@/assets/icons/truck-time.svg";
-import idk from "@/assets/icons/idk.svg";
-import visa from "@/assets/icons/Visa.svg";
-import bitcoin from "@/assets/icons/Bitcoin.svg";
-import interac from "@/assets/icons/Interac.svg";
-import SizeColorSelector from "./SizeColorSelect";
-
+import { useEffect, useState } from "react";
 //other
 import useCart from "@/common/hooks/useCart";
 import { toast } from "@/components/ui/use-toast";
 import SkeletonCart from "./SkeletonCart";
 import CartRight from "./CartRight";
 import CartLeft from "./CartLeft";
+import { useUserContext } from "@/common/context/UserProvider";
+import { io } from "socket.io-client";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
+
+const socket = io("http://localhost:3000");
+
+
+// order
 
 const ShopCart = () => {
   const [attribute, setAttribute] = useState<string | 1>("1");
 
-  const userId = "66a105b8ad18a6e2447d5afb"; // USER ID
+  const { _id }: any = useUserContext();
+
+  // console.log('id: ', _id);
+
+  useEffect(() => {
+    socket.on("order", (data) => {
+      console.log(data);
+    });
+  }, [])
+
+  useEffect(() => {
+    document.title = "Giỏ hàng";
+  }, []);
+
   const {
     cart,
     isLoading,
@@ -35,12 +42,15 @@ const ShopCart = () => {
     addVoucher,
     removeVoucher,
     changeVariant,
-  } = useCart(userId);
-  // console.log(cart)
+    selectedOneItem,
+    selectedAllItem,
+    removeAllItemSelected
+  } = useCart(_id);
+  // console.log('cart', cart);
 
   function userAction(action: any, value: any) {
     const item = {
-      userId: userId,
+      userId: _id,
       ...value,
     };
     // console.log(item)
@@ -84,7 +94,7 @@ const ShopCart = () => {
           onSuccess: () => {
             // console.log(`Thêm mã giảm giá ${value.voucherCode} thành công`)
             toast({
-              title: "Sucsess",
+              title: "Thành công",
               description: `Thêm mã giảm giá ${value.voucherCode} thành công`,
             });
           },
@@ -92,25 +102,50 @@ const ShopCart = () => {
         break;
 
       case "removeVoucher":
-        removeVoucher.mutate(item);
+        removeVoucher.mutate(item, {
+          onSuccess: () => {
+            toast({
+              title: "Thành công",
+              description: `Gỡ mã giảm giá thành công`,
+            });
+          },
+        });
         break;
 
       case "changeVariant":
         changeVariant.mutate(item, {
           onSuccess: () => {
             toast({
-              title: "Sucsess",
+              title: "Thành công",
               description: "Đổi thành công!",
             });
             setAttribute("1");
           },
         });
         break;
+
+      case "selectedOne":
+        selectedOneItem.mutate(item);
+        break;
+
+      case "selectedAll":
+        selectedAllItem.mutate(item);
+        break;
+
+      case "removeAllSelected":
+        removeAllItemSelected.mutate(item);
+        break;
     }
   }
 
   if (isLoading) return <SkeletonCart />;
-  if (isError) return <div>Is Error</div>;
+  if (isError) return (
+    <div className="flex items-center justify-center p-[10rem] my-10   ">
+      <AiOutlineExclamationCircle className="text-red-500 text-xl mr-2" />
+      <span className="text-red-600 font-semibold">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</span>
+    </div>
+  );;
+  // console.log('cart', cart);
 
   return (
     <>
@@ -123,6 +158,8 @@ const ShopCart = () => {
           attribute={attribute}
           setAttribute={setAttribute}
           userAction={userAction}
+          isLoading={isLoading}
+          isError={isError}
         />
         {/* End Cart__Left  */}
 
