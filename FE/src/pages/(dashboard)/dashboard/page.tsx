@@ -21,7 +21,6 @@ export default function DashBoardPage() {
       </div>
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
         {/* <CircleTotal /> */}
-        {/* <CircleCategory /> */}
         <UserList />
         <TopProducts />
       </div>
