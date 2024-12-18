@@ -36,7 +36,7 @@ const NewArrivals = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/products");
+        const response = await axios.get("http://localhost:8080/api/products/all");
         setProducts(response.data.data);
       } catch (error) {
         console.error("Lỗi khi lấy sản phẩm:", error);

@@ -21,7 +21,7 @@ const CheckSubmitOrder = ({
         <div className="Subtotal flex flex-col gap-4">
           <div className="flex justify-between">
             <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
-              Tổng tiền
+              Tổng tiền hàng
             </p>
             <div>
               <span>{formatCurrency(cart?.subTotal ?? 0)} VNĐ</span>
@@ -43,6 +43,14 @@ const CheckSubmitOrder = ({
               <span>{formatCurrency(30000)}VNĐ</span>
             </div>
           </div>
+          <div className="flex justify-between">
+                        <p className="text-[#9D9EA2] transition-all duration-500 max-sm:text-[14px]">
+                            Thành tiền
+                        </p>
+                        <div>
+                            <span>{formatCurrency(cart.total ?? 0)}VNĐ</span>
+                        </div>
+                    </div>
         </div>
 
         {/* <div className='Free-Ship flex flex-col pt-4 gap-4 border-t border-[#F4F4F4]'>
