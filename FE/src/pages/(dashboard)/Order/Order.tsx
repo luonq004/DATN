@@ -94,7 +94,7 @@ const AdminOrder = () => {
       alert("Không lấy được OrderId");
       return;
     }
-    const newStatus = "đã hủy";
+    const newStatus = "hủy đơn";
     if (!reason.trim()) {
       alert("Vui lòng nhập lý do hủy.");
       return;
@@ -234,7 +234,7 @@ const AdminOrder = () => {
     // Lặp qua các đơn hàng để kiểm tra
     orders.forEach(async (order) => {
       // Chỉ xử lý các đơn hàng có trạng thái "chờ xác nhận" và payment là "Vnpay"
-      if (order.isPaid === false && order.payment === "Vnpay" && order.status !== "đã hủy") {
+      if (order.isPaid === false && order.payment === "Vnpay" && order.status !== "hủy đơn") {
         await axios.put(
           `${apiUrl}/delete-orderAdmin/${order.id}`
         );
@@ -325,7 +325,7 @@ const AdminOrder = () => {
                 <Select
                   value={row.original.status}
                   onValueChange={async (newStatus) => {
-                    if (newStatus === "đã hủy") {
+                    if (newStatus === "hủy đơn") {
                       setOrderIdToCancel(row.original.id);
                       openModal();
                       return;
@@ -345,7 +345,7 @@ const AdminOrder = () => {
                   }}
                   disabled={
                     row.original.status === "đã hoàn thành" ||
-                    row.original.status === "đã hủy"
+                    row.original.status === "hủy đơn"
                   }
                 >
                   <SelectTrigger>
@@ -358,7 +358,7 @@ const AdminOrder = () => {
                         "đã xác nhận",
                         "đang giao hàng",
                         "đã hoàn thành",
-                        "đã hủy",
+                        "hủy đơn",
                       ].map((status) => (
                         <SelectItem key={status} value={status}>
                           {status}
@@ -451,7 +451,7 @@ const AdminOrder = () => {
             <SelectItem value="đã xác nhận">đã xác nhận</SelectItem>
             <SelectItem value="đang giao hàng">đang giao hàng</SelectItem>
             <SelectItem value="đã hoàn thành">Đã hoàn thành</SelectItem>
-            <SelectItem value="đã hủy">Đã hủy</SelectItem>
+            <SelectItem value="hủy đơn">hủy đơn</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -533,7 +533,7 @@ const getStatusClassName = (status: string) => {
       return "px-2 py-1 text-xs font-semibold rounded-full capitalize bg-green-100 text-green-800";
     case "đã hoàn thành":
       return "px-2 py-1 text-xs font-semibold rounded-full capitalize bg-gray-100 text-gray-800";
-    case "đã hủy":
+    case "hủy đơn":
       return "px-2 py-1 text-xs font-semibold rounded-full capitalize bg-red-100 text-red-800";
     default:
       return "";

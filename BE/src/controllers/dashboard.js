@@ -298,7 +298,7 @@ export const getDataOrderList = async (req, res) => {
         if (orders.length === 0) {
             return res.status(404).json({ message: "Không có đơn hàng nào" });
         }
-        const newOrders = orders.filter((order) => order.status !== "đã hoàn thành" && order.status !== "đã hủy");
+        const newOrders = orders.filter((order) => order.status !== "đã hoàn thành" && order.status !== "hủy đơn");
         // console.log(newOrders);
         // Trả về danh sách đơn hàng
         return res.status(StatusCodes.OK).json(newOrders);
